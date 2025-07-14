@@ -16,6 +16,7 @@ interface UseParticipantDataProps {
     district?: string;
     sex?: string;
     isPWD?: string;
+    ageGroup?: string;
   };
 }
 
@@ -42,6 +43,8 @@ export function useParticipantData({
       initialSearchParams?.district || searchParams.get("district") || "",
     sex: initialSearchParams?.sex || searchParams.get("sex") || "",
     isPWD: initialSearchParams?.isPWD || searchParams.get("isPWD") || "",
+    ageGroup:
+      initialSearchParams?.ageGroup || searchParams.get("ageGroup") || "",
   });
 
   // State to control whether metrics should use filters
@@ -86,6 +89,7 @@ export function useParticipantData({
       district: newFilters.district,
       sex: newFilters.sex,
       isPWD: newFilters.isPWD,
+      ageGroup: newFilters.ageGroup,
     });
   };
 
@@ -134,6 +138,7 @@ export function useParticipantData({
     const district = searchParams.get("district") || "";
     const sex = searchParams.get("sex") || "";
     const isPWD = searchParams.get("isPWD") || "";
+    const ageGroup = searchParams.get("ageGroup") || "";
 
     setCurrentPage(page);
     setPageSize(perPage);
@@ -144,6 +149,7 @@ export function useParticipantData({
       district,
       sex,
       isPWD,
+      ageGroup,
     }));
   }, [searchParams]);
 
@@ -158,6 +164,7 @@ export function useParticipantData({
         district: filters.district,
         sex: filters.sex,
         isPWD: filters.isPWD,
+        ageGroup: filters.ageGroup,
       },
     });
 
@@ -169,6 +176,7 @@ export function useParticipantData({
         district: filters.district,
         sex: filters.sex,
         isPWD: filters.isPWD,
+        ageGroup: filters.ageGroup,
       },
       applyFilters: applyFiltersToMetrics,
     });

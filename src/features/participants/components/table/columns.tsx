@@ -4,11 +4,7 @@ import { type ColumnDef, type Table, type Row } from "@tanstack/react-table";
 import { type Participant } from "../../types/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ActionCell } from "./action-cell";
-import {
-  DistrictNameCell,
-  SubcountyNameCell,
-  CountyNameCell,
-} from "./location-name-cell";
+import { LocationNameCell, LocationType } from "./location-name-cell";
 
 interface GetColumnsProps {
   onEdit: (participant: Participant) => void;
@@ -88,21 +84,45 @@ export function getColumns({
       header: "District",
       enableHiding: true,
       accessorFn: row => row.districtName || row.district,
-      cell: ({ row }) => <DistrictNameCell value={row.original.district} />,
+      cell: ({ row }) => {
+        // Use the LocationNameCell component to show district name
+        const districtValue =
+          row.original.districtName || row.original.district || "";
+
+        return (
+          <LocationNameCell id={districtValue} type={LocationType.District} />
+        );
+      },
     },
     {
       id: "subCounty",
       header: "Sub County",
       enableHiding: true,
       accessorFn: row => row.subCountyName || row.subCounty,
-      cell: ({ row }) => <SubcountyNameCell value={row.original.subCounty} />,
+      cell: ({ row }) => {
+        // Use the LocationNameCell component to show subcounty name
+        const subCountyValue =
+          row.original.subCountyName || row.original.subCounty || "";
+
+        return (
+          <LocationNameCell id={subCountyValue} type={LocationType.SubCounty} />
+        );
+      },
     },
     {
       id: "country",
       header: "Country",
       enableHiding: true,
       accessorFn: row => row.countyName || row.country || "",
-      cell: ({ row }) => <CountyNameCell value={row.original.country} />,
+      cell: ({ row }) => {
+        // Use the LocationNameCell component to show country name
+        const countryValue =
+          row.original.countyName || row.original.country || "";
+
+        return (
+          <LocationNameCell id={countryValue} type={LocationType.Country} />
+        );
+      },
     },
     {
       id: "organization",

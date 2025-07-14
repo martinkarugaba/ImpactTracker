@@ -24,6 +24,7 @@ export function useParticipants(
       district?: string;
       sex?: string;
       isPWD?: string;
+      ageGroup?: string;
     };
   }
 ) {
@@ -49,6 +50,7 @@ export function useParticipantsMetrics(
       district?: string;
       sex?: string;
       isPWD?: string;
+      ageGroup?: string;
     };
     applyFilters: boolean;
   }

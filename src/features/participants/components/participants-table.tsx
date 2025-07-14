@@ -134,7 +134,7 @@ export function ParticipantsTable({
             onDelete={onDelete}
             onClearSelection={() => setSelectedRows([])}
           />
-          <div className="flex items-center gap-2">
+          <div className="flex w-full items-center gap-2">
             <ImportParticipants
               onImport={onImportParticipants}
               clusterId={clusters[0]?.id || ""}

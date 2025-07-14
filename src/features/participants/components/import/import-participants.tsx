@@ -178,8 +178,8 @@ export function ImportParticipants({
           Import
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-h-[90vh] w-[1400px] max-w-[95vw] overflow-y-auto">
+        <DialogHeader className="w-full">
           <div className="flex items-center justify-between">
             <div>
               <DialogTitle>Import Participants</DialogTitle>

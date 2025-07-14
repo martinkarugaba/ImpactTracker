@@ -2,52 +2,84 @@
 
 import { useQuery } from "@tanstack/react-query";
 import {
-  getDistrictNameById,
-  getSubcountyNameById,
-  getCountyNameById,
+  batchGetDistrictNames,
+  batchGetSubCountyNames,
+  batchGetCountryNames,
 } from "../actions/location-lookup";
 
-/**
- * Hook to fetch district name by ID
- */
-export function useDistrictName(districtId: string | undefined | null) {
-  return useQuery({
-    queryKey: ["district-name", districtId],
-    queryFn: () =>
-      districtId ? getDistrictNameById(districtId) : Promise.resolve(null),
-    enabled: !!districtId && isUUID(districtId),
-  });
-}
+export type LocationNames = {
+  districts: Record<string, string>;
+  subCounties: Record<string, string>;
+  countries: Record<string, string>;
+  isLoading: boolean;
+  error: Error | null;
+};
 
-/**
- * Hook to fetch subcounty name by ID
- */
-export function useSubcountyName(subcountyId: string | undefined | null) {
-  return useQuery({
-    queryKey: ["subcounty-name", subcountyId],
-    queryFn: () =>
-      subcountyId ? getSubcountyNameById(subcountyId) : Promise.resolve(null),
-    enabled: !!subcountyId && isUUID(subcountyId),
-  });
-}
+export function useLocationNames(
+  districtIds: string[] = [],
+  subCountyIds: string[] = [],
+  countryIds: string[] = []
+): LocationNames {
+  // Filter out empty values
+  const filteredDistrictIds = districtIds.filter(Boolean);
+  const filteredSubCountyIds = subCountyIds.filter(Boolean);
+  const filteredCountryIds = countryIds.filter(Boolean);
 
-/**
- * Hook to fetch county name by ID
- */
-export function useCountyName(countyId: string | undefined | null) {
-  return useQuery({
-    queryKey: ["county-name", countyId],
+  // Query for districts
+  const {
+    data: districts = {},
+    isLoading: isLoadingDistricts,
+    error: districtError,
+  } = useQuery({
+    queryKey: ["districts", filteredDistrictIds],
     queryFn: () =>
-      countyId ? getCountyNameById(countyId) : Promise.resolve(null),
-    enabled: !!countyId && isUUID(countyId),
+      filteredDistrictIds.length
+        ? batchGetDistrictNames(filteredDistrictIds)
+        : Promise.resolve({}),
+    enabled: filteredDistrictIds.length > 0,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
-}
 
-/**
- * Helper function to check if a string is a UUID
- */
-function isUUID(str: string): boolean {
-  const uuidRegex =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  return uuidRegex.test(str);
+  // Query for subCounties
+  const {
+    data: subCounties = {},
+    isLoading: isLoadingSubCounties,
+    error: subCountyError,
+  } = useQuery({
+    queryKey: ["subCounties", filteredSubCountyIds],
+    queryFn: () =>
+      filteredSubCountyIds.length
+        ? batchGetSubCountyNames(filteredSubCountyIds)
+        : Promise.resolve({}),
+    enabled: filteredSubCountyIds.length > 0,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Query for countries
+  const {
+    data: countries = {},
+    isLoading: isLoadingCountries,
+    error: countryError,
+  } = useQuery({
+    queryKey: ["countries", filteredCountryIds],
+    queryFn: () =>
+      filteredCountryIds.length
+        ? batchGetCountryNames(filteredCountryIds)
+        : Promise.resolve({}),
+    enabled: filteredCountryIds.length > 0,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const isLoading =
+    isLoadingDistricts || isLoadingSubCounties || isLoadingCountries;
+
+  const error = districtError || subCountyError || countryError;
+
+  return {
+    districts,
+    subCounties,
+    countries,
+    isLoading,
+    error,
+  };
 }

@@ -122,6 +122,45 @@ export function ParticipantContainer({
                   <DetailedParticipantMetrics
                     participants={metricsData}
                     isLoading={isLoadingMetrics}
+                    onFilterChange={filter => {
+                      const newFilters = { ...filters };
+
+                      switch (filter.type) {
+                        case "gender":
+                          newFilters.sex = filter.value;
+                          break;
+                        case "age":
+                          // Handle age-based filters
+                          const isYoung = filter.value.includes("young");
+                          const isFemale = filter.value.includes("female");
+
+                          newFilters.ageGroup = isYoung ? "young" : "older";
+                          newFilters.sex = isFemale ? "female" : "male";
+                          break;
+                        case "disability":
+                          newFilters.isPWD = "true";
+                          if (filter.value !== "all") {
+                            newFilters.sex = filter.value;
+                          }
+                          break;
+                        case "all":
+                          // Reset filters
+                          newFilters.sex = "";
+                          newFilters.ageGroup = "";
+                          newFilters.isPWD = "";
+                          break;
+                      }
+
+                      handleFilterChange(newFilters);
+                    }}
+                    activeFilters={{
+                      gender: filters.sex,
+                      age:
+                        filters.ageGroup &&
+                        filters.sex &&
+                        `${filters.ageGroup}-${filters.sex}`,
+                      disability: filters.isPWD === "true",
+                    }}
                   />
                 </div>
               </SheetContent>
