@@ -73,7 +73,6 @@ export function ParticipantContainer({
   const clusterOrganizations = extractClusterOrganizations(clusterId, clusters);
 
   // We no longer need to extract metrics here since CompactParticipantMetrics handles it
-
   return (
     <div className="container mx-auto max-w-7xl py-10">
       <div className="flex flex-col gap-4 md:gap-6">

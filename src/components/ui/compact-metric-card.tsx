@@ -3,7 +3,6 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TrendingDown, TrendingUp } from "lucide-react";
-
 export interface CompactMetricCardProps {
   title: string;
   value?: string | number;
