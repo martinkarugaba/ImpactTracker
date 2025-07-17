@@ -41,7 +41,7 @@ export function ParticipantTableFilters({
   setFilters,
 }: TableFiltersProps) {
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-4 p-6">
       <h2 className="text-lg font-semibold">Filters</h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
         {/* View Selector */}

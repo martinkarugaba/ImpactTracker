@@ -16,6 +16,7 @@ import {
   IconSearch,
   IconSettings,
   IconTarget,
+  IconTrain,
   IconUsers,
   IconUsersGroup,
 } from "@tabler/icons-react";
@@ -133,6 +134,11 @@ export const navigationData = {
       name: "Participants",
       url: "/dashboard/participants",
       icon: IconUsersGroup,
+    },
+    {
+      name: "Trainings",
+      url: "/dashboard/trainings",
+      icon: IconTrain,
     },
     {
       name: "Targets",

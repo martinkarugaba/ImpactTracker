@@ -22,6 +22,7 @@ export async function getParticipants(
       district?: string;
       sex?: string;
       isPWD?: string;
+      ageGroup?: string;
     };
   }
 ): Promise<ParticipantsResponse> {
@@ -51,6 +52,13 @@ export async function getParticipants(
         whereConditions.push(eq(participants.isPWD, "yes"));
       } else if (params.filters.isPWD === "no") {
         whereConditions.push(eq(participants.isPWD, "no"));
+      }
+      if (params.filters.ageGroup) {
+        if (params.filters.ageGroup === "young") {
+          whereConditions.push(sql`${participants.age} <= 30`);
+        } else if (params.filters.ageGroup === "older") {
+          whereConditions.push(sql`${participants.age} > 30`);
+        }
       }
     }
 
@@ -99,9 +107,8 @@ export async function getParticipants(
 
     const orgMap = new Map(orgs.map(org => [org.id, org.name]));
 
-    // In the current implementation, district, subCounty, and country fields
-    // in the participants table already contain names, not IDs
-    // We'll keep this simpler for now and just use the existing values
+    // We want to just pass the district, subCounty, and country values directly
+    // The LocationNameCell will handle fetching and displaying the actual names
 
     // Enhance participant data with organization, project, and location names
     const data = participantsData.map(participant => ({
@@ -109,7 +116,7 @@ export async function getParticipants(
       organizationName: orgMap.get(participant.organization_id) || "Unknown",
       projectName: participant.project?.name || "Unknown",
       clusterName: participant.cluster?.name || "Unknown",
-      // Use the direct values since these fields already contain names
+      // We'll pass these values directly to the LocationNameCell component later
       districtName: participant.district,
       subCountyName: participant.subCounty,
       countyName: participant.country,

@@ -169,6 +169,13 @@
       "when": 1748074441355,
       "tag": "0023_previous_power_man",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1749720325699,
+      "tag": "0024_powerful_albert_cleary",
+      "breakpoints": true
     }
   ]
 }

@@ -687,3 +687,70 @@ export const cellsRelations = relations(cells, ({ one }) => ({
     references: [divisions.id],
   }),
 }));
+
+export const trainings = pgTable("trainings", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  description: text("description"),
+  conceptNote: text("concept_note"),
+  activityReport: text("activity_report"),
+  trainingDate: timestamp("training_date").notNull(),
+  venue: text("venue").notNull(),
+  status: text("status").notNull().default("pending"),
+  numberOfParticipants: integer("number_of_participants").notNull().default(0),
+  budget: integer("budget"),
+  organization_id: uuid("organization_id")
+    .references(() => organizations.id)
+    .notNull(),
+  cluster_id: uuid("cluster_id")
+    .references(() => clusters.id)
+    .notNull(),
+  project_id: uuid("project_id")
+    .references(() => projects.id)
+    .notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const trainingParticipants = pgTable("training_participants", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  training_id: uuid("training_id")
+    .references(() => trainings.id)
+    .notNull(),
+  participant_id: uuid("participant_id")
+    .references(() => participants.id)
+    .notNull(),
+  attendance_status: text("attendance_status").notNull().default("pending"),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const trainingsRelations = relations(trainings, ({ one, many }) => ({
+  organization: one(organizations, {
+    fields: [trainings.organization_id],
+    references: [organizations.id],
+  }),
+  cluster: one(clusters, {
+    fields: [trainings.cluster_id],
+    references: [clusters.id],
+  }),
+  project: one(projects, {
+    fields: [trainings.project_id],
+    references: [projects.id],
+  }),
+  trainingParticipants: many(trainingParticipants),
+}));
+
+export const trainingParticipantsRelations = relations(
+  trainingParticipants,
+  ({ one }) => ({
+    training: one(trainings, {
+      fields: [trainingParticipants.training_id],
+      references: [trainings.id],
+    }),
+    participant: one(participants, {
+      fields: [trainingParticipants.participant_id],
+      references: [participants.id],
+    }),
+  })
+);

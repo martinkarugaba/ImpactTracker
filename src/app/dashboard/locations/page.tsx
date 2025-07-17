@@ -5,7 +5,7 @@ export default async function LocationsPage() {
   return (
     <div className="container mx-auto py-10 pt-0">
       <SiteHeader title="Locations" />
-      <div className="mt-6">
+      <div className="mt-4 px-6">
         <CountriesTab />
       </div>
     </div>

@@ -1,6 +1,6 @@
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { FlatCompat } from '@eslint/eslintrc';
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import { FlatCompat } from "@eslint/eslintrc";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -12,75 +12,72 @@ const compat = new FlatCompat({
 const eslintConfig = [
   {
     plugins: {
-      prettier: await import('eslint-plugin-prettier').then(m => m.default),
+      prettier: await import("eslint-plugin-prettier").then(m => m.default),
     },
   },
   {
     ignores: [
       // dependencies
-      'node_modules/**',
-      '.pnp/**',
-      '.pnp.js',
+      "node_modules/**",
+      ".pnp/**",
+      ".pnp.js",
 
       // next.js
-      '.next/**/*',
-      '.next/types/**/*',
-      'out/**',
-      'build/**',
-      'dist/**',
+      ".next/**",
+      "out/**",
+      "build/**",
+      "dist/**",
 
       // misc
-      '**/.DS_Store',
-      '*.pem',
+      "**/.DS_Store",
+      "*.pem",
 
       // debug
-      '**/npm-debug.log*',
-      '**/yarn-debug.log*',
-      '**/yarn-error.log*',
-      '**/pnpm-debug.log*',
+      "**/npm-debug.log*",
+      "**/yarn-debug.log*",
+      "**/yarn-error.log*",
+      "**/pnpm-debug.log*",
 
       // local env files
-      '**/.env*.local',
+      "**/.env*.local",
 
       // vercel
-      '.vercel/**',
+      ".vercel/**",
 
       // typescript
-      '*.tsbuildinfo',
-      'next-env.d.ts',
+      "*.tsbuildinfo",
+      "next-env.d.ts",
 
       // coverage
-      'coverage/**',
+      "coverage/**",
     ],
   },
-  ...compat.extends('next/core-web-vitals', 'next/typescript', 'prettier'),
+  ...compat.extends("next/core-web-vitals", "next/typescript", "prettier"),
   {
-    files: ['**/*.{js,mjs,cjs,jsx,ts,tsx}'],
+    files: ["**/*.{js,mjs,cjs,jsx,ts,tsx}"],
     settings: {
       next: {
-        rootDir: './',
+        rootDir: "./",
+      },
+      react: {
+        version: "detect",
       },
     },
     rules: {
-      '@typescript-eslint/no-unused-vars': [
-        'error',
+      "@typescript-eslint/no-unused-vars": [
+        "error",
         {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-          destructuredArrayIgnorePattern: '^_',
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
           ignoreRestSiblings: true,
         },
       ],
-      '@typescript-eslint/no-explicit-any': 'error',
-      'react-hooks/exhaustive-deps': 'error',
-      'react/no-unescaped-entities': 'off',
-      'prettier/prettier': 'error',
-    },
-    settings: {
-      react: {
-        version: 'detect',
-      },
+      "@typescript-eslint/no-explicit-any": "error",
+      "react-hooks/exhaustive-deps": "error",
+      "react/no-unescaped-entities": "off",
+      "prettier/prettier": "error",
     },
   },
 ];

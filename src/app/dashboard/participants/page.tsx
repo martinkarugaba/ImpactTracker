@@ -57,7 +57,7 @@ export default async function Page(props: {
   return (
     <>
       <SiteHeader title="Participants" />
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col px-6">
         <div className="@container/main flex flex-1 flex-col gap-2 p-4 @xl/main:px-6">
           <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-0">
             <Suspense fallback={<ParticipantsTableSkeleton />}>
