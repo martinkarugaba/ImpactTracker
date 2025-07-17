@@ -4,6 +4,7 @@ import { type ColumnDef, type Table, type Row } from "@tanstack/react-table";
 import { type Participant } from "../../types/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ActionCell } from "./action-cell";
+import { LocationNameCell, LocationType } from "./location-name-cell";
 
 interface GetColumnsProps {
   onEdit: (participant: Participant) => void;
@@ -61,9 +62,16 @@ export function getColumns({
       accessorFn: row => row.sex,
       cell: ({ row }) => {
         const sex = row.original.sex;
-        return sex
-          ? sex.charAt(0).toUpperCase() + sex.slice(1).toLowerCase()
-          : "";
+        if (!sex) return "";
+
+        const firstLetter = sex.charAt(0).toUpperCase();
+        return firstLetter === "M" || firstLetter === "F"
+          ? firstLetter
+          : sex.toLowerCase() === "male"
+            ? "M"
+            : sex.toLowerCase() === "female"
+              ? "F"
+              : firstLetter;
       },
     },
     {
@@ -77,11 +85,12 @@ export function getColumns({
       enableHiding: true,
       accessorFn: row => row.districtName || row.district,
       cell: ({ row }) => {
-        const displayValue = row.original.districtName || row.original.district;
+        // Use the LocationNameCell component to show district name
+        const districtValue =
+          row.original.districtName || row.original.district || "";
+
         return (
-          <div className="max-w-[200px] truncate" title={displayValue}>
-            {displayValue}
-          </div>
+          <LocationNameCell id={districtValue} type={LocationType.District} />
         );
       },
     },
@@ -91,12 +100,12 @@ export function getColumns({
       enableHiding: true,
       accessorFn: row => row.subCountyName || row.subCounty,
       cell: ({ row }) => {
-        const displayValue =
-          row.original.subCountyName || row.original.subCounty;
+        // Use the LocationNameCell component to show subcounty name
+        const subCountyValue =
+          row.original.subCountyName || row.original.subCounty || "";
+
         return (
-          <div className="max-w-[200px] truncate" title={displayValue}>
-            {displayValue}
-          </div>
+          <LocationNameCell id={subCountyValue} type={LocationType.SubCounty} />
         );
       },
     },
@@ -106,12 +115,12 @@ export function getColumns({
       enableHiding: true,
       accessorFn: row => row.countyName || row.country || "",
       cell: ({ row }) => {
-        const displayValue =
-          row.original.countyName || row.original.country || "—";
+        // Use the LocationNameCell component to show country name
+        const countryValue =
+          row.original.countyName || row.original.country || "";
+
         return (
-          <div className="max-w-[200px] truncate" title={displayValue}>
-            {displayValue}
-          </div>
+          <LocationNameCell id={countryValue} type={LocationType.Country} />
         );
       },
     },

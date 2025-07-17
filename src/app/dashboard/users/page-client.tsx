@@ -85,7 +85,9 @@ export function UsersClient({ users }: UsersClientProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Users Management</h2>
+        <h2 className="sr-only text-3xl font-bold tracking-tight">
+          Users Management
+        </h2>
         <AddUserDialog onUserAdded={handleUserAdded} />
       </div>
 

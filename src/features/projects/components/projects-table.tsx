@@ -201,7 +201,7 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
 
   return (
     <div className="w-full flex-col justify-start gap-6">
-      <div className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6">
+      <div className="relative flex flex-col gap-4 overflow-auto">
         <ReusableDataTable
           columns={columns}
           data={projects}

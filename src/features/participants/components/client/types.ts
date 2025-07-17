@@ -12,6 +12,7 @@ export interface ParticipantFilters {
   district: string;
   sex: string;
   isPWD: string;
+  ageGroup?: string;
 }
 
 export interface QueryParams {
@@ -23,6 +24,7 @@ export interface QueryParams {
     district: string;
     sex: string;
     isPWD: string;
+    ageGroup?: string;
   };
 }
 
@@ -71,5 +73,6 @@ export interface ParticipantContainerProps {
     district?: string;
     sex?: string;
     isPWD?: string;
+    ageGroup?: string;
   };
 }

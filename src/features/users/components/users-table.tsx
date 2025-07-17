@@ -192,7 +192,7 @@ export function UsersTable({
           </Button>
         </div>
       )}
-      <div className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6">
+      <div className="relative flex flex-col gap-4 overflow-auto">
         <ReusableDataTable
           columns={columns}
           data={users}
