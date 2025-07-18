@@ -28,7 +28,6 @@ import { useRouter } from "next/navigation";
 import { useActivities } from "../hooks/use-activities";
 import { updateActivityConceptNote, updateActivityReport } from "../actions";
 import { toast } from "react-hot-toast";
-
 interface ActivityDetailsContainerProps {
   activity: Activity;
   organizations: Array<{ id: string; name: string }>;
