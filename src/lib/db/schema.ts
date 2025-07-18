@@ -815,6 +815,7 @@ export const activitiesRelations = relations(activities, ({ one, many }) => ({
     references: [projects.id],
   }),
   activityParticipants: many(activityParticipants),
+  conceptNotes: many(conceptNotes),
 }));
 
 export const activityParticipantsRelations = relations(
@@ -830,3 +831,30 @@ export const activityParticipantsRelations = relations(
     }),
   })
 );
+
+export const conceptNotes = pgTable("concept_notes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  activity_id: uuid("activity_id")
+    .references(() => activities.id)
+    .notNull(),
+  content: text("content").notNull(),
+  title: text("title").notNull(),
+  charge_code: text("charge_code"),
+  activity_lead: text("activity_lead"),
+  submission_date: timestamp("submission_date"),
+  project_summary: text("project_summary"),
+  methodology: text("methodology"),
+  requirements: text("requirements"),
+  participant_details: text("participant_details"),
+  budget_items: text("budget_items").array().default([]), // Store JSON stringified budget items
+  budget_notes: text("budget_notes"),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const conceptNotesRelations = relations(conceptNotes, ({ one }) => ({
+  activity: one(activities, {
+    fields: [conceptNotes.activity_id],
+    references: [activities.id],
+  }),
+}));

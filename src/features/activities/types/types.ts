@@ -1,5 +1,29 @@
 import { type InferSelectModel } from "drizzle-orm";
-import { type activities, type activityParticipants } from "@/lib/db/schema";
+import {
+  type activities,
+  type activityParticipants,
+  type conceptNotes,
+} from "@/lib/db/schema";
+
+export type ConceptNote = InferSelectModel<typeof conceptNotes>;
+
+export type NewConceptNote = Omit<
+  ConceptNote,
+  "id" | "created_at" | "updated_at"
+>;
+
+export type BudgetItem = {
+  description: string;
+  quantity: number;
+  unitCost: number;
+  totalCost: number;
+};
+
+export type ConceptNoteResponse = {
+  success: boolean;
+  data?: ConceptNote;
+  error?: string;
+};
 
 export type Activity = InferSelectModel<typeof activities> & {
   organizationName?: string;
@@ -7,7 +31,7 @@ export type Activity = InferSelectModel<typeof activities> & {
   clusterName?: string;
   participantCount?: number;
   // Additional fields for enhanced functionality
-  conceptNote?: string;
+  conceptNote?: ConceptNote | null; // Updated to allow null
   activityReport?: string;
   attendanceCount?: number;
   attendanceList?: AttendanceRecord[];

@@ -1,0 +1,57 @@
+@media print {
+  /* Hide all elements except the concept note and activity report content */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Show only the container and its contents */
+  .print-section,
+  .print-section * {
+    visibility: visible;
+  }
+
+  /* Position the printable content at the top of the page */
+  .print-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  /* Hide buttons and UI elements in print */
+  button, 
+  .no-print {
+    display: none !important;
+  }
+
+  /* Improve table styles for printing */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    padding: 8px;
+    border: 1px solid #ddd;
+  }
+
+  /* Ensure text is black for better printing */
+  body {
+    color: black;
+    background: white;
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+
+  /* Add page breaks where needed */
+  h1, h2 {
+    page-break-after: avoid;
+  }
+
+  /* Ensure links show their URLs */
+  a:link:after, 
+  a:visited:after {
+    content: " (" attr(href) ")";
+    font-size: 80%;
+  }
+}

@@ -132,14 +132,13 @@ async function ActivitiesPageContent() {
         : [];
 
     return (
-      <>
-        <SiteHeader title="Activities" />
+      <div className="container px-6">
         <ActivitiesContainer
           organizations={organizations}
           clusters={clusters}
           projects={projects}
         />
-      </>
+      </div>
     );
   } catch (error) {
     console.error("Error loading activities page data:", error);
@@ -169,10 +168,17 @@ export const metadata = {
 
 export default function ActivitiesPage() {
   return (
-    <div className="container mx-auto px-6 py-6">
-      <Suspense fallback={<ActivitiesPageSkeleton />}>
-        <ActivitiesPageContent />
-      </Suspense>
-    </div>
+    <>
+      <SiteHeader title="Activities" />
+      <div className="flex flex-1 flex-col">
+        <div className="@container/main flex flex-1 flex-col gap-2">
+          <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+            <Suspense fallback={<ActivitiesPageSkeleton />}>
+              <ActivitiesPageContent />
+            </Suspense>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }

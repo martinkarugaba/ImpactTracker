@@ -130,7 +130,7 @@ export function ActivitiesContainer({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pt-6">
       {/* Metrics Cards */}
       <ActivityMetricsCards
         metrics={
@@ -197,14 +197,8 @@ export function ActivitiesContainer({
         />
       </div>
 
-      {/* Header with Create Button */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Activities</h2>
-          <p className="text-muted-foreground">
-            Manage and track all organizational activities
-          </p>
-        </div>
+      {/* Create Button */}
+      <div className="mb-4 flex items-center justify-end">
         <Button onClick={() => setIsCreateDialogOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           Create Activity

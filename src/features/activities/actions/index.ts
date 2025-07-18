@@ -6,6 +6,7 @@ import {
   activities,
   activityParticipants,
   participants,
+  conceptNotes,
 } from "@/lib/db/schema";
 import { eq, and, desc, between, ilike, or, inArray } from "drizzle-orm";
 import {
@@ -15,6 +16,8 @@ import {
   type ActivityMetrics,
   type ActivityMetricsResponse,
   type AttendanceRecord,
+  type BudgetItem,
+  type ConceptNoteResponse,
 } from "../types/types";
 
 export async function getActivities(
@@ -138,19 +141,45 @@ export async function getActivities(
 
 export async function getActivity(id: string): Promise<ActivityResponse> {
   try {
-    const activity = await db.query.activities.findFirst({
-      where: eq(activities.id, id),
-      with: {
-        cluster: true,
-        project: true,
-        organization: true,
-        activityParticipants: {
-          with: {
-            participant: true,
+    // First try to get activity with conceptNotes relation
+    let activity;
+    let conceptNote = null;
+
+    try {
+      activity = await db.query.activities.findFirst({
+        where: eq(activities.id, id),
+        with: {
+          cluster: true,
+          project: true,
+          organization: true,
+          activityParticipants: {
+            with: {
+              participant: true,
+            },
+          },
+          conceptNotes: true,
+        },
+      });
+
+      // Get the concept note if it exists
+      conceptNote = activity?.conceptNotes?.[0] || null;
+    } catch (error) {
+      // If conceptNotes relation doesn't exist, get activity without it
+      console.warn("ConceptNotes table may not exist yet:", error);
+      activity = await db.query.activities.findFirst({
+        where: eq(activities.id, id),
+        with: {
+          cluster: true,
+          project: true,
+          organization: true,
+          activityParticipants: {
+            with: {
+              participant: true,
+            },
           },
         },
-      },
-    });
+      });
+    }
 
     if (!activity) {
       return {
@@ -165,6 +194,28 @@ export async function getActivity(id: string): Promise<ActivityResponse> {
       projectName: activity.project?.name || "Unknown",
       clusterName: activity.cluster?.name || "Unknown",
       participantCount: activity.activityParticipants?.length || 0,
+      // Use concept note if it exists, otherwise create a fallback from objectives array
+      conceptNote:
+        conceptNote ||
+        (activity.objectives && activity.objectives.length > 0
+          ? {
+              content: activity.objectives[0],
+              title: activity.title,
+              id: "",
+              activity_id: activity.id,
+              created_at: activity.created_at,
+              updated_at: activity.updated_at,
+              charge_code: null,
+              activity_lead: null,
+              submission_date: null,
+              project_summary: null,
+              methodology: null,
+              requirements: null,
+              participant_details: null,
+              budget_items: [],
+              budget_notes: null,
+            }
+          : null),
     };
 
     return {
@@ -258,6 +309,9 @@ export async function deleteActivity(id: string): Promise<ActivityResponse> {
     await db
       .delete(activityParticipants)
       .where(eq(activityParticipants.activity_id, id));
+
+    // Delete any concept notes associated with this activity
+    await db.delete(conceptNotes).where(eq(conceptNotes.activity_id, id));
 
     // Then delete the activity
     const [activity] = await db
@@ -374,26 +428,86 @@ export async function getActivityMetrics(
 // CONCEPT NOTES CRUD
 // =============================================================================
 
+// Get a concept note for an activity
+export async function getActivityConceptNote(
+  activityId: string
+): Promise<ConceptNoteResponse> {
+  try {
+    const conceptNote = await db.query.conceptNotes.findFirst({
+      where: eq(conceptNotes.activity_id, activityId),
+    });
+
+    return {
+      success: true,
+      data: conceptNote || undefined,
+    };
+  } catch (error) {
+    console.error("Error getting concept note:", error);
+    return {
+      success: false,
+      error: "Failed to get concept note",
+    };
+  }
+}
+
+// Create or update a concept note
 export async function updateActivityConceptNote(
   activityId: string,
-  conceptNote: string
-): Promise<ActivityResponse> {
+  conceptNoteData: {
+    title: string;
+    content: string;
+    charge_code?: string;
+    activity_lead?: string;
+    submission_date?: Date;
+    project_summary?: string;
+    methodology?: string;
+    requirements?: string;
+    participant_details?: string;
+    budget_items?: BudgetItem[];
+    budget_notes?: string;
+  }
+): Promise<ConceptNoteResponse> {
   try {
-    const [activity] = await db
-      .update(activities)
-      .set({
-        objectives: conceptNote ? [conceptNote] : [],
-        updated_at: new Date(),
-      })
-      .where(eq(activities.id, activityId))
-      .returning();
+    // Check if a concept note already exists for this activity
+    const existingConceptNote = await db.query.conceptNotes.findFirst({
+      where: eq(conceptNotes.activity_id, activityId),
+    });
+
+    let result;
+
+    if (existingConceptNote) {
+      // Update the existing concept note
+      [result] = await db
+        .update(conceptNotes)
+        .set({
+          ...conceptNoteData,
+          budget_items: conceptNoteData.budget_items
+            ? conceptNoteData.budget_items.map(item => JSON.stringify(item))
+            : [],
+          updated_at: new Date(),
+        })
+        .where(eq(conceptNotes.id, existingConceptNote.id))
+        .returning();
+    } else {
+      // Create a new concept note
+      [result] = await db
+        .insert(conceptNotes)
+        .values({
+          activity_id: activityId,
+          ...conceptNoteData,
+          budget_items: conceptNoteData.budget_items
+            ? conceptNoteData.budget_items.map(item => JSON.stringify(item))
+            : [],
+        })
+        .returning();
+    }
 
     revalidatePath(`/dashboard/activities/${activityId}`);
     revalidatePath(`/dashboard/activities`);
 
     return {
       success: true,
-      data: activity,
+      data: result,
     };
   } catch (error) {
     console.error("Error updating concept note:", error);
@@ -406,15 +520,24 @@ export async function updateActivityConceptNote(
 
 export async function deleteActivityConceptNote(
   activityId: string
-): Promise<ActivityResponse> {
+): Promise<ConceptNoteResponse> {
   try {
-    const [activity] = await db
-      .update(activities)
-      .set({
-        objectives: [],
-        updated_at: new Date(),
-      })
-      .where(eq(activities.id, activityId))
+    // Find the concept note for this activity
+    const conceptNote = await db.query.conceptNotes.findFirst({
+      where: eq(conceptNotes.activity_id, activityId),
+    });
+
+    if (!conceptNote) {
+      return {
+        success: false,
+        error: "Concept note not found",
+      };
+    }
+
+    // Delete the concept note
+    const [deletedConceptNote] = await db
+      .delete(conceptNotes)
+      .where(eq(conceptNotes.id, conceptNote.id))
       .returning();
 
     revalidatePath(`/dashboard/activities/${activityId}`);
@@ -422,7 +545,7 @@ export async function deleteActivityConceptNote(
 
     return {
       success: true,
-      data: activity,
+      data: deletedConceptNote,
     };
   } catch (error) {
     console.error("Error deleting concept note:", error);

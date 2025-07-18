@@ -166,12 +166,14 @@ async function ActivityDetailsContent({ id }: { id: string }) {
     return (
       <>
         <SiteHeader title={activity.title} />
-        <ActivityDetailsContainer
-          activity={activity}
-          organizations={organizations}
-          clusters={clusters}
-          projects={projects}
-        />
+        <div className="container px-6">
+          <ActivityDetailsContainer
+            activity={activity}
+            organizations={organizations}
+            clusters={clusters}
+            projects={projects}
+          />
+        </div>
       </>
     );
   } catch (error) {
@@ -210,10 +212,16 @@ export default async function ActivityDetailsPage({
   const { id } = await params;
 
   return (
-    <div className="container mx-auto px-6 py-6">
-      <Suspense fallback={<ActivityDetailsPageSkeleton />}>
-        <ActivityDetailsContent id={id} />
-      </Suspense>
-    </div>
+    <>
+      <div className="flex flex-1 flex-col">
+        <div className="@container/main flex flex-1 flex-col gap-2">
+          <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 lg:pt-0">
+            <Suspense fallback={<ActivityDetailsPageSkeleton />}>
+              <ActivityDetailsContent id={id} />
+            </Suspense>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }

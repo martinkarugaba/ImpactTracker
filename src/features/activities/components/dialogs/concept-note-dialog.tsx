@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -73,7 +73,19 @@ interface ConceptNoteDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   activity: Activity;
-  onSave: (conceptNote: string) => void;
+  onSave: (conceptNoteData: {
+    title: string;
+    content: string;
+    charge_code?: string;
+    activity_lead?: string;
+    submission_date?: Date;
+    project_summary?: string;
+    methodology?: string;
+    requirements?: string;
+    participant_details?: string;
+    budget_items?: BudgetItem[];
+    budget_notes?: string;
+  }) => void;
 }
 
 export function ConceptNoteDialog({
@@ -95,7 +107,27 @@ export function ConceptNoteDialog({
   });
 
   // Parse existing concept note if available
-  const existingConceptNote = activity.conceptNote ? activity.conceptNote : "";
+  const existingConceptNote = activity.conceptNote || null;
+
+  // Initialize budget items if concept note exists
+  useEffect(() => {
+    if (existingConceptNote?.budget_items) {
+      try {
+        const parsedItems = existingConceptNote.budget_items
+          .map(item => {
+            try {
+              return JSON.parse(item as string) as BudgetItem;
+            } catch {
+              return null;
+            }
+          })
+          .filter((item): item is BudgetItem => item !== null);
+        setBudgetItems(parsedItems);
+      } catch (error) {
+        console.error("Error parsing budget items:", error);
+      }
+    }
+  }, [existingConceptNote]);
 
   // Handle budget item actions
   const addBudgetItem = () => {
@@ -135,69 +167,43 @@ export function ConceptNoteDialog({
   const form = useForm<ConceptNoteFormValues>({
     resolver: zodResolver(conceptNoteSchema),
     defaultValues: {
-      title: activity.title || "",
-      chargeCode: "",
-      activityLead: "",
-      submissionDate: new Date(),
-      projectSummary: "",
-      objectives: existingConceptNote,
-      methodology: "",
-      requirements: "",
-      participantDetails: "",
-      budgetNotes: "",
+      title: existingConceptNote?.title || activity.title || "",
+      chargeCode: existingConceptNote?.charge_code || "",
+      activityLead: existingConceptNote?.activity_lead || "",
+      submissionDate: existingConceptNote?.submission_date
+        ? new Date(existingConceptNote.submission_date)
+        : new Date(),
+      projectSummary: existingConceptNote?.project_summary || "",
+      objectives: existingConceptNote?.content || "",
+      methodology: existingConceptNote?.methodology || "",
+      requirements: existingConceptNote?.requirements || "",
+      participantDetails: existingConceptNote?.participant_details || "",
+      budgetNotes: existingConceptNote?.budget_notes || "",
     },
   });
 
   const handleSave = async (values: ConceptNoteFormValues) => {
     setIsLoading(true);
     try {
-      // Format the budget table
-      // Format the budget table
-      let budgetTable = "";
-      if (budgetItems.length > 0) {
-        budgetTable = `
-| Item Description | Quantity | Unit Cost | Total Cost |
-|------------------|----------|-----------|------------|
-${budgetItems
-  .map(
-    item =>
-      `| ${item.description} | ${item.quantity} | ${item.unitCost.toFixed(2)} | ${item.totalCost.toFixed(2)} |`
-  )
-  .join("\n")}
-| **TOTAL** | | | **${calculateTotalBudget().toFixed(2)}** |
-`;
-      } else {
-        budgetTable = "No budget items specified.";
-      }
+      // Format the content of the concept note
+      const formattedContent = values.objectives;
 
-      // Format the concept note into a structured string
-      const formattedConceptNote = `
-# ${values.title} - Concept Note
-Charge Code: ${values.chargeCode}
-Activity Lead: ${values.activityLead}
-Submission Date: ${format(values.submissionDate, "PPP")}
+      // Create a concept note data object
+      const conceptNoteData = {
+        title: values.title,
+        content: formattedContent,
+        charge_code: values.chargeCode,
+        activity_lead: values.activityLead,
+        submission_date: values.submissionDate,
+        project_summary: values.projectSummary,
+        methodology: values.methodology,
+        requirements: values.requirements,
+        participant_details: values.participantDetails,
+        budget_items: budgetItems,
+        budget_notes: values.budgetNotes,
+      };
 
-## Project Summary/Introduction
-${values.projectSummary}
-
-## Objectives/Purpose
-${values.objectives}
-
-## Methodology
-${values.methodology}
-
-## Requirements
-${values.requirements}
-
-## Participant Details
-${values.participantDetails}
-
-## Budget
-${budgetTable}
-${values.budgetNotes ? `\nBudget Notes:\n${values.budgetNotes}` : ""}
-`.trim();
-
-      await onSave(formattedConceptNote);
+      await onSave(conceptNoteData);
       onOpenChange(false);
     } catch (error) {
       console.error("Failed to save concept note:", error);
