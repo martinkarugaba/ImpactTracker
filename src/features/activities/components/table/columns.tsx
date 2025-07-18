@@ -4,6 +4,7 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { type Activity } from "../../types/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,7 +43,12 @@ export function getActivityColumns({
         const activity = row.original;
         return (
           <div className="flex flex-col space-y-1">
-            <div className="font-medium">{activity.title}</div>
+            <Link
+              href={`/dashboard/activities/${activity.id}`}
+              className="text-primary font-medium hover:underline"
+            >
+              {activity.title}
+            </Link>
             <div className="text-muted-foreground line-clamp-2 text-sm">
               {activity.description}
             </div>
