@@ -541,6 +541,10 @@ export const clusterUsersRelations = relations(clusterUsers, ({ one }) => ({
 }));
 
 export const participantsRelations = relations(participants, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [participants.organization_id],
+    references: [organizations.id],
+  }),
   cluster: one(clusters, {
     fields: [participants.cluster_id],
     references: [clusters.id],

@@ -2,14 +2,19 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { activities, activityParticipants } from "@/lib/db/schema";
-import { eq, and, desc, between, ilike, or } from "drizzle-orm";
+import {
+  activities,
+  activityParticipants,
+  participants,
+} from "@/lib/db/schema";
+import { eq, and, desc, between, ilike, or, inArray } from "drizzle-orm";
 import {
   type NewActivity,
   type ActivityResponse,
   type ActivitiesResponse,
   type ActivityMetrics,
   type ActivityMetricsResponse,
+  type AttendanceRecord,
 } from "../types/types";
 
 export async function getActivities(
@@ -361,6 +366,384 @@ export async function getActivityMetrics(
     return {
       success: false,
       error: "Failed to get activity metrics",
+    };
+  }
+}
+
+// =============================================================================
+// CONCEPT NOTES CRUD
+// =============================================================================
+
+export async function updateActivityConceptNote(
+  activityId: string,
+  conceptNote: string
+): Promise<ActivityResponse> {
+  try {
+    const [activity] = await db
+      .update(activities)
+      .set({
+        objectives: conceptNote ? [conceptNote] : [],
+        updated_at: new Date(),
+      })
+      .where(eq(activities.id, activityId))
+      .returning();
+
+    revalidatePath(`/dashboard/activities/${activityId}`);
+    revalidatePath(`/dashboard/activities`);
+
+    return {
+      success: true,
+      data: activity,
+    };
+  } catch (error) {
+    console.error("Error updating concept note:", error);
+    return {
+      success: false,
+      error: "Failed to update concept note",
+    };
+  }
+}
+
+export async function deleteActivityConceptNote(
+  activityId: string
+): Promise<ActivityResponse> {
+  try {
+    const [activity] = await db
+      .update(activities)
+      .set({
+        objectives: [],
+        updated_at: new Date(),
+      })
+      .where(eq(activities.id, activityId))
+      .returning();
+
+    revalidatePath(`/dashboard/activities/${activityId}`);
+    revalidatePath(`/dashboard/activities`);
+
+    return {
+      success: true,
+      data: activity,
+    };
+  } catch (error) {
+    console.error("Error deleting concept note:", error);
+    return {
+      success: false,
+      error: "Failed to delete concept note",
+    };
+  }
+}
+
+// =============================================================================
+// ACTIVITY REPORTS CRUD
+// =============================================================================
+
+export async function updateActivityReport(
+  activityId: string,
+  reportData: {
+    status?: string;
+    outcomes?: string;
+    challenges?: string;
+    recommendations?: string;
+    actualCost?: number;
+    numberOfParticipants?: number;
+  }
+): Promise<ActivityResponse> {
+  try {
+    const [activity] = await db
+      .update(activities)
+      .set({
+        ...reportData,
+        updated_at: new Date(),
+      })
+      .where(eq(activities.id, activityId))
+      .returning();
+
+    revalidatePath(`/dashboard/activities/${activityId}`);
+    revalidatePath(`/dashboard/activities`);
+
+    return {
+      success: true,
+      data: activity,
+    };
+  } catch (error) {
+    console.error("Error updating activity report:", error);
+    return {
+      success: false,
+      error: "Failed to update activity report",
+    };
+  }
+}
+
+export async function deleteActivityReport(
+  activityId: string
+): Promise<ActivityResponse> {
+  try {
+    const [activity] = await db
+      .update(activities)
+      .set({
+        outcomes: null,
+        challenges: null,
+        recommendations: null,
+        actualCost: null,
+        updated_at: new Date(),
+      })
+      .where(eq(activities.id, activityId))
+      .returning();
+
+    revalidatePath(`/dashboard/activities/${activityId}`);
+    revalidatePath(`/dashboard/activities`);
+
+    return {
+      success: true,
+      data: activity,
+    };
+  } catch (error) {
+    console.error("Error deleting activity report:", error);
+    return {
+      success: false,
+      error: "Failed to delete activity report",
+    };
+  }
+}
+
+// =============================================================================
+// ATTENDANCE LISTS CRUD
+// =============================================================================
+
+export async function getAvailableParticipants(): Promise<{
+  success: boolean;
+  data?: Array<{
+    id: string;
+    name: string;
+    email: string;
+    phone?: string;
+    organization?: string;
+    cluster?: string;
+  }>;
+  error?: string;
+}> {
+  try {
+    const participantsData = await db.query.participants.findMany({
+      with: {
+        cluster: true,
+      },
+      orderBy: [desc(participants.created_at)],
+    });
+
+    const formattedParticipants = participantsData.map(participant => ({
+      id: participant.id,
+      name: `${participant.firstName} ${participant.lastName}`.trim(),
+      email: "", // participants table doesn't have email field
+      phone: participant.contact || undefined,
+      organization: undefined, // need to fetch organization separately if needed
+      cluster: participant.cluster?.name || undefined,
+    }));
+
+    return {
+      success: true,
+      data: formattedParticipants,
+    };
+  } catch (error) {
+    console.error("Error getting available participants:", error);
+    return {
+      success: false,
+      error: "Failed to get available participants",
+    };
+  }
+}
+
+export async function addActivityParticipants(
+  activityId: string,
+  participantIds: string[]
+): Promise<{
+  success: boolean;
+  data?: Array<{
+    id: string;
+    activity_id: string;
+    participant_id: string;
+    attendance_status: string;
+  }>;
+  error?: string;
+}> {
+  try {
+    // Check if participants are already registered for this activity
+    const existingParticipants = await db.query.activityParticipants.findMany({
+      where: and(
+        eq(activityParticipants.activity_id, activityId),
+        inArray(activityParticipants.participant_id, participantIds)
+      ),
+    });
+
+    const existingParticipantIds = existingParticipants.map(
+      p => p.participant_id
+    );
+    const newParticipantIds = participantIds.filter(
+      id => !existingParticipantIds.includes(id)
+    );
+
+    if (newParticipantIds.length === 0) {
+      return {
+        success: false,
+        error:
+          "All selected participants are already registered for this activity",
+      };
+    }
+
+    // Add new participants
+    const newActivityParticipants = await db
+      .insert(activityParticipants)
+      .values(
+        newParticipantIds.map(participantId => ({
+          activity_id: activityId,
+          participant_id: participantId,
+          attendance_status: "invited",
+        }))
+      )
+      .returning();
+
+    revalidatePath(`/dashboard/activities/${activityId}`);
+    revalidatePath(`/dashboard/activities`);
+
+    return {
+      success: true,
+      data: newActivityParticipants,
+    };
+  } catch (error) {
+    console.error("Error adding activity participants:", error);
+    return {
+      success: false,
+      error: "Failed to add participants to activity",
+    };
+  }
+}
+
+export async function updateActivityAttendance(
+  activityId: string,
+  participantId: string,
+  attendanceStatus: "invited" | "attended" | "absent",
+  role?: string,
+  feedback?: string
+): Promise<{
+  success: boolean;
+  data?: {
+    id: string;
+    activity_id: string;
+    participant_id: string;
+    attendance_status: string;
+  };
+  error?: string;
+}> {
+  try {
+    const [updatedParticipant] = await db
+      .update(activityParticipants)
+      .set({
+        attendance_status: attendanceStatus,
+        role: role || "participant",
+        feedback: feedback || null,
+        updated_at: new Date(),
+      })
+      .where(
+        and(
+          eq(activityParticipants.activity_id, activityId),
+          eq(activityParticipants.participant_id, participantId)
+        )
+      )
+      .returning();
+
+    revalidatePath(`/dashboard/activities/${activityId}`);
+    revalidatePath(`/dashboard/activities`);
+
+    return {
+      success: true,
+      data: updatedParticipant,
+    };
+  } catch (error) {
+    console.error("Error updating attendance:", error);
+    return {
+      success: false,
+      error: "Failed to update attendance",
+    };
+  }
+}
+
+export async function removeActivityParticipant(
+  activityId: string,
+  participantId: string
+): Promise<{
+  success: boolean;
+  data?: {
+    id: string;
+    activity_id: string;
+    participant_id: string;
+  };
+  error?: string;
+}> {
+  try {
+    const [removedParticipant] = await db
+      .delete(activityParticipants)
+      .where(
+        and(
+          eq(activityParticipants.activity_id, activityId),
+          eq(activityParticipants.participant_id, participantId)
+        )
+      )
+      .returning();
+
+    revalidatePath(`/dashboard/activities/${activityId}`);
+    revalidatePath(`/dashboard/activities`);
+
+    return {
+      success: true,
+      data: removedParticipant,
+    };
+  } catch (error) {
+    console.error("Error removing participant:", error);
+    return {
+      success: false,
+      error: "Failed to remove participant",
+    };
+  }
+}
+
+export async function getActivityAttendanceList(activityId: string): Promise<{
+  success: boolean;
+  data?: AttendanceRecord[];
+  error?: string;
+}> {
+  try {
+    const attendanceData = await db.query.activityParticipants.findMany({
+      where: eq(activityParticipants.activity_id, activityId),
+      with: {
+        participant: {
+          with: {
+            organization: true,
+            cluster: true,
+          },
+        },
+      },
+    });
+
+    const attendanceList: AttendanceRecord[] = attendanceData.map(record => ({
+      id: record.id,
+      name: `${record.participant.firstName} ${record.participant.lastName}`.trim(),
+      email: "", // participants table doesn't have email field
+      attended: record.attendance_status === "attended",
+      role: record.role || undefined,
+      organization: record.participant.organization?.name || undefined,
+      checkInTime: undefined, // Not available in current schema
+      checkOutTime: undefined, // Not available in current schema
+      notes: record.feedback || undefined,
+    }));
+
+    return {
+      success: true,
+      data: attendanceList,
+    };
+  } catch (error) {
+    console.error("Error getting attendance list:", error);
+    return {
+      success: false,
+      error: "Failed to get attendance list",
     };
   }
 }

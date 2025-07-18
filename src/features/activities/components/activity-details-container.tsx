@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Activity } from "../types/types";
+import { Activity, AttendanceRecord } from "../types/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,7 +21,13 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { ActivityFormDialog } from "./forms/activity-form-dialog";
+import { ConceptNoteDialog } from "./dialogs/concept-note-dialog";
+import { ActivityReportDialog } from "./dialogs/activity-report-dialog";
+import { AttendanceDialog } from "./dialogs/attendance-dialog";
 import { useRouter } from "next/navigation";
+import { useActivities } from "../hooks/use-activities";
+import { updateActivityConceptNote, updateActivityReport } from "../actions";
+import { toast } from "react-hot-toast";
 
 interface ActivityDetailsContainerProps {
   activity: Activity;
@@ -37,7 +43,12 @@ export function ActivityDetailsContainer({
   projects = [],
 }: ActivityDetailsContainerProps) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isConceptNoteDialogOpen, setIsConceptNoteDialogOpen] = useState(false);
+  const [isActivityReportDialogOpen, setIsActivityReportDialogOpen] =
+    useState(false);
+  const [isAttendanceDialogOpen, setIsAttendanceDialogOpen] = useState(false);
   const router = useRouter();
+  const { refetch } = useActivities();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -91,6 +102,54 @@ export function ActivityDetailsContainer({
     if (!projectId) return null;
     const project = projects.find(p => p.id === projectId);
     return project?.name || "Unknown Project";
+  };
+
+  // Handler functions for dialogs
+  const handleConceptNoteSave = async (conceptNote: string) => {
+    try {
+      const result = await updateActivityConceptNote(activity.id, conceptNote);
+      if (result.success) {
+        toast.success("Concept note updated successfully");
+        setIsConceptNoteDialogOpen(false);
+        refetch();
+      } else {
+        toast.error(result.error || "Failed to update concept note");
+      }
+    } catch (_error) {
+      toast.error("Failed to update concept note");
+    }
+  };
+
+  const handleActivityReportSave = async (reportData: {
+    status: string;
+    outcomes: string;
+    challenges: string;
+    recommendations: string;
+    actualCost?: number;
+  }) => {
+    try {
+      const result = await updateActivityReport(activity.id, reportData);
+      if (result.success) {
+        toast.success("Activity report updated successfully");
+        setIsActivityReportDialogOpen(false);
+        refetch();
+      } else {
+        toast.error(result.error || "Failed to update activity report");
+      }
+    } catch (_error) {
+      toast.error("Failed to update activity report");
+    }
+  };
+
+  const handleAttendanceSave = async (_attendanceList: AttendanceRecord[]) => {
+    try {
+      // The attendance dialog will handle the CRUD operations internally
+      toast.success("Attendance updated successfully");
+      setIsAttendanceDialogOpen(false);
+      refetch();
+    } catch (_error) {
+      toast.error("Failed to update attendance");
+    }
   };
 
   return (
@@ -290,9 +349,7 @@ export function ActivityDetailsContainer({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => {
-                /* TODO: Open concept note dialog */
-              }}
+              onClick={() => setIsConceptNoteDialogOpen(true)}
             >
               <EditIcon className="mr-2 h-4 w-4" />
               {activity.conceptNote ? "Edit" : "Add"} Concept Note
@@ -339,9 +396,7 @@ export function ActivityDetailsContainer({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => {
-                /* TODO: Open activity report dialog */
-              }}
+              onClick={() => setIsActivityReportDialogOpen(true)}
             >
               <EditIcon className="mr-2 h-4 w-4" />
               {activity.activityReport ? "Edit" : "Add"} Report
@@ -448,9 +503,7 @@ export function ActivityDetailsContainer({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => {
-                  /* TODO: Open attendance dialog */
-                }}
+                onClick={() => setIsAttendanceDialogOpen(true)}
               >
                 <EditIcon className="mr-2 h-4 w-4" />
                 Manage Attendance
@@ -536,6 +589,30 @@ export function ActivityDetailsContainer({
         organizations={organizations}
         clusters={clusters}
         projects={projects}
+      />
+
+      {/* Concept Note Dialog */}
+      <ConceptNoteDialog
+        open={isConceptNoteDialogOpen}
+        onOpenChange={setIsConceptNoteDialogOpen}
+        activity={activity}
+        onSave={handleConceptNoteSave}
+      />
+
+      {/* Activity Report Dialog */}
+      <ActivityReportDialog
+        open={isActivityReportDialogOpen}
+        onOpenChange={setIsActivityReportDialogOpen}
+        activity={activity}
+        onSave={handleActivityReportSave}
+      />
+
+      {/* Attendance Dialog */}
+      <AttendanceDialog
+        open={isAttendanceDialogOpen}
+        onOpenChange={setIsAttendanceDialogOpen}
+        activity={activity}
+        onSave={handleAttendanceSave}
       />
     </div>
   );

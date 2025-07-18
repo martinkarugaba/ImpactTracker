@@ -15,8 +15,6 @@ import {
   IconReport,
   IconSearch,
   IconSettings,
-  IconTarget,
-  IconTrain,
   IconUsers,
   IconUsersGroup,
 } from "@tabler/icons-react";
@@ -126,7 +124,7 @@ export const navigationData = {
   ],
   kpis: [
     {
-      name: "Dashboard",
+      name: "Overview",
       url: "/dashboard/kpis-overview",
       icon: IconDatabase,
     },
@@ -136,24 +134,14 @@ export const navigationData = {
       icon: IconUsersGroup,
     },
     {
-      name: "Trainings",
-      url: "/dashboard/trainings",
-      icon: IconTrain,
-    },
-    {
-      name: "Targets",
-      url: "/dashboard/targets",
-      icon: IconTarget,
-    },
-    {
-      name: "Activity Reports",
-      url: "/dashboard/reports",
-      icon: IconReport,
-    },
-    {
       name: "Activities",
       url: "/dashboard/activities",
       icon: IconActivity,
+    },
+    {
+      name: "Reports",
+      url: "/dashboard/reports",
+      icon: IconReport,
     },
     {
       name: "Concept notes",
@@ -166,8 +154,8 @@ export const navigationData = {
       icon: IconCashBanknote,
     },
     {
-      name: "Photos",
-      url: "/dashboard/photos",
+      name: "Success stories",
+      url: "/dashboard/success-stories",
       icon: IconCamera,
     },
   ],
