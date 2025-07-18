@@ -10,9 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 interface ActivityDetailsPageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>; // Correctly type params as a Promise
 }
 
 // Loading component for the activity details page
@@ -185,7 +183,9 @@ async function ActivityDetailsContent({ id }: { id: string }) {
 // Main page component with proper metadata
 export async function generateMetadata({ params }: ActivityDetailsPageProps) {
   try {
-    const result = await getActivity(params.id);
+    // Unwrap params using await to get the id
+    const { id } = await params;
+    const result = await getActivity(id);
     if (result.success && result.data) {
       return {
         title: `${result.data.title} | Activities | KPI Edge`,
@@ -203,13 +203,16 @@ export async function generateMetadata({ params }: ActivityDetailsPageProps) {
   };
 }
 
-export default function ActivityDetailsPage({
+export default async function ActivityDetailsPage({
   params,
 }: ActivityDetailsPageProps) {
+  // Unwrap params using await to get the id
+  const { id } = await params;
+
   return (
     <div className="container mx-auto px-6 py-6">
       <Suspense fallback={<ActivityDetailsPageSkeleton />}>
-        <ActivityDetailsContent id={params.id} />
+        <ActivityDetailsContent id={id} />
       </Suspense>
     </div>
   );

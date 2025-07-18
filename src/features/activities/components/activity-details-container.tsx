@@ -16,6 +16,8 @@ import {
   BuildingIcon,
   FolderIcon,
   TargetIcon,
+  FileTextIcon,
+  DownloadIcon,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ActivityFormDialog } from "./forms/activity-form-dialog";
@@ -99,115 +101,112 @@ export function ActivityDetailsContainer({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => router.push("/dashboard/activities")}
-            className="hover:bg-muted"
+            onClick={() => router.back()}
+            className="flex items-center"
           >
             <ArrowLeftIcon className="mr-2 h-4 w-4" />
-            Back to Activities
+            Back
           </Button>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+              {activity.title}
+            </h1>
+            <p className="text-muted-foreground mt-1 text-lg">
+              {activity.description}
+            </p>
+          </div>
         </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsEditDialogOpen(true)}
-          >
-            <EditIcon className="mr-2 h-4 w-4" />
-            Edit
-          </Button>
-        </div>
+        <Button onClick={() => setIsEditDialogOpen(true)}>
+          <EditIcon className="mr-2 h-4 w-4" />
+          Edit Activity
+        </Button>
       </div>
 
-      {/* Activity Header Card */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <Badge className={getTypeColor(activity.type)}>
-                  {activity.type.replace("_", " ").toUpperCase()}
-                </Badge>
-                <Badge className={getStatusColor(activity.status)}>
-                  {activity.status.toUpperCase()}
-                </Badge>
-              </div>
-              <CardTitle className="text-2xl">{activity.title}</CardTitle>
-              {activity.description && (
-                <p className="text-muted-foreground max-w-3xl">
-                  {activity.description}
-                </p>
-              )}
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
+      {/* Status and Type Badges */}
+      <div className="flex items-center space-x-2">
+        <Badge className={getStatusColor(activity.status)} variant="secondary">
+          {activity.status.charAt(0).toUpperCase() + activity.status.slice(1)}
+        </Badge>
+        <Badge className={getTypeColor(activity.type)} variant="outline">
+          {activity.type.replace("_", " ").charAt(0).toUpperCase() +
+            activity.type.replace("_", " ").slice(1)}
+        </Badge>
+      </div>
 
-      {/* Activity Details Grid */}
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Basic Information */}
+      {/* Key Information Cards */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <CalendarIcon className="mr-2 h-5 w-5" />
-              Event Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <ClockIcon className="text-muted-foreground h-4 w-4" />
-              <div>
-                <p className="text-sm font-medium">Start Date</p>
-                <p className="text-muted-foreground text-sm">
-                  {format(new Date(activity.startDate), "PPP")}
-                </p>
-              </div>
-            </div>
-
-            {activity.endDate && (
-              <div className="flex items-center space-x-3">
-                <ClockIcon className="text-muted-foreground h-4 w-4" />
-                <div>
-                  <p className="text-sm font-medium">End Date</p>
-                  <p className="text-muted-foreground text-sm">
-                    {format(new Date(activity.endDate), "PPP")}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            <div className="flex items-center space-x-3">
-              <MapPinIcon className="text-muted-foreground h-4 w-4" />
-              <div>
-                <p className="text-sm font-medium">Venue</p>
-                <p className="text-muted-foreground text-sm">
-                  {activity.venue}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <UsersIcon className="text-muted-foreground h-4 w-4" />
-              <div>
-                <p className="text-sm font-medium">Participants</p>
-                <p className="text-muted-foreground text-sm">
-                  {activity.numberOfParticipants || 0} registered
-                </p>
-              </div>
+          <CardContent className="flex items-center p-6">
+            <CalendarIcon className="mr-3 h-8 w-8 text-blue-600" />
+            <div>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Start Date
+              </p>
+              <p className="text-2xl font-bold">
+                {format(new Date(activity.startDate), "MMM dd")}
+              </p>
             </div>
           </CardContent>
         </Card>
 
-        {/* Organization & Project Information */}
+        <Card>
+          <CardContent className="flex items-center p-6">
+            <ClockIcon className="mr-3 h-8 w-8 text-green-600" />
+            <div>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Duration
+              </p>
+              <p className="text-2xl font-bold">
+                {activity.endDate
+                  ? `${Math.ceil(
+                      (new Date(activity.endDate).getTime() -
+                        new Date(activity.startDate).getTime()) /
+                        (1000 * 60 * 60 * 24)
+                    )} days`
+                  : "Ongoing"}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="flex items-center p-6">
+            <DollarSignIcon className="mr-3 h-8 w-8 text-purple-600" />
+            <div>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Budget
+              </p>
+              <p className="text-2xl font-bold">
+                {activity.budget ? formatCurrency(activity.budget) : "N/A"}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="flex items-center p-6">
+            <UsersIcon className="mr-3 h-8 w-8 text-orange-600" />
+            <div>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Participants
+              </p>
+              <p className="text-2xl font-bold">
+                {activity.numberOfParticipants || 0}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Activity Details */}
+      <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <BuildingIcon className="mr-2 h-5 w-5" />
-              Organization Details
-            </CardTitle>
+            <CardTitle>Activity Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <BuildingIcon className="text-muted-foreground h-4 w-4" />
+            <div className="flex items-center">
+              <BuildingIcon className="mr-3 h-5 w-5 text-gray-400" />
               <div>
                 <p className="text-sm font-medium">Organization</p>
                 <p className="text-muted-foreground text-sm">
@@ -217,8 +216,8 @@ export function ActivityDetailsContainer({
             </div>
 
             {activity.cluster_id && (
-              <div className="flex items-center space-x-3">
-                <TargetIcon className="text-muted-foreground h-4 w-4" />
+              <div className="flex items-center">
+                <UsersIcon className="mr-3 h-5 w-5 text-gray-400" />
                 <div>
                   <p className="text-sm font-medium">Cluster</p>
                   <p className="text-muted-foreground text-sm">
@@ -229,8 +228,8 @@ export function ActivityDetailsContainer({
             )}
 
             {activity.project_id && (
-              <div className="flex items-center space-x-3">
-                <FolderIcon className="text-muted-foreground h-4 w-4" />
+              <div className="flex items-center">
+                <FolderIcon className="mr-3 h-5 w-5 text-gray-400" />
                 <div>
                   <p className="text-sm font-medium">Project</p>
                   <p className="text-muted-foreground text-sm">
@@ -240,121 +239,292 @@ export function ActivityDetailsContainer({
               </div>
             )}
 
-            {activity.budget && (
-              <div className="flex items-center space-x-3">
-                <DollarSignIcon className="text-muted-foreground h-4 w-4" />
-                <div>
-                  <p className="text-sm font-medium">Budget</p>
-                  <p className="text-muted-foreground text-sm">
-                    {formatCurrency(activity.budget)}
-                  </p>
-                </div>
+            <div className="flex items-center">
+              <MapPinIcon className="mr-3 h-5 w-5 text-gray-400" />
+              <div>
+                <p className="text-sm font-medium">Location</p>
+                <p className="text-muted-foreground text-sm">
+                  {activity.venue || "Not specified"}
+                </p>
               </div>
-            )}
+            </div>
 
-            {activity.actualCost && (
-              <div className="flex items-center space-x-3">
-                <DollarSignIcon className="text-muted-foreground h-4 w-4" />
-                <div>
-                  <p className="text-sm font-medium">Actual Cost</p>
-                  <p className="text-muted-foreground text-sm">
-                    {formatCurrency(activity.actualCost)}
-                  </p>
-                </div>
+            <div className="flex items-center">
+              <CalendarIcon className="mr-3 h-5 w-5 text-gray-400" />
+              <div>
+                <p className="text-sm font-medium">Timeline</p>
+                <p className="text-muted-foreground text-sm">
+                  {format(new Date(activity.startDate), "PPP")}
+                  {activity.endDate &&
+                    ` - ${format(new Date(activity.endDate), "PPP")}`}
+                </p>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Activity Notes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {activity.objectives ? (
+              <p className="text-sm leading-relaxed">{activity.objectives}</p>
+            ) : (
+              <p className="text-muted-foreground text-sm italic">
+                No additional notes provided.
+              </p>
             )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Objectives */}
-      {activity.objectives && activity.objectives.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Objectives</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="list-disc space-y-2 pl-5">
-              {activity.objectives.map((objective, index) => (
-                <li key={index} className="text-sm">
-                  {objective}
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Additional Information */}
-      {(activity.outcomes ||
-        activity.challenges ||
-        activity.recommendations) && (
-        <div className="grid gap-6 md:grid-cols-1">
-          {activity.outcomes && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Outcomes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm">{activity.outcomes}</p>
-              </CardContent>
-            </Card>
-          )}
-
-          {activity.challenges && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Challenges</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm">{activity.challenges}</p>
-              </CardContent>
-            </Card>
-          )}
-
-          {activity.recommendations && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Recommendations</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm">{activity.recommendations}</p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      )}
-
-      {/* Activity Metadata */}
+      {/* Concept Note Section */}
       <Card>
         <CardHeader>
-          <CardTitle>Activity Information</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center">
+              <FileTextIcon className="mr-2 h-5 w-5" />
+              Concept Note
+            </CardTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                /* TODO: Open concept note dialog */
+              }}
+            >
+              <EditIcon className="mr-2 h-4 w-4" />
+              {activity.conceptNote ? "Edit" : "Add"} Concept Note
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <p className="text-sm font-medium">Created By</p>
-              <p className="text-muted-foreground text-sm">
-                {activity.created_by}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Created At</p>
-              <p className="text-muted-foreground text-sm">
-                {activity.created_at
-                  ? format(new Date(activity.created_at), "PPP 'at' p")
-                  : "N/A"}
-              </p>
-            </div>
-            {activity.updated_at && (
-              <div>
-                <p className="text-sm font-medium">Last Updated</p>
-                <p className="text-muted-foreground text-sm">
-                  {format(new Date(activity.updated_at), "PPP 'at' p")}
-                </p>
+          {activity.conceptNote ? (
+            <div className="space-y-3">
+              <div className="prose prose-sm max-w-none">
+                <p className="text-sm">{activity.conceptNote}</p>
               </div>
-            )}
+              <div className="text-muted-foreground flex items-center text-sm">
+                <CalendarIcon className="mr-1 h-3 w-3" />
+                Added{" "}
+                {activity.created_at
+                  ? format(new Date(activity.created_at), "PPP")
+                  : "Unknown"}
+              </div>
+            </div>
+          ) : (
+            <div className="py-8 text-center">
+              <FolderIcon className="text-muted-foreground mx-auto h-12 w-12" />
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                No concept note
+              </h3>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Add a concept note to provide context and planning details for
+                this activity.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Activity Report Section */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center">
+              <TargetIcon className="mr-2 h-5 w-5" />
+              Activity Report
+            </CardTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                /* TODO: Open activity report dialog */
+              }}
+            >
+              <EditIcon className="mr-2 h-4 w-4" />
+              {activity.activityReport ? "Edit" : "Add"} Report
+            </Button>
           </div>
+        </CardHeader>
+        <CardContent>
+          {activity.activityReport ||
+          activity.outcomes ||
+          activity.challenges ||
+          activity.recommendations ? (
+            <div className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                <div>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="mb-2 text-sm font-medium">Status</p>
+                      <Badge className={getStatusColor(activity.status)}>
+                        {activity.status.charAt(0).toUpperCase() +
+                          activity.status.slice(1)}
+                      </Badge>
+                    </div>
+                    <div>
+                      <p className="mb-2 text-sm font-medium">Participants</p>
+                      <p className="text-muted-foreground text-sm">
+                        {activity.numberOfParticipants || 0} people
+                      </p>
+                    </div>
+                    <div>
+                      <p className="mb-2 text-sm font-medium">
+                        Actual End Date
+                      </p>
+                      <p className="text-muted-foreground text-sm">
+                        {activity.endDate
+                          ? format(new Date(activity.endDate), "PPP")
+                          : "Ongoing"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="mb-2 text-sm font-medium">Outcomes</p>
+                      <p className="text-muted-foreground text-sm">
+                        {activity.outcomes}
+                      </p>
+                    </div>
+                    {activity.challenges && (
+                      <div>
+                        <p className="mb-2 text-sm font-medium">Challenges</p>
+                        <p className="text-muted-foreground text-sm">
+                          {activity.challenges}
+                        </p>
+                      </div>
+                    )}
+                    {activity.recommendations && (
+                      <div>
+                        <p className="mb-2 text-sm font-medium">
+                          Recommendations
+                        </p>
+                        <p className="text-muted-foreground text-sm">
+                          {activity.recommendations}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="py-8 text-center">
+              <TargetIcon className="text-muted-foreground mx-auto h-12 w-12" />
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                No activity report
+              </h3>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Add a detailed report about this activity's outcomes and impact.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Attendance List Section */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center">
+              <UsersIcon className="mr-2 h-5 w-5" />
+              Attendance List
+            </CardTitle>
+            <div className="flex space-x-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  /* TODO: Export attendance list */
+                }}
+              >
+                <DownloadIcon className="mr-2 h-4 w-4" />
+                Export
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  /* TODO: Open attendance dialog */
+                }}
+              >
+                <EditIcon className="mr-2 h-4 w-4" />
+                Manage Attendance
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {activity.attendanceList && activity.attendanceList.length > 0 ? (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between text-sm">
+                <span className="font-medium">
+                  {activity.attendanceList.length} participants registered
+                </span>
+                <span className="text-muted-foreground">
+                  {activity.attendanceList.filter(p => p.attended).length}{" "}
+                  attended
+                </span>
+              </div>
+              <div className="max-h-64 space-y-2 overflow-y-auto">
+                {activity.attendanceList
+                  .slice(0, 5)
+                  .map((participant, index) => (
+                    <div
+                      key={index}
+                      className="bg-muted/50 flex items-center justify-between rounded-md px-3 py-2"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-full">
+                          <span className="text-xs font-medium">
+                            {participant.name
+                              .split(" ")
+                              .map(n => n[0])
+                              .join("")
+                              .toUpperCase()}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">
+                            {participant.name}
+                          </p>
+                          <p className="text-muted-foreground text-xs">
+                            {participant.email}
+                          </p>
+                        </div>
+                      </div>
+                      <Badge
+                        variant={participant.attended ? "default" : "secondary"}
+                      >
+                        {participant.attended ? "Attended" : "Registered"}
+                      </Badge>
+                    </div>
+                  ))}
+                {activity.attendanceList.length > 5 && (
+                  <div className="py-2 text-center">
+                    <Button variant="ghost" size="sm">
+                      View all participants
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="py-8 text-center">
+              <UsersIcon className="text-muted-foreground mx-auto h-12 w-12" />
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                No attendance records
+              </h3>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Start by adding participants and tracking attendance for this
+                activity.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 

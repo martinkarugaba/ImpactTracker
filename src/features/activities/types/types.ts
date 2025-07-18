@@ -6,6 +6,23 @@ export type Activity = InferSelectModel<typeof activities> & {
   projectName?: string;
   clusterName?: string;
   participantCount?: number;
+  // Additional fields for enhanced functionality
+  conceptNote?: string;
+  activityReport?: string;
+  attendanceCount?: number;
+  attendanceList?: AttendanceRecord[];
+};
+
+export type AttendanceRecord = {
+  id: string;
+  name: string;
+  email: string;
+  attended: boolean;
+  role?: string;
+  organization?: string;
+  checkInTime?: Date;
+  checkOutTime?: Date;
+  notes?: string;
 };
 
 export type ActivityParticipant = InferSelectModel<
