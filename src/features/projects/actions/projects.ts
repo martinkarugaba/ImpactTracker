@@ -125,7 +125,31 @@ export async function getProjects(organizationId?: string) {
     return { success: true, data: typedProjects };
   } catch (error) {
     console.error("Error fetching projects:", error);
-    return { success: false, error: "Failed to fetch projects" };
+
+    // Check for specific database connection errors
+    if (error instanceof Error) {
+      if (
+        error.message.includes("fetch failed") ||
+        error.message.includes("ECONNREFUSED")
+      ) {
+        return {
+          success: false,
+          error:
+            "Database connection failed. Please check your connection and try again.",
+        };
+      }
+      if (error.message.includes("timeout")) {
+        return {
+          success: false,
+          error: "Database request timed out. Please try again.",
+        };
+      }
+    }
+
+    return {
+      success: false,
+      error: "Failed to fetch projects. Please try again later.",
+    };
   }
 }
 

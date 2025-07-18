@@ -56,11 +56,11 @@ export function ActivityFiltersComponent({
   const clearFilters = () => {
     onFiltersChange({
       search: "",
-      type: undefined,
-      status: undefined,
-      organizationId: undefined,
-      clusterId: undefined,
-      projectId: undefined,
+      type: "",
+      status: "",
+      organizationId: "",
+      clusterId: "",
+      projectId: "",
       startDate: undefined,
       endDate: undefined,
     });

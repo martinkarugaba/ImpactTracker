@@ -109,20 +109,20 @@ export function ActivityFormDialog({
     if (open) {
       if (activity) {
         form.reset({
-          title: activity.title,
+          title: activity.title || "",
           description: activity.description || "",
           type: activity.type as ActivityType,
           status: activity.status as ActivityStatus,
           startDate: new Date(activity.startDate),
           endDate: activity.endDate ? new Date(activity.endDate) : undefined,
-          venue: activity.venue,
+          venue: activity.venue || "",
           budget: activity.budget || undefined,
           objectives: Array.isArray(activity.objectives)
             ? activity.objectives.join("\n")
             : activity.objectives || "",
-          organizationId: activity.organization_id,
-          clusterId: activity.cluster_id || undefined,
-          projectId: activity.project_id || undefined,
+          organizationId: activity.organization_id || "",
+          clusterId: activity.cluster_id || "",
+          projectId: activity.project_id || "",
         });
       } else {
         form.reset({
@@ -413,6 +413,7 @@ export function ActivityFormDialog({
                       type="number"
                       placeholder="0"
                       {...field}
+                      value={field.value || ""}
                       onChange={e =>
                         field.onChange(
                           e.target.value ? Number(e.target.value) : undefined

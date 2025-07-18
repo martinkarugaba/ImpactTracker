@@ -40,11 +40,11 @@ export function ActivitiesContainer({
 }: ActivitiesContainerProps) {
   const [filters, setFilters] = useState<ActivityFilters>({
     search: "",
-    type: undefined,
-    status: undefined,
-    organizationId: undefined,
-    clusterId: undefined,
-    projectId: undefined,
+    type: "",
+    status: "",
+    organizationId: "",
+    clusterId: "",
+    projectId: "",
     startDate: undefined,
     endDate: undefined,
   });
@@ -60,12 +60,12 @@ export function ActivitiesContainer({
     isLoading: _isActivitiesLoading,
     error: activitiesError,
   } = useActivities(undefined, {
-    search: filters.search,
+    search: filters.search || undefined,
     filters: {
-      type: filters.type,
-      status: filters.status,
-      organization: filters.organizationId,
-      project: filters.projectId,
+      type: filters.type || undefined,
+      status: filters.status || undefined,
+      organization: filters.organizationId || undefined,
+      project: filters.projectId || undefined,
       dateFrom: filters.startDate?.toISOString(),
       dateTo: filters.endDate?.toISOString(),
     },

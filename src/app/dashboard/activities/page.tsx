@@ -5,11 +5,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getOrganizations } from "@/features/organizations/actions/organizations";
 import { getClusters } from "@/features/clusters/actions/clusters";
 import { getProjects } from "@/features/projects/actions/projects";
+import { SiteHeader } from "@/features/dashboard/components/site-header";
 
 // Loading component for the page
 function ActivitiesPageSkeleton() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-6">
       {/* Metrics Cards Skeleton */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
@@ -82,12 +83,33 @@ function ActivitiesPageSkeleton() {
 // Main activities page content
 async function ActivitiesPageContent() {
   try {
-    // Fetch all required data in parallel
+    // Fetch all required data in parallel with better error handling
     const [organizationsResult, clustersResult, projectsResult] =
       await Promise.allSettled([
-        getOrganizations(),
-        getClusters().catch(() => ({ success: false, data: [] })), // Graceful fallback for optional data
-        getProjects().catch(() => ({ success: false, data: [] })), // Graceful fallback for optional data
+        getOrganizations().catch(error => {
+          console.warn("Failed to fetch organizations:", error);
+          return {
+            success: false,
+            data: [],
+            error: "Organizations unavailable",
+          };
+        }),
+        getClusters().catch(error => {
+          console.warn("Failed to fetch clusters:", error);
+          return {
+            success: false,
+            data: [],
+            error: "Clusters unavailable",
+          };
+        }),
+        getProjects().catch(error => {
+          console.warn("Failed to fetch projects:", error);
+          return {
+            success: false,
+            data: [],
+            error: "Projects unavailable",
+          };
+        }),
       ]);
 
     // Extract organizations (required)
@@ -110,21 +132,28 @@ async function ActivitiesPageContent() {
         : [];
 
     return (
-      <ActivitiesContainer
-        organizations={organizations}
-        clusters={clusters}
-        projects={projects}
-      />
+      <>
+        <SiteHeader title="Activities" />
+        <ActivitiesContainer
+          organizations={organizations}
+          clusters={clusters}
+          projects={projects}
+        />
+      </>
     );
   } catch (error) {
     console.error("Error loading activities page data:", error);
 
     return (
-      <div className="flex h-96 items-center justify-center">
+      <div className="flex h-96 items-center justify-center px-6">
         <div className="text-center">
           <h3 className="text-lg font-semibold">Error loading activities</h3>
           <p className="text-muted-foreground mt-2">
-            Failed to load page data. Please try refreshing the page.
+            Failed to load page data. This might be a temporary database
+            connectivity issue.
+          </p>
+          <p className="text-muted-foreground mt-1">
+            Please check your internet connection and try refreshing the page.
           </p>
         </div>
       </div>
@@ -140,7 +169,7 @@ export const metadata = {
 
 export default function ActivitiesPage() {
   return (
-    <div className="container mx-auto py-6">
+    <div className="container mx-auto px-6 py-6">
       <Suspense fallback={<ActivitiesPageSkeleton />}>
         <ActivitiesPageContent />
       </Suspense>
