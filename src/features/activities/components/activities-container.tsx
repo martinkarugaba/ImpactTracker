@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { ActivityTable } from "./table/activity-table";
+import { ReusableDataTable } from "@/components/ui/reusable-data-table";
 import { getActivityColumns } from "./table/columns";
 import { ActivityFormDialog } from "./forms/activity-form-dialog";
 import { ActivityFiltersComponent } from "./filters/activity-filters";
@@ -39,7 +38,6 @@ export function ActivitiesContainer({
   clusters = [],
   projects = [],
 }: ActivitiesContainerProps) {
-  const router = useRouter();
   const [filters, setFilters] = useState<ActivityFilters>({
     search: "",
     type: "",
@@ -93,7 +91,8 @@ export function ActivitiesContainer({
   };
 
   const handleView = (activity: Activity) => {
-    router.push(`/dashboard/activities/${activity.id}`);
+    // For now, just show a toast - could implement a detailed view modal
+    toast.success(`Viewing details for "${activity.title}"`);
   };
 
   const confirmDelete = async () => {
@@ -130,7 +129,7 @@ export function ActivitiesContainer({
   }
 
   return (
-    <div className="space-y-6 pt-6">
+    <div className="space-y-6">
       {/* Metrics Cards */}
       <ActivityMetricsCards
         metrics={
@@ -197,8 +196,14 @@ export function ActivitiesContainer({
         />
       </div>
 
-      {/* Create Button */}
-      <div className="mb-4 flex items-center justify-end">
+      {/* Header with Create Button */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Activities</h2>
+          <p className="text-muted-foreground">
+            Manage and track all organizational activities
+          </p>
+        </div>
         <Button onClick={() => setIsCreateDialogOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           Create Activity
@@ -215,10 +220,16 @@ export function ActivitiesContainer({
       />
 
       {/* Activities Table */}
-      <ActivityTable
+      <ReusableDataTable
         columns={columns}
         data={activities}
-        searchPlaceholder="Search activities..."
+        filterColumn="title"
+        filterPlaceholder="Search activities..."
+        showColumnToggle={true}
+        showPagination={true}
+        showRowSelection={true}
+        pageSize={10}
+        onRowClick={handleView}
       />
 
       {/* Create/Edit Dialog */}

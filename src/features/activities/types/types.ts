@@ -1,52 +1,11 @@
 import { type InferSelectModel } from "drizzle-orm";
-import {
-  type activities,
-  type activityParticipants,
-  type conceptNotes,
-} from "@/lib/db/schema";
-
-export type ConceptNote = InferSelectModel<typeof conceptNotes>;
-
-export type NewConceptNote = Omit<
-  ConceptNote,
-  "id" | "created_at" | "updated_at"
->;
-
-export type BudgetItem = {
-  description: string;
-  quantity: number;
-  unitCost: number;
-  totalCost: number;
-};
-
-export type ConceptNoteResponse = {
-  success: boolean;
-  data?: ConceptNote;
-  error?: string;
-};
+import { type activities, type activityParticipants } from "@/lib/db/schema";
 
 export type Activity = InferSelectModel<typeof activities> & {
   organizationName?: string;
   projectName?: string;
   clusterName?: string;
   participantCount?: number;
-  // Additional fields for enhanced functionality
-  conceptNote?: ConceptNote | null; // Updated to allow null
-  activityReport?: string;
-  attendanceCount?: number;
-  attendanceList?: AttendanceRecord[];
-};
-
-export type AttendanceRecord = {
-  id: string;
-  name: string;
-  email: string;
-  attended: boolean;
-  role?: string;
-  organization?: string;
-  checkInTime?: Date;
-  checkOutTime?: Date;
-  notes?: string;
 };
 
 export type ActivityParticipant = InferSelectModel<
