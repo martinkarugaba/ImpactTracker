@@ -541,6 +541,10 @@ export const clusterUsersRelations = relations(clusterUsers, ({ one }) => ({
 }));
 
 export const participantsRelations = relations(participants, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [participants.organization_id],
+    references: [organizations.id],
+  }),
   cluster: one(clusters, {
     fields: [participants.cluster_id],
     references: [clusters.id],
@@ -750,6 +754,78 @@ export const trainingParticipantsRelations = relations(
     }),
     participant: one(participants, {
       fields: [trainingParticipants.participant_id],
+      references: [participants.id],
+    }),
+  })
+);
+
+export const activities = pgTable("activities", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: text("title").notNull(),
+  description: text("description"),
+  type: text("type").notNull(), // meeting, workshop, field_visit, etc.
+  status: text("status").notNull().default("planned"), // planned, ongoing, completed, cancelled
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date"),
+  venue: text("venue").notNull(),
+  budget: integer("budget"),
+  actualCost: integer("actual_cost"),
+  numberOfParticipants: integer("number_of_participants").default(0),
+  objectives: text("objectives").array().default([]),
+  outcomes: text("outcomes"),
+  challenges: text("challenges"),
+  recommendations: text("recommendations"),
+  attachments: text("attachments").array().default([]),
+  organization_id: uuid("organization_id")
+    .references(() => organizations.id)
+    .notNull(),
+  cluster_id: uuid("cluster_id").references(() => clusters.id),
+  project_id: uuid("project_id").references(() => projects.id),
+  created_by: text("created_by").notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const activityParticipants = pgTable("activity_participants", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  activity_id: uuid("activity_id")
+    .references(() => activities.id)
+    .notNull(),
+  participant_id: uuid("participant_id")
+    .references(() => participants.id)
+    .notNull(),
+  attendance_status: text("attendance_status").notNull().default("invited"), // invited, attended, absent
+  role: text("role").default("participant"), // participant, facilitator, organizer
+  feedback: text("feedback"),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const activitiesRelations = relations(activities, ({ one, many }) => ({
+  organization: one(organizations, {
+    fields: [activities.organization_id],
+    references: [organizations.id],
+  }),
+  cluster: one(clusters, {
+    fields: [activities.cluster_id],
+    references: [clusters.id],
+  }),
+  project: one(projects, {
+    fields: [activities.project_id],
+    references: [projects.id],
+  }),
+  activityParticipants: many(activityParticipants),
+}));
+
+export const activityParticipantsRelations = relations(
+  activityParticipants,
+  ({ one }) => ({
+    activity: one(activities, {
+      fields: [activityParticipants.activity_id],
+      references: [activities.id],
+    }),
+    participant: one(participants, {
+      fields: [activityParticipants.participant_id],
       references: [participants.id],
     }),
   })
