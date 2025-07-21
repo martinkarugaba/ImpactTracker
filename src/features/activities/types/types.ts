@@ -3,6 +3,7 @@ import {
   type activities,
   type activityParticipants,
   type conceptNotes,
+  type activityReports,
 } from "@/lib/db/schema";
 
 export type Activity = InferSelectModel<typeof activities> & {
@@ -141,3 +142,34 @@ export type ActivityType = (typeof ACTIVITY_TYPES)[number];
 export type ActivityStatus = (typeof ACTIVITY_STATUSES)[number];
 export type AttendanceStatus = (typeof ATTENDANCE_STATUSES)[number];
 export type ParticipantRole = (typeof PARTICIPANT_ROLES)[number];
+
+// Activity Report Types from Database Schema
+export type ActivityReport = InferSelectModel<typeof activityReports>;
+
+export type NewActivityReport = Omit<
+  ActivityReport,
+  "id" | "created_at" | "updated_at"
+>;
+
+// Follow-up Action Types for UI
+export type FollowUpAction = {
+  id: string;
+  action: string;
+  responsiblePerson: string;
+  timeline: string;
+};
+
+export type NewFollowUpAction = Omit<FollowUpAction, "id">;
+
+// Activity Report Response Types
+export type ActivityReportResponse = {
+  success: boolean;
+  data?: ActivityReport;
+  error?: string;
+};
+
+export type ActivityReportsResponse = {
+  success: boolean;
+  data?: ActivityReport[];
+  error?: string;
+};

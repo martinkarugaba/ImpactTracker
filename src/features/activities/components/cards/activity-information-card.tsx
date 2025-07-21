@@ -19,16 +19,16 @@ export function ActivityInformationCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Activity Information</CardTitle>
+        <CardTitle className="text-xl">Activity Information</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid gap-3">
+        <div className="grid gap-4">
           <div>
-            <label className="text-muted-foreground text-sm font-medium">
+            <label className="text-muted-foreground text-base font-medium">
               Type
             </label>
             <div className="mt-1">
-              <Badge variant="outline" className="capitalize">
+              <Badge variant="outline" className="text-base capitalize">
                 {getTypeLabel(activity.type)}
               </Badge>
             </div>
@@ -36,28 +36,28 @@ export function ActivityInformationCard({
 
           {activity.projectName && (
             <div>
-              <label className="text-muted-foreground text-sm font-medium">
+              <label className="text-muted-foreground text-base font-medium">
                 Project
               </label>
-              <p className="mt-1 text-sm">{activity.projectName}</p>
+              <p className="mt-1 text-base">{activity.projectName}</p>
             </div>
           )}
 
           {activity.clusterName && (
             <div>
-              <label className="text-muted-foreground text-sm font-medium">
+              <label className="text-muted-foreground text-base font-medium">
                 Cluster
               </label>
-              <p className="mt-1 text-sm">{activity.clusterName}</p>
+              <p className="mt-1 text-base">{activity.clusterName}</p>
             </div>
           )}
 
           {activity.budget && (
             <div>
-              <label className="text-muted-foreground text-sm font-medium">
+              <label className="text-muted-foreground text-base font-medium">
                 Budget
               </label>
-              <p className="mt-1 text-sm">
+              <p className="mt-1 text-base">
                 ${Number(activity.budget).toLocaleString()}
               </p>
             </div>
@@ -65,10 +65,10 @@ export function ActivityInformationCard({
 
           {activity.actualCost && (
             <div>
-              <label className="text-muted-foreground text-sm font-medium">
+              <label className="text-muted-foreground text-base font-medium">
                 Actual Cost
               </label>
-              <p className="mt-1 text-sm">
+              <p className="mt-1 text-base">
                 ${Number(activity.actualCost).toLocaleString()}
               </p>
             </div>
@@ -76,10 +76,10 @@ export function ActivityInformationCard({
 
           {activity.objectives && (
             <div>
-              <label className="text-muted-foreground text-sm font-medium">
+              <label className="text-muted-foreground text-base font-medium">
                 Objectives
               </label>
-              <p className="mt-1 text-sm">{activity.objectives}</p>
+              <p className="mt-1 text-base">{activity.objectives}</p>
             </div>
           )}
         </div>

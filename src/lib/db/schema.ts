@@ -812,6 +812,7 @@ export const activitiesRelations = relations(activities, ({ one, many }) => ({
   }),
   activityParticipants: many(activityParticipants),
   conceptNotes: many(conceptNotes),
+  activityReports: many(activityReports),
 }));
 
 export const activityParticipantsRelations = relations(
@@ -854,3 +855,35 @@ export const conceptNotesRelations = relations(conceptNotes, ({ one }) => ({
     references: [activities.id],
   }),
 }));
+
+export const activityReports = pgTable("activity_reports", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  activity_id: uuid("activity_id")
+    .references(() => activities.id)
+    .notNull(),
+  title: text("title").notNull(),
+  execution_date: timestamp("execution_date").notNull(),
+  cluster_name: text("cluster_name").notNull(),
+  venue: text("venue").notNull(),
+  team_leader: text("team_leader").notNull(),
+  background_purpose: text("background_purpose").notNull(),
+  progress_achievements: text("progress_achievements").notNull(),
+  challenges_recommendations: text("challenges_recommendations").notNull(),
+  lessons_learned: text("lessons_learned").notNull(),
+  follow_up_actions: text("follow_up_actions").array().default([]), // JSON string array of follow-up actions
+  actual_cost: integer("actual_cost"),
+  number_of_participants: integer("number_of_participants"),
+  created_by: text("created_by").notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const activityReportsRelations = relations(
+  activityReports,
+  ({ one }) => ({
+    activity: one(activities, {
+      fields: [activityReports.activity_id],
+      references: [activities.id],
+    }),
+  })
+);

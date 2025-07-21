@@ -71,13 +71,13 @@ export function ConceptNotesTable({
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <FileText className="text-muted-foreground h-5 w-5" />
-            <CardTitle>Concept Notes</CardTitle>
+            <FileText className="text-muted-foreground h-6 w-6" />
+            <CardTitle className="text-xl">Concept Notes</CardTitle>
           </div>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <div className="text-muted-foreground text-sm">
+            <div className="text-muted-foreground text-base">
               Loading concept notes...
             </div>
           </div>
@@ -91,13 +91,13 @@ export function ConceptNotesTable({
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <FileText className="text-muted-foreground h-5 w-5" />
-            <CardTitle>Concept Notes</CardTitle>
+            <FileText className="text-muted-foreground h-6 w-6" />
+            <CardTitle className="text-xl">Concept Notes</CardTitle>
           </div>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <div className="text-destructive text-sm">{error}</div>
+            <div className="text-destructive text-base">{error}</div>
           </div>
         </CardContent>
       </Card>
@@ -110,12 +110,12 @@ export function ConceptNotesTable({
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <FileText className="text-muted-foreground h-5 w-5" />
-              <CardTitle>Concept Notes</CardTitle>
+              <FileText className="text-muted-foreground h-6 w-6" />
+              <CardTitle className="text-xl">Concept Notes</CardTitle>
             </div>
             {onCreateConceptNote && (
               <Button variant="outline" size="sm" onClick={onCreateConceptNote}>
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus className="mr-2 h-5 w-5" />
                 Create Concept Note
               </Button>
             )}
@@ -126,12 +126,12 @@ export function ConceptNotesTable({
             <div className="bg-muted mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
               <FileText className="text-muted-foreground h-6 w-6" />
             </div>
-            <p className="text-muted-foreground mb-4 text-sm">
+            <p className="text-muted-foreground mb-4 text-base">
               No concept notes have been created for this activity yet.
             </p>
             {onCreateConceptNote && (
               <Button variant="outline" onClick={onCreateConceptNote}>
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus className="mr-2 h-5 w-5" />
                 Create First Concept Note
               </Button>
             )}
@@ -146,12 +146,14 @@ export function ConceptNotesTable({
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FileText className="text-muted-foreground h-5 w-5" />
-            <CardTitle>Concept Notes ({conceptNotes.length})</CardTitle>
+            <FileText className="text-muted-foreground h-6 w-6" />
+            <CardTitle className="text-xl">
+              Concept Notes ({conceptNotes.length})
+            </CardTitle>
           </div>
           {onCreateConceptNote && (
             <Button variant="outline" size="sm" onClick={onCreateConceptNote}>
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="mr-2 h-5 w-5" />
               Add Concept Note
             </Button>
           )}

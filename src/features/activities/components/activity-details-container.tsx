@@ -21,10 +21,6 @@ import {
   FileText,
   Users,
   ClipboardList,
-  CheckCircle,
-  Clock,
-  AlertCircle,
-  CalendarCheck,
 } from "lucide-react";
 import { ActivityFormDialog } from "./forms/activity-form-dialog";
 import { ConceptNoteDialog } from "./dialogs/concept-note-dialog";
@@ -78,33 +74,6 @@ export function ActivityDetailsContainer({
   const [refreshKey, setRefreshKey] = useState(0);
   const deleteActivity = useDeleteActivity();
   const router = useRouter();
-
-  // Get accent color based on activity status
-  const getStatusColor = () => {
-    const statusColors = {
-      planned: { bg: "bg-blue-500", text: "text-blue-800", icon: Clock },
-      ongoing: { bg: "bg-amber-500", text: "text-amber-800", icon: Clock },
-      completed: {
-        bg: "bg-green-500",
-        text: "text-green-800",
-        icon: CheckCircle,
-      },
-      cancelled: { bg: "bg-red-500", text: "text-red-800", icon: AlertCircle },
-      postponed: {
-        bg: "bg-gray-500",
-        text: "text-gray-800",
-        icon: CalendarCheck,
-      },
-    };
-
-    return (
-      statusColors[activity.status as keyof typeof statusColors] ||
-      statusColors.planned
-    );
-  };
-
-  const statusColor = getStatusColor();
-  const StatusIcon = statusColor.icon;
 
   const handleEdit = () => {
     setIsEditDialogOpen(true);
@@ -221,42 +190,34 @@ export function ActivityDetailsContainer({
         <Button
           onClick={handleGoBack}
           variant="ghost"
-          size="sm"
+          size="lg"
           className="text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
+          <ArrowLeft className="mr-2 h-5 w-5" />
           Back
         </Button>
       </div>
 
-      {/* Activity Header with color based on type */}
-      <div className="rounded-lg bg-gradient-to-br from-gray-50/50 to-transparent p-1">
-        <ActivityHeader activity={activity} />
-      </div>
-
-      {/* Status Indicator */}
-      <div className="flex items-center gap-2">
-        <div className="flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-800">
-          <StatusIcon className="mr-1.5 h-4 w-4" />
-          {activity.status.charAt(0).toUpperCase() + activity.status.slice(1)}
-        </div>
-      </div>
+      {/* Activity Header */}
+      <ActivityHeader activity={activity} />
 
       {/* Action Buttons */}
       <div className="flex items-center gap-3">
         <Button
           onClick={handleEdit}
-          className="bg-blue-600 text-white hover:bg-blue-700"
+          className="bg-primary text-primary-foreground hover:bg-primary/90"
+          size="lg"
         >
-          <Edit className="mr-2 h-4 w-4" />
+          <Edit className="mr-2 h-5 w-5" />
           Edit Activity
         </Button>
         <Button
           onClick={handleDelete}
           variant="outline"
-          className="border-red-300 text-red-700 hover:bg-red-50 hover:text-red-800"
+          className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+          size="lg"
         >
-          <Trash2 className="mr-2 h-4 w-4" />
+          <Trash2 className="mr-2 h-5 w-5" />
           Delete Activity
         </Button>
       </div>
@@ -265,26 +226,29 @@ export function ActivityDetailsContainer({
       <div className="flex flex-wrap items-center gap-3">
         <Button
           onClick={handleCreateConceptNote}
-          className="border-indigo-300 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 hover:text-indigo-800"
           variant="outline"
+          className="border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 hover:text-indigo-800 dark:border-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300 dark:hover:bg-indigo-900 dark:hover:text-indigo-200"
+          size="lg"
         >
-          <FileText className="mr-2 h-4 w-4" />
+          <FileText className="mr-2 h-5 w-5" />
           Create Concept Note
         </Button>
         <Button
           onClick={handleCreateActivityReport}
-          className="border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800"
           variant="outline"
+          className="border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 dark:hover:bg-emerald-900 dark:hover:text-emerald-200"
+          size="lg"
         >
-          <ClipboardList className="mr-2 h-4 w-4" />
+          <ClipboardList className="mr-2 h-5 w-5" />
           Update Activity Report
         </Button>
         <Button
           onClick={handleManageAttendance}
-          className="border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 hover:text-amber-800"
           variant="outline"
+          className="border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 hover:text-amber-800 dark:border-amber-800 dark:bg-amber-900/50 dark:text-amber-300 dark:hover:bg-amber-900 dark:hover:text-amber-200"
+          size="lg"
         >
-          <Users className="mr-2 h-4 w-4" />
+          <Users className="mr-2 h-5 w-5" />
           Manage Attendance
         </Button>
       </div>
@@ -293,36 +257,26 @@ export function ActivityDetailsContainer({
       <div className="grid gap-6 md:grid-cols-2">
         {/* Left Column */}
         <div className="space-y-6">
-          <div className="rounded-lg bg-gradient-to-br from-gray-50/30 to-transparent p-1">
-            <ActivityInformationCard activity={activity} />
-          </div>
-          <div className="rounded-lg bg-gradient-to-br from-gray-50/30 to-transparent p-1">
-            <ActivityNotesCard activity={activity} />
-          </div>
+          <ActivityInformationCard activity={activity} />
+          <ActivityNotesCard activity={activity} />
         </div>
 
         {/* Right Column */}
         <div className="space-y-6">
-          <div className="rounded-lg bg-gradient-to-br from-gray-50/30 to-transparent p-1">
-            <AttendanceListCard activity={activity} />
-          </div>
-          <div className="rounded-lg bg-gradient-to-br from-gray-50/30 to-transparent p-1">
-            <ActivityReportCard activity={activity} />
-          </div>
+          <AttendanceListCard activity={activity} />
+          <ActivityReportCard activity={activity} />
         </div>
       </div>
 
       {/* Concept Notes Table */}
-      <div className="rounded-lg bg-gradient-to-br from-gray-50/20 to-transparent p-3">
-        <ConceptNotesTable
-          key={`concept-notes-${activity.id}-${refreshKey}`}
-          activityId={activity.id}
-          onCreateConceptNote={handleCreateConceptNote}
-          onEditConceptNote={handleEditConceptNote}
-          onDeleteConceptNote={handleDeleteConceptNote}
-          refreshKey={refreshKey}
-        />
-      </div>
+      <ConceptNotesTable
+        key={`concept-notes-${activity.id}-${refreshKey}`}
+        activityId={activity.id}
+        onCreateConceptNote={handleCreateConceptNote}
+        onEditConceptNote={handleEditConceptNote}
+        onDeleteConceptNote={handleDeleteConceptNote}
+        refreshKey={refreshKey}
+      />
 
       {/* Edit Activity Dialog */}
       <ActivityFormDialog
