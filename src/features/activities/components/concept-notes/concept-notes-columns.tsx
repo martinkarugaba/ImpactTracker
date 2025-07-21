@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { type ConceptNote } from "../../types/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Pencil, Trash, Eye } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -107,7 +107,9 @@ export const conceptNoteColumns: ColumnDef<ConceptNote>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: () => {
+    cell: ({ row }) => {
+      const conceptNote = row.original;
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -118,16 +120,28 @@ export const conceptNoteColumns: ColumnDef<ConceptNote>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>
-              <Eye className="mr-2 h-4 w-4" />
-              View Details
-            </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                if (window.onEditConceptNote) {
+                  window.onEditConceptNote(conceptNote.id);
+                }
+              }}
+            >
               <Pencil className="mr-2 h-4 w-4" />
               Edit
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive focus:text-destructive">
+            <DropdownMenuItem
+              onClick={() => {
+                if (
+                  window.onDeleteConceptNote &&
+                  confirm("Are you sure you want to delete this concept note?")
+                ) {
+                  window.onDeleteConceptNote(conceptNote.id);
+                }
+              }}
+              className="text-destructive focus:text-destructive"
+            >
               <Trash className="mr-2 h-4 w-4" />
               Delete
             </DropdownMenuItem>

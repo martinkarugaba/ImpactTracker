@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { conceptNoteColumns } from "./concept-notes-columns";
 import { type ConceptNote } from "../../types/types";
@@ -12,38 +12,59 @@ import { FileText, Plus } from "lucide-react";
 interface ConceptNotesTableProps {
   activityId: string;
   onCreateConceptNote?: () => void;
+  onEditConceptNote?: (conceptNoteId: string) => void;
+  onDeleteConceptNote?: (conceptNoteId: string) => void;
+  refreshKey?: number;
 }
 
 export function ConceptNotesTable({
   activityId,
   onCreateConceptNote,
+  onEditConceptNote,
+  onDeleteConceptNote,
+  refreshKey = 0,
 }: ConceptNotesTableProps) {
   const [conceptNotes, setConceptNotes] = useState<ConceptNote[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchConceptNotes = async () => {
-      try {
-        setIsLoading(true);
-        const response = await getConceptNotesByActivity(activityId);
-        if (response.success && response.data) {
-          setConceptNotes(response.data);
-        } else {
-          setError(response.error || "Failed to fetch concept notes");
-        }
-      } catch (err) {
-        setError("An error occurred while fetching concept notes");
-        console.error("Error fetching concept notes:", err);
-      } finally {
-        setIsLoading(false);
+  const fetchConceptNotes = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const response = await getConceptNotesByActivity(activityId);
+      if (response.success && response.data) {
+        setConceptNotes(response.data);
+      } else {
+        setError(response.error || "Failed to fetch concept notes");
       }
-    };
+    } catch (err) {
+      setError("An error occurred while fetching concept notes");
+      console.error("Error fetching concept notes:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activityId]);
 
+  // Set up global handlers for edit and delete
+  useEffect(() => {
+    if (onEditConceptNote) {
+      window.onEditConceptNote = onEditConceptNote;
+    }
+    if (onDeleteConceptNote) {
+      window.onDeleteConceptNote = onDeleteConceptNote;
+    }
+
+    return () => {
+      window.onEditConceptNote = undefined;
+      window.onDeleteConceptNote = undefined;
+    };
+  }, [onEditConceptNote, onDeleteConceptNote]);
+
+  useEffect(() => {
     if (activityId) {
       fetchConceptNotes();
     }
-  }, [activityId]);
+  }, [activityId, fetchConceptNotes, refreshKey]);
 
   if (isLoading) {
     return (
@@ -144,6 +165,7 @@ export function ConceptNotesTable({
           filterPlaceholder="Filter concept notes..."
           showColumnToggle={true}
           showPagination={conceptNotes.length > 5}
+          showRowSelection={false}
           pageSize={5}
         />
       </CardContent>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { v4 as uuidv4 } from "uuid";
 import {
   Dialog,
   DialogContent,
@@ -33,6 +34,7 @@ import {
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { ConceptNote, NewConceptNote } from "../../types/types";
+import { BudgetItem, NewBudgetItem } from "../../types/budget-item";
 
 const conceptNoteSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -65,6 +67,28 @@ export function ConceptNoteDialog({
   onSubmit,
 }: ConceptNoteDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [budgetItems, setBudgetItems] = useState<BudgetItem[]>(() => {
+    // Parse budget items from string[] to BudgetItem[]
+    if (conceptNote?.budget_items && Array.isArray(conceptNote.budget_items)) {
+      return conceptNote.budget_items
+        .map((item: string) => {
+          try {
+            return JSON.parse(item) as BudgetItem;
+          } catch (e) {
+            console.error("Error parsing budget item:", e);
+            return null;
+          }
+        })
+        .filter((item): item is BudgetItem => item !== null);
+    }
+    return [];
+  });
+  const [newBudgetItem, setNewBudgetItem] = useState<NewBudgetItem>({
+    description: "",
+    quantity: 1,
+    unitCost: 0,
+    totalCost: 0,
+  });
 
   const form = useForm<ConceptNoteFormData>({
     resolver: zodResolver(conceptNoteSchema),
@@ -84,6 +108,57 @@ export function ConceptNoteDialog({
     },
   });
 
+  const handleAddBudgetItem = () => {
+    if (
+      !newBudgetItem.description ||
+      newBudgetItem.quantity <= 0 ||
+      newBudgetItem.unitCost <= 0
+    ) {
+      return;
+    }
+
+    const totalCost = newBudgetItem.quantity * newBudgetItem.unitCost;
+
+    setBudgetItems([
+      ...budgetItems,
+      {
+        id: uuidv4(),
+        description: newBudgetItem.description,
+        quantity: newBudgetItem.quantity,
+        unitCost: newBudgetItem.unitCost,
+        totalCost,
+      },
+    ]);
+
+    setNewBudgetItem({
+      description: "",
+      quantity: 1,
+      unitCost: 0,
+      totalCost: 0,
+    });
+  };
+
+  const handleUpdateBudgetItemField = (
+    field: keyof NewBudgetItem,
+    value: string | number
+  ) => {
+    setNewBudgetItem(prev => {
+      const updated = { ...prev, [field]: value };
+
+      if (field === "quantity" || field === "unitCost") {
+        const quantity = field === "quantity" ? Number(value) : prev.quantity;
+        const unitCost = field === "unitCost" ? Number(value) : prev.unitCost;
+        updated.totalCost = quantity * unitCost;
+      }
+
+      return updated;
+    });
+  };
+
+  const handleRemoveBudgetItem = (id: string) => {
+    setBudgetItems(budgetItems.filter(item => item.id !== id));
+  };
+
   const handleSubmit = async (data: ConceptNoteFormData) => {
     setIsLoading(true);
     try {
@@ -98,11 +173,12 @@ export function ConceptNoteDialog({
         methodology: data.methodology || null,
         requirements: data.requirements || null,
         participant_details: data.participant_details || null,
-        budget_items: conceptNote?.budget_items ?? [],
+        budget_items: budgetItems.map(item => JSON.stringify(item)),
         budget_notes: data.budget_notes || null,
       });
       onOpenChange(false);
       form.reset();
+      setBudgetItems([]);
     } catch (error) {
       console.error("Error saving concept note:", error);
     } finally {
@@ -112,7 +188,7 @@ export function ConceptNoteDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
+      <DialogContent className="max-h-[90vh] w-full max-w-7xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {conceptNote ? "Edit Concept Note" : "Create Concept Note"}
@@ -129,7 +205,7 @@ export function ConceptNoteDialog({
             onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-6"
           >
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4">
               <FormField
                 control={form.control}
                 name="title"
@@ -147,36 +223,38 @@ export function ConceptNoteDialog({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="charge_code"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Charge Code</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter charge code" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="charge_code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Charge Code</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter charge code" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="activity_lead"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Activity Lead</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter activity lead name"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="activity_lead"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Activity Lead</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter activity lead name"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <FormField
                 control={form.control}
@@ -257,43 +335,41 @@ export function ConceptNoteDialog({
               )}
             />
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="methodology"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Methodology</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Describe the methodology..."
-                        className="min-h-[100px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name="methodology"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Methodology</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Describe the methodology..."
+                      className="min-h-[100px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={form.control}
-                name="requirements"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Requirements</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="List the requirements..."
-                        className="min-h-[100px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="requirements"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Requirements</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="List the requirements..."
+                      className="min-h-[100px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
@@ -313,23 +389,144 @@ export function ConceptNoteDialog({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="budget_notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Budget Notes</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Enter budget notes..."
-                      className="min-h-[80px]"
-                      {...field}
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-medium">Budget Items</h3>
+                <p className="text-muted-foreground text-sm">
+                  Add budget items for this concept note.
+                </p>
+              </div>
+
+              <div className="rounded-md border">
+                <div className="bg-muted/50 grid grid-cols-12 gap-2 px-4 py-2">
+                  <div className="col-span-5 font-medium">Description</div>
+                  <div className="col-span-2 font-medium">Quantity</div>
+                  <div className="col-span-2 font-medium">Unit Cost (UGX)</div>
+                  <div className="col-span-2 font-medium">Total (UGX)</div>
+                  <div className="col-span-1"></div>
+                </div>
+
+                {budgetItems.length > 0 ? (
+                  <div className="divide-y">
+                    {budgetItems.map(item => (
+                      <div
+                        key={item.id}
+                        className="grid grid-cols-12 gap-2 px-4 py-3"
+                      >
+                        <div className="col-span-5">{item.description}</div>
+                        <div className="col-span-2">{item.quantity}</div>
+                        <div className="col-span-2">
+                          {item.unitCost.toLocaleString()}
+                        </div>
+                        <div className="col-span-2">
+                          {item.totalCost.toLocaleString()}
+                        </div>
+                        <div className="col-span-1">
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleRemoveBudgetItem(item.id)}
+                          >
+                            &times;
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-muted-foreground py-8 text-center text-sm">
+                    No budget items added yet.
+                  </div>
+                )}
+
+                <div className="bg-muted/20 grid grid-cols-12 gap-2 border-t px-4 py-3">
+                  <div className="col-span-5">
+                    <Input
+                      placeholder="Item description"
+                      value={newBudgetItem.description}
+                      onChange={e =>
+                        handleUpdateBudgetItemField(
+                          "description",
+                          e.target.value
+                        )
+                      }
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                  </div>
+                  <div className="col-span-2">
+                    <Input
+                      type="number"
+                      min="1"
+                      placeholder="Qty"
+                      value={newBudgetItem.quantity}
+                      onChange={e =>
+                        handleUpdateBudgetItemField(
+                          "quantity",
+                          parseInt(e.target.value)
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <Input
+                      type="number"
+                      min="0"
+                      placeholder="Unit cost"
+                      value={newBudgetItem.unitCost}
+                      onChange={e =>
+                        handleUpdateBudgetItemField(
+                          "unitCost",
+                          parseInt(e.target.value)
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="col-span-2 flex items-center">
+                    {newBudgetItem.totalCost.toLocaleString()}
+                  </div>
+                  <div className="col-span-1">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={handleAddBudgetItem}
+                    >
+                      Add
+                    </Button>
+                  </div>
+                </div>
+
+                {budgetItems.length > 0 && (
+                  <div className="bg-muted/40 flex items-center justify-end gap-2 px-4 py-2 text-sm font-medium">
+                    <div>Total Budget:</div>
+                    <div>
+                      {budgetItems
+                        .reduce((sum, item) => sum + item.totalCost, 0)
+                        .toLocaleString()}{" "}
+                      UGX
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <FormField
+                control={form.control}
+                name="budget_notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Budget Notes</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Enter additional budget notes..."
+                        className="min-h-[80px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <DialogFooter>
               <Button

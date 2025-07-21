@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { Activity } from "../types/types";
-import type { NewConceptNote, ActivityParticipant } from "../types/types";
+import type {
+  ConceptNote,
+  NewConceptNote,
+  ActivityParticipant,
+} from "../types/types";
 import { ActivityHeader } from "./details/activity-header";
 import { ActivityInformationCard } from "./cards/activity-information-card";
 import { ActivityNotesCard } from "./cards/activity-notes-card";
@@ -33,7 +37,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useDeleteActivity } from "../hooks/use-activities";
-import { createConceptNote } from "../actions/concept-notes";
+import {
+  createConceptNote,
+  updateConceptNote,
+  getConceptNote,
+  deleteConceptNote,
+} from "../actions/concept-notes";
 import { bulkUpdateActivityParticipants } from "../actions/participants";
 import { updateActivity } from "../actions";
 import { useRouter } from "next/navigation";
@@ -55,10 +64,14 @@ export function ActivityDetailsContainer({
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isConceptNoteDialogOpen, setIsConceptNoteDialogOpen] = useState(false);
+  const [editingConceptNote, setEditingConceptNote] = useState<
+    ConceptNote | undefined
+  >(undefined);
   const [isActivityReportDialogOpen, setIsActivityReportDialogOpen] =
     useState(false);
   const [isAttendanceListDialogOpen, setIsAttendanceListDialogOpen] =
     useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const deleteActivity = useDeleteActivity();
   const router = useRouter();
 
@@ -75,7 +88,38 @@ export function ActivityDetailsContainer({
   };
 
   const handleCreateConceptNote = () => {
+    setEditingConceptNote(undefined);
     setIsConceptNoteDialogOpen(true);
+  };
+
+  const handleEditConceptNote = async (conceptNoteId: string) => {
+    try {
+      const response = await getConceptNote(conceptNoteId);
+      if (response.success && response.data) {
+        setEditingConceptNote(response.data);
+        setIsConceptNoteDialogOpen(true);
+      } else {
+        toast.error("Failed to load concept note for editing.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while loading the concept note.");
+      console.error("Error loading concept note:", error);
+    }
+  };
+
+  const handleDeleteConceptNote = async (conceptNoteId: string) => {
+    try {
+      const response = await deleteConceptNote(conceptNoteId);
+      if (response.success) {
+        toast.success("Concept note deleted successfully.");
+        setRefreshKey(prevKey => prevKey + 1);
+      } else {
+        toast.error("Failed to delete concept note.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while deleting the concept note.");
+      console.error("Error deleting concept note:", error);
+    }
   };
 
   const handleCreateActivityReport = () => {
@@ -88,10 +132,21 @@ export function ActivityDetailsContainer({
 
   const handleConceptNoteSubmit = async (data: NewConceptNote) => {
     try {
-      await createConceptNote(data);
-      toast.success("Concept note created successfully.");
+      if (editingConceptNote) {
+        await updateConceptNote(editingConceptNote.id, data);
+        toast.success("Concept note updated successfully.");
+      } else {
+        await createConceptNote(data);
+        toast.success("Concept note created successfully.");
+      }
+      // Increment refresh key to force table to reload
+      setRefreshKey(prevKey => prevKey + 1);
     } catch (_error) {
-      toast.error("Failed to create concept note. Please try again.");
+      toast.error(
+        editingConceptNote
+          ? "Failed to update concept note. Please try again."
+          : "Failed to create concept note. Please try again."
+      );
     }
   };
 
@@ -196,8 +251,12 @@ export function ActivityDetailsContainer({
       {/* Concept Notes Table */}
       <div className="space-y-6">
         <ConceptNotesTable
+          key={`concept-notes-${activity.id}-${refreshKey}`}
           activityId={activity.id}
           onCreateConceptNote={handleCreateConceptNote}
+          onEditConceptNote={handleEditConceptNote}
+          onDeleteConceptNote={handleDeleteConceptNote}
+          refreshKey={refreshKey}
         />
       </div>
 
@@ -239,8 +298,14 @@ export function ActivityDetailsContainer({
       {/* Concept Note Dialog */}
       <ConceptNoteDialog
         open={isConceptNoteDialogOpen}
-        onOpenChange={setIsConceptNoteDialogOpen}
+        onOpenChange={open => {
+          setIsConceptNoteDialogOpen(open);
+          if (!open) {
+            setEditingConceptNote(undefined);
+          }
+        }}
         activityId={activity.id}
+        conceptNote={editingConceptNote}
         onSubmit={handleConceptNoteSubmit}
       />
 
