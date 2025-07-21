@@ -16,6 +16,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -38,7 +39,6 @@ import { BudgetItem, NewBudgetItem } from "../../types/budget-item";
 
 const conceptNoteSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  content: z.string().min(10, "Content must be at least 10 characters"),
   charge_code: z.string().optional(),
   activity_lead: z.string().optional(),
   submission_date: z.date().optional(),
@@ -94,7 +94,6 @@ export function ConceptNoteDialog({
     resolver: zodResolver(conceptNoteSchema),
     defaultValues: {
       title: conceptNote?.title ?? "",
-      content: conceptNote?.content ?? "",
       charge_code: conceptNote?.charge_code ?? "",
       activity_lead: conceptNote?.activity_lead ?? "",
       submission_date: conceptNote?.submission_date
@@ -165,7 +164,7 @@ export function ConceptNoteDialog({
       await onSubmit({
         activity_id: activityId,
         title: data.title,
-        content: data.content,
+        content: data.project_summary || "", // Map project_summary to content
         charge_code: data.charge_code || null,
         activity_lead: data.activity_lead || null,
         submission_date: data.submission_date || null,
@@ -188,7 +187,7 @@ export function ConceptNoteDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] w-full max-w-7xl overflow-y-auto">
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {conceptNote ? "Edit Concept Note" : "Create Concept Note"}
@@ -301,28 +300,10 @@ export function ConceptNoteDialog({
 
             <FormField
               control={form.control}
-              name="content"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Content</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Enter the main content of the concept note..."
-                      className="min-h-[120px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name="project_summary"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Project Summary</FormLabel>
+                  <FormLabel>Project Summary/Introduction</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Enter project summary..."
@@ -330,6 +311,11 @@ export function ConceptNoteDialog({
                       {...field}
                     />
                   </FormControl>
+                  <FormDescription>
+                    Provide a brief background and context of the project.
+                    Highlight the problem being addressed and the significance
+                    of the activity.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -348,6 +334,11 @@ export function ConceptNoteDialog({
                       {...field}
                     />
                   </FormControl>
+                  <FormDescription>
+                    Describe the approach, techniques, and strategies to be used
+                    in implementing the activity. Give details of the activity
+                    dates and location and or venues for the activity.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -366,6 +357,10 @@ export function ConceptNoteDialog({
                       {...field}
                     />
                   </FormControl>
+                  <FormDescription>
+                    List the resources, materials, and any other necessary
+                    requirements for the activity.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -384,6 +379,10 @@ export function ConceptNoteDialog({
                       {...field}
                     />
                   </FormControl>
+                  <FormDescription>
+                    Indicate the number of participants and how many are-Youths
+                    15-35 years, male and female, PWDs.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

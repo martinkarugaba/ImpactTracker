@@ -51,7 +51,6 @@ import { bulkUpdateActivityParticipants } from "../actions/participants";
 import { updateActivity } from "../actions";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { cn } from "@/lib/utils";
 
 interface ActivityDetailsContainerProps {
   activity: Activity;
@@ -80,31 +79,6 @@ export function ActivityDetailsContainer({
   const deleteActivity = useDeleteActivity();
   const router = useRouter();
 
-  // Get color theme based on activity type
-  const getActivityTypeColor = () => {
-    const typeColors = {
-      meeting: "from-blue-50 to-blue-100 border-blue-200",
-      workshop: "from-indigo-50 to-indigo-100 border-indigo-200",
-      training: "from-violet-50 to-violet-100 border-violet-200",
-      field_visit: "from-green-50 to-green-100 border-green-200",
-      conference: "from-amber-50 to-amber-100 border-amber-200",
-      seminar: "from-teal-50 to-teal-100 border-teal-200",
-      consultation: "from-cyan-50 to-cyan-100 border-cyan-200",
-      assessment: "from-rose-50 to-rose-100 border-rose-200",
-      monitoring: "from-emerald-50 to-emerald-100 border-emerald-200",
-      evaluation: "from-fuchsia-50 to-fuchsia-100 border-fuchsia-200",
-      community_engagement: "from-lime-50 to-lime-100 border-lime-200",
-      capacity_building: "from-sky-50 to-sky-100 border-sky-200",
-      advocacy: "from-orange-50 to-orange-100 border-orange-200",
-      research: "from-purple-50 to-purple-100 border-purple-200",
-      other: "from-gray-50 to-gray-100 border-gray-200",
-    };
-
-    return (
-      typeColors[activity.type as keyof typeof typeColors] || typeColors.other
-    );
-  };
-
   // Get accent color based on activity status
   const getStatusColor = () => {
     const statusColors = {
@@ -129,7 +103,6 @@ export function ActivityDetailsContainer({
     );
   };
 
-  const activityTypeClass = getActivityTypeColor();
   const statusColor = getStatusColor();
   const StatusIcon = statusColor.icon;
 
@@ -257,12 +230,7 @@ export function ActivityDetailsContainer({
       </div>
 
       {/* Activity Header with color based on type */}
-      <div
-        className={cn(
-          "rounded-lg border bg-gradient-to-br p-1",
-          activityTypeClass
-        )}
-      >
+      <div className="rounded-lg bg-gradient-to-br from-gray-50/50 to-transparent p-1">
         <ActivityHeader activity={activity} />
       </div>
 
@@ -325,27 +293,27 @@ export function ActivityDetailsContainer({
       <div className="grid gap-6 md:grid-cols-2">
         {/* Left Column */}
         <div className="space-y-6">
-          <div className="rounded-lg border border-blue-200 bg-gradient-to-br from-blue-50/50 to-transparent p-1">
+          <div className="rounded-lg bg-gradient-to-br from-gray-50/30 to-transparent p-1">
             <ActivityInformationCard activity={activity} />
           </div>
-          <div className="rounded-lg border border-violet-200 bg-gradient-to-br from-violet-50/50 to-transparent p-1">
+          <div className="rounded-lg bg-gradient-to-br from-gray-50/30 to-transparent p-1">
             <ActivityNotesCard activity={activity} />
           </div>
         </div>
 
         {/* Right Column */}
         <div className="space-y-6">
-          <div className="rounded-lg border border-emerald-200 bg-gradient-to-br from-emerald-50/50 to-transparent p-1">
+          <div className="rounded-lg bg-gradient-to-br from-gray-50/30 to-transparent p-1">
             <AttendanceListCard activity={activity} />
           </div>
-          <div className="rounded-lg border border-amber-200 bg-gradient-to-br from-amber-50/50 to-transparent p-1">
+          <div className="rounded-lg bg-gradient-to-br from-gray-50/30 to-transparent p-1">
             <ActivityReportCard activity={activity} />
           </div>
         </div>
       </div>
 
       {/* Concept Notes Table */}
-      <div className="rounded-lg border border-indigo-200 bg-gradient-to-br from-indigo-50/30 to-transparent p-3">
+      <div className="rounded-lg bg-gradient-to-br from-gray-50/20 to-transparent p-3">
         <ConceptNotesTable
           key={`concept-notes-${activity.id}-${refreshKey}`}
           activityId={activity.id}
