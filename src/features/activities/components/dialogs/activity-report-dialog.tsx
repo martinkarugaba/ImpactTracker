@@ -25,8 +25,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Loader2, Plus, Trash2 } from "lucide-react";
-import { Activity } from "../../types/types";
+import { Activity, ActivityReport, NewActivityReport } from "../../types/types";
 import type { FollowUpAction, NewFollowUpAction } from "../../types/types";
+import {
+  createActivityReport,
+  updateActivityReport,
+} from "../../actions/activity-reports";
 import { v4 as uuidv4 } from "uuid";
 
 const activityReportSchema = z.object({
@@ -64,44 +68,70 @@ interface ActivityReportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   activity: Activity;
-  onSubmit: (data: Partial<Activity>) => Promise<void>;
+  activityReport?: ActivityReport;
+  onSubmit: () => Promise<void>;
 }
 
 export function ActivityReportDialog({
   open,
   onOpenChange,
   activity,
+  activityReport,
   onSubmit,
 }: ActivityReportDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [followUpActions, setFollowUpActions] = useState<FollowUpAction[]>([]);
 
   const form = useForm<ActivityReportFormData>({
     resolver: zodResolver(activityReportSchema),
     defaultValues: {
-      // Basic Information - prefill from activity data
-      activityName: activity.title || "",
-      executionDate: activity.startDate
-        ? new Date(activity.startDate).toISOString().split("T")[0]
-        : "",
-      clusterName: activity.clusterName || "",
-      venue: activity.venue || "",
-      teamLeader: "",
+      // Basic Information - prefill from activity data or existing report
+      activityName: activityReport?.title || activity.title || "",
+      executionDate: activityReport?.execution_date
+        ? new Date(activityReport.execution_date).toISOString().split("T")[0]
+        : activity.startDate
+          ? new Date(activity.startDate).toISOString().split("T")[0]
+          : "",
+      clusterName: activityReport?.cluster_name || activity.clusterName || "",
+      venue: activityReport?.venue || activity.venue || "",
+      teamLeader: activityReport?.team_leader || "",
 
       // Activity Details
-      backgroundPurpose: "",
-      progressAchievements: "",
-      challengesRecommendations: "",
-      lessonsLearned: "",
+      backgroundPurpose: activityReport?.background_purpose || "",
+      progressAchievements: activityReport?.progress_achievements || "",
+      challengesRecommendations:
+        activityReport?.challenges_recommendations || "",
+      lessonsLearned: activityReport?.lessons_learned || "",
 
-      // Legacy fields
-      outcomes: activity.outcomes ?? "",
-      challenges: activity.challenges ?? "",
-      recommendations: activity.recommendations ?? "",
-      actualCost: activity.actualCost ?? undefined,
-      numberOfParticipants: activity.numberOfParticipants ?? undefined,
+      // Legacy fields - keep for compatibility but not used in new schema
+      outcomes: "",
+      challenges: "",
+      recommendations: "",
+      actualCost: activityReport?.actual_cost ?? undefined,
+      numberOfParticipants: activityReport?.number_of_participants ?? undefined,
     },
   });
+
+  // Initialize follow-up actions from existing report
+  const [followUpActions, setFollowUpActions] = useState<FollowUpAction[]>(
+    () => {
+      if (activityReport?.follow_up_actions) {
+        try {
+          return activityReport.follow_up_actions.map(actionStr => {
+            const parsed = JSON.parse(actionStr);
+            return {
+              id: parsed.id || uuidv4(),
+              action: parsed.action || "",
+              responsiblePerson: parsed.responsiblePerson || "",
+              timeline: parsed.timeline || "",
+            };
+          });
+        } catch {
+          return [];
+        }
+      }
+      return [];
+    }
+  );
 
   const handleAddFollowUpAction = useCallback(() => {
     const newAction: FollowUpAction = {
@@ -111,7 +141,7 @@ export function ActivityReportDialog({
       timeline: "",
     };
     setFollowUpActions(prev => [...prev, newAction]);
-  }, []);
+  }, [setFollowUpActions]);
 
   const handleUpdateFollowUpAction = useCallback(
     (id: string, field: keyof NewFollowUpAction, value: string) => {
@@ -121,43 +151,54 @@ export function ActivityReportDialog({
         )
       );
     },
-    []
+    [setFollowUpActions]
   );
 
-  const handleRemoveFollowUpAction = useCallback((id: string) => {
-    setFollowUpActions(prev => prev.filter(action => action.id !== id));
-  }, []);
+  const handleRemoveFollowUpAction = useCallback(
+    (id: string) => {
+      setFollowUpActions(prev => prev.filter(action => action.id !== id));
+    },
+    [setFollowUpActions]
+  );
 
   const handleSubmit = async (data: ActivityReportFormData) => {
     setIsLoading(true);
     try {
-      // Prepare the comprehensive report data
-      const reportData = {
-        id: activity.id,
-        // Legacy fields for backward compatibility
-        outcomes: data.outcomes || null,
-        challenges: data.challenges || null,
-        recommendations: data.recommendations || null,
-        actualCost: data.actualCost || null,
-        numberOfParticipants: data.numberOfParticipants || null,
-
-        // New comprehensive report fields
-        activityReport: {
-          activityName: data.activityName,
-          executionDate: data.executionDate,
-          clusterName: data.clusterName,
-          venue: data.venue,
-          teamLeader: data.teamLeader,
-          backgroundPurpose: data.backgroundPurpose,
-          progressAchievements: data.progressAchievements,
-          challengesRecommendations: data.challengesRecommendations,
-          lessonsLearned: data.lessonsLearned,
-          followUpActions: followUpActions,
-        },
+      // Prepare the activity report data
+      const reportData: NewActivityReport = {
+        activity_id: activity.id,
+        title: data.activityName,
+        execution_date: new Date(data.executionDate),
+        cluster_name: data.clusterName,
+        venue: data.venue,
+        team_leader: data.teamLeader,
+        background_purpose: data.backgroundPurpose,
+        progress_achievements: data.progressAchievements,
+        challenges_recommendations: data.challengesRecommendations,
+        lessons_learned: data.lessonsLearned,
+        follow_up_actions: followUpActions.map(action =>
+          JSON.stringify(action)
+        ),
+        actual_cost: data.actualCost || null,
+        number_of_participants: data.numberOfParticipants || null,
+        created_by: "current-user", // TODO: Get actual user ID
       };
 
-      await onSubmit(reportData);
-      onOpenChange(false);
+      let response;
+      if (activityReport) {
+        // Update existing report
+        response = await updateActivityReport(activityReport.id, reportData);
+      } else {
+        // Create new report
+        response = await createActivityReport(reportData);
+      }
+
+      if (response.success) {
+        onOpenChange(false);
+        await onSubmit(); // Refresh the reports list
+      } else {
+        console.error("Error saving activity report:", response.error);
+      }
     } catch (error) {
       console.error("Error saving activity report:", error);
     } finally {
@@ -169,9 +210,13 @@ export function ActivityReportDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] w-[95vw] max-w-[95vw] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl">Activity Report</DialogTitle>
+          <DialogTitle className="text-xl">
+            {activityReport ? "Edit Activity Report" : "Create Activity Report"}
+          </DialogTitle>
           <DialogDescription>
-            Create a comprehensive report for "{activity.title}".
+            {activityReport
+              ? `Update the comprehensive report for "${activity.title}".`
+              : `Create a comprehensive report for "${activity.title}".`}
           </DialogDescription>
         </DialogHeader>
 

@@ -66,3 +66,12 @@ export type ParticipantMetricsResponse = {
   data?: ParticipantMetrics;
   error?: string;
 };
+
+export type ParticipantFilters = {
+  search: string;
+  project: string;
+  district: string;
+  sex: string;
+  isPWD: string;
+  ageGroup: string;
+};

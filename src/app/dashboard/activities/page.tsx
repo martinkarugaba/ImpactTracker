@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import { ActivitiesContainer } from "@/features/activities/components/activities-container";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SiteHeader } from "@/features/dashboard/components/site-header";
+import { ActivitiesTableSkeleton } from "@/features/activities/components/table/activities-table-skeleton";
 import { getOrganizations } from "@/features/organizations/actions/organizations";
 import { getClusters } from "@/features/clusters/actions/clusters";
 import { getProjects } from "@/features/projects/actions/projects";
@@ -65,16 +67,7 @@ function ActivitiesPageSkeleton() {
       </div>
 
       {/* Table Skeleton */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="space-y-4">
-            <Skeleton className="h-10 w-full" />
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-16 w-full" />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <ActivitiesTableSkeleton rows={8} />
     </div>
   );
 }
@@ -140,10 +133,13 @@ export const metadata = {
 
 export default function ActivitiesPage() {
   return (
-    <div className="container mx-auto px-6 py-6">
-      <Suspense fallback={<ActivitiesPageSkeleton />}>
-        <ActivitiesPageContent />
-      </Suspense>
-    </div>
+    <>
+      <SiteHeader title="Activities" />
+      <div className="container mx-auto px-6 py-6">
+        <Suspense fallback={<ActivitiesPageSkeleton />}>
+          <ActivitiesPageContent />
+        </Suspense>
+      </div>
+    </>
   );
 }

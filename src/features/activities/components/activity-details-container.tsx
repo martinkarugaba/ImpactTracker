@@ -6,11 +6,13 @@ import type {
   ConceptNote,
   NewConceptNote,
   ActivityParticipant,
+  ActivityReport,
 } from "../types/types";
 import { ActivityHeader } from "./details/activity-header";
 import { ActivityInformationCard } from "./cards/activity-information-card";
 import { ActivityNotesCard } from "./cards/activity-notes-card";
 import { ConceptNotesTable } from "./concept-notes/concept-notes-table";
+import { ActivityReportsTable } from "./activity-reports/activity-reports-table";
 import { AttendanceListCard } from "./cards/attendance-list-card";
 import { ActivityReportCard } from "./cards/activity-report-card";
 import { Button } from "@/components/ui/button";
@@ -43,8 +45,11 @@ import {
   getConceptNote,
   deleteConceptNote,
 } from "../actions/concept-notes";
+import {
+  getActivityReport,
+  deleteActivityReport,
+} from "../actions/activity-reports";
 import { bulkUpdateActivityParticipants } from "../actions/participants";
-import { updateActivity } from "../actions";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
@@ -67,11 +72,15 @@ export function ActivityDetailsContainer({
   const [editingConceptNote, setEditingConceptNote] = useState<
     ConceptNote | undefined
   >(undefined);
+  const [editingActivityReport, setEditingActivityReport] = useState<
+    ActivityReport | undefined
+  >(undefined);
   const [isActivityReportDialogOpen, setIsActivityReportDialogOpen] =
     useState(false);
   const [isAttendanceListDialogOpen, setIsAttendanceListDialogOpen] =
     useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [activityReportsRefreshKey, setActivityReportsRefreshKey] = useState(0);
   const deleteActivity = useDeleteActivity();
   const router = useRouter();
 
@@ -123,7 +132,38 @@ export function ActivityDetailsContainer({
   };
 
   const handleCreateActivityReport = () => {
+    setEditingActivityReport(undefined);
     setIsActivityReportDialogOpen(true);
+  };
+
+  const handleEditActivityReport = async (activityReportId: string) => {
+    try {
+      const response = await getActivityReport(activityReportId);
+      if (response.success && response.data) {
+        setEditingActivityReport(response.data);
+        setIsActivityReportDialogOpen(true);
+      } else {
+        toast.error("Failed to load activity report for editing.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while loading the activity report.");
+      console.error("Error loading activity report:", error);
+    }
+  };
+
+  const handleDeleteActivityReport = async (activityReportId: string) => {
+    try {
+      const response = await deleteActivityReport(activityReportId);
+      if (response.success) {
+        toast.success("Activity report deleted successfully.");
+        setActivityReportsRefreshKey(prevKey => prevKey + 1);
+      } else {
+        toast.error("Failed to delete activity report.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while deleting the activity report.");
+      console.error("Error deleting activity report:", error);
+    }
   };
 
   const handleManageAttendance = () => {
@@ -150,10 +190,10 @@ export function ActivityDetailsContainer({
     }
   };
 
-  const handleActivityReportSubmit = async (data: Partial<Activity>) => {
+  const handleActivityReportSubmit = async () => {
     try {
-      await updateActivity(activity.id, data);
       toast.success("Activity report saved successfully.");
+      setActivityReportsRefreshKey(prevKey => prevKey + 1);
     } catch (_error) {
       toast.error("Failed to save activity report. Please try again.");
     }
@@ -278,6 +318,16 @@ export function ActivityDetailsContainer({
         refreshKey={refreshKey}
       />
 
+      {/* Activity Reports Table */}
+      <ActivityReportsTable
+        key={`activity-reports-${activity.id}-${activityReportsRefreshKey}`}
+        activityId={activity.id}
+        onCreateActivityReport={handleCreateActivityReport}
+        onEditActivityReport={handleEditActivityReport}
+        onDeleteActivityReport={handleDeleteActivityReport}
+        refreshKey={activityReportsRefreshKey}
+      />
+
       {/* Edit Activity Dialog */}
       <ActivityFormDialog
         open={isEditDialogOpen}
@@ -330,8 +380,14 @@ export function ActivityDetailsContainer({
       {/* Activity Report Dialog */}
       <ActivityReportDialog
         open={isActivityReportDialogOpen}
-        onOpenChange={setIsActivityReportDialogOpen}
+        onOpenChange={open => {
+          setIsActivityReportDialogOpen(open);
+          if (!open) {
+            setEditingActivityReport(undefined);
+          }
+        }}
         activity={activity}
+        activityReport={editingActivityReport}
         onSubmit={handleActivityReportSubmit}
       />
 

@@ -87,7 +87,7 @@ export function ActivityHeader({ activity }: ActivityHeaderProps) {
         <div className="flex items-start justify-between">
           <div className="space-y-3">
             <div className="space-y-2">
-              <CardTitle className="text-3xl font-bold">
+              <CardTitle className="text-2xl font-bold">
                 {activity.title}
               </CardTitle>
               <div className="flex items-center gap-2">

@@ -6,15 +6,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ActionCell } from "./action-cell";
 import { LocationNameCell, LocationType } from "./location-name-cell";
 
-interface GetColumnsProps {
+interface GetParticipantColumnsProps {
   onEdit: (participant: Participant) => void;
   onDelete: (participant: Participant) => void;
+  onView: (participant: Participant) => void;
 }
 
-export function getColumns({
+export function getParticipantColumns({
   onEdit,
   onDelete,
-}: GetColumnsProps): ColumnDef<Participant>[] {
+  onView,
+}: GetParticipantColumnsProps): ColumnDef<Participant>[] {
   return [
     {
       id: "select",
@@ -195,6 +197,7 @@ export function getColumns({
           participant={row.original}
           onEdit={onEdit}
           onDelete={onDelete}
+          onView={onView}
         />
       ),
     },

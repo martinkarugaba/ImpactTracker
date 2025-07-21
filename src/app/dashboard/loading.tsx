@@ -1,203 +1,175 @@
 "use client";
 
 import { motion } from "motion/react";
-import {
-  ChartBar,
-  Globe,
-  BarChart3,
-  FileBarChart,
-  Activity,
-  Map,
-  Target,
-} from "lucide-react";
+import { BarChart3, TrendingUp, Activity } from "lucide-react";
 
 export default function DashboardLoading() {
   return (
-    <div className="bg-background/50 flex h-screen w-full flex-col items-center justify-center">
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="bg-card relative flex flex-col items-center gap-8 rounded-xl p-12 shadow-xl"
-      >
-        {/* Animated KPI Logo with pulse effect */}
+    <div className="from-background via-background to-muted/20 flex min-h-screen w-full items-center justify-center bg-gradient-to-br">
+      <div className="flex flex-col items-center space-y-8">
+        {/* Main logo with sophisticated animation */}
         <motion.div
-          className="relative h-28 w-28"
-          initial={{ y: 0 }}
-          animate={{ y: [0, -8, 0] }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            repeatType: "reverse",
-            ease: "easeInOut",
-          }}
+          className="relative"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
         >
           <motion.div
-            className="bg-primary/5 absolute inset-0 rounded-full"
-            initial={{ scale: 1, opacity: 0.5 }}
-            animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.2, 0.5] }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              repeatType: "reverse",
-              ease: "easeInOut",
-            }}
-          />
-          <motion.div
-            className="bg-primary/10 absolute inset-0 rounded-full"
-            initial={{ scale: 0.9 }}
-            animate={{ scale: [0.9, 1.1, 0.9] }}
-            transition={{
-              duration: 2.5,
-              repeat: Infinity,
-              repeatType: "reverse",
-              ease: "easeInOut",
-            }}
-          />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <FileBarChart className="text-primary h-14 w-14" />
-          </div>
-        </motion.div>
-
-        {/* Loading Text with typewriter effect */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          className="flex flex-col items-center gap-3 text-center"
-        >
-          <h2 className="text-primary text-2xl font-bold tracking-tight">
-            Loading KPI Dashboard
-          </h2>
-          <motion.p
-            className="text-muted-foreground"
-            initial={{ opacity: 0.5 }}
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              repeatType: "reverse",
-              ease: "easeInOut",
-            }}
-          >
-            Preparing your insights and analytics...
-          </motion.p>
-        </motion.div>
-
-        {/* Circular animated icons */}
-        <motion.div
-          className="relative mt-4 h-32 w-32"
-          initial={{ rotate: 0 }}
-          animate={{ rotate: 360 }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-        >
-          {[Activity, Globe, BarChart3, Map, Target].map((Icon, index) => {
-            const angle = index * (360 / 5) * (Math.PI / 180);
-            const x = Math.cos(angle) * 60;
-            const y = Math.sin(angle) * 60;
-
-            return (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                  delay: 0.2 + index * 0.15,
-                  duration: 0.5,
-                }}
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-                }}
-                className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full p-2"
-              >
-                <motion.div
-                  animate={{
-                    scale: [1, 1.15, 1],
-                    rotate: [0, 0, 0],
-                  }}
-                  transition={{
-                    duration: 2 + index * 0.3,
-                    delay: index * 0.2,
-                    repeat: Infinity,
-                    repeatType: "loop",
-                    ease: "easeInOut",
-                  }}
-                >
-                  <Icon className="text-primary h-6 w-6" />
-                </motion.div>
-              </motion.div>
-            );
-          })}
-
-          {/* Center icon */}
-          <motion.div
-            className="bg-primary/5 absolute top-1/2 left-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full"
+            className="from-primary to-primary/80 relative flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br shadow-lg"
             animate={{
-              scale: [1, 1.1, 1],
-              backgroundColor: [
-                "hsl(var(--primary) / 0.05)",
-                "hsl(var(--primary) / 0.1)",
-                "hsl(var(--primary) / 0.05)",
+              boxShadow: [
+                "0 4px 20px rgba(0, 0, 0, 0.1)",
+                "0 8px 40px rgba(var(--primary-rgb), 0.2)",
+                "0 4px 20px rgba(0, 0, 0, 0.1)",
               ],
             }}
             transition={{
-              duration: 3,
+              duration: 2,
               repeat: Infinity,
               ease: "easeInOut",
             }}
           >
-            <ChartBar className="text-primary h-7 w-7" />
+            <motion.div
+              animate={{ rotate: [0, 360] }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            >
+              <BarChart3 className="text-primary-foreground h-10 w-10" />
+            </motion.div>
           </motion.div>
+
+          {/* Floating particles */}
+          {[...Array(3)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="bg-primary/60 absolute h-2 w-2 rounded-full"
+              style={{
+                top: `${20 + i * 15}%`,
+                left: `${85 + i * 5}%`,
+              }}
+              animate={{
+                y: [-10, -20, -10],
+                opacity: [0.6, 1, 0.6],
+                scale: [1, 1.2, 1],
+              }}
+              transition={{
+                duration: 2 + i * 0.5,
+                repeat: Infinity,
+                delay: i * 0.3,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
         </motion.div>
 
-        {/* Loading progress bar with shine effect */}
-        <div className="mt-8 w-64 overflow-hidden">
-          <div className="mb-2 flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Loading dashboard</span>
-            <motion.span
-              className="text-primary font-medium"
-              initial={{ opacity: 0.7 }}
-              animate={{ opacity: [0.7, 1, 0.7] }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            >
-              Please wait...
-            </motion.span>
-          </div>
-          <motion.div className="bg-primary/10 h-1.5 w-full overflow-hidden rounded-full">
-            <motion.div
-              className="bg-primary h-full"
-              initial={{ width: "0%" }}
-              animate={{ width: "100%" }}
-              transition={{
-                duration: 2.8,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            >
+        {/* Loading text with smooth entrance */}
+        <motion.div
+          className="text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
+        >
+          <h1 className="text-foreground mb-2 text-2xl font-semibold tracking-tight">
+            Loading Dashboard
+          </h1>
+          <motion.p
+            className="text-muted-foreground"
+            animate={{ opacity: [0.7, 1, 0.7] }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
+            Preparing your analytics experience
+          </motion.p>
+        </motion.div>
+
+        {/* Modern progress indicator */}
+        <motion.div
+          className="relative"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.6, duration: 0.6, ease: "easeOut" }}
+        >
+          <div className="flex space-x-1">
+            {[...Array(5)].map((_, i) => (
               <motion.div
-                className="h-full w-20 bg-white/20"
-                animate={{ x: ["0%", "250%"] }}
+                key={i}
+                className="bg-primary/30 h-3 w-3 rounded-full"
+                animate={{
+                  backgroundColor: [
+                    "hsl(var(--primary) / 0.3)",
+                    "hsl(var(--primary) / 1)",
+                    "hsl(var(--primary) / 0.3)",
+                  ],
+                  scale: [1, 1.2, 1],
+                }}
                 transition={{
-                  duration: 1.4,
+                  duration: 1.5,
                   repeat: Infinity,
+                  delay: i * 0.2,
                   ease: "easeInOut",
                 }}
               />
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Floating feature icons */}
+        <motion.div
+          className="flex space-x-8"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9, duration: 0.8, ease: "easeOut" }}
+        >
+          {[
+            { icon: TrendingUp, delay: 0 },
+            { icon: Activity, delay: 0.2 },
+            { icon: BarChart3, delay: 0.4 },
+          ].map(({ icon: Icon, delay }, i) => (
+            <motion.div
+              key={i}
+              className="bg-muted/50 flex h-12 w-12 items-center justify-center rounded-xl backdrop-blur-sm"
+              animate={{
+                y: [0, -8, 0],
+                opacity: [0.7, 1, 0.7],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                delay: delay,
+                ease: "easeInOut",
+              }}
+            >
+              <Icon className="text-muted-foreground h-5 w-5" />
             </motion.div>
-          </motion.div>
-        </div>
-      </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Subtle loading bar */}
+        <motion.div
+          className="bg-muted/30 w-48 overflow-hidden rounded-full"
+          initial={{ opacity: 0, width: 0 }}
+          animate={{ opacity: 1, width: "12rem" }}
+          transition={{ delay: 1.2, duration: 0.8, ease: "easeOut" }}
+        >
+          <motion.div
+            className="from-primary/60 to-primary h-1 bg-gradient-to-r"
+            animate={{
+              x: ["-100%", "100%"],
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        </motion.div>
+      </div>
     </div>
   );
 }
