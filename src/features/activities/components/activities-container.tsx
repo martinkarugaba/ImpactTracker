@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { ReusableDataTable } from "@/components/ui/reusable-data-table";
@@ -38,6 +39,7 @@ export function ActivitiesContainer({
   clusters = [],
   projects = [],
 }: ActivitiesContainerProps) {
+  const router = useRouter();
   const [filters, setFilters] = useState<ActivityFilters>({
     search: "",
     type: "",
@@ -91,8 +93,7 @@ export function ActivitiesContainer({
   };
 
   const handleView = (activity: Activity) => {
-    // For now, just show a toast - could implement a detailed view modal
-    toast.success(`Viewing details for "${activity.title}"`);
+    router.push(`/dashboard/activities/${activity.id}`);
   };
 
   const confirmDelete = async () => {

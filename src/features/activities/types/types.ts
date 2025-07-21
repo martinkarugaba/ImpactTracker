@@ -1,5 +1,9 @@
 import { type InferSelectModel } from "drizzle-orm";
-import { type activities, type activityParticipants } from "@/lib/db/schema";
+import {
+  type activities,
+  type activityParticipants,
+  type conceptNotes,
+} from "@/lib/db/schema";
 
 export type Activity = InferSelectModel<typeof activities> & {
   organizationName?: string;
@@ -14,6 +18,13 @@ export type ActivityParticipant = InferSelectModel<
   participantName?: string;
   participantEmail?: string;
 };
+
+export type ConceptNote = InferSelectModel<typeof conceptNotes>;
+
+export type NewConceptNote = Omit<
+  ConceptNote,
+  "id" | "created_at" | "updated_at"
+>;
 
 export type NewActivity = Omit<
   Activity,

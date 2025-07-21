@@ -73,9 +73,6 @@ export function getActivityColumns({
         return (
           <div className="flex flex-col space-y-1">
             <div className="font-medium">{activity.title}</div>
-            <div className="text-muted-foreground line-clamp-2 text-sm">
-              {activity.description}
-            </div>
           </div>
         );
       },
