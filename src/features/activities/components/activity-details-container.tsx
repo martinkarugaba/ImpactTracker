@@ -21,6 +21,10 @@ import {
   FileText,
   Users,
   ClipboardList,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  CalendarCheck,
 } from "lucide-react";
 import { ActivityFormDialog } from "./forms/activity-form-dialog";
 import { ConceptNoteDialog } from "./dialogs/concept-note-dialog";
@@ -47,6 +51,7 @@ import { bulkUpdateActivityParticipants } from "../actions/participants";
 import { updateActivity } from "../actions";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { cn } from "@/lib/utils";
 
 interface ActivityDetailsContainerProps {
   activity: Activity;
@@ -74,6 +79,59 @@ export function ActivityDetailsContainer({
   const [refreshKey, setRefreshKey] = useState(0);
   const deleteActivity = useDeleteActivity();
   const router = useRouter();
+
+  // Get color theme based on activity type
+  const getActivityTypeColor = () => {
+    const typeColors = {
+      meeting: "from-blue-50 to-blue-100 border-blue-200",
+      workshop: "from-indigo-50 to-indigo-100 border-indigo-200",
+      training: "from-violet-50 to-violet-100 border-violet-200",
+      field_visit: "from-green-50 to-green-100 border-green-200",
+      conference: "from-amber-50 to-amber-100 border-amber-200",
+      seminar: "from-teal-50 to-teal-100 border-teal-200",
+      consultation: "from-cyan-50 to-cyan-100 border-cyan-200",
+      assessment: "from-rose-50 to-rose-100 border-rose-200",
+      monitoring: "from-emerald-50 to-emerald-100 border-emerald-200",
+      evaluation: "from-fuchsia-50 to-fuchsia-100 border-fuchsia-200",
+      community_engagement: "from-lime-50 to-lime-100 border-lime-200",
+      capacity_building: "from-sky-50 to-sky-100 border-sky-200",
+      advocacy: "from-orange-50 to-orange-100 border-orange-200",
+      research: "from-purple-50 to-purple-100 border-purple-200",
+      other: "from-gray-50 to-gray-100 border-gray-200",
+    };
+
+    return (
+      typeColors[activity.type as keyof typeof typeColors] || typeColors.other
+    );
+  };
+
+  // Get accent color based on activity status
+  const getStatusColor = () => {
+    const statusColors = {
+      planned: { bg: "bg-blue-500", text: "text-blue-800", icon: Clock },
+      ongoing: { bg: "bg-amber-500", text: "text-amber-800", icon: Clock },
+      completed: {
+        bg: "bg-green-500",
+        text: "text-green-800",
+        icon: CheckCircle,
+      },
+      cancelled: { bg: "bg-red-500", text: "text-red-800", icon: AlertCircle },
+      postponed: {
+        bg: "bg-gray-500",
+        text: "text-gray-800",
+        icon: CalendarCheck,
+      },
+    };
+
+    return (
+      statusColors[activity.status as keyof typeof statusColors] ||
+      statusColors.planned
+    );
+  };
+
+  const activityTypeClass = getActivityTypeColor();
+  const statusColor = getStatusColor();
+  const StatusIcon = statusColor.icon;
 
   const handleEdit = () => {
     setIsEditDialogOpen(true);
@@ -198,19 +256,37 @@ export function ActivityDetailsContainer({
         </Button>
       </div>
 
-      {/* Activity Header */}
-      <ActivityHeader activity={activity} />
+      {/* Activity Header with color based on type */}
+      <div
+        className={cn(
+          "rounded-lg border bg-gradient-to-br p-1",
+          activityTypeClass
+        )}
+      >
+        <ActivityHeader activity={activity} />
+      </div>
+
+      {/* Status Indicator */}
+      <div className="flex items-center gap-2">
+        <div className="flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-800">
+          <StatusIcon className="mr-1.5 h-4 w-4" />
+          {activity.status.charAt(0).toUpperCase() + activity.status.slice(1)}
+        </div>
+      </div>
 
       {/* Action Buttons */}
       <div className="flex items-center gap-3">
-        <Button onClick={handleEdit} variant="outline">
+        <Button
+          onClick={handleEdit}
+          className="bg-blue-600 text-white hover:bg-blue-700"
+        >
           <Edit className="mr-2 h-4 w-4" />
           Edit Activity
         </Button>
         <Button
           onClick={handleDelete}
           variant="outline"
-          className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+          className="border-red-300 text-red-700 hover:bg-red-50 hover:text-red-800"
         >
           <Trash2 className="mr-2 h-4 w-4" />
           Delete Activity
@@ -219,15 +295,27 @@ export function ActivityDetailsContainer({
 
       {/* Additional Action Buttons */}
       <div className="flex flex-wrap items-center gap-3">
-        <Button onClick={handleCreateConceptNote} variant="outline">
+        <Button
+          onClick={handleCreateConceptNote}
+          className="border-indigo-300 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 hover:text-indigo-800"
+          variant="outline"
+        >
           <FileText className="mr-2 h-4 w-4" />
           Create Concept Note
         </Button>
-        <Button onClick={handleCreateActivityReport} variant="outline">
+        <Button
+          onClick={handleCreateActivityReport}
+          className="border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800"
+          variant="outline"
+        >
           <ClipboardList className="mr-2 h-4 w-4" />
           Update Activity Report
         </Button>
-        <Button onClick={handleManageAttendance} variant="outline">
+        <Button
+          onClick={handleManageAttendance}
+          className="border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 hover:text-amber-800"
+          variant="outline"
+        >
           <Users className="mr-2 h-4 w-4" />
           Manage Attendance
         </Button>
@@ -237,19 +325,27 @@ export function ActivityDetailsContainer({
       <div className="grid gap-6 md:grid-cols-2">
         {/* Left Column */}
         <div className="space-y-6">
-          <ActivityInformationCard activity={activity} />
-          <ActivityNotesCard activity={activity} />
+          <div className="rounded-lg border border-blue-200 bg-gradient-to-br from-blue-50/50 to-transparent p-1">
+            <ActivityInformationCard activity={activity} />
+          </div>
+          <div className="rounded-lg border border-violet-200 bg-gradient-to-br from-violet-50/50 to-transparent p-1">
+            <ActivityNotesCard activity={activity} />
+          </div>
         </div>
 
         {/* Right Column */}
         <div className="space-y-6">
-          <AttendanceListCard activity={activity} />
-          <ActivityReportCard activity={activity} />
+          <div className="rounded-lg border border-emerald-200 bg-gradient-to-br from-emerald-50/50 to-transparent p-1">
+            <AttendanceListCard activity={activity} />
+          </div>
+          <div className="rounded-lg border border-amber-200 bg-gradient-to-br from-amber-50/50 to-transparent p-1">
+            <ActivityReportCard activity={activity} />
+          </div>
         </div>
       </div>
 
       {/* Concept Notes Table */}
-      <div className="space-y-6">
+      <div className="rounded-lg border border-indigo-200 bg-gradient-to-br from-indigo-50/30 to-transparent p-3">
         <ConceptNotesTable
           key={`concept-notes-${activity.id}-${refreshKey}`}
           activityId={activity.id}
