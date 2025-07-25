@@ -4,7 +4,7 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { type Activity } from "../../types/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,21 +37,42 @@ export function getActivityColumns({
 }: ActivityColumnsProps): ColumnDef<Activity>[] {
   return [
     {
+      id: "select",
+      header: ({ table }) => (
+        <div className="flex h-10 w-10 items-center justify-center">
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Select all"
+            className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+          />
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="flex h-10 w-10 items-center justify-center">
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={value => row.toggleSelected(!!value)}
+            aria-label="Select row"
+            className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+          />
+        </div>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      size: 40,
+    },
+    {
       accessorKey: "title",
       header: "Title",
       cell: ({ row }) => {
         const activity = row.original;
         return (
           <div className="flex flex-col space-y-1">
-            <Link
-              href={`/dashboard/activities/${activity.id}`}
-              className="text-primary font-medium hover:underline"
-            >
-              {activity.title}
-            </Link>
-            <div className="text-muted-foreground line-clamp-2 text-sm">
-              {activity.description}
-            </div>
+            <div className="font-medium">{activity.title}</div>
           </div>
         );
       },

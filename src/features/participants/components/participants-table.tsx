@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   AddParticipantDialog,
   BulkDeleteButton,
-  getColumns,
+  getParticipantColumns,
   ParticipantTableFilters,
 } from "./table";
 import { ImportParticipants } from "./import/import-participants";
@@ -106,7 +106,7 @@ export function ParticipantsTable({
   onPageSizeChange,
 }: ParticipantsTableProps) {
   const [selectedRows, setSelectedRows] = useState<Participant[]>([]);
-  const columns = getColumns({ onEdit, onDelete });
+  const columns = getParticipantColumns({ onEdit, onDelete, onView: onEdit });
   const [search, setSearch] = useState(searchTerm || "");
 
   const handleSearchChange = (value: string) => {

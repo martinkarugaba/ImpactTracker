@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { ActivityTable } from "./table/activity-table";
+import { ReusableDataTable } from "@/components/ui/reusable-data-table";
 import { getActivityColumns } from "./table/columns";
 import { ActivityFormDialog } from "./forms/activity-form-dialog";
 import { ActivityFiltersComponent } from "./filters/activity-filters";
@@ -221,10 +221,16 @@ export function ActivitiesContainer({
       />
 
       {/* Activities Table */}
-      <ActivityTable
+      <ReusableDataTable
         columns={columns}
         data={activities}
-        searchPlaceholder="Search activities..."
+        filterColumn="title"
+        filterPlaceholder="Search activities..."
+        showColumnToggle={true}
+        showPagination={true}
+        showRowSelection={true}
+        pageSize={10}
+        onRowClick={handleView}
       />
 
       {/* Create/Edit Dialog */}

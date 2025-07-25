@@ -1,28 +1,16 @@
 import { type InferSelectModel } from "drizzle-orm";
-import { type activities, type activityParticipants } from "@/lib/db/schema";
+import {
+  type activities,
+  type activityParticipants,
+  type conceptNotes,
+  type activityReports,
+} from "@/lib/db/schema";
 
 export type Activity = InferSelectModel<typeof activities> & {
   organizationName?: string;
   projectName?: string;
   clusterName?: string;
   participantCount?: number;
-  // Additional fields for enhanced functionality
-  conceptNote?: string;
-  activityReport?: string;
-  attendanceCount?: number;
-  attendanceList?: AttendanceRecord[];
-};
-
-export type AttendanceRecord = {
-  id: string;
-  name: string;
-  email: string;
-  attended: boolean;
-  role?: string;
-  organization?: string;
-  checkInTime?: Date;
-  checkOutTime?: Date;
-  notes?: string;
 };
 
 export type ActivityParticipant = InferSelectModel<
@@ -31,6 +19,13 @@ export type ActivityParticipant = InferSelectModel<
   participantName?: string;
   participantEmail?: string;
 };
+
+export type ConceptNote = InferSelectModel<typeof conceptNotes>;
+
+export type NewConceptNote = Omit<
+  ConceptNote,
+  "id" | "created_at" | "updated_at"
+>;
 
 export type NewActivity = Omit<
   Activity,
@@ -147,3 +142,34 @@ export type ActivityType = (typeof ACTIVITY_TYPES)[number];
 export type ActivityStatus = (typeof ACTIVITY_STATUSES)[number];
 export type AttendanceStatus = (typeof ATTENDANCE_STATUSES)[number];
 export type ParticipantRole = (typeof PARTICIPANT_ROLES)[number];
+
+// Activity Report Types from Database Schema
+export type ActivityReport = InferSelectModel<typeof activityReports>;
+
+export type NewActivityReport = Omit<
+  ActivityReport,
+  "id" | "created_at" | "updated_at"
+>;
+
+// Follow-up Action Types for UI
+export type FollowUpAction = {
+  id: string;
+  action: string;
+  responsiblePerson: string;
+  timeline: string;
+};
+
+export type NewFollowUpAction = Omit<FollowUpAction, "id">;
+
+// Activity Report Response Types
+export type ActivityReportResponse = {
+  success: boolean;
+  data?: ActivityReport;
+  error?: string;
+};
+
+export type ActivityReportsResponse = {
+  success: boolean;
+  data?: ActivityReport[];
+  error?: string;
+};

@@ -2,10 +2,11 @@ import { Suspense } from "react";
 import { ActivitiesContainer } from "@/features/activities/components/activities-container";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SiteHeader } from "@/features/dashboard/components/site-header";
+import { ActivitiesTableSkeleton } from "@/features/activities/components/table/activities-table-skeleton";
 import { getOrganizations } from "@/features/organizations/actions/organizations";
 import { getClusters } from "@/features/clusters/actions/clusters";
 import { getProjects } from "@/features/projects/actions/projects";
-import { SiteHeader } from "@/features/dashboard/components/site-header";
 
 // Loading component for the page
 function ActivitiesPageSkeleton() {
@@ -66,16 +67,7 @@ function ActivitiesPageSkeleton() {
       </div>
 
       {/* Table Skeleton */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="space-y-4">
-            <Skeleton className="h-10 w-full" />
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-16 w-full" />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <ActivitiesTableSkeleton rows={8} />
     </div>
   );
 }
@@ -83,33 +75,12 @@ function ActivitiesPageSkeleton() {
 // Main activities page content
 async function ActivitiesPageContent() {
   try {
-    // Fetch all required data in parallel with better error handling
+    // Fetch all required data in parallel
     const [organizationsResult, clustersResult, projectsResult] =
       await Promise.allSettled([
-        getOrganizations().catch(error => {
-          console.warn("Failed to fetch organizations:", error);
-          return {
-            success: false,
-            data: [],
-            error: "Organizations unavailable",
-          };
-        }),
-        getClusters().catch(error => {
-          console.warn("Failed to fetch clusters:", error);
-          return {
-            success: false,
-            data: [],
-            error: "Clusters unavailable",
-          };
-        }),
-        getProjects().catch(error => {
-          console.warn("Failed to fetch projects:", error);
-          return {
-            success: false,
-            data: [],
-            error: "Projects unavailable",
-          };
-        }),
+        getOrganizations(),
+        getClusters().catch(() => ({ success: false, data: [] })), // Graceful fallback for optional data
+        getProjects().catch(() => ({ success: false, data: [] })), // Graceful fallback for optional data
       ]);
 
     // Extract organizations (required)
@@ -132,14 +103,11 @@ async function ActivitiesPageContent() {
         : [];
 
     return (
-      <>
-        <SiteHeader title="Activities" />
-        <ActivitiesContainer
-          organizations={organizations}
-          clusters={clusters}
-          projects={projects}
-        />
-      </>
+      <ActivitiesContainer
+        organizations={organizations}
+        clusters={clusters}
+        projects={projects}
+      />
     );
   } catch (error) {
     console.error("Error loading activities page data:", error);
@@ -149,11 +117,7 @@ async function ActivitiesPageContent() {
         <div className="text-center">
           <h3 className="text-lg font-semibold">Error loading activities</h3>
           <p className="text-muted-foreground mt-2">
-            Failed to load page data. This might be a temporary database
-            connectivity issue.
-          </p>
-          <p className="text-muted-foreground mt-1">
-            Please check your internet connection and try refreshing the page.
+            Failed to load page data. Please try refreshing the page.
           </p>
         </div>
       </div>
@@ -169,10 +133,13 @@ export const metadata = {
 
 export default function ActivitiesPage() {
   return (
-    <div className="container mx-auto px-6 py-6">
-      <Suspense fallback={<ActivitiesPageSkeleton />}>
-        <ActivitiesPageContent />
-      </Suspense>
-    </div>
+    <>
+      <SiteHeader title="Activities" />
+      <div className="container mx-auto px-6 py-6">
+        <Suspense fallback={<ActivitiesPageSkeleton />}>
+          <ActivitiesPageContent />
+        </Suspense>
+      </div>
+    </>
   );
 }

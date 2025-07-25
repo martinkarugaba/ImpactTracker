@@ -1,586 +1,334 @@
 "use client";
 
 import { useState } from "react";
-import { Activity, AttendanceRecord } from "../types/types";
-import { Badge } from "@/components/ui/badge";
+import { Activity } from "../types/types";
+import type {
+  ConceptNote,
+  NewConceptNote,
+  ActivityParticipant,
+  ActivityReport,
+} from "../types/types";
+import { ActivityHeader } from "./details/activity-header";
+import { ActivityInformationCard } from "./cards/activity-information-card";
+import { ActivityNotesCard } from "./cards/activity-notes-card";
+import { ConceptNotesTable } from "./concept-notes/concept-notes-table";
+import { ActivityReportsTable } from "./activity-reports/activity-reports-table";
+import { AttendanceListCard } from "./cards/attendance-list-card";
+import { ActivityReportCard } from "./cards/activity-report-card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  CalendarIcon,
-  MapPinIcon,
-  DollarSignIcon,
-  UsersIcon,
-  EditIcon,
-  ArrowLeftIcon,
-  ClockIcon,
-  BuildingIcon,
-  FolderIcon,
-  TargetIcon,
-  FileTextIcon,
-  DownloadIcon,
+  Edit,
+  Trash2,
+  ArrowLeft,
+  FileText,
+  Users,
+  ClipboardList,
 } from "lucide-react";
-import { format } from "date-fns";
 import { ActivityFormDialog } from "./forms/activity-form-dialog";
 import { ConceptNoteDialog } from "./dialogs/concept-note-dialog";
 import { ActivityReportDialog } from "./dialogs/activity-report-dialog";
-import { AttendanceDialog } from "./dialogs/attendance-dialog";
+import { AttendanceListDialog } from "./dialogs/attendance-list-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useDeleteActivity } from "../hooks/use-activities";
+import {
+  createConceptNote,
+  updateConceptNote,
+  getConceptNote,
+  deleteConceptNote,
+} from "../actions/concept-notes";
+import {
+  getActivityReport,
+  deleteActivityReport,
+} from "../actions/activity-reports";
+import { bulkUpdateActivityParticipants } from "../actions/participants";
 import { useRouter } from "next/navigation";
-import { useActivities } from "../hooks/use-activities";
-import { updateActivityConceptNote, updateActivityReport } from "../actions";
-import { toast } from "react-hot-toast";
+import toast from "react-hot-toast";
+
 interface ActivityDetailsContainerProps {
   activity: Activity;
-  organizations: Array<{ id: string; name: string }>;
+  organizations?: Array<{ id: string; name: string }>;
   clusters?: Array<{ id: string; name: string }>;
   projects?: Array<{ id: string; name: string }>;
 }
 
 export function ActivityDetailsContainer({
   activity,
-  organizations,
+  organizations = [],
   clusters = [],
   projects = [],
 }: ActivityDetailsContainerProps) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isConceptNoteDialogOpen, setIsConceptNoteDialogOpen] = useState(false);
+  const [editingConceptNote, setEditingConceptNote] = useState<
+    ConceptNote | undefined
+  >(undefined);
+  const [editingActivityReport, setEditingActivityReport] = useState<
+    ActivityReport | undefined
+  >(undefined);
   const [isActivityReportDialogOpen, setIsActivityReportDialogOpen] =
     useState(false);
-  const [isAttendanceDialogOpen, setIsAttendanceDialogOpen] = useState(false);
+  const [isAttendanceListDialogOpen, setIsAttendanceListDialogOpen] =
+    useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [activityReportsRefreshKey, setActivityReportsRefreshKey] = useState(0);
+  const deleteActivity = useDeleteActivity();
   const router = useRouter();
-  const { refetch } = useActivities();
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
-      case "ongoing":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
-      case "planned":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
-      case "cancelled":
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
-    }
+  const handleEdit = () => {
+    setIsEditDialogOpen(true);
   };
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case "training":
-        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300";
-      case "workshop":
-        return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300";
-      case "meeting":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
-      case "field_visit":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
-    }
+  const handleDelete = () => {
+    setIsDeleteDialogOpen(true);
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
+  const handleGoBack = () => {
+    router.back();
   };
 
-  const getOrganizationName = (orgId: string) => {
-    const org = organizations.find(o => o.id === orgId);
-    return org?.name || "Unknown Organization";
+  const handleCreateConceptNote = () => {
+    setEditingConceptNote(undefined);
+    setIsConceptNoteDialogOpen(true);
   };
 
-  const getClusterName = (clusterId: string | null) => {
-    if (!clusterId) return null;
-    const cluster = clusters.find(c => c.id === clusterId);
-    return cluster?.name || "Unknown Cluster";
-  };
-
-  const getProjectName = (projectId: string | null) => {
-    if (!projectId) return null;
-    const project = projects.find(p => p.id === projectId);
-    return project?.name || "Unknown Project";
-  };
-
-  // Handler functions for dialogs
-  const handleConceptNoteSave = async (conceptNote: string) => {
+  const handleEditConceptNote = async (conceptNoteId: string) => {
     try {
-      const result = await updateActivityConceptNote(activity.id, conceptNote);
-      if (result.success) {
-        toast.success("Concept note updated successfully");
-        setIsConceptNoteDialogOpen(false);
-        refetch();
+      const response = await getConceptNote(conceptNoteId);
+      if (response.success && response.data) {
+        setEditingConceptNote(response.data);
+        setIsConceptNoteDialogOpen(true);
       } else {
-        toast.error(result.error || "Failed to update concept note");
+        toast.error("Failed to load concept note for editing.");
       }
-    } catch (_error) {
-      toast.error("Failed to update concept note");
+    } catch (error) {
+      toast.error("An error occurred while loading the concept note.");
+      console.error("Error loading concept note:", error);
     }
   };
 
-  const handleActivityReportSave = async (reportData: {
-    status: string;
-    outcomes: string;
-    challenges: string;
-    recommendations: string;
-    actualCost?: number;
-  }) => {
+  const handleDeleteConceptNote = async (conceptNoteId: string) => {
     try {
-      const result = await updateActivityReport(activity.id, reportData);
-      if (result.success) {
-        toast.success("Activity report updated successfully");
-        setIsActivityReportDialogOpen(false);
-        refetch();
+      const response = await deleteConceptNote(conceptNoteId);
+      if (response.success) {
+        toast.success("Concept note deleted successfully.");
+        setRefreshKey(prevKey => prevKey + 1);
       } else {
-        toast.error(result.error || "Failed to update activity report");
+        toast.error("Failed to delete concept note.");
       }
-    } catch (_error) {
-      toast.error("Failed to update activity report");
+    } catch (error) {
+      toast.error("An error occurred while deleting the concept note.");
+      console.error("Error deleting concept note:", error);
     }
   };
 
-  const handleAttendanceSave = async (_attendanceList: AttendanceRecord[]) => {
+  const handleCreateActivityReport = () => {
+    setEditingActivityReport(undefined);
+    setIsActivityReportDialogOpen(true);
+  };
+
+  const handleEditActivityReport = async (activityReportId: string) => {
     try {
-      // The attendance dialog will handle the CRUD operations internally
-      toast.success("Attendance updated successfully");
-      setIsAttendanceDialogOpen(false);
-      refetch();
+      const response = await getActivityReport(activityReportId);
+      if (response.success && response.data) {
+        setEditingActivityReport(response.data);
+        setIsActivityReportDialogOpen(true);
+      } else {
+        toast.error("Failed to load activity report for editing.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while loading the activity report.");
+      console.error("Error loading activity report:", error);
+    }
+  };
+
+  const handleDeleteActivityReport = async (activityReportId: string) => {
+    try {
+      const response = await deleteActivityReport(activityReportId);
+      if (response.success) {
+        toast.success("Activity report deleted successfully.");
+        setActivityReportsRefreshKey(prevKey => prevKey + 1);
+      } else {
+        toast.error("Failed to delete activity report.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while deleting the activity report.");
+      console.error("Error deleting activity report:", error);
+    }
+  };
+
+  const handleManageAttendance = () => {
+    setIsAttendanceListDialogOpen(true);
+  };
+
+  const handleConceptNoteSubmit = async (data: NewConceptNote) => {
+    try {
+      if (editingConceptNote) {
+        await updateConceptNote(editingConceptNote.id, data);
+        toast.success("Concept note updated successfully.");
+      } else {
+        await createConceptNote(data);
+        toast.success("Concept note created successfully.");
+      }
+      // Increment refresh key to force table to reload
+      setRefreshKey(prevKey => prevKey + 1);
     } catch (_error) {
-      toast.error("Failed to update attendance");
+      toast.error(
+        editingConceptNote
+          ? "Failed to update concept note. Please try again."
+          : "Failed to create concept note. Please try again."
+      );
+    }
+  };
+
+  const handleActivityReportSubmit = async () => {
+    try {
+      toast.success("Activity report saved successfully.");
+      setActivityReportsRefreshKey(prevKey => prevKey + 1);
+    } catch (_error) {
+      toast.error("Failed to save activity report. Please try again.");
+    }
+  };
+
+  const handleAttendanceListSubmit = async (
+    participants: Partial<ActivityParticipant>[]
+  ) => {
+    try {
+      await bulkUpdateActivityParticipants(
+        activity.id,
+        participants as Parameters<typeof bulkUpdateActivityParticipants>[1]
+      );
+      toast.success("Attendance list updated successfully.");
+    } catch (_error) {
+      toast.error("Failed to update attendance list. Please try again.");
+    }
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await deleteActivity.mutateAsync({ id: activity.id });
+      toast.success("Activity deleted successfully.");
+      router.push("/dashboard/activities");
+    } catch (_error) {
+      toast.error("Failed to delete activity. Please try again.");
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.back()}
-            className="flex items-center"
-          >
-            <ArrowLeftIcon className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-              {activity.title}
-            </h1>
-            <p className="text-muted-foreground mt-1 text-lg">
-              {activity.description}
-            </p>
-          </div>
-        </div>
-        <Button onClick={() => setIsEditDialogOpen(true)}>
-          <EditIcon className="mr-2 h-4 w-4" />
-          Edit Activity
+      {/* Back Button */}
+      <div className="flex items-center">
+        <Button
+          onClick={handleGoBack}
+          variant="ghost"
+          size="lg"
+          className="text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="mr-2 h-5 w-5" />
+          Back
         </Button>
       </div>
 
-      {/* Status and Type Badges */}
-      <div className="flex items-center space-x-2">
-        <Badge className={getStatusColor(activity.status)} variant="secondary">
-          {activity.status.charAt(0).toUpperCase() + activity.status.slice(1)}
-        </Badge>
-        <Badge className={getTypeColor(activity.type)} variant="outline">
-          {activity.type.replace("_", " ").charAt(0).toUpperCase() +
-            activity.type.replace("_", " ").slice(1)}
-        </Badge>
+      {/* Activity Header */}
+      <ActivityHeader activity={activity} />
+
+      {/* Action Buttons */}
+      <div className="flex items-center gap-3">
+        <Button
+          onClick={handleEdit}
+          className="bg-primary text-primary-foreground hover:bg-primary/90"
+          size="lg"
+        >
+          <Edit className="mr-2 h-5 w-5" />
+          Edit Activity
+        </Button>
+        <Button
+          onClick={handleDelete}
+          variant="outline"
+          className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+          size="lg"
+        >
+          <Trash2 className="mr-2 h-5 w-5" />
+          Delete Activity
+        </Button>
       </div>
 
-      {/* Key Information Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <CalendarIcon className="mr-3 h-8 w-8 text-blue-600" />
-            <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Start Date
-              </p>
-              <p className="text-2xl font-bold">
-                {format(new Date(activity.startDate), "MMM dd")}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <ClockIcon className="mr-3 h-8 w-8 text-green-600" />
-            <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Duration
-              </p>
-              <p className="text-2xl font-bold">
-                {activity.endDate
-                  ? `${Math.ceil(
-                      (new Date(activity.endDate).getTime() -
-                        new Date(activity.startDate).getTime()) /
-                        (1000 * 60 * 60 * 24)
-                    )} days`
-                  : "Ongoing"}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <DollarSignIcon className="mr-3 h-8 w-8 text-purple-600" />
-            <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Budget
-              </p>
-              <p className="text-2xl font-bold">
-                {activity.budget ? formatCurrency(activity.budget) : "N/A"}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <UsersIcon className="mr-3 h-8 w-8 text-orange-600" />
-            <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Participants
-              </p>
-              <p className="text-2xl font-bold">
-                {activity.numberOfParticipants || 0}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Additional Action Buttons */}
+      <div className="flex flex-wrap items-center gap-3">
+        <Button
+          onClick={handleCreateConceptNote}
+          variant="outline"
+          className="border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 hover:text-indigo-800 dark:border-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300 dark:hover:bg-indigo-900 dark:hover:text-indigo-200"
+          size="lg"
+        >
+          <FileText className="mr-2 h-5 w-5" />
+          Create Concept Note
+        </Button>
+        <Button
+          onClick={handleCreateActivityReport}
+          variant="outline"
+          className="border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 dark:hover:bg-emerald-900 dark:hover:text-emerald-200"
+          size="lg"
+        >
+          <ClipboardList className="mr-2 h-5 w-5" />
+          Update Activity Report
+        </Button>
+        <Button
+          onClick={handleManageAttendance}
+          variant="outline"
+          className="border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 hover:text-amber-800 dark:border-amber-800 dark:bg-amber-900/50 dark:text-amber-300 dark:hover:bg-amber-900 dark:hover:text-amber-200"
+          size="lg"
+        >
+          <Users className="mr-2 h-5 w-5" />
+          Manage Attendance
+        </Button>
       </div>
 
-      {/* Activity Details */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Activity Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center">
-              <BuildingIcon className="mr-3 h-5 w-5 text-gray-400" />
-              <div>
-                <p className="text-sm font-medium">Organization</p>
-                <p className="text-muted-foreground text-sm">
-                  {getOrganizationName(activity.organization_id)}
-                </p>
-              </div>
-            </div>
+      {/* Activity Details Grid */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Left Column */}
+        <div className="space-y-6">
+          <ActivityInformationCard activity={activity} />
+          <ActivityNotesCard activity={activity} />
+        </div>
 
-            {activity.cluster_id && (
-              <div className="flex items-center">
-                <UsersIcon className="mr-3 h-5 w-5 text-gray-400" />
-                <div>
-                  <p className="text-sm font-medium">Cluster</p>
-                  <p className="text-muted-foreground text-sm">
-                    {getClusterName(activity.cluster_id)}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {activity.project_id && (
-              <div className="flex items-center">
-                <FolderIcon className="mr-3 h-5 w-5 text-gray-400" />
-                <div>
-                  <p className="text-sm font-medium">Project</p>
-                  <p className="text-muted-foreground text-sm">
-                    {getProjectName(activity.project_id)}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            <div className="flex items-center">
-              <MapPinIcon className="mr-3 h-5 w-5 text-gray-400" />
-              <div>
-                <p className="text-sm font-medium">Location</p>
-                <p className="text-muted-foreground text-sm">
-                  {activity.venue || "Not specified"}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center">
-              <CalendarIcon className="mr-3 h-5 w-5 text-gray-400" />
-              <div>
-                <p className="text-sm font-medium">Timeline</p>
-                <p className="text-muted-foreground text-sm">
-                  {format(new Date(activity.startDate), "PPP")}
-                  {activity.endDate &&
-                    ` - ${format(new Date(activity.endDate), "PPP")}`}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Activity Notes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {activity.objectives ? (
-              <p className="text-sm leading-relaxed">{activity.objectives}</p>
-            ) : (
-              <p className="text-muted-foreground text-sm italic">
-                No additional notes provided.
-              </p>
-            )}
-          </CardContent>
-        </Card>
+        {/* Right Column */}
+        <div className="space-y-6">
+          <AttendanceListCard activity={activity} />
+          <ActivityReportCard activity={activity} />
+        </div>
       </div>
 
-      {/* Concept Note Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center">
-              <FileTextIcon className="mr-2 h-5 w-5" />
-              Concept Note
-            </CardTitle>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsConceptNoteDialogOpen(true)}
-            >
-              <EditIcon className="mr-2 h-4 w-4" />
-              {activity.conceptNote ? "Edit" : "Add"} Concept Note
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {activity.conceptNote ? (
-            <div className="space-y-3">
-              <div className="prose prose-sm max-w-none">
-                <p className="text-sm">{activity.conceptNote}</p>
-              </div>
-              <div className="text-muted-foreground flex items-center text-sm">
-                <CalendarIcon className="mr-1 h-3 w-3" />
-                Added{" "}
-                {activity.created_at
-                  ? format(new Date(activity.created_at), "PPP")
-                  : "Unknown"}
-              </div>
-            </div>
-          ) : (
-            <div className="py-8 text-center">
-              <FolderIcon className="text-muted-foreground mx-auto h-12 w-12" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">
-                No concept note
-              </h3>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Add a concept note to provide context and planning details for
-                this activity.
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {/* Concept Notes Table */}
+      <ConceptNotesTable
+        key={`concept-notes-${activity.id}-${refreshKey}`}
+        activityId={activity.id}
+        onCreateConceptNote={handleCreateConceptNote}
+        onEditConceptNote={handleEditConceptNote}
+        onDeleteConceptNote={handleDeleteConceptNote}
+        refreshKey={refreshKey}
+      />
 
-      {/* Activity Report Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center">
-              <TargetIcon className="mr-2 h-5 w-5" />
-              Activity Report
-            </CardTitle>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsActivityReportDialogOpen(true)}
-            >
-              <EditIcon className="mr-2 h-4 w-4" />
-              {activity.activityReport ? "Edit" : "Add"} Report
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {activity.activityReport ||
-          activity.outcomes ||
-          activity.challenges ||
-          activity.recommendations ? (
-            <div className="space-y-6">
-              <div className="grid gap-6 md:grid-cols-2">
-                <div>
-                  <div className="space-y-4">
-                    <div>
-                      <p className="mb-2 text-sm font-medium">Status</p>
-                      <Badge className={getStatusColor(activity.status)}>
-                        {activity.status.charAt(0).toUpperCase() +
-                          activity.status.slice(1)}
-                      </Badge>
-                    </div>
-                    <div>
-                      <p className="mb-2 text-sm font-medium">Participants</p>
-                      <p className="text-muted-foreground text-sm">
-                        {activity.numberOfParticipants || 0} people
-                      </p>
-                    </div>
-                    <div>
-                      <p className="mb-2 text-sm font-medium">
-                        Actual End Date
-                      </p>
-                      <p className="text-muted-foreground text-sm">
-                        {activity.endDate
-                          ? format(new Date(activity.endDate), "PPP")
-                          : "Ongoing"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <div className="space-y-4">
-                    <div>
-                      <p className="mb-2 text-sm font-medium">Outcomes</p>
-                      <p className="text-muted-foreground text-sm">
-                        {activity.outcomes}
-                      </p>
-                    </div>
-                    {activity.challenges && (
-                      <div>
-                        <p className="mb-2 text-sm font-medium">Challenges</p>
-                        <p className="text-muted-foreground text-sm">
-                          {activity.challenges}
-                        </p>
-                      </div>
-                    )}
-                    {activity.recommendations && (
-                      <div>
-                        <p className="mb-2 text-sm font-medium">
-                          Recommendations
-                        </p>
-                        <p className="text-muted-foreground text-sm">
-                          {activity.recommendations}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="py-8 text-center">
-              <TargetIcon className="text-muted-foreground mx-auto h-12 w-12" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">
-                No activity report
-              </h3>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Add a detailed report about this activity's outcomes and impact.
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {/* Activity Reports Table */}
+      <ActivityReportsTable
+        key={`activity-reports-${activity.id}-${activityReportsRefreshKey}`}
+        activityId={activity.id}
+        onCreateActivityReport={handleCreateActivityReport}
+        onEditActivityReport={handleEditActivityReport}
+        onDeleteActivityReport={handleDeleteActivityReport}
+        refreshKey={activityReportsRefreshKey}
+      />
 
-      {/* Attendance List Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center">
-              <UsersIcon className="mr-2 h-5 w-5" />
-              Attendance List
-            </CardTitle>
-            <div className="flex space-x-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  /* TODO: Export attendance list */
-                }}
-              >
-                <DownloadIcon className="mr-2 h-4 w-4" />
-                Export
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsAttendanceDialogOpen(true)}
-              >
-                <EditIcon className="mr-2 h-4 w-4" />
-                Manage Attendance
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {activity.attendanceList && activity.attendanceList.length > 0 ? (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between text-sm">
-                <span className="font-medium">
-                  {activity.attendanceList.length} participants registered
-                </span>
-                <span className="text-muted-foreground">
-                  {activity.attendanceList.filter(p => p.attended).length}{" "}
-                  attended
-                </span>
-              </div>
-              <div className="max-h-64 space-y-2 overflow-y-auto">
-                {activity.attendanceList
-                  .slice(0, 5)
-                  .map((participant, index) => (
-                    <div
-                      key={index}
-                      className="bg-muted/50 flex items-center justify-between rounded-md px-3 py-2"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-full">
-                          <span className="text-xs font-medium">
-                            {participant.name
-                              .split(" ")
-                              .map(n => n[0])
-                              .join("")
-                              .toUpperCase()}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium">
-                            {participant.name}
-                          </p>
-                          <p className="text-muted-foreground text-xs">
-                            {participant.email}
-                          </p>
-                        </div>
-                      </div>
-                      <Badge
-                        variant={participant.attended ? "default" : "secondary"}
-                      >
-                        {participant.attended ? "Attended" : "Registered"}
-                      </Badge>
-                    </div>
-                  ))}
-                {activity.attendanceList.length > 5 && (
-                  <div className="py-2 text-center">
-                    <Button variant="ghost" size="sm">
-                      View all participants
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="py-8 text-center">
-              <UsersIcon className="text-muted-foreground mx-auto h-12 w-12" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">
-                No attendance records
-              </h3>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Start by adding participants and tracking attendance for this
-                activity.
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Edit Dialog */}
+      {/* Edit Activity Dialog */}
       <ActivityFormDialog
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
@@ -590,28 +338,65 @@ export function ActivityDetailsContainer({
         projects={projects}
       />
 
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              activity "{activity.title}" and all associated data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete Activity
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Concept Note Dialog */}
       <ConceptNoteDialog
         open={isConceptNoteDialogOpen}
-        onOpenChange={setIsConceptNoteDialogOpen}
-        activity={activity}
-        onSave={handleConceptNoteSave}
+        onOpenChange={open => {
+          setIsConceptNoteDialogOpen(open);
+          if (!open) {
+            setEditingConceptNote(undefined);
+          }
+        }}
+        activityId={activity.id}
+        conceptNote={editingConceptNote}
+        onSubmit={handleConceptNoteSubmit}
       />
 
       {/* Activity Report Dialog */}
       <ActivityReportDialog
         open={isActivityReportDialogOpen}
-        onOpenChange={setIsActivityReportDialogOpen}
+        onOpenChange={open => {
+          setIsActivityReportDialogOpen(open);
+          if (!open) {
+            setEditingActivityReport(undefined);
+          }
+        }}
         activity={activity}
-        onSave={handleActivityReportSave}
+        activityReport={editingActivityReport}
+        onSubmit={handleActivityReportSubmit}
       />
 
-      {/* Attendance Dialog */}
-      <AttendanceDialog
-        open={isAttendanceDialogOpen}
-        onOpenChange={setIsAttendanceDialogOpen}
-        activity={activity}
-        onSave={handleAttendanceSave}
+      {/* Attendance List Dialog */}
+      <AttendanceListDialog
+        open={isAttendanceListDialogOpen}
+        onOpenChange={setIsAttendanceListDialogOpen}
+        activityId={activity.id}
+        onSubmit={handleAttendanceListSubmit}
       />
     </div>
   );
