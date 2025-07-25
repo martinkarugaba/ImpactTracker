@@ -190,7 +190,7 @@ export function TeamSwitcher() {
   const { currentOrg, organizations } = organizationsData;
 
   return (
-    <SidebarHeader>
+    <SidebarHeader className="mt-1 border-none border-orange-500 p-0">
       <SidebarMenu>
         <SidebarMenuItem>
           <DropdownMenu open={open} onOpenChange={setOpen}>
