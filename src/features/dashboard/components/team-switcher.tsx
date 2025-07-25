@@ -1,8 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ChevronsUpDown, Plus, Building2, ChevronDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ChevronsUpDown, Plus, Building2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -173,13 +172,59 @@ export function TeamSwitcher() {
 
   if (isLoadingOrgId || isLoadingOrgs) {
     return (
-      <Button variant="ghost" className="w-full justify-between px-2" size="sm">
-        <div className="flex items-center gap-2">
-          <Building2 className="h-4 w-4" />
-          <span className="truncate">Loading...</span>
-        </div>
-        <ChevronDown className="h-4 w-4" />
-      </Button>
+      <SidebarHeader className="mt-1 border-none border-orange-500 p-0">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu open={open} onOpenChange={setOpen}>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size="lg"
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="bg-primary/20 aspect-square size-8 animate-pulse rounded-lg" />
+                    <div className="flex-1">
+                      <div className="bg-primary/20 h-4 w-1/3 animate-pulse rounded-sm" />
+                      <div className="bg-primary/20 mt-1 h-3 w-1/2 animate-pulse rounded-sm" />
+                    </div>
+                    <div className="bg-primary/20 size-4 animate-pulse rounded-lg" />
+                  </div>
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 animate-pulse rounded-lg"
+                align="start"
+                side={isMobile ? "bottom" : "right"}
+                sideOffset={4}
+              >
+                <div className="text-muted-foreground px-2 py-1.5 text-xs">
+                  <div className="bg-primary/20 h-4 w-1/3" />
+                </div>
+                {[...Array(3)].map((_, index) => (
+                  <div
+                    key={index}
+                    className="group flex items-center px-2 py-1.5"
+                  >
+                    <div className="bg-primary/20 size-6 rounded-lg" />
+                    <div className="ml-2 flex-1">
+                      <div className="bg-primary/20 h-4 w-1/3 rounded-sm" />
+                      <div className="bg-primary/20 mt-1 h-3 w-1/4 rounded-sm" />
+                    </div>
+                    <div className="bg-primary/20 ml-auto h-4 w-8 rounded-sm" />
+                  </div>
+                ))}
+                <div className="bg-border my-1.5 h-px" />
+                <div className="group flex items-center px-2 py-1.5">
+                  <div className="bg-primary/20 size-6 rounded-lg" />
+                  <div className="ml-2 flex-1">
+                    <div className="bg-primary/20 h-4 w-1/3 rounded-sm" />
+                  </div>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
     );
   }
 

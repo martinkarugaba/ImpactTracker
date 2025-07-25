@@ -14,7 +14,8 @@ const inter = Inter({
   display: "swap",
   preload: false, // Disable preload to prevent build issues
   adjustFontFallback: true,
-  fallback: ["system-ui", "Arial", "sans-serif"],
+  // fallback: ["system-ui", "Arial", "sans-serif"],
+  fallback: ["system-ui", "sans-serif"],
   variable: "--font-inter", // Use CSS variable for more flexibility
 });
 
