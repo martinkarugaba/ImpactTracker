@@ -35,29 +35,35 @@ export async function getParticipants(
 
     // Add filter conditions
     if (params?.filters) {
-      if (params.filters.project) {
+      if (params.filters.project && params.filters.project !== "all") {
         whereConditions.push(
           eq(participants.project_id, params.filters.project)
         );
       }
-      if (params.filters.district) {
+      if (params.filters.district && params.filters.district !== "all") {
         whereConditions.push(
           eq(participants.district, params.filters.district)
         );
       }
-      if (params.filters.sex) {
+      if (params.filters.sex && params.filters.sex !== "all") {
         whereConditions.push(eq(participants.sex, params.filters.sex));
       }
-      if (params.filters.isPWD === "yes") {
-        whereConditions.push(eq(participants.isPWD, "yes"));
-      } else if (params.filters.isPWD === "no") {
-        whereConditions.push(eq(participants.isPWD, "no"));
+      if (params.filters.isPWD && params.filters.isPWD !== "all") {
+        if (params.filters.isPWD === "true") {
+          whereConditions.push(eq(participants.isPWD, "yes"));
+        } else if (params.filters.isPWD === "false") {
+          whereConditions.push(eq(participants.isPWD, "no"));
+        }
       }
-      if (params.filters.ageGroup) {
+      if (params.filters.ageGroup && params.filters.ageGroup !== "all") {
         if (params.filters.ageGroup === "young") {
           whereConditions.push(sql`${participants.age} <= 30`);
-        } else if (params.filters.ageGroup === "older") {
-          whereConditions.push(sql`${participants.age} > 30`);
+        } else if (params.filters.ageGroup === "adult") {
+          whereConditions.push(
+            sql`${participants.age} > 30 AND ${participants.age} <= 60`
+          );
+        } else if (params.filters.ageGroup === "elder") {
+          whereConditions.push(sql`${participants.age} > 60`);
         }
       }
     }

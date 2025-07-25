@@ -754,3 +754,136 @@ export const trainingParticipantsRelations = relations(
     }),
   })
 );
+
+export const activities = pgTable("activities", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: text("title").notNull(),
+  description: text("description"),
+  type: text("type").notNull(), // meeting, workshop, field_visit, etc.
+  status: text("status").notNull().default("planned"), // planned, ongoing, completed, cancelled
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date"),
+  venue: text("venue").notNull(),
+  budget: integer("budget"),
+  actualCost: integer("actual_cost"),
+  numberOfParticipants: integer("number_of_participants").default(0),
+  objectives: text("objectives").array().default([]),
+  outcomes: text("outcomes"),
+  challenges: text("challenges"),
+  recommendations: text("recommendations"),
+  attachments: text("attachments").array().default([]),
+  organization_id: uuid("organization_id")
+    .references(() => organizations.id)
+    .notNull(),
+  cluster_id: uuid("cluster_id").references(() => clusters.id),
+  project_id: uuid("project_id").references(() => projects.id),
+  created_by: text("created_by").notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const activityParticipants = pgTable("activity_participants", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  activity_id: uuid("activity_id")
+    .references(() => activities.id)
+    .notNull(),
+  participant_id: uuid("participant_id")
+    .references(() => participants.id)
+    .notNull(),
+  attendance_status: text("attendance_status").notNull().default("invited"), // invited, attended, absent
+  role: text("role").default("participant"), // participant, facilitator, organizer
+  feedback: text("feedback"),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const activitiesRelations = relations(activities, ({ one, many }) => ({
+  organization: one(organizations, {
+    fields: [activities.organization_id],
+    references: [organizations.id],
+  }),
+  cluster: one(clusters, {
+    fields: [activities.cluster_id],
+    references: [clusters.id],
+  }),
+  project: one(projects, {
+    fields: [activities.project_id],
+    references: [projects.id],
+  }),
+  activityParticipants: many(activityParticipants),
+  conceptNotes: many(conceptNotes),
+  activityReports: many(activityReports),
+}));
+
+export const activityParticipantsRelations = relations(
+  activityParticipants,
+  ({ one }) => ({
+    activity: one(activities, {
+      fields: [activityParticipants.activity_id],
+      references: [activities.id],
+    }),
+    participant: one(participants, {
+      fields: [activityParticipants.participant_id],
+      references: [participants.id],
+    }),
+  })
+);
+
+export const conceptNotes = pgTable("concept_notes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  activity_id: uuid("activity_id")
+    .references(() => activities.id)
+    .notNull(),
+  content: text("content").notNull(),
+  title: text("title").notNull(),
+  charge_code: text("charge_code"),
+  activity_lead: text("activity_lead"),
+  submission_date: timestamp("submission_date"),
+  project_summary: text("project_summary"),
+  methodology: text("methodology"),
+  requirements: text("requirements"),
+  participant_details: text("participant_details"),
+  budget_items: text("budget_items").array().default([]),
+  budget_notes: text("budget_notes"),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const conceptNotesRelations = relations(conceptNotes, ({ one }) => ({
+  activity: one(activities, {
+    fields: [conceptNotes.activity_id],
+    references: [activities.id],
+  }),
+}));
+
+export const activityReports = pgTable("activity_reports", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  activity_id: uuid("activity_id")
+    .references(() => activities.id)
+    .notNull(),
+  title: text("title").notNull(),
+  execution_date: timestamp("execution_date").notNull(),
+  cluster_name: text("cluster_name").notNull(),
+  venue: text("venue").notNull(),
+  team_leader: text("team_leader").notNull(),
+  background_purpose: text("background_purpose").notNull(),
+  progress_achievements: text("progress_achievements").notNull(),
+  challenges_recommendations: text("challenges_recommendations").notNull(),
+  lessons_learned: text("lessons_learned").notNull(),
+  follow_up_actions: text("follow_up_actions").array().default([]), // JSON string array of follow-up actions
+  actual_cost: integer("actual_cost"),
+  number_of_participants: integer("number_of_participants"),
+  created_by: text("created_by").notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const activityReportsRelations = relations(
+  activityReports,
+  ({ one }) => ({
+    activity: one(activities, {
+      fields: [activityReports.activity_id],
+      references: [activities.id],
+    }),
+  })
+);

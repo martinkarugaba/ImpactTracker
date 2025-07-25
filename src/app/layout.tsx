@@ -19,7 +19,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Gauge app",
+  title: "kpi-edge app",
   description: "Track your KPIs across organizations and projects",
 };
 

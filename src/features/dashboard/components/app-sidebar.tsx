@@ -13,12 +13,7 @@ import { SidebarMainNav } from "./sidebar-main-nav";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar
-      className="border-none py-2"
-      variant="floating"
-      collapsible="icon"
-      {...props}
-    >
+    <Sidebar className="border-none px-2 py-2" collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher />
       </SidebarHeader>
