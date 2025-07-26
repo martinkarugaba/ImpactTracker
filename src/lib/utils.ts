@@ -5,6 +5,16 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function formatCurrency(
+  value: number,
+  currency: string = "USD",
+  locale: string = "en-US"
+) {
+  return new Intl.NumberFormat(locale, { style: "currency", currency }).format(
+    value
+  );
+}
+
 export type ApiResult<T> = {
   success: boolean;
   data?: T;
