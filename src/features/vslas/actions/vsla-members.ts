@@ -5,6 +5,9 @@ import { vslaMembers } from "@/lib/db/schema";
 import { eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { type InferSelectModel } from "drizzle-orm";
+
+export type VSLAMember = InferSelectModel<typeof vslaMembers>;
 
 const createVSLAMemberSchema = z.object({
   vsla_id: z.string().min(1, "VSLA is required"),

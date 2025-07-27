@@ -11,30 +11,9 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { getVSLAMembers } from "../../actions/vsla-members";
+import { AddVSLAMemberDialog } from "./add-vsla-member-dialog";
+import { AddParticipantToVSLADialog } from "./add-participant-to-vsla-dialog";
 import { formatCurrency } from "@/lib/utils";
-
-// Temporary stub components
-const AddVSLAMemberDialog = ({
-  children,
-  vslaId: _vslaId,
-}: {
-  children: React.ReactNode;
-  vslaId: string;
-}) => {
-  return <>{children}</>;
-};
-
-const AddParticipantToVSLADialog = ({
-  children,
-  vslaId: _vslaId,
-  clusterId: _clusterId,
-}: {
-  children: React.ReactNode;
-  vslaId: string;
-  clusterId?: string;
-}) => {
-  return <>{children}</>;
-};
 
 interface VSLAMembersSectionProps {
   vsla: {

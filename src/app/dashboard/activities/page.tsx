@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { ActivitiesContainer } from "@/features/activities/components/activities-container";
+import { MetricCard } from "@/components/ui/metric-card";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SiteHeader } from "@/features/dashboard/components/site-header";
@@ -7,24 +8,25 @@ import { ActivitiesTableSkeleton } from "@/features/activities/components/table/
 import { getOrganizations } from "@/features/organizations/actions/organizations";
 import { getClusters } from "@/features/clusters/actions/clusters";
 import { getProjects } from "@/features/projects/actions/projects";
+import { IconActivity } from "@tabler/icons-react";
 
 // Loading component for the page
 function ActivitiesPageSkeleton() {
   return (
     <div className="space-y-6 px-6">
       {/* Metrics Cards Skeleton */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <Card key={i}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-4 w-4" />
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="mb-2 h-8 w-16" />
-              <Skeleton className="h-3 w-24" />
-            </CardContent>
-          </Card>
+          <MetricCard
+            key={i}
+            title="Loading..."
+            value="--"
+            footer={{
+              title: "Loading...",
+              description: "Fetching data...",
+            }}
+            icon={<IconActivity className="size-4" />}
+          />
         ))}
       </div>
 

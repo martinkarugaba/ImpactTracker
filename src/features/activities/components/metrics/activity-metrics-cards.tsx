@@ -1,17 +1,18 @@
 "use client";
 
+import { MetricCard } from "@/components/ui/metric-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  Activity,
-  Calendar,
-  CheckCircle,
-  Clock,
-  DollarSign,
-  Users,
-  TrendingUp,
-  AlertCircle,
-} from "lucide-react";
+  IconActivity,
+  IconCalendar,
+  IconCheck,
+  IconClock,
+  IconCurrencyDollar,
+  IconUsers,
+  IconTrendingUp,
+  IconAlertCircle,
+} from "@tabler/icons-react";
 import { type ActivityMetrics } from "../../types/types";
 
 interface ActivityMetricsCardsProps {
@@ -25,103 +26,104 @@ export function ActivityMetricsCards({
 }: ActivityMetricsCardsProps) {
   if (isLoading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <Card key={i}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                <div className="bg-muted h-4 w-20 animate-pulse rounded" />
-              </CardTitle>
-              <div className="bg-muted h-4 w-4 animate-pulse rounded" />
-            </CardHeader>
-            <CardContent>
-              <div className="bg-muted mb-2 h-8 w-16 animate-pulse rounded" />
-              <div className="bg-muted h-3 w-24 animate-pulse rounded" />
-            </CardContent>
-          </Card>
+          <MetricCard
+            key={i}
+            title="Loading..."
+            value="--"
+            footer={{
+              title: "Loading...",
+              description: "Fetching data...",
+            }}
+            icon={<IconActivity className="size-4" />}
+          />
         ))}
       </div>
     );
   }
 
-  const cards = [
-    {
-      title: "Total Activities",
-      value: metrics.totalActivities,
-      change: "+12% from last month",
-      icon: Activity,
-      color: "text-blue-600",
-    },
-    {
-      title: "Active Activities",
-      value: metrics.activeActivities,
-      change: `${metrics.activeActivities} ongoing`,
-      icon: Clock,
-      color: "text-orange-600",
-    },
-    {
-      title: "Completed Activities",
-      value: metrics.completedActivities,
-      change: `${((metrics.completedActivities / metrics.totalActivities) * 100).toFixed(1)}% completion rate`,
-      icon: CheckCircle,
-      color: "text-green-600",
-    },
-    {
-      title: "Total Participants",
-      value: metrics.totalParticipants,
-      change: `Across ${metrics.totalActivities} activities`,
-      icon: Users,
-      color: "text-purple-600",
-    },
-    {
-      title: "This Month",
-      value: metrics.thisMonth,
-      change: "Activities scheduled",
-      icon: Calendar,
-      color: "text-indigo-600",
-    },
-    {
-      title: "Next Month",
-      value: metrics.nextMonth,
-      change: "Upcoming activities",
-      icon: TrendingUp,
-      color: "text-teal-600",
-    },
-    {
-      title: "Total Budget",
-      value: `$${metrics.totalBudget.toLocaleString()}`,
-      change: "Allocated budget",
-      icon: DollarSign,
-      color: "text-emerald-600",
-    },
-    {
-      title: "Overdue",
-      value: metrics.overdue,
-      change: "Need attention",
-      icon: AlertCircle,
-      color: "text-red-600",
-    },
-  ];
-
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {cards.map((card, index) => {
-        const Icon = card.icon;
-        return (
-          <Card key={index}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {card.title}
-              </CardTitle>
-              <Icon className={`h-4 w-4 ${card.color}`} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{card.value}</div>
-              <p className="text-muted-foreground text-xs">{card.change}</p>
-            </CardContent>
-          </Card>
-        );
-      })}
+    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
+      <MetricCard
+        title="Total Activities"
+        value={metrics.totalActivities}
+        footer={{
+          title: "+12% from last month",
+          description: "Overall activity count",
+        }}
+        icon={<IconActivity className="size-4 text-blue-600" />}
+      />
+
+      <MetricCard
+        title="Active Activities"
+        value={metrics.activeActivities}
+        footer={{
+          title: `${metrics.activeActivities} ongoing`,
+          description: "Currently in progress",
+        }}
+        icon={<IconClock className="size-4 text-orange-600" />}
+      />
+
+      <MetricCard
+        title="Completed Activities"
+        value={metrics.completedActivities}
+        footer={{
+          title: `${((metrics.completedActivities / metrics.totalActivities) * 100).toFixed(1)}% completion rate`,
+          description: "Successfully finished",
+        }}
+        icon={<IconCheck className="size-4 text-green-600" />}
+      />
+
+      <MetricCard
+        title="Total Participants"
+        value={metrics.totalParticipants}
+        footer={{
+          title: `Across ${metrics.totalActivities} activities`,
+          description: "People involved",
+        }}
+        icon={<IconUsers className="size-4 text-purple-600" />}
+      />
+
+      <MetricCard
+        title="This Month"
+        value={metrics.thisMonth}
+        footer={{
+          title: "Activities scheduled",
+          description: "Current month pipeline",
+        }}
+        icon={<IconCalendar className="size-4 text-indigo-600" />}
+      />
+
+      <MetricCard
+        title="Next Month"
+        value={metrics.nextMonth}
+        footer={{
+          title: "Upcoming activities",
+          description: "Future planning",
+        }}
+        icon={<IconTrendingUp className="size-4 text-teal-600" />}
+      />
+
+      <MetricCard
+        title="Total Budget"
+        value={`$${metrics.totalBudget.toLocaleString()}`}
+        footer={{
+          title: "Allocated budget",
+          description: "Financial resources",
+        }}
+        icon={<IconCurrencyDollar className="size-4 text-emerald-600" />}
+      />
+
+      <MetricCard
+        title="Overdue"
+        value={metrics.overdue}
+        footer={{
+          title: "Need attention",
+          description: "Delayed activities",
+        }}
+        icon={<IconAlertCircle className="size-4 text-red-600" />}
+      />
     </div>
   );
 }

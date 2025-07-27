@@ -1,5 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { TrendingUp, Users } from "lucide-react";
+import { MetricCard } from "@/components/ui/metric-card";
+import { IconTrendingUp, IconUsers } from "@tabler/icons-react";
 import { formatCurrency } from "@/lib/utils";
 import { VSLA } from "../../types";
 
@@ -9,50 +9,36 @@ interface VSLAStatsOverviewProps {
 
 export function VSLAStatsOverview({ vsla }: VSLAStatsOverviewProps) {
   return (
-    <div className="mb-6 grid gap-4 md:grid-cols-3">
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-muted-foreground text-sm font-medium">
-                Total Members
-              </p>
-              <p className="text-2xl font-bold">{vsla.total_members}</p>
-            </div>
-            <Users className="text-muted-foreground h-8 w-8" />
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-muted-foreground text-sm font-medium">
-                Total Savings
-              </p>
-              <p className="text-2xl font-bold text-green-600">
-                {formatCurrency(vsla.total_savings)}
-              </p>
-            </div>
-            <TrendingUp className="h-8 w-8 text-green-600" />
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-muted-foreground text-sm font-medium">
-                Total Loans
-              </p>
-              <p className="text-2xl font-bold text-blue-600">
-                {formatCurrency(vsla.total_loans)}
-              </p>
-            </div>
-            <TrendingUp className="h-8 w-8 text-blue-600" />
-          </div>
-        </CardContent>
-      </Card>
+    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card mb-6 grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-3">
+      <MetricCard
+        title="Total Members"
+        value={vsla.total_members}
+        footer={{
+          title: "Active Members",
+          description: "Current VSLA membership count",
+        }}
+        icon={<IconUsers className="size-4" />}
+      />
+
+      <MetricCard
+        title="Total Savings"
+        value={formatCurrency(vsla.total_savings)}
+        footer={{
+          title: "Member Savings",
+          description: "Accumulated savings pool",
+        }}
+        icon={<IconTrendingUp className="size-4 text-green-600" />}
+      />
+
+      <MetricCard
+        title="Total Loans"
+        value={formatCurrency(vsla.total_loans)}
+        footer={{
+          title: "Outstanding Loans",
+          description: "Active loan portfolio",
+        }}
+        icon={<IconTrendingUp className="size-4 text-blue-600" />}
+      />
     </div>
   );
 }
