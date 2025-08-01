@@ -9,6 +9,7 @@ import { VSLAsTableSkeleton } from "./vslas-table-skeleton";
 import { CreateVSLADialog } from "./create-vsla-dialog";
 import { EditVSLADialog } from "./edit-vsla-dialog";
 import { DeleteVSLADialog } from "./delete-vsla-dialog";
+import { VSLAMetricsCards } from "./metrics/vsla-metrics-cards";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { VSLA } from "../types";
@@ -116,12 +117,19 @@ export function VSLAsPageContent({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Metrics Cards */}
+      <VSLAMetricsCards vslas={vslas} isLoading={isLoading} />
+
+      {/* Header with Action Buttons */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-medium">All VSLAs</h3>
-          <p className="text-muted-foreground text-sm">
-            Manage Village Savings and Loans Associations ({vslas.length} total)
+          <h2 className="text-2xl font-bold tracking-tight">
+            Village Savings and Loans Associations
+          </h2>
+          <p className="text-muted-foreground">
+            Manage and track all VSLAs across your organization ({vslas.length}{" "}
+            total)
           </p>
         </div>
         <CreateVSLADialog

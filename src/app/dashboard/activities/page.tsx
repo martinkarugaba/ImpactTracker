@@ -20,7 +20,7 @@ function ActivitiesPageSkeleton() {
           <MetricCard
             key={i}
             title="Loading..."
-            value="--"
+            value="..."
             footer={{
               title: "Loading...",
               description: "Fetching data...",

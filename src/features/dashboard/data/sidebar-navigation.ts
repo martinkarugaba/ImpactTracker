@@ -149,14 +149,14 @@ export const navigationData = {
       icon: IconNote,
     },
     {
-      name: "VSLAs",
-      url: "/dashboard/vslas",
-      icon: IconCashBanknote,
-    },
-    {
       name: "Success stories",
       url: "/dashboard/success-stories",
       icon: IconCamera,
+    },
+    {
+      name: "VSLAs",
+      url: "/dashboard/vslas",
+      icon: IconCashBanknote,
     },
   ],
 };
