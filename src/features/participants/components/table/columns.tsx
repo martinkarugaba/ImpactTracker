@@ -2,20 +2,35 @@
 
 import { type ColumnDef, type Table, type Row } from "@tanstack/react-table";
 import { type Participant } from "../../types/types";
+import { type LocationNames } from "../../hooks/use-location-names";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import {
+  User,
+  UserCheck,
+  MapPin,
+  Building2,
+  FolderOpen,
+  Phone,
+  Briefcase,
+  Store,
+  Users,
+  Flag,
+} from "lucide-react";
 import { ActionCell } from "./action-cell";
-import { LocationNameCell, LocationType } from "./location-name-cell";
 
 interface GetParticipantColumnsProps {
   onEdit: (participant: Participant) => void;
   onDelete: (participant: Participant) => void;
   onView: (participant: Participant) => void;
+  locationNames?: LocationNames;
 }
 
 export function getParticipantColumns({
   onEdit,
   onDelete,
   onView,
+  locationNames,
 }: GetParticipantColumnsProps): ColumnDef<Participant>[] {
   return [
     {
@@ -48,145 +63,322 @@ export function getParticipantColumns({
     },
     {
       id: "fullName",
-      header: "Name",
+      header: () => (
+        <div className="flex items-center gap-2">
+          <User className="h-4 w-4" />
+          Name
+        </div>
+      ),
       enableHiding: true,
-      accessorFn: row => `${row.firstName} ${row.lastName}`, // This enables sorting and filtering
+      accessorFn: row => `${row.firstName} ${row.lastName}`,
       cell: ({ row }) => (
-        <div>
-          {row.original.firstName} {row.original.lastName}
+        <div className="flex items-center gap-2">
+          <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium">
+            {row.original.firstName?.[0]?.toUpperCase()}
+            {row.original.lastName?.[0]?.toUpperCase()}
+          </div>
+          <div className="font-medium">
+            {row.original.firstName} {row.original.lastName}
+          </div>
         </div>
       ),
     },
     {
       id: "sex",
-      header: "Sex",
+      header: () => (
+        <div className="flex items-center gap-2">
+          <Users className="h-4 w-4" />
+          Gender
+        </div>
+      ),
       enableHiding: true,
       accessorFn: row => row.sex,
       cell: ({ row }) => {
         const sex = row.original.sex;
         if (!sex) return "";
 
-        const firstLetter = sex.charAt(0).toUpperCase();
-        return firstLetter === "M" || firstLetter === "F"
-          ? firstLetter
-          : sex.toLowerCase() === "male"
-            ? "M"
-            : sex.toLowerCase() === "female"
-              ? "F"
-              : firstLetter;
+        const isMale =
+          sex.toLowerCase() === "male" || sex.toLowerCase() === "m";
+        const isFemale =
+          sex.toLowerCase() === "female" || sex.toLowerCase() === "f";
+
+        if (isMale) {
+          return (
+            <Badge
+              variant="secondary"
+              className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+            >
+              M
+            </Badge>
+          );
+        }
+
+        if (isFemale) {
+          return (
+            <Badge
+              variant="secondary"
+              className="bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200"
+            >
+              F
+            </Badge>
+          );
+        }
+
+        return <Badge variant="outline">{sex.charAt(0).toUpperCase()}</Badge>;
       },
     },
     {
       accessorKey: "age",
-      header: "Age",
+      header: () => (
+        <div className="flex items-center gap-2">
+          <UserCheck className="h-4 w-4" />
+          Age
+        </div>
+      ),
       enableHiding: true,
+      cell: ({ row }) => {
+        const age = row.original.age;
+        if (!age) return "—";
+
+        const ageNum = Number(age);
+        let variant: "default" | "secondary" | "destructive" | "outline" =
+          "outline";
+        let className = "";
+
+        if (ageNum <= 35) {
+          variant = "secondary";
+          className =
+            "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+        } else if (ageNum <= 50) {
+          variant = "secondary";
+          className =
+            "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+        } else {
+          variant = "secondary";
+          className =
+            "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200";
+        }
+
+        return (
+          <Badge variant={variant} className={className}>
+            {age}
+          </Badge>
+        );
+      },
     },
     {
       id: "district",
-      header: "District",
+      header: () => (
+        <div className="flex items-center gap-2">
+          <MapPin className="h-4 w-4" />
+          District
+        </div>
+      ),
       enableHiding: true,
-      accessorFn: row => row.districtName || row.district,
+      accessorFn: row => {
+        const districtId = row.district;
+        return locationNames?.districts[districtId] || districtId || "—";
+      },
       cell: ({ row }) => {
-        // Use the LocationNameCell component to show district name
-        const districtValue =
-          row.original.districtName || row.original.district || "";
+        const districtId = row.original.district;
+        const districtName =
+          locationNames?.districts[districtId] || districtId || "—";
 
         return (
-          <LocationNameCell id={districtValue} type={LocationType.District} />
+          <div className="flex items-center gap-2">
+            <div className="bg-muted text-muted-foreground flex h-6 w-6 items-center justify-center rounded text-xs">
+              <Flag className="h-3 w-3" />
+            </div>
+            <div className="max-w-[200px] truncate" title={districtName}>
+              {districtName}
+            </div>
+          </div>
         );
       },
     },
     {
       id: "subCounty",
-      header: "Sub County",
+      header: () => (
+        <div className="flex items-center gap-2">
+          <MapPin className="h-4 w-4" />
+          Sub County
+        </div>
+      ),
       enableHiding: true,
-      accessorFn: row => row.subCountyName || row.subCounty,
+      accessorFn: row => {
+        const subCountyId = row.subCounty;
+        return locationNames?.subCounties[subCountyId] || subCountyId || "—";
+      },
       cell: ({ row }) => {
-        // Use the LocationNameCell component to show subcounty name
-        const subCountyValue =
-          row.original.subCountyName || row.original.subCounty || "";
+        const subCountyId = row.original.subCounty;
+        const subCountyName =
+          locationNames?.subCounties[subCountyId] || subCountyId || "—";
 
         return (
-          <LocationNameCell id={subCountyValue} type={LocationType.SubCounty} />
+          <div
+            className="text-muted-foreground max-w-[200px] truncate"
+            title={subCountyName}
+          >
+            {subCountyName}
+          </div>
         );
       },
     },
     {
       id: "country",
-      header: "Country",
+      header: () => (
+        <div className="flex items-center gap-2">
+          <Flag className="h-4 w-4" />
+          Country
+        </div>
+      ),
       enableHiding: true,
-      accessorFn: row => row.countyName || row.country || "",
+      accessorFn: row => {
+        const countryId = row.country;
+        return locationNames?.countries[countryId] || countryId || "—";
+      },
       cell: ({ row }) => {
-        // Use the LocationNameCell component to show country name
-        const countryValue =
-          row.original.countyName || row.original.country || "";
+        const countryId = row.original.country;
+        const countryName =
+          locationNames?.countries[countryId] || countryId || "—";
 
         return (
-          <LocationNameCell id={countryValue} type={LocationType.Country} />
+          <div className="flex items-center gap-2">
+            <Badge
+              variant="outline"
+              className="bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300"
+            >
+              {countryName}
+            </Badge>
+          </div>
         );
       },
     },
     {
       id: "organization",
-      header: "Organization",
+      header: () => (
+        <div className="flex items-center gap-2">
+          <Building2 className="h-4 w-4" />
+          Organization
+        </div>
+      ),
       enableHiding: true,
       accessorFn: row => row.organizationName || row.organization_id,
       cell: ({ row }) => {
         const name =
           row.original.organizationName || row.original.organization_id;
-        // We could add logic here to find the organization by ID and get its acronym
-        // For now, showing 3-letter acronym from name
         const acronym = name
           .split(/\s+/)
           .map(word => word[0])
           .join("")
           .toUpperCase()
           .slice(0, 3);
+
         return (
-          <div className="max-w-[200px] truncate" title={name}>
-            <span className="font-medium">{acronym}</span>
-            {/* <span className="text-muted-foreground ml-2 text-xs">({name})</span> */}
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 text-xs font-bold text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+              {acronym}
+            </div>
+            <div className="max-w-[150px] truncate text-sm" title={name}>
+              {name}
+            </div>
           </div>
         );
       },
     },
     {
       id: "project",
-      header: "Project",
+      header: () => (
+        <div className="flex items-center gap-2">
+          <FolderOpen className="h-4 w-4" />
+          Project
+        </div>
+      ),
       enableHiding: true,
       accessorFn: row => row.projectName || "Unknown",
       cell: ({ row }) => {
         const name = row.original.projectName || "Unknown";
-        // We could add logic here to find the project and get its acronym
-        // For now, showing 3-letter acronym from name
         const acronym = name
           .split(/\s+/)
           .map(word => word[0])
           .join("")
           .toUpperCase()
           .slice(0, 3);
+
         return (
-          <div className="max-w-[200px] truncate" title={name}>
-            <span className="font-medium">{acronym}</span>
-            {/* <span className="text-muted-foreground ml-2 text-xs">({name})</span> */}
+          <div className="flex items-center gap-2">
+            <Badge
+              variant="secondary"
+              className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200"
+            >
+              {acronym}
+            </Badge>
           </div>
         );
       },
     },
     {
       accessorKey: "designation",
-      header: "Designation",
+      header: () => (
+        <div className="flex items-center gap-2">
+          <Briefcase className="h-4 w-4" />
+          Designation
+        </div>
+      ),
       enableHiding: true,
+      cell: ({ row }) => {
+        const designation = row.original.designation;
+        if (!designation) return "—";
+
+        return (
+          <Badge variant="outline" className="max-w-[150px] truncate">
+            {designation}
+          </Badge>
+        );
+      },
     },
     {
       accessorKey: "enterprise",
-      header: "Enterprise",
+      header: () => (
+        <div className="flex items-center gap-2">
+          <Store className="h-4 w-4" />
+          Enterprise
+        </div>
+      ),
       enableHiding: true,
+      cell: ({ row }) => {
+        const enterprise = row.original.enterprise;
+        if (!enterprise) return "—";
+
+        return (
+          <div className="flex items-center gap-2">
+            <div className="rounded bg-amber-100 px-2 py-1 text-xs font-medium text-amber-800 dark:bg-amber-900 dark:text-amber-200">
+              {enterprise}
+            </div>
+          </div>
+        );
+      },
     },
     {
       accessorKey: "contact",
-      header: "Contact",
+      header: () => (
+        <div className="flex items-center gap-2">
+          <Phone className="h-4 w-4" />
+          Contact
+        </div>
+      ),
       enableHiding: true,
+      cell: ({ row }) => {
+        const contact = row.original.contact;
+        if (!contact) return "—";
+
+        return (
+          <div className="flex items-center gap-2 font-mono text-sm">
+            <Phone className="text-muted-foreground h-3 w-3" />
+            {contact}
+          </div>
+        );
+      },
     },
     {
       id: "actions",

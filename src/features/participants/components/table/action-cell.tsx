@@ -6,6 +6,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, Pencil, Trash, Eye } from "lucide-react";
@@ -27,22 +28,38 @@ export function ActionCell({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
+        <Button
+          variant="ghost"
+          className="hover:bg-accent h-8 w-8 p-0 transition-colors"
+        >
           <span className="sr-only">Open menu</span>
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => onView(participant)}>
+      <DropdownMenuContent align="end" className="w-[160px]">
+        <DropdownMenuLabel className="text-muted-foreground text-xs font-medium">
+          Actions
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() => onView(participant)}
+          className="cursor-pointer hover:bg-blue-50 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-700"
+        >
           <Eye className="mr-2 h-4 w-4" />
-          View
+          View Details
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onEdit(participant)}>
+        <DropdownMenuItem
+          onClick={() => onEdit(participant)}
+          className="cursor-pointer hover:bg-amber-50 hover:text-amber-700 focus:bg-amber-50 focus:text-amber-700"
+        >
           <Pencil className="mr-2 h-4 w-4" />
           Edit
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onDelete(participant)}>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() => onDelete(participant)}
+          className="cursor-pointer text-red-600 hover:bg-red-50 hover:text-red-700 focus:bg-red-50 focus:text-red-700"
+        >
           <Trash className="mr-2 h-4 w-4" />
           Delete
         </DropdownMenuItem>

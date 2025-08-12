@@ -1,16 +1,16 @@
 import { type Participant } from "../../types/types";
 import { useParticipantMetrics } from "./hooks/use-participant-metrics";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MetricCard } from "@/components/ui/metric-card";
 import {
-  Users,
-  UserCheck,
-  CircleUser,
-  Gauge,
-  TrendingUp,
-  MapPin,
-  Calendar,
-  Activity,
-} from "lucide-react";
+  IconUsers,
+  IconUserCheck,
+  IconUser,
+  IconGauge,
+  IconTrendingUp,
+  IconMapPin,
+  IconCalendar,
+  IconActivity,
+} from "@tabler/icons-react";
 
 interface CompactParticipantMetricsProps {
   participants: Participant[];
@@ -37,20 +37,18 @@ export function CompactParticipantMetrics({
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <Card key={i}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                <div className="bg-muted h-4 w-20 animate-pulse rounded" />
-              </CardTitle>
-              <div className="bg-muted h-4 w-4 animate-pulse rounded" />
-            </CardHeader>
-            <CardContent>
-              <div className="bg-muted mb-2 h-8 w-16 animate-pulse rounded" />
-              <div className="bg-muted h-3 w-24 animate-pulse rounded" />
-            </CardContent>
-          </Card>
+          <MetricCard
+            key={i}
+            title="Loading..."
+            value="--"
+            footer={{
+              title: "Loading...",
+              description: "Fetching data...",
+            }}
+            icon={<IconUsers className="size-4" />}
+          />
         ))}
       </div>
     );
@@ -78,84 +76,87 @@ export function CompactParticipantMetrics({
     participants.map(p => p.project_id).filter(Boolean)
   ).size;
 
-  const cards = [
-    {
-      title: "Total Participants",
-      value: totalParticipants,
-      change: `Across ${uniqueProjects} projects`,
-      icon: Users,
-      color: "text-blue-600",
-    },
-    {
-      title: "Female Participants",
-      value: totalFemales,
-      change: `${formatPercent(femalePercent)} of total`,
-      icon: UserCheck,
-      color: "text-pink-600",
-    },
-    {
-      title: "Male Participants",
-      value: totalMales,
-      change: `${formatPercent(malePercent)} of total`,
-      icon: CircleUser,
-      color: "text-blue-500",
-    },
-    {
-      title: "PWD Participants",
-      value: disabled.length,
-      change: `${formatPercent(disabledPercent)} of total`,
-      icon: Gauge,
-      color: "text-purple-600",
-    },
-    {
-      title: "Youth (≤35)",
-      value: youthCount,
-      change: `${((youthCount / totalParticipants) * 100).toFixed(1)}% youth`,
-      icon: TrendingUp,
-      color: "text-green-600",
-    },
-    {
-      title: "Elders (≥60)",
-      value: elderCount,
-      change: `${((elderCount / totalParticipants) * 100).toFixed(1)}% elders`,
-      icon: Activity,
-      color: "text-orange-600",
-    },
-    {
-      title: "Districts Covered",
-      value: uniqueDistricts,
-      change: "Geographic reach",
-      icon: MapPin,
-      color: "text-indigo-600",
-    },
-    {
-      title: "Average Age",
-      value: `${avgAge} years`,
-      change: "Participant average",
-      icon: Calendar,
-      color: "text-teal-600",
-    },
-  ];
-
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {cards.map((card, index) => {
-        const Icon = card.icon;
-        return (
-          <Card key={index}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {card.title}
-              </CardTitle>
-              <Icon className={`h-4 w-4 ${card.color}`} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{card.value}</div>
-              <p className="text-muted-foreground text-xs">{card.change}</p>
-            </CardContent>
-          </Card>
-        );
-      })}
+    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
+      <MetricCard
+        title="Total Participants"
+        value={totalParticipants}
+        footer={{
+          title: `Across ${uniqueProjects} projects`,
+          description: "Active participant count",
+        }}
+        icon={<IconUsers className="size-4 text-blue-600" />}
+      />
+
+      <MetricCard
+        title="Female Participants"
+        value={totalFemales}
+        footer={{
+          title: `${formatPercent(femalePercent)} of total`,
+          description: "Gender distribution",
+        }}
+        icon={<IconUserCheck className="size-4 text-pink-600" />}
+      />
+
+      <MetricCard
+        title="Male Participants"
+        value={totalMales}
+        footer={{
+          title: `${formatPercent(malePercent)} of total`,
+          description: "Gender distribution",
+        }}
+        icon={<IconUser className="size-4 text-blue-500" />}
+      />
+
+      <MetricCard
+        title="PWD Participants"
+        value={disabled.length}
+        footer={{
+          title: `${formatPercent(disabledPercent)} of total`,
+          description: "Persons with disabilities",
+        }}
+        icon={<IconGauge className="size-4 text-purple-600" />}
+      />
+
+      <MetricCard
+        title="Youth (≤35)"
+        value={youthCount}
+        footer={{
+          title: `${((youthCount / totalParticipants) * 100).toFixed(1)}% youth`,
+          description: "Young participants",
+        }}
+        icon={<IconTrendingUp className="size-4 text-green-600" />}
+      />
+
+      <MetricCard
+        title="Elders (≥60)"
+        value={elderCount}
+        footer={{
+          title: `${((elderCount / totalParticipants) * 100).toFixed(1)}% elders`,
+          description: "Senior participants",
+        }}
+        icon={<IconActivity className="size-4 text-orange-600" />}
+      />
+
+      <MetricCard
+        title="Districts Covered"
+        value={uniqueDistricts}
+        footer={{
+          title: "Geographic reach",
+          description: "Coverage area",
+        }}
+        icon={<IconMapPin className="size-4 text-indigo-600" />}
+      />
+
+      <MetricCard
+        title="Average Age"
+        value={`${avgAge} years`}
+        footer={{
+          title: "Participant average",
+          description: "Age demographics",
+        }}
+        icon={<IconCalendar className="size-4 text-teal-600" />}
+      />
     </div>
   );
 }
