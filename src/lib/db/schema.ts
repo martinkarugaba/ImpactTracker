@@ -878,6 +878,56 @@ export const activityReports = pgTable("activity_reports", {
   updated_at: timestamp("updated_at").defaultNow(),
 });
 
+export const vslas = pgTable("vslas", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  code: text("code").notNull().unique(),
+  description: text("description"),
+  organization_id: uuid("organization_id")
+    .references(() => organizations.id)
+    .notNull(),
+  cluster_id: uuid("cluster_id")
+    .references(() => clusters.id)
+    .notNull(),
+  project_id: uuid("project_id")
+    .references(() => projects.id)
+    .notNull(),
+  country: text("country").notNull(),
+  district: text("district").notNull(),
+  sub_county: text("sub_county").notNull(),
+  parish: text("parish").notNull(),
+  village: text("village").notNull(),
+  address: text("address"),
+  total_members: integer("total_members").notNull().default(0),
+  total_savings: integer("total_savings").notNull().default(0),
+  total_loans: integer("total_loans").notNull().default(0),
+  meeting_frequency: text("meeting_frequency").notNull(), // weekly, monthly, etc.
+  meeting_day: text("meeting_day"), // monday, tuesday, etc.
+  meeting_time: text("meeting_time"),
+  status: text("status").notNull().default("active"), // active, inactive, suspended
+  formed_date: timestamp("formed_date").notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const vslaMembers = pgTable("vsla_members", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  vsla_id: uuid("vsla_id")
+    .references(() => vslas.id)
+    .notNull(),
+  first_name: text("first_name").notNull(),
+  last_name: text("last_name").notNull(),
+  phone: text("phone").notNull(),
+  email: text("email"),
+  role: text("role").notNull().default("member"), // chairperson, secretary, treasurer, member
+  joined_date: timestamp("joined_date").notNull(),
+  total_savings: integer("total_savings").notNull().default(0),
+  total_loans: integer("total_loans").notNull().default(0),
+  status: text("status").notNull().default("active"), // active, inactive, suspended
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
 export const activityReportsRelations = relations(
   activityReports,
   ({ one }) => ({
@@ -887,3 +937,26 @@ export const activityReportsRelations = relations(
     }),
   })
 );
+
+export const vslasRelations = relations(vslas, ({ one, many }) => ({
+  organization: one(organizations, {
+    fields: [vslas.organization_id],
+    references: [organizations.id],
+  }),
+  cluster: one(clusters, {
+    fields: [vslas.cluster_id],
+    references: [clusters.id],
+  }),
+  project: one(projects, {
+    fields: [vslas.project_id],
+    references: [projects.id],
+  }),
+  members: many(vslaMembers),
+}));
+
+export const vslaMembersRelations = relations(vslaMembers, ({ one }) => ({
+  vsla: one(vslas, {
+    fields: [vslaMembers.vsla_id],
+    references: [vslas.id],
+  }),
+}));

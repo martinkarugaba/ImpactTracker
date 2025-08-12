@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Plus, FileDown, Upload } from "lucide-react";
@@ -12,8 +12,10 @@ import { ParticipantFilters } from "./participant-filters";
 import { ImportParticipants } from "./import/import-participants";
 import { useParticipants } from "../hooks/use-participants";
 import { useParticipantMetrics } from "../hooks/use-participant-metrics";
+import { useLocationNames } from "../hooks/use-location-names";
 import { type Participant } from "../types/types";
 import { type ParticipantFilters as ParticipantFiltersType } from "../types/types";
+import { type ParticipantsResponse } from "../types/types";
 import toast from "react-hot-toast";
 import {
   Dialog,
@@ -72,14 +74,21 @@ export function ParticipantsContainer({
   const [deletingParticipant, setDeletingParticipant] =
     useState<Participant | null>(null);
   const [applyFiltersToMetrics, setApplyFiltersToMetrics] = useState(false);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 10,
+  });
+  const [searchValue, setSearchValue] = useState("");
 
-  // Fetch participants with filters
+  // Fetch participants with filters and pagination
   const {
     data: participantsData,
     isLoading: isParticipantsLoading,
     error: participantsError,
   } = useParticipants(clusterId, {
-    search: filters.search || undefined,
+    page: pagination.page,
+    limit: pagination.pageSize,
+    search: searchValue || undefined,
     filters: {
       project: filters.project || undefined,
       district: filters.district || undefined,
@@ -99,8 +108,62 @@ export function ParticipantsContainer({
     applyFiltersToMetrics ? filters : undefined
   );
 
-  const participants = participantsData?.data?.data || [];
+  const participants = useMemo(() => {
+    const data = participantsData as ParticipantsResponse;
+    return data?.success ? data.data?.data || [] : [];
+  }, [participantsData]);
   const metricsParticipants = metricsData || [];
+
+  // Extract unique location IDs for batch fetching
+  const locationIds = useMemo(() => {
+    const districtIds = [
+      ...new Set(
+        participants.map((p: Participant) => p.district).filter(Boolean)
+      ),
+    ] as string[];
+    const subCountyIds = [
+      ...new Set(
+        participants.map((p: Participant) => p.subCounty).filter(Boolean)
+      ),
+    ] as string[];
+    const countryIds = [
+      ...new Set(
+        participants.map((p: Participant) => p.country).filter(Boolean)
+      ),
+    ] as string[];
+
+    return { districtIds, subCountyIds, countryIds };
+  }, [participants]);
+
+  // Batch fetch all location names
+  const locationNames = useLocationNames(
+    locationIds.districtIds,
+    locationIds.subCountyIds,
+    locationIds.countryIds
+  );
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setPagination(prev => ({ ...prev, page: 1 }));
+  }, [
+    filters.project,
+    filters.district,
+    filters.sex,
+    filters.isPWD,
+    filters.ageGroup,
+  ]);
+
+  // Ensure local state stays in sync with server data
+  useEffect(() => {
+    const data = participantsData as ParticipantsResponse;
+    if (data?.success && data.data?.pagination) {
+      const serverPage = data.data.pagination.page;
+      // Only update if the server page is different and we're not in the middle of a page change
+      if (serverPage && serverPage !== pagination.page) {
+        setPagination(prev => ({ ...prev, page: serverPage }));
+      }
+    }
+  }, [participantsData, pagination.page]);
 
   const handleEdit = (participant: Participant) => {
     setEditingParticipant(participant);
@@ -131,10 +194,28 @@ export function ParticipantsContainer({
     toast("Export functionality coming soon!");
   };
 
+  const handlePaginationChange = (page: number, pageSize: number) => {
+    // Use a function to ensure we always have the latest state
+    setPagination(current => {
+      // Only update if values actually changed to prevent unnecessary rerenders
+      if (current.page === page && current.pageSize === pageSize) {
+        return current;
+      }
+      return { page, pageSize };
+    });
+  };
+
+  const handleSearchChange = (search: string) => {
+    setSearchValue(search);
+    // Reset to first page when searching
+    setPagination(prev => ({ ...prev, page: 1 }));
+  };
+
   const columns = getParticipantColumns({
     onEdit: handleEdit,
     onDelete: handleDelete,
     onView: handleView,
+    locationNames,
   });
 
   if (participantsError || metricsError) {
@@ -297,9 +378,23 @@ export function ParticipantsContainer({
         showColumnToggle={true}
         showPagination={true}
         showRowSelection={true}
-        pageSize={10}
+        pageSize={pagination.pageSize}
         onRowClick={handleView}
-        isLoading={isParticipantsLoading}
+        isLoading={isParticipantsLoading || locationNames.isLoading}
+        serverSidePagination={true}
+        paginationData={(() => {
+          const data = participantsData as ParticipantsResponse;
+          return data?.success && data.data
+            ? {
+                ...data.data.pagination,
+                // Ensure the page matches our local state to prevent flickering
+                page: pagination.page,
+              }
+            : undefined;
+        })()}
+        onPaginationChange={handlePaginationChange}
+        searchValue={searchValue}
+        onSearchChange={handleSearchChange}
       />
 
       {/* Create/Edit Dialog */}

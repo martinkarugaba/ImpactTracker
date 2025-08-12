@@ -8,10 +8,37 @@ import { revalidatePath } from "next/cache";
 // Get all clusters
 export async function getClusters() {
   try {
+    console.log("🔄 Attempting to fetch clusters...");
+
     const clustersList = await db.select().from(clusters);
+
+    console.log(`✅ Successfully fetched ${clustersList.length} clusters`);
     return { success: true, data: clustersList };
   } catch (error) {
-    console.error("Error fetching clusters:", error);
+    console.error("❌ Error fetching clusters:", error);
+
+    // Provide more specific error information
+    if (error instanceof Error) {
+      if (error.message.includes("fetch failed")) {
+        return {
+          success: false,
+          error:
+            "Database connection failed. Please check your DATABASE_URL and network connectivity.",
+        };
+      }
+      if (error.message.includes("unauthorized")) {
+        return {
+          success: false,
+          error:
+            "Database authentication failed. Please check your DATABASE_URL credentials.",
+        };
+      }
+      return {
+        success: false,
+        error: `Database error: ${error.message}`,
+      };
+    }
+
     return { success: false, error: "Failed to fetch clusters" };
   }
 }

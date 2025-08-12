@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -66,17 +65,7 @@ export function ParticipantFilters({
         )}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
-        {/* Search */}
-        <div className="lg:col-span-2">
-          <Input
-            placeholder="Search participants..."
-            value={filters.search}
-            onChange={e => updateFilter("search", e.target.value)}
-            className="h-9"
-          />
-        </div>
-
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         {/* Project Filter */}
         <Select
           value={filters.project}

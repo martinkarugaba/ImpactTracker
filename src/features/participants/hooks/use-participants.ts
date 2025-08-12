@@ -38,6 +38,8 @@ export function useParticipants(
       JSON.stringify(params?.filters), // stringify to ensure changes trigger refetch
     ],
     queryFn: () => getParticipants(clusterId, params),
+    staleTime: 0, // Always fetch fresh data when parameters change
+    placeholderData: prevData => prevData, // This will keep the previous data while loading new data
   });
 }
 
