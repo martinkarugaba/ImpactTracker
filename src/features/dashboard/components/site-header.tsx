@@ -22,19 +22,25 @@ export function SiteHeader({
   return (
     <header
       className={cn(
-        "bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full rounded-t-2xl border-b px-2 backdrop-blur lg:px-6",
+        "bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full rounded-none border-b px-2 backdrop-blur md:rounded-t-2xl lg:px-6",
         className
       )}
       {...props}
     >
-      <div className="container flex h-12 items-center">
+      <div className="container flex h-12 items-center md:h-14">
+        {/* Mobile: Show sidebar trigger and title */}
+        <div className="flex items-center gap-3 md:hidden">
+          <SidebarTrigger />
+          <h1 className="text-lg font-medium">{title}</h1>
+        </div>
+
+        {/* Desktop: Show full header */}
         <div className="mr-4 hidden md:flex">
           <SidebarTrigger />
         </div>
 
         <div className="flex flex-1 flex-col justify-center md:flex-row md:items-center md:justify-between">
-          <div className="container py-2 md:py-4">
-            {/* <DashboardBreadcrumbs /> */}
+          <div className="container hidden py-2 md:block md:py-4">
             <h1 className="text-lg font-medium">{title}</h1>
           </div>
           <div className="ml-auto flex items-center gap-2">
