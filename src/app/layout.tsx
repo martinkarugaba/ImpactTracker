@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/features/themes/providers/theme-provider";
@@ -23,6 +23,17 @@ export const metadata: Metadata = {
   description: "Track your KPIs across organizations and projects",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -41,7 +52,7 @@ export default function RootLayout({
             >
               <ActiveThemeProvider>
                 <SidebarProvider defaultOpen={true}>
-                  <div className="w-full">{children}</div>
+                  <div className="safe-area-padding w-full">{children}</div>
                   <Toaster />
                 </SidebarProvider>
               </ActiveThemeProvider>
