@@ -22,6 +22,7 @@ export async function getParticipant(id: string): Promise<ParticipantResponse> {
         lastName: participants.lastName,
         sex: participants.sex,
         age: participants.age,
+        dateOfBirth: participants.dateOfBirth,
         contact: participants.contact,
         designation: participants.designation,
         enterprise: participants.enterprise,

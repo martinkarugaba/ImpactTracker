@@ -27,7 +27,11 @@ export const LoginFormSchema = z.object({
 
 type FormValues = z.infer<typeof LoginFormSchema>;
 
-export function LoginForm() {
+interface LoginFormProps {
+  onSuccess?: () => void;
+}
+
+export function LoginForm({ onSuccess }: LoginFormProps = {}) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -47,6 +51,7 @@ export function LoginForm() {
 
       if (result.success) {
         toast.success("You have been logged in successfully.");
+        onSuccess?.(); // Call the success callback if provided
         router.push("/dashboard");
         router.refresh();
       } else {

@@ -19,7 +19,7 @@ export function FeatureCard({
         <p className="text-sm leading-normal font-medium text-[#0e151b] sm:text-base">
           {title}
         </p>
-        <p className="text-xs leading-normal font-normal text-[#4e7997] sm:text-sm">
+        <p className="text-xs leading-relaxed font-normal text-[#4e7997] sm:text-sm">
           {description}
         </p>
       </div>

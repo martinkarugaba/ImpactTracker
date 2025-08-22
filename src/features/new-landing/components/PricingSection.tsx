@@ -38,69 +38,87 @@ const pricingPlans = [
 
 export function PricingSection() {
   return (
-    <>
-      <h2 className="px-4 pt-5 pb-3 text-lg leading-tight font-bold tracking-[-0.015em] text-[#0e151b] sm:text-xl md:text-[22px]">
-        Pricing
-      </h2>
-      <div className="grid grid-cols-1 gap-4 px-4 py-3 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-        {pricingPlans.map(plan => (
-          <div
-            key={plan.id}
-            className="flex flex-1 flex-col gap-4 rounded-lg border border-solid border-[#d0dde7] bg-slate-50 p-4 sm:rounded-xl sm:p-6"
-          >
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center justify-between">
-                <h1 className="text-sm leading-tight font-bold text-[#0e151b] sm:text-base">
-                  {plan.name}
-                </h1>
-                {plan.popular && (
-                  <p className="rounded-lg bg-[#1991e6] px-2 py-1 text-center text-xs leading-normal font-medium tracking-[0.015em] text-slate-50 sm:rounded-xl sm:px-3 sm:py-[3px]">
-                    Most Popular
-                  </p>
-                )}
-              </div>
-              <p className="flex items-baseline gap-1 text-[#0e151b]">
-                <span className="text-2xl leading-tight font-black tracking-[-0.033em] text-[#0e151b] sm:text-3xl md:text-4xl">
-                  {plan.price}
-                </span>
-                <span className="text-sm leading-tight font-bold text-[#0e151b] sm:text-base">
-                  {plan.period}
-                </span>
-              </p>
-            </div>
-            <button className="flex h-10 min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-[#e7eef3] px-4 text-sm leading-normal font-bold tracking-[0.015em] text-[#0e151b] transition-colors hover:bg-[#d0dde7] sm:rounded-xl">
-              <span className="truncate">{plan.buttonText}</span>
-            </button>
-            <div className="flex flex-col gap-2">
-              {plan.features.map((feature, index) => (
-                <div
-                  key={index}
-                  className="flex gap-2 text-xs leading-normal font-normal text-[#0e151b] sm:gap-3 sm:text-[13px]"
+    <div className="flex w-full items-center justify-center px-4 sm:px-6 md:px-8 lg:px-10">
+      <div className="w-full max-w-7xl">
+        <h2 className="pt-5 pb-4 text-[22px] leading-tight font-bold tracking-[-0.015em] text-[#0e151b]">
+          Pricing Plans
+        </h2>
+        <div className="grid grid-cols-1 gap-4 pb-4 lg:grid-cols-3">
+          {pricingPlans.map(plan => (
+            <div
+              key={plan.id}
+              className={`flex flex-col rounded-xl p-6 transition-colors ${
+                plan.popular
+                  ? "bg-[#0B4F82] text-white"
+                  : "bg-[#e7eef3] text-[#0e151b]"
+              }`}
+            >
+              <div className="text-center">
+                <h3
+                  className={`text-xl font-bold ${
+                    plan.popular ? "text-white" : "text-[#0e151b]"
+                  }`}
                 >
-                  <div
-                    className="flex-shrink-0 text-[#0e151b]"
-                    data-icon="Check"
-                    data-size="20px"
-                    data-weight="regular"
+                  {plan.name}
+                </h3>
+                <div className="py-4">
+                  <span
+                    className={`text-4xl font-bold ${
+                      plan.popular ? "text-white" : "text-[#0e151b]"
+                    }`}
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16px"
-                      height="16px"
-                      fill="currentColor"
-                      viewBox="0 0 256 256"
-                      className="sm:h-5 sm:w-5"
-                    >
-                      <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path>
-                    </svg>
-                  </div>
-                  {feature}
+                    {plan.price}
+                  </span>
+                  <span
+                    className={`text-base ${
+                      plan.popular ? "text-white/80" : "text-[#4e7997]"
+                    }`}
+                  >
+                    {plan.period}
+                  </span>
                 </div>
-              ))}
+              </div>
+
+              <ul className="flex-1 space-y-3 pb-6">
+                {plan.features.map((feature, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <svg
+                      className={`mt-0.5 h-4 w-4 flex-shrink-0 ${
+                        plan.popular ? "text-white" : "text-green-500"
+                      }`}
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span
+                      className={`text-sm leading-relaxed ${
+                        plan.popular ? "text-white/90" : "text-[#4e7997]"
+                      }`}
+                    >
+                      {feature}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <button
+                className={`w-full rounded-xl px-4 py-3 font-medium transition-colors ${
+                  plan.popular
+                    ? "bg-white text-[#0B4F82] hover:bg-gray-100"
+                    : "bg-[#0B4F82] text-white hover:bg-[#094068]"
+                }`}
+              >
+                {plan.buttonText}
+              </button>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </>
+    </div>
   );
 }

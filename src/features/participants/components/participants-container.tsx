@@ -437,8 +437,7 @@ export function ParticipantsContainer({
           </DialogHeader>
           <ImportParticipants
             clusterId={clusterId}
-            projects={projects}
-            onImport={async () => {
+            onImportComplete={async () => {
               setIsImportDialogOpen(false);
             }}
           />

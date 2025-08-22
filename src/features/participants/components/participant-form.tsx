@@ -38,6 +38,7 @@ const formSchema = z.object({
   village: z.string().min(2, "Village is required"),
   sex: z.enum(["male", "female", "other"]),
   age: z.string().min(1, "Age is required"),
+  dateOfBirth: z.string().optional(),
   isPWD: z.enum(["yes", "no"]),
   isMother: z.enum(["yes", "no"]),
   isRefugee: z.enum(["yes", "no"]),

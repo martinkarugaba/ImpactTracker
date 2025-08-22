@@ -1,4 +1,15 @@
-import { type ParticipantFormValues } from "../participant-form";
+"use client";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -7,228 +18,266 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Combobox } from "@/components/ui/combobox";
-import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { type ParticipantFormValues } from "../participant-form";
 
 interface DataPreviewProps {
   data: ParticipantFormValues[];
   projects: { id: string; name: string }[];
   countryOptions: { value: string; label: string }[];
-  selectedCountry: string;
+  districtOptions: { value: string; label: string }[];
+  subCountyOptions: { value: string; label: string }[];
   selectedProject: string;
+  selectedCountry: string;
   selectedDistrict: string;
   selectedSubCounty: string;
-  onCountrySelect: (value: string) => void;
   onProjectSelect: (value: string) => void;
+  onCountrySelect: (value: string) => void;
   onDistrictSelect: (value: string) => void;
   onSubCountySelect: (value: string) => void;
   onSearchCountry: (searchTerm: string) => void;
   onSearchDistrict: (searchTerm: string) => void;
   onSearchSubCounty: (searchTerm: string) => void;
-  districtOptions: { value: string; label: string }[];
-  subCountyOptions: { value: string; label: string }[];
-  isLoadingCountries: boolean;
-  isLoadingDistricts: boolean;
-  isLoadingSubCounties: boolean;
+  isLoadingCountries?: boolean;
+  isLoadingDistricts?: boolean;
+  isLoadingSubCounties?: boolean;
 }
 
 export function DataPreview({
   data,
-  projects = [],
-  countryOptions = [],
-  selectedCountry,
+  projects,
+  countryOptions,
+  districtOptions,
+  subCountyOptions,
   selectedProject,
+  selectedCountry,
   selectedDistrict,
   selectedSubCounty,
-  onCountrySelect,
   onProjectSelect,
+  onCountrySelect,
   onDistrictSelect,
   onSubCountySelect,
-  onSearchCountry,
-  onSearchDistrict,
-  onSearchSubCounty,
-  districtOptions = [],
-  subCountyOptions = [],
   isLoadingCountries = false,
   isLoadingDistricts = false,
   isLoadingSubCounties = false,
 }: DataPreviewProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, data.length);
+  const currentData = data.slice(startIndex, endIndex);
+
+  // Check if data has these fields populated
+  const hasProjectInData = data.some(p => p.project_id);
+  const hasCountryInData = data.some(p => p.country);
+  const hasDistrictInData = data.some(p => p.district);
+  const hasSubCountyInData = data.some(p => p.subCounty);
+
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Preview</CardTitle>
-        <CardDescription>
-          Showing first 5 of {data.length} participants
-        </CardDescription>
-
-        <div className="mt-4 space-y-4">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="project">
-                Select Project for All Participants
-              </Label>
-              <Combobox
-                options={projects.map(project => ({
-                  value: project.id,
-                  label: project.name,
-                }))}
-                value={selectedProject}
-                onValueChange={onProjectSelect}
-                placeholder="Select a project"
-                emptyMessage="No projects found."
-                className="w-full"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="country">
-                Select Country for All Participants
-              </Label>
-              <Combobox
-                options={countryOptions}
-                value={selectedCountry}
-                onValueChange={onCountrySelect}
-                onSearchChange={onSearchCountry}
-                placeholder="Type to search countries"
-                emptyMessage={
-                  isLoadingCountries
-                    ? "Loading countries..."
-                    : "No matching countries found"
-                }
-                disabled={isLoadingCountries}
-                className="w-full"
-              />
-              {isLoadingCountries && (
-                <div className="text-muted-foreground flex animate-pulse items-center gap-2 text-sm">
-                  <div className="bg-muted h-2 w-2 rounded-full"></div>
-                  <span>Loading countries, please wait...</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="district">
-                Select District for All Participants
-              </Label>
-              <Combobox
-                options={districtOptions}
-                value={selectedDistrict}
-                onValueChange={onDistrictSelect}
-                onSearchChange={onSearchDistrict}
-                placeholder={
-                  !selectedCountry
-                    ? "Select a country first, then search for districts"
-                    : "Type to search districts"
-                }
-                emptyMessage={
-                  !selectedCountry
-                    ? "Please select a country first"
-                    : isLoadingDistricts
-                      ? "Loading..."
-                      : "No districts found for this country"
-                }
-                disabled={isLoadingDistricts} // Allow typing even without country selected
-                className="w-full"
-              />
-              {isLoadingDistricts && (
-                <div className="text-muted-foreground flex animate-pulse items-center gap-2 text-sm">
-                  <div className="bg-muted h-2 w-2 rounded-full"></div>
-                  <span>Loading districts, please wait...</span>
-                </div>
-              )}
-              {!selectedCountry && selectedDistrict && (
-                <div className="text-xs text-amber-500">
-                  Please select a country to confirm district selection
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="subCounty">
-                Select Sub-County for All Participants
-              </Label>
-              <Combobox
-                options={subCountyOptions}
-                value={selectedSubCounty}
-                onValueChange={onSubCountySelect}
-                onSearchChange={onSearchSubCounty}
-                placeholder={
-                  !selectedDistrict
-                    ? "Select a district first, then search for sub-counties"
-                    : "Type to search sub-counties"
-                }
-                emptyMessage={
-                  !selectedDistrict
-                    ? "Please select a district first"
-                    : isLoadingSubCounties
-                      ? "Loading..."
-                      : "No sub-counties found for this district"
-                }
-                disabled={isLoadingSubCounties} // Allow typing even without district selected
-                className="w-full"
-              />
-              {isLoadingSubCounties && (
-                <div className="text-muted-foreground flex animate-pulse items-center gap-2 text-sm">
-                  <div className="bg-muted h-2 w-2 rounded-full"></div>
-                  <span>Loading sub-counties, please wait...</span>
-                </div>
-              )}
-              {!selectedDistrict && selectedSubCounty && (
-                <div className="text-xs text-amber-500">
-                  Please select a district to confirm sub-county selection
-                </div>
-              )}
-            </div>
-          </div>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-medium">Data Preview</h3>
+          <p className="text-sm text-gray-600">
+            Showing {startIndex + 1}-{endIndex} of {data.length} participants
+          </p>
         </div>
-      </CardHeader>
+        <Badge variant="secondary">{data.length} valid records</Badge>
+      </div>
 
-      <CardContent>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Sex</TableHead>
-                <TableHead>Age</TableHead>
-                <TableHead>Contact</TableHead>
-                <TableHead>Designation</TableHead>
-                <TableHead>Enterprise</TableHead>
-                <TableHead>Village</TableHead>
-                <TableHead>Parish</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.slice(0, 5).map((row, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-medium">{`${row.firstName} ${row.lastName}`}</TableCell>
-                  <TableCell>{row.sex}</TableCell>
-                  <TableCell>{row.age}</TableCell>
-                  <TableCell>{row.contact}</TableCell>
-                  <TableCell>{row.designation || "—"}</TableCell>
-                  <TableCell>{row.enterprise || "—"}</TableCell>
-                  <TableCell>{row.village || "—"}</TableCell>
-                  <TableCell>{row.parish || "—"}</TableCell>
-                </TableRow>
+      {/* Global Selection Controls */}
+      <div className="grid grid-cols-1 gap-4 rounded-lg border p-4 md:grid-cols-2 lg:grid-cols-4">
+        <div>
+          <Label htmlFor="project-select">
+            Default Project{" "}
+            {!hasProjectInData && <span className="text-red-500">*</span>}
+          </Label>
+          <Select value={selectedProject} onValueChange={onProjectSelect}>
+            <SelectTrigger id="project-select">
+              <SelectValue placeholder="Select project" />
+            </SelectTrigger>
+            <SelectContent>
+              {projects.map(project => (
+                <SelectItem key={project.id} value={project.id}>
+                  {project.name}
+                </SelectItem>
               ))}
-            </TableBody>
-          </Table>
+            </SelectContent>
+          </Select>
+          {!hasProjectInData && (
+            <p className="mt-1 text-xs text-gray-500">
+              Will be applied to all participants
+            </p>
+          )}
         </div>
-        <div className="text-muted-foreground mt-4 text-sm">
-          Showing 5 of {data.length} participants to be imported. All data will
-          be assigned to the selected Project, Country, District, and
-          Sub-County.
+
+        <div>
+          <Label htmlFor="country-select">
+            Default Country{" "}
+            {!hasCountryInData && <span className="text-red-500">*</span>}
+          </Label>
+          <Select
+            value={selectedCountry}
+            onValueChange={onCountrySelect}
+            disabled={isLoadingCountries}
+          >
+            <SelectTrigger id="country-select">
+              <SelectValue placeholder="Select country" />
+            </SelectTrigger>
+            <SelectContent>
+              {countryOptions.map(option => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {!hasCountryInData && (
+            <p className="mt-1 text-xs text-gray-500">
+              Will be applied to all participants
+            </p>
+          )}
         </div>
-      </CardContent>
-    </Card>
+
+        <div>
+          <Label htmlFor="district-select">
+            Default District{" "}
+            {!hasDistrictInData && <span className="text-red-500">*</span>}
+          </Label>
+          <Select
+            value={selectedDistrict}
+            onValueChange={onDistrictSelect}
+            disabled={isLoadingDistricts || !selectedCountry}
+          >
+            <SelectTrigger id="district-select">
+              <SelectValue placeholder="Select district" />
+            </SelectTrigger>
+            <SelectContent>
+              {districtOptions.map(option => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {!hasDistrictInData && (
+            <p className="mt-1 text-xs text-gray-500">
+              Will be applied to all participants
+            </p>
+          )}
+        </div>
+
+        <div>
+          <Label htmlFor="subcounty-select">Default Sub County</Label>
+          <Select
+            value={selectedSubCounty}
+            onValueChange={onSubCountySelect}
+            disabled={isLoadingSubCounties || !selectedDistrict}
+          >
+            <SelectTrigger id="subcounty-select">
+              <SelectValue placeholder="Select sub county" />
+            </SelectTrigger>
+            <SelectContent>
+              {subCountyOptions.map(option => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {!hasSubCountyInData && (
+            <p className="mt-1 text-xs text-gray-500">
+              Will be applied to all participants
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Data Table */}
+      <div className="rounded-lg border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Sex</TableHead>
+              <TableHead>Age</TableHead>
+              <TableHead>Date of Birth</TableHead>
+              <TableHead>PWD</TableHead>
+              <TableHead>Contact</TableHead>
+              <TableHead>Location</TableHead>
+              <TableHead>Employment</TableHead>
+              <TableHead>Skills</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {currentData.map((participant, index) => (
+              <TableRow key={startIndex + index}>
+                <TableCell className="font-medium">
+                  {participant.firstName} {participant.lastName}
+                </TableCell>
+                <TableCell>{participant.sex}</TableCell>
+                <TableCell>{participant.age}</TableCell>
+                <TableCell>
+                  {participant.dateOfBirth ? (
+                    <span className="text-sm">
+                      {new Date(participant.dateOfBirth).toLocaleDateString()}
+                    </span>
+                  ) : (
+                    <span className="text-sm text-gray-400">—</span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                      participant.isPWD === "yes"
+                        ? "bg-blue-100 text-blue-800"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {participant.isPWD === "yes" ? "Yes" : "No"}
+                  </span>
+                </TableCell>
+                <TableCell>{participant.contact}</TableCell>
+                <TableCell>
+                  <div className="text-sm">
+                    <div>{participant.district}</div>
+                    <div className="text-gray-500">{participant.subCounty}</div>
+                  </div>
+                </TableCell>
+                <TableCell>{participant.employmentStatus}</TableCell>
+                <TableCell>{participant.skillOfInterest}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <Button
+            variant="outline"
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          <span className="text-sm text-gray-600">
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            onClick={() =>
+              setCurrentPage(prev => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }

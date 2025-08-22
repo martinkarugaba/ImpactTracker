@@ -89,7 +89,7 @@ export function ParticipantsTable({
   setIsOpen,
   editingParticipant,
   handleSubmit,
-  onImportParticipants,
+  onImportParticipants: _onImportParticipants,
   isLoading,
   tableIsLoading,
   projects,
@@ -136,9 +136,13 @@ export function ParticipantsTable({
           />
           <div className="flex w-full items-center gap-2">
             <ImportParticipants
-              onImport={onImportParticipants}
+              onImportComplete={() => {
+                // Trigger a data refresh after import completion
+                // The ImportParticipants component handles the actual import internally
+                // We just need to refresh the data in the parent component
+                window.location.reload(); // Simple refresh for now
+              }}
               clusterId={clusters[0]?.id || ""}
-              projects={projects}
             />
             <AddParticipantDialog
               isOpen={isOpen}

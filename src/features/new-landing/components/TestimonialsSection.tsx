@@ -27,33 +27,35 @@ const testimonials = [
 
 export function TestimonialsSection() {
   return (
-    <>
-      <h2 className="px-4 pt-5 pb-3 text-lg leading-tight font-bold tracking-[-0.015em] text-[#0e151b] sm:text-xl md:text-[22px]">
-        Client Testimonials
-      </h2>
-      <div className="scrollbar-hide flex overflow-x-auto">
-        <div className="flex min-w-full items-stretch gap-3 p-4 sm:gap-4">
-          {testimonials.map(testimonial => (
-            <div
-              key={testimonial.id}
-              className="flex min-w-[280px] flex-1 flex-col gap-3 rounded-lg sm:min-w-[320px] sm:gap-4 md:min-w-60"
-            >
+    <div className="flex w-full items-center justify-center px-4 sm:px-6 md:px-8 lg:px-10">
+      <div className="w-full max-w-7xl">
+        <h2 className="pt-5 pb-3 text-lg leading-tight font-bold tracking-[-0.015em] text-[#0e151b] sm:text-xl md:text-[22px]">
+          Client Testimonials
+        </h2>
+        <div className="scrollbar-hide flex overflow-x-auto">
+          <div className="flex min-w-full items-stretch gap-3 pb-4 sm:gap-4">
+            {testimonials.map(testimonial => (
               <div
-                className="flex aspect-square w-full flex-col rounded-lg bg-cover bg-center bg-no-repeat sm:rounded-xl"
-                style={{ backgroundImage: `url("${testimonial.imageUrl}")` }}
-              ></div>
-              <div className="flex flex-col gap-2">
-                <p className="text-sm leading-normal font-medium text-[#0e151b] sm:text-base">
-                  {testimonial.title}
-                </p>
-                <p className="text-xs leading-normal font-normal text-[#4e7997] sm:text-sm">
-                  {testimonial.description}
-                </p>
+                key={testimonial.id}
+                className="flex min-w-[280px] flex-1 flex-col gap-3 rounded-lg sm:min-w-[320px] sm:gap-4 md:min-w-60"
+              >
+                <div
+                  className="flex aspect-square w-full flex-col rounded-lg bg-cover bg-center bg-no-repeat sm:rounded-xl"
+                  style={{ backgroundImage: `url("${testimonial.imageUrl}")` }}
+                ></div>
+                <div className="flex flex-col gap-2">
+                  <p className="text-sm leading-normal font-medium text-[#0e151b] sm:text-base">
+                    {testimonial.title}
+                  </p>
+                  <p className="text-xs leading-relaxed font-normal text-[#4e7997] sm:text-sm">
+                    {testimonial.description}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -103,13 +103,18 @@ export async function getParticipants(
     const organizationIds = [
       ...new Set(participantsData.map(p => p.organization_id)),
     ];
-    const orgs = await db.query.organizations.findMany({
-      where: sql`${organizations.id} IN (${organizationIds.join(",")})`,
-      columns: {
-        id: true,
-        name: true,
-      },
-    });
+
+    let orgs: Array<{ id: string; name: string }> = [];
+    if (organizationIds.length > 0) {
+      orgs = await db.query.organizations.findMany({
+        where: (organizations, { inArray }) =>
+          inArray(organizations.id, organizationIds),
+        columns: {
+          id: true,
+          name: true,
+        },
+      });
+    }
 
     const orgMap = new Map(orgs.map(org => [org.id, org.name]));
 

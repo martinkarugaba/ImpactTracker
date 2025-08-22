@@ -29,20 +29,24 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <div className="@container flex flex-col gap-6 px-4 py-6 sm:gap-8 sm:py-8 md:gap-10 md:py-10">
-      <div className="flex flex-col gap-3 sm:gap-4">
-        <h1 className="tracking-light max-w-[720px] text-2xl leading-tight font-bold text-[#0e151b] sm:text-3xl md:text-4xl">
-          Key Features
-        </h1>
-        <p className="max-w-[720px] text-sm leading-normal font-normal text-[#0e151b] sm:text-base">
-          ImpactTrack offers a comprehensive suite of tools to streamline your
-          operations and maximize your impact.
-        </p>
-      </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-        {features.map(feature => (
-          <FeatureCard key={feature.id} {...feature} />
-        ))}
+    <div className="@container flex w-full items-center justify-center px-4 sm:px-6 md:px-8 lg:px-10">
+      <div className="w-full max-w-7xl">
+        <div className="flex flex-col gap-6 py-6 sm:gap-8 sm:py-8 md:gap-10 md:py-10">
+          <div className="flex flex-col gap-3 sm:gap-4">
+            <h1 className="tracking-light max-w-[720px] text-2xl leading-tight font-bold text-[#0e151b] sm:text-3xl md:text-4xl">
+              Key Features
+            </h1>
+            <p className="max-w-[720px] text-sm leading-relaxed font-normal text-[#0e151b] sm:text-base">
+              ImpactTrack offers a comprehensive suite of tools to streamline
+              your operations and maximize your impact.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+            {features.map(feature => (
+              <FeatureCard key={feature.id} {...feature} />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

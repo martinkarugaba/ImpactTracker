@@ -58,6 +58,7 @@ export function useParticipantFormHandlers({
             village: data.village,
             sex: data.sex,
             age: data.age,
+            dateOfBirth: null,
             isPWD: data.isPWD ? "yes" : "no",
             isMother: data.isMother ? "yes" : "no",
             isRefugee: data.isRefugee ? "yes" : "no",
@@ -102,6 +103,7 @@ export function useParticipantFormHandlers({
           village: data.village,
           sex: data.sex,
           age: data.age,
+          dateOfBirth: null,
           isPWD: data.isPWD ? "yes" : "no",
           isMother: data.isMother ? "yes" : "no",
           isRefugee: data.isRefugee ? "yes" : "no",
@@ -138,12 +140,65 @@ export function useParticipantFormHandlers({
   };
 
   const handleImportParticipants = async (data: ParticipantFormValues[]) => {
+    console.log("=== FRONTEND IMPORT HANDLER CALLED ===");
+    console.log("Data received in handler:", data.length, "participants");
+    console.log("Sample data:", JSON.stringify(data[0], null, 2));
+
     onSetIsLoading(true);
     const toastId = toast.loading(`Importing ${data.length} participants...`);
 
     try {
+      console.log("ClusterId being used:", clusterId);
+
+      // Verify required fields again before transformation
+      const missingRequired = data.filter(
+        p => !p.project_id || !p.organization_id || !p.cluster_id
+      );
+      if (missingRequired.length > 0) {
+        console.error(
+          "Participants missing required fields:",
+          missingRequired.length
+        );
+        console.error(
+          "Example missing fields:",
+          JSON.stringify(missingRequired[0], null, 2)
+        );
+        throw new Error(
+          `${missingRequired.length} participants have missing required fields (project_id, organization_id, cluster_id)`
+        );
+      }
+
       const transformedData = transformImportData(data, clusterId);
+      console.log(
+        "Transformed data (first participant):",
+        JSON.stringify(transformedData[0], null, 2)
+      );
+
+      // Verify all transformedData has required fields
+      const missingAfterTransform = transformedData.filter(
+        p => !p.project_id || !p.organization_id || !p.cluster_id
+      );
+      if (missingAfterTransform.length > 0) {
+        console.error(
+          "After transform, missing fields:",
+          missingAfterTransform.length
+        );
+        console.error(
+          "Example with missing fields:",
+          JSON.stringify(missingAfterTransform[0], null, 2)
+        );
+        throw new Error(
+          `After transformation, ${missingAfterTransform.length} participants have missing required fields`
+        );
+      }
+
+      console.log(
+        "Calling bulkCreateParticipants with",
+        transformedData.length,
+        "participants"
+      );
       const result = await bulkCreateParticipants.mutateAsync(transformedData);
+      console.log("Import result:", JSON.stringify(result, null, 2));
 
       if (!result.success) {
         throw new Error(result.error || "Failed to import participants");

@@ -5,6 +5,7 @@ import { type Participant } from "../../types/types";
 import { type LocationNames } from "../../hooks/use-location-names";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { capitalizeWords, calculateAge, formatContact } from "@/lib/utils";
 import {
   User,
   UserCheck,
@@ -70,15 +71,21 @@ export function getParticipantColumns({
         </div>
       ),
       enableHiding: true,
-      accessorFn: row => `${row.firstName} ${row.lastName}`,
+      enableSorting: true,
+      accessorFn: row => {
+        const firstName = capitalizeWords(row.firstName || "");
+        const lastName = capitalizeWords(row.lastName || "");
+        return `${firstName} ${lastName}`;
+      },
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium">
-            {row.original.firstName?.[0]?.toUpperCase()}
-            {row.original.lastName?.[0]?.toUpperCase()}
+            {capitalizeWords(row.original.firstName || "")?.[0]?.toUpperCase()}
+            {capitalizeWords(row.original.lastName || "")?.[0]?.toUpperCase()}
           </div>
           <div className="font-medium">
-            {row.original.firstName} {row.original.lastName}
+            {capitalizeWords(row.original.firstName || "")}{" "}
+            {capitalizeWords(row.original.lastName || "")}
           </div>
         </div>
       ),
@@ -92,6 +99,7 @@ export function getParticipantColumns({
         </div>
       ),
       enableHiding: true,
+      enableSorting: true,
       accessorFn: row => row.sex,
       cell: ({ row }) => {
         const sex = row.original.sex;
@@ -128,7 +136,7 @@ export function getParticipantColumns({
       },
     },
     {
-      accessorKey: "age",
+      id: "age",
       header: () => (
         <div className="flex items-center gap-2">
           <UserCheck className="h-4 w-4" />
@@ -136,9 +144,34 @@ export function getParticipantColumns({
         </div>
       ),
       enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => {
+        // Try to calculate age from date of birth first
+        if (row.dateOfBirth) {
+          const calculatedAge = calculateAge(row.dateOfBirth);
+          if (calculatedAge !== null) {
+            return calculatedAge;
+          }
+        }
+        // Fall back to stored age if dateOfBirth is null or invalid
+        return row.age || 0;
+      },
       cell: ({ row }) => {
-        const age = row.original.age;
-        if (!age) return "—";
+        let age = 0;
+
+        // Try to calculate age from date of birth first
+        if (row.original.dateOfBirth) {
+          const calculatedAge = calculateAge(row.original.dateOfBirth);
+          if (calculatedAge !== null) {
+            age = calculatedAge;
+          } else {
+            age = row.original.age || 0;
+          }
+        } else {
+          age = row.original.age || 0;
+        }
+
+        if (!age && age !== 0) return "—";
 
         const ageNum = Number(age);
         let variant: "default" | "secondary" | "destructive" | "outline" =
@@ -175,22 +208,26 @@ export function getParticipantColumns({
         </div>
       ),
       enableHiding: true,
+      enableSorting: true,
       accessorFn: row => {
         const districtId = row.district;
-        return locationNames?.districts[districtId] || districtId || "—";
+        const districtName =
+          locationNames?.districts[districtId] || districtId || "—";
+        return capitalizeWords(districtName);
       },
       cell: ({ row }) => {
         const districtId = row.original.district;
         const districtName =
           locationNames?.districts[districtId] || districtId || "—";
+        const capitalizedName = capitalizeWords(districtName);
 
         return (
           <div className="flex items-center gap-2">
             <div className="bg-muted text-muted-foreground flex h-6 w-6 items-center justify-center rounded text-xs">
               <Flag className="h-3 w-3" />
             </div>
-            <div className="max-w-[200px] truncate" title={districtName}>
-              {districtName}
+            <div className="max-w-[200px] truncate" title={capitalizedName}>
+              {capitalizedName}
             </div>
           </div>
         );
@@ -205,21 +242,25 @@ export function getParticipantColumns({
         </div>
       ),
       enableHiding: true,
+      enableSorting: true,
       accessorFn: row => {
         const subCountyId = row.subCounty;
-        return locationNames?.subCounties[subCountyId] || subCountyId || "—";
+        const subCountyName =
+          locationNames?.subCounties[subCountyId] || subCountyId || "—";
+        return capitalizeWords(subCountyName);
       },
       cell: ({ row }) => {
         const subCountyId = row.original.subCounty;
         const subCountyName =
           locationNames?.subCounties[subCountyId] || subCountyId || "—";
+        const capitalizedName = capitalizeWords(subCountyName);
 
         return (
           <div
             className="text-muted-foreground max-w-[200px] truncate"
-            title={subCountyName}
+            title={capitalizedName}
           >
-            {subCountyName}
+            {capitalizedName}
           </div>
         );
       },
@@ -233,6 +274,7 @@ export function getParticipantColumns({
         </div>
       ),
       enableHiding: true,
+      enableSorting: true,
       accessorFn: row => {
         const countryId = row.country;
         return locationNames?.countries[countryId] || countryId || "—";
@@ -263,6 +305,7 @@ export function getParticipantColumns({
         </div>
       ),
       enableHiding: true,
+      enableSorting: true,
       accessorFn: row => row.organizationName || row.organization_id,
       cell: ({ row }) => {
         const name =
@@ -295,6 +338,7 @@ export function getParticipantColumns({
         </div>
       ),
       enableHiding: true,
+      enableSorting: true,
       accessorFn: row => row.projectName || "Unknown",
       cell: ({ row }) => {
         const name = row.original.projectName || "Unknown";
@@ -326,6 +370,7 @@ export function getParticipantColumns({
         </div>
       ),
       enableHiding: true,
+      enableSorting: true,
       cell: ({ row }) => {
         const designation = row.original.designation;
         if (!designation) return "—";
@@ -346,6 +391,7 @@ export function getParticipantColumns({
         </div>
       ),
       enableHiding: true,
+      enableSorting: true,
       cell: ({ row }) => {
         const enterprise = row.original.enterprise;
         if (!enterprise) return "—";
@@ -360,7 +406,7 @@ export function getParticipantColumns({
       },
     },
     {
-      accessorKey: "contact",
+      id: "contact",
       header: () => (
         <div className="flex items-center gap-2">
           <Phone className="h-4 w-4" />
@@ -368,14 +414,18 @@ export function getParticipantColumns({
         </div>
       ),
       enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => formatContact(row.contact || ""),
       cell: ({ row }) => {
         const contact = row.original.contact;
         if (!contact) return "—";
 
+        const formattedContact = formatContact(contact);
+
         return (
           <div className="flex items-center gap-2 font-mono text-sm">
             <Phone className="text-muted-foreground h-3 w-3" />
-            {contact}
+            {formattedContact}
           </div>
         );
       },
