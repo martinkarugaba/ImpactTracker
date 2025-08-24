@@ -30,6 +30,7 @@ interface AddParticipantDialogProps {
   isLoading: boolean;
   projects: Project[];
   clusters: { id: string; name: string }[];
+  children?: React.ReactNode;
 }
 
 export function AddParticipantDialog({
@@ -40,6 +41,7 @@ export function AddParticipantDialog({
   isLoading,
   projects,
   clusters,
+  children,
 }: AddParticipantDialogProps) {
   const handleOpenDialog = () => setIsOpen(true);
 
@@ -87,14 +89,18 @@ export function AddParticipantDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       {!editingParticipant && (
         <DialogTrigger asChild>
-          <Button
-            onClick={handleOpenDialog}
-            className="flex items-center gap-2"
-            variant="default"
-          >
-            <Plus className="h-3 w-4" />
-            Add Participant
-          </Button>
+          {children ? (
+            children
+          ) : (
+            <Button
+              onClick={handleOpenDialog}
+              className="flex items-center gap-2"
+              variant="default"
+            >
+              <Plus className="h-3 w-4" />
+              Add Participant
+            </Button>
+          )}
         </DialogTrigger>
       )}
       <DialogContent className="max-h-[90vh] min-w-[80vw] overflow-auto lg:min-w-[600px]">

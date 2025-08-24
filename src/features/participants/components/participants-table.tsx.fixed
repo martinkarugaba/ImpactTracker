@@ -206,43 +206,6 @@ export function ParticipantsTable({
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex items-center justify-end gap-2">
-        <Button
-          size="sm"
-          onClick={handleExport}
-          variant="outline"
-          className="gap-2"
-        >
-          <Download className="h-4 w-4" />
-          <span className="hidden lg:inline">Export</span>
-          <span className="lg:hidden">Export</span>
-        </Button>
-        <ImportParticipants
-          onImportComplete={() => {
-            window.location.reload();
-          }}
-          clusterId={clusters[0]?.id || ""}
-          buttonText="Import"
-          className="h-8"
-        />
-        <AddParticipantDialog
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          editingParticipant={editingParticipant}
-          handleSubmit={handleSubmit}
-          isLoading={isLoading}
-          projects={projects}
-          clusters={clusters}
-        >
-          <Button size="sm">
-            <Plus className="mr-2 h-4 w-4" />
-            <span className="hidden lg:inline">Add Participant</span>
-            <span className="lg:hidden">Add</span>
-          </Button>
-        </AddParticipantDialog>
-      </div>
-
       {/* Table Card */}
       <div className="bg-card text-card-foreground rounded-lg border shadow-sm">
         <div className="min-h-[600px] p-6">
@@ -263,6 +226,43 @@ export function ParticipantsTable({
               pageSize={pagination?.limit || 10}
               onRowSelectionChange={setSelectedRows}
               onSortingChange={handleSortingChange}
+              customActions={
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    onClick={handleExport}
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    <Download className="h-4 w-4" />
+                    <span className="hidden lg:inline">Export</span>
+                    <span className="lg:hidden">Export</span>
+                  </Button>
+                  <ImportParticipants
+                    onImportComplete={() => {
+                      window.location.reload();
+                    }}
+                    clusterId={clusters[0]?.id || ""}
+                    buttonText="Import"
+                    className="h-8"
+                  />
+                  <AddParticipantDialog
+                    isOpen={isOpen}
+                    setIsOpen={setIsOpen}
+                    editingParticipant={editingParticipant}
+                    handleSubmit={handleSubmit}
+                    isLoading={isLoading}
+                    projects={projects}
+                    clusters={clusters}
+                  >
+                    <Button size="sm">
+                      <Plus className="mr-2 h-4 w-4" />
+                      <span className="hidden lg:inline">Add Participant</span>
+                      <span className="lg:hidden">Add</span>
+                    </Button>
+                  </AddParticipantDialog>
+                </div>
+              }
             />
           )}
         </div>

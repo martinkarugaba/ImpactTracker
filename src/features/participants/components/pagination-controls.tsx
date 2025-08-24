@@ -1,9 +1,16 @@
 "use client";
 
 import { FC } from "react";
-
-import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+
+import { usePagination } from "@/hooks/use-pagination";
+import { Button } from "@/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+} from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -33,61 +40,113 @@ const PaginationControls: FC<PaginationControlsProps> = ({
   onPageChange,
   onPageSizeChange,
 }) => {
+  const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
+    currentPage,
+    totalPages,
+    paginationItemsToDisplay: 5,
+  });
+
   return (
-    <div className="flex items-center justify-between gap-2">
-      <div className="flex items-center gap-2">
-        <div className="text-muted-foreground text-sm">Rows per page:</div>
+    <div className="flex items-center justify-between gap-3 max-sm:flex-col">
+      {/* Page number information */}
+      <p
+        className="text-muted-foreground flex-1 text-sm whitespace-nowrap"
+        aria-live="polite"
+      >
+        Page <span className="text-foreground">{currentPage}</span> of{" "}
+        <span className="text-foreground">{totalPages}</span>
+      </p>
+
+      {/* Pagination buttons */}
+      <div className="grow">
+        <Pagination>
+          <PaginationContent>
+            {/* Previous page button */}
+            <PaginationItem>
+              <Button
+                size="icon"
+                variant="outline"
+                className="disabled:pointer-events-none disabled:opacity-50"
+                onClick={() => onPageChange?.(currentPage - 1)}
+                disabled={!hasPrevPage}
+                aria-label="Go to previous page"
+              >
+                <ChevronLeftIcon size={16} aria-hidden="true" />
+              </Button>
+            </PaginationItem>
+
+            {/* Left ellipsis (...) */}
+            {showLeftEllipsis && (
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+            )}
+
+            {/* Page number buttons */}
+            {pages.map(page => {
+              const isActive = page === currentPage;
+              return (
+                <PaginationItem key={page}>
+                  <Button
+                    size="icon"
+                    variant={`${isActive ? "outline" : "ghost"}`}
+                    onClick={() => onPageChange?.(page)}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    {page}
+                  </Button>
+                </PaginationItem>
+              );
+            })}
+
+            {/* Right ellipsis (...) */}
+            {showRightEllipsis && (
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+            )}
+
+            {/* Next page button */}
+            <PaginationItem>
+              <Button
+                size="icon"
+                variant="outline"
+                className="disabled:pointer-events-none disabled:opacity-50"
+                onClick={() => onPageChange?.(currentPage + 1)}
+                disabled={!hasNextPage}
+                aria-label="Go to next page"
+              >
+                <ChevronRightIcon size={16} aria-hidden="true" />
+              </Button>
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
+
+      {/* Results per page */}
+      <div className="flex flex-1 justify-end">
         <Select
           value={pageSize.toString()}
           onValueChange={value => {
             const newSize = parseInt(value);
             onPageSizeChange?.(newSize);
           }}
+          aria-label="Results per page"
         >
-          <SelectTrigger className="w-[70px]">
-            <SelectValue aria-label={pageSize.toString()}>
-              {pageSize}
-            </SelectValue>
+          <SelectTrigger
+            id="results-per-page"
+            className="w-fit whitespace-nowrap"
+          >
+            <SelectValue placeholder="Select number of results" />
           </SelectTrigger>
           <SelectContent>
             {pageSizeOptions.map(size => (
               <SelectItem key={size} value={size.toString()}>
-                {size}
+                {size} / page
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <div className="text-muted-foreground text-sm">
-          Page {currentPage} of {totalPages}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            disabled={!hasPrevPage}
-            onClick={() => {
-              const newPage = currentPage > 1 ? currentPage - 1 : 1;
-              onPageChange?.(newPage);
-            }}
-          >
-            <ChevronLeftIcon className="h-4 w-4" />
-          </Button>
-
-          <Button
-            variant="outline"
-            size="icon"
-            disabled={!hasNextPage}
-            onClick={() => {
-              onPageChange?.(currentPage + 1);
-            }}
-          >
-            <ChevronRightIcon className="h-4 w-4" />
-          </Button>
-        </div>
       </div>
     </div>
   );

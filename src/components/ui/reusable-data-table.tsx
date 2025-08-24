@@ -74,6 +74,7 @@ interface ReusableDataTableProps<TData, TValue> {
   isLoading?: boolean;
   searchValue?: string;
   onSearchChange?: (search: string) => void;
+  onSortingChange?: (sorting: SortingState) => void;
 }
 
 export function ReusableDataTable<TData, TValue>({
@@ -94,6 +95,7 @@ export function ReusableDataTable<TData, TValue>({
   isLoading = false,
   searchValue,
   onSearchChange,
+  onSortingChange,
 }: ReusableDataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -108,6 +110,13 @@ export function ReusableDataTable<TData, TValue>({
       ? paginationData?.limit || pageSize
       : pageSize,
   });
+
+  // Notify parent of sorting changes
+  React.useEffect(() => {
+    if (onSortingChange) {
+      onSortingChange(sorting);
+    }
+  }, [sorting, onSortingChange]);
 
   // Handle search for server-side pagination
   const [searchInput, setSearchInput] = React.useState(searchValue || "");
