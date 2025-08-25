@@ -151,19 +151,11 @@ export function ParticipantsContainer({
     filters.sex,
     filters.isPWD,
     filters.ageGroup,
+    searchValue, // Also reset when search changes
   ]);
 
-  // Ensure local state stays in sync with server data
-  useEffect(() => {
-    const data = participantsData as ParticipantsResponse;
-    if (data?.success && data.data?.pagination) {
-      const serverPage = data.data.pagination.page;
-      // Only update if the server page is different and we're not in the middle of a page change
-      if (serverPage && serverPage !== pagination.page) {
-        setPagination(prev => ({ ...prev, page: serverPage }));
-      }
-    }
-  }, [participantsData, pagination.page]);
+  // Don't sync pagination state with server response to prevent flickering
+  // The server pagination is handled by React Query and will be reflected in the paginationData
 
   const handleEdit = (participant: Participant) => {
     setEditingParticipant(participant);
@@ -195,14 +187,10 @@ export function ParticipantsContainer({
   };
 
   const handlePaginationChange = (page: number, pageSize: number) => {
-    // Use a function to ensure we always have the latest state
-    setPagination(current => {
-      // Only update if values actually changed to prevent unnecessary rerenders
-      if (current.page === page && current.pageSize === pageSize) {
-        return current;
-      }
-      return { page, pageSize };
-    });
+    console.log(
+      `ParticipantsContainer: Setting pagination to page=${page}, pageSize=${pageSize}`
+    );
+    setPagination({ page, pageSize });
   };
 
   const handleSearchChange = (search: string) => {
@@ -384,13 +372,15 @@ export function ParticipantsContainer({
         serverSidePagination={true}
         paginationData={(() => {
           const data = participantsData as ParticipantsResponse;
-          return data?.success && data.data
-            ? {
-                ...data.data.pagination,
-                // Ensure the page matches our local state to prevent flickering
-                page: pagination.page,
-              }
-            : undefined;
+          if (data?.success && data.data) {
+            return {
+              ...data.data.pagination,
+              // Use the local pagination state for the current page to prevent flickering
+              page: pagination.page,
+              limit: pagination.pageSize,
+            };
+          }
+          return undefined;
         })()}
         onPaginationChange={handlePaginationChange}
         searchValue={searchValue}

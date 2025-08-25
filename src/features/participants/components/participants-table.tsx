@@ -17,7 +17,6 @@ import {
   ParticipantTableFilters,
 } from "./table";
 import { ImportParticipants } from "./import/import-participants";
-import PaginationControls from "./pagination-controls";
 
 function TableSkeleton() {
   return (
@@ -255,7 +254,7 @@ export function ParticipantsTable({
               filterColumn="fullName"
               filterPlaceholder="Filter by name..."
               showColumnToggle={true}
-              showPagination={false}
+              showPagination={true}
               isLoading={false}
               searchValue={search}
               onSearchChange={handleSearchChange}
@@ -263,22 +262,28 @@ export function ParticipantsTable({
               pageSize={pagination?.limit || 10}
               onRowSelectionChange={setSelectedRows}
               onSortingChange={handleSortingChange}
+              serverSidePagination={true}
+              paginationData={
+                pagination
+                  ? {
+                      page: pagination.page,
+                      limit: pagination.limit,
+                      total: pagination.total,
+                      totalPages: pagination.totalPages,
+                      hasNext: pagination.hasNext,
+                      hasPrev: pagination.hasPrev,
+                    }
+                  : undefined
+              }
+              onPaginationChange={(page, pageSize) => {
+                // Directly call the parent handlers with the page number (1-indexed)
+                // and page size without any complex logic
+                onPageChange(page);
+                onPageSizeChange(pageSize);
+              }}
             />
           )}
         </div>
-        {pagination && (
-          <div className="bg-card sticky bottom-0 border-t px-6 py-4">
-            <PaginationControls
-              hasNextPage={pagination.hasNext}
-              hasPrevPage={pagination.hasPrev}
-              totalPages={pagination.totalPages}
-              currentPage={pagination.page}
-              pageSize={pagination.limit}
-              onPageChange={onPageChange}
-              onPageSizeChange={onPageSizeChange}
-            />
-          </div>
-        )}
       </div>
     </div>
   );
