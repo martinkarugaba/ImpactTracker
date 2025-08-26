@@ -2,8 +2,13 @@
 
 import { auth } from "./auth";
 import { db } from "@/lib/db";
-import { organizationMembers, users, organizations } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import {
+  organizationMembers,
+  users,
+  organizations,
+  clusterUsers,
+} from "@/lib/db/schema";
+import { eq, and } from "drizzle-orm";
 
 export async function getUserClusterId() {
   try {
@@ -12,13 +17,43 @@ export async function getUserClusterId() {
       return null;
     }
 
-    // First get the organization ID for the user
+    // Get the user to check their role
+    const user = await db.query.users.findFirst({
+      where: eq(users.id, session.user.id),
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    // Super admins can access any cluster - for now, let's get the first available cluster
+    // In a multi-cluster setup, you might want to add cluster selection logic
+    if (user.role === "super_admin") {
+      const firstCluster = await db.query.clusters.findFirst({
+        columns: { id: true },
+      });
+      return firstCluster?.id || null;
+    }
+
+    // Cluster managers can access clusters they manage
+    if (user.role === "cluster_manager") {
+      const userCluster = await db.query.clusterUsers.findFirst({
+        where: and(
+          eq(clusterUsers.user_id, session.user.id),
+          eq(clusterUsers.role, "cluster_manager")
+        ),
+        columns: { cluster_id: true },
+      });
+      return userCluster?.cluster_id || null;
+    }
+
+    // For regular users, get cluster through organization membership
     const organizationId = await getOrganizationId();
     if (!organizationId) {
       return null;
     }
 
-    // Now get the cluster ID for that organization
+    // Get the cluster ID for that organization
     const [org] = await db
       .select({ cluster_id: organizations.cluster_id })
       .from(organizations)

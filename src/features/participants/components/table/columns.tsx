@@ -339,21 +339,17 @@ export function getParticipantColumns({
       ),
       enableHiding: true,
       enableSorting: true,
-      accessorFn: row => row.projectName || "Unknown",
+      accessorFn: row => row.projectAcronym || "UNK",
       cell: ({ row }) => {
+        const acronym = row.original.projectAcronym || "UNK";
         const name = row.original.projectName || "Unknown";
-        const acronym = name
-          .split(/\s+/)
-          .map(word => word[0])
-          .join("")
-          .toUpperCase()
-          .slice(0, 3);
 
         return (
           <div className="flex items-center gap-2">
             <Badge
               variant="secondary"
               className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200"
+              title={name}
             >
               {acronym}
             </Badge>

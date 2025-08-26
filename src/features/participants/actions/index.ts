@@ -9,6 +9,7 @@ import {
   type ParticipantResponse,
   type ParticipantsResponse,
 } from "../types/types";
+import { calculateAge, validateDateOfBirth } from "../lib/age-calculator";
 
 export async function getParticipants(
   clusterId: string,
@@ -27,6 +28,11 @@ export async function getParticipants(
   }
 ): Promise<ParticipantsResponse> {
   try {
+    console.log("🔍 getParticipants called with:", {
+      clusterId,
+      params,
+    });
+
     const page = params?.page || 1;
     const limit = params?.limit || 10;
     const offset = (page - 1) * limit;
@@ -35,20 +41,26 @@ export async function getParticipants(
 
     // Add filter conditions
     if (params?.filters) {
+      console.log("📝 Processing filters:", params.filters);
+
       if (params.filters.project && params.filters.project !== "all") {
+        console.log("Adding project filter:", params.filters.project);
         whereConditions.push(
           eq(participants.project_id, params.filters.project)
         );
       }
       if (params.filters.district && params.filters.district !== "all") {
+        console.log("Adding district filter:", params.filters.district);
         whereConditions.push(
           eq(participants.district, params.filters.district)
         );
       }
       if (params.filters.sex && params.filters.sex !== "all") {
+        console.log("Adding sex filter:", params.filters.sex);
         whereConditions.push(eq(participants.sex, params.filters.sex));
       }
       if (params.filters.isPWD && params.filters.isPWD !== "all") {
+        console.log("Adding isPWD filter:", params.filters.isPWD);
         if (params.filters.isPWD === "true") {
           whereConditions.push(eq(participants.isPWD, "yes"));
         } else if (params.filters.isPWD === "false") {
@@ -56,14 +68,23 @@ export async function getParticipants(
         }
       }
       if (params.filters.ageGroup && params.filters.ageGroup !== "all") {
+        console.log("Adding ageGroup filter:", params.filters.ageGroup);
         if (params.filters.ageGroup === "young") {
-          whereConditions.push(sql`${participants.age} <= 30`);
-        } else if (params.filters.ageGroup === "adult") {
+          console.log("Applying young filter: age >= 15 AND age <= 35");
+          // 15-35 Years
           whereConditions.push(
-            sql`${participants.age} > 30 AND ${participants.age} <= 60`
+            sql`${participants.age} >= 15 AND ${participants.age} <= 35`
           );
-        } else if (params.filters.ageGroup === "elder") {
-          whereConditions.push(sql`${participants.age} > 60`);
+        } else if (params.filters.ageGroup === "adult") {
+          console.log("Applying adult filter: age >= 36 AND age <= 59");
+          // 36-59 Years
+          whereConditions.push(
+            sql`${participants.age} >= 36 AND ${participants.age} <= 59`
+          );
+        } else if (params.filters.ageGroup === "older") {
+          console.log("Applying older filter: age >= 60");
+          // 60+ Years
+          whereConditions.push(sql`${participants.age} >= 60`);
         }
       }
     }
@@ -126,6 +147,7 @@ export async function getParticipants(
       ...participant,
       organizationName: orgMap.get(participant.organization_id) || "Unknown",
       projectName: participant.project?.name || "Unknown",
+      projectAcronym: participant.project?.acronym || "UNK",
       clusterName: participant.cluster?.name || "Unknown",
       // We'll pass these values directly to the LocationNameCell component later
       districtName: participant.district,
@@ -194,10 +216,35 @@ export async function createParticipant(
       };
     }
 
+    // Calculate age from date of birth if provided, otherwise leave age as null
+    let calculatedAge: number | null = null;
+    if (data.dateOfBirth) {
+      const validation = validateDateOfBirth(data.dateOfBirth);
+      if (validation.isValid) {
+        calculatedAge = calculateAge(data.dateOfBirth);
+        console.log(
+          `Calculated age ${calculatedAge} from date of birth ${data.dateOfBirth}`
+        );
+      } else {
+        console.warn(
+          `Invalid date of birth: ${validation.error}, leaving age as null`
+        );
+        calculatedAge = null;
+      }
+    } else if (data.age) {
+      // Only use provided age if dateOfBirth is empty but age is provided
+      calculatedAge = data.age;
+      console.log(`Using provided age: ${calculatedAge}`);
+    } else {
+      console.log(`No date of birth or age provided, leaving age as null`);
+      calculatedAge = null;
+    }
+
     const [participant] = await db
       .insert(participants)
       .values({
         ...data,
+        age: calculatedAge, // Use calculated age instead of provided age
         cluster_id: data.cluster_id,
         project_id: data.project_id,
         organization_id: data.organization_id,
@@ -224,9 +271,36 @@ export async function updateParticipant(
   data: NewParticipant
 ): Promise<ParticipantResponse> {
   try {
+    // Calculate age from date of birth if provided, otherwise leave age as null
+    let calculatedAge: number | null = null;
+    if (data.dateOfBirth) {
+      const validation = validateDateOfBirth(data.dateOfBirth);
+      if (validation.isValid) {
+        calculatedAge = calculateAge(data.dateOfBirth);
+        console.log(
+          `Calculated age ${calculatedAge} from date of birth ${data.dateOfBirth}`
+        );
+      } else {
+        console.warn(
+          `Invalid date of birth: ${validation.error}, leaving age as null`
+        );
+        calculatedAge = null;
+      }
+    } else if (data.age) {
+      // Only use provided age if dateOfBirth is empty but age is provided
+      calculatedAge = data.age;
+      console.log(`Using provided age: ${calculatedAge}`);
+    } else {
+      console.log(`No date of birth or age provided, leaving age as null`);
+      calculatedAge = null;
+    }
+
     const [participant] = await db
       .update(participants)
-      .set(data)
+      .set({
+        ...data,
+        age: calculatedAge, // Use calculated age instead of provided age
+      })
       .where(eq(participants.id, id))
       .returning();
 

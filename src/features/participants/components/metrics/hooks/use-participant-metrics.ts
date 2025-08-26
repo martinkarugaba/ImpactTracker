@@ -85,7 +85,12 @@ export function useParticipantMetrics(participants: Participant[]) {
   const femalePercent = calculatePercent(totalFemales, totalParticipants);
   const malePercent = calculatePercent(totalMales, totalParticipants);
 
-  // Age group metrics
+  // Age group metrics (15-35 and >35)
+  const participants15to35 = filterByAge(participants, 15, 35);
+  const participantsOver35 = filterByAge(participants, 36);
+  const total15to35 = participants15to35.length;
+  const totalOver35 = participantsOver35.length;
+
   const femalesYoung = filterByAge(females, 15, 35);
   const femalesOlder = filterByAge(females, 36);
   const malesYoung = filterByAge(males, 15, 35);
@@ -116,6 +121,12 @@ export function useParticipantMetrics(participants: Participant[]) {
     disabled.length
   );
 
+  // PWD Age group metrics
+  const disabled15to35 = filterByAge(disabled, 15, 35);
+  const disabledOver35 = filterByAge(disabled, 36);
+  const totalDisabled15to35 = disabled15to35.length;
+  const totalDisabledOver35 = disabledOver35.length;
+
   return {
     // Total
     totalParticipants,
@@ -128,7 +139,13 @@ export function useParticipantMetrics(participants: Participant[]) {
     femalePercent,
     malePercent,
 
-    // Age groups
+    // Age groups totals
+    participants15to35,
+    participantsOver35,
+    total15to35,
+    totalOver35,
+
+    // Age groups by gender
     femalesYoung,
     femalesOlder,
     malesYoung,
@@ -145,6 +162,12 @@ export function useParticipantMetrics(participants: Participant[]) {
     disabledPercent,
     disabledMalePercent,
     disabledFemalePercent,
+
+    // PWD Age groups
+    disabled15to35,
+    disabledOver35,
+    totalDisabled15to35,
+    totalDisabledOver35,
 
     // Formatters
     formatPercent,

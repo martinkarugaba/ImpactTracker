@@ -47,7 +47,7 @@ export function EditParticipantDialog({
     try {
       const updateData = {
         ...data,
-        age: parseInt(data.age),
+        age: data.age ? parseInt(data.age) : null,
         noOfTrainings: parseInt(data.noOfTrainings),
         numberOfChildren: parseInt(data.numberOfChildren),
         monthlyIncome: parseInt(data.monthlyIncome),
@@ -87,7 +87,7 @@ export function EditParticipantDialog({
     parish: participant.parish,
     village: participant.village,
     sex: participant.sex as "male" | "female" | "other",
-    age: participant.age.toString(),
+    age: participant.age ? participant.age.toString() : undefined,
     dateOfBirth: participant.dateOfBirth
       ? participant.dateOfBirth.toISOString().split("T")[0]
       : undefined,

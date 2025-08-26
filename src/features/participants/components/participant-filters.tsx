@@ -14,9 +14,15 @@ import { type ParticipantFilters as ParticipantFiltersType } from "../types/type
 interface ParticipantFiltersProps {
   filters: ParticipantFiltersType;
   onFiltersChange: (filters: ParticipantFiltersType) => void;
-  projects: Array<{ id: string; name: string }>;
+  projects: Array<{
+    id: string;
+    name: string;
+    acronym: string;
+  }>;
   _clusters: Array<{ id: string; name: string }>;
   _organizations: Array<{ id: string; name: string }>;
+  searchTerm?: string;
+  onSearchChange?: (search: string) => void;
 }
 
 export function ParticipantFilters({
@@ -25,12 +31,17 @@ export function ParticipantFilters({
   projects,
   _clusters,
   _organizations,
+  searchTerm: _searchTerm,
+  onSearchChange: _onSearchChange,
 }: ParticipantFiltersProps) {
   const updateFilter = (key: keyof ParticipantFiltersType, value: string) => {
-    onFiltersChange({
+    console.log(`🔧 Filter update: ${key} = ${value}`);
+    const newFilters = {
       ...filters,
       [key]: value,
-    });
+    };
+    console.log("🔧 New filters state:", newFilters);
+    onFiltersChange(newFilters);
   };
 
   const clearFilters = () => {
@@ -42,14 +53,16 @@ export function ParticipantFilters({
       isPWD: "all",
       ageGroup: "all",
     });
+    // Search is now handled in the data table header
   };
 
-  const hasActiveFilters = Object.values(filters).some(
-    value => value !== "" && value !== "all"
-  );
+  const hasActiveFilters = Object.entries(filters).some(([key, value]) => {
+    if (key === "search") return false; // Exclude search from this check
+    return value !== "" && value !== "all";
+  });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium">Filters</h3>
         {hasActiveFilters && (
@@ -59,13 +72,13 @@ export function ParticipantFilters({
             onClick={clearFilters}
             className="h-8 px-2 lg:px-3"
           >
-            Clear filters
+            Clear all
             <X className="ml-2 h-4 w-4" />
           </Button>
         )}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {/* Project Filter */}
         <Select
           value={filters.project}
@@ -78,7 +91,7 @@ export function ParticipantFilters({
             <SelectItem value="all">All Projects</SelectItem>
             {projects.map(project => (
               <SelectItem key={project.id} value={project.id}>
-                {project.name}
+                {project.acronym}
               </SelectItem>
             ))}
           </SelectContent>
@@ -124,9 +137,9 @@ export function ParticipantFilters({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Ages</SelectItem>
-            <SelectItem value="young">Youth (18-35)</SelectItem>
-            <SelectItem value="adult">Adult (36-59)</SelectItem>
-            <SelectItem value="elder">Elder (60+)</SelectItem>
+            <SelectItem value="young">15-35 Years</SelectItem>
+            <SelectItem value="adult">36-59 Years</SelectItem>
+            <SelectItem value="older">60+ Years</SelectItem>
           </SelectContent>
         </Select>
       </div>

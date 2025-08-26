@@ -80,8 +80,8 @@ export function DetailedParticipantMetrics({
   };
 
   const getCurrentAgeGroup = () => {
-    if (activeFilters.age?.includes("young")) return "Young (≤30)";
-    if (activeFilters.age?.includes("older")) return "Older (>30)";
+    if (activeFilters.age?.includes("young")) return "Young (15-35)";
+    if (activeFilters.age?.includes("older")) return "Older (>35)";
     return "All";
   };
 
@@ -167,8 +167,8 @@ export function DetailedParticipantMetrics({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Ages</SelectItem>
-                <SelectItem value="young">Young (≤30)</SelectItem>
-                <SelectItem value="older">Older (&gt;30)</SelectItem>
+                <SelectItem value="young">Young (15-35)</SelectItem>
+                <SelectItem value="older">Older (&gt;35)</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -278,7 +278,7 @@ export function DetailedParticipantMetrics({
           </h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <CompactMetricCard
-              title="Young Women (≤30)"
+              title="Female 15-35"
               count={femalesYoung.length}
               percent={formatPercent(youngFemalePercent)}
               isLoading={isLoading}
@@ -287,7 +287,7 @@ export function DetailedParticipantMetrics({
             />
 
             <CompactMetricCard
-              title="Older Women (&gt;30)"
+              title="Female > 35"
               count={femalesOlder.length}
               percent={formatPercent(olderFemalePercent)}
               isLoading={isLoading}
@@ -296,7 +296,7 @@ export function DetailedParticipantMetrics({
             />
 
             <CompactMetricCard
-              title="Young Men (≤30)"
+              title="Male 15-35"
               count={malesYoung.length}
               percent={formatPercent(youngMalePercent)}
               isLoading={isLoading}
@@ -305,7 +305,7 @@ export function DetailedParticipantMetrics({
             />
 
             <CompactMetricCard
-              title="Older Men (&gt;30)"
+              title="Male > 35"
               count={malesOlder.length}
               percent={formatPercent(olderMalePercent)}
               isLoading={isLoading}

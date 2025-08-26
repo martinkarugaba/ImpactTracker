@@ -56,7 +56,9 @@ export function AddParticipantDialog({
         parish: editingParticipant.parish,
         village: editingParticipant.village,
         sex: editingParticipant.sex as "male" | "female" | "other",
-        age: editingParticipant.age.toString(),
+        age: editingParticipant.age
+          ? editingParticipant.age.toString()
+          : undefined,
         isPWD: editingParticipant.isPWD as "yes" | "no",
         isMother: editingParticipant.isMother as "yes" | "no",
         isRefugee: editingParticipant.isRefugee as "yes" | "no",

@@ -38,7 +38,8 @@ export interface ParticipantSubmitData {
   parish: string;
   village: string;
   sex: "male" | "female" | "other";
-  age: string;
+  age?: string;
+  dateOfBirth?: string;
   isPWD: "yes" | "no";
   isMother: "yes" | "no";
   isRefugee: "yes" | "no";

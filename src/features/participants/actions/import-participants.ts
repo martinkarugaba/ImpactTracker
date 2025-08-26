@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { participants } from "@/lib/db/schema";
 import { revalidatePath } from "next/cache";
 import { type ParticipantFormValues } from "../components/participant-form";
+import { calculateAge, validateDateOfBirth } from "../lib/age-calculator";
 
 export async function importParticipants(data: ParticipantFormValues[]) {
   console.log("=== IMPORT STARTED ===");
@@ -230,11 +231,35 @@ export async function importParticipants(data: ParticipantFormValues[]) {
         throw new Error("Missing organization_id for participant");
       }
 
+      // Calculate age from date of birth if provided, otherwise leave age as null
+      let calculatedAge: number | null = null;
+      if (participant.dateOfBirth && participant.dateOfBirth.trim() !== "") {
+        const validation = validateDateOfBirth(participant.dateOfBirth);
+        if (validation.isValid) {
+          calculatedAge = calculateAge(participant.dateOfBirth);
+          console.log(
+            `Calculated age ${calculatedAge} from date of birth ${participant.dateOfBirth}`
+          );
+        } else {
+          console.warn(
+            `Invalid date of birth for participant: ${validation.error}, leaving age as null`
+          );
+          calculatedAge = null;
+        }
+      } else if (participant.age && participant.age.trim() !== "") {
+        // Only use provided age if dateOfBirth is empty but age is provided
+        calculatedAge = parseInt(participant.age);
+        console.log(`Using provided age: ${calculatedAge}`);
+      } else {
+        console.log(`No date of birth or age provided, leaving age as null`);
+        calculatedAge = null;
+      }
+
       return {
         firstName: participant.firstName,
         lastName: participant.lastName,
         sex: participant.sex,
-        age: parseInt(participant.age),
+        age: calculatedAge,
         dateOfBirth: participant.dateOfBirth
           ? new Date(participant.dateOfBirth)
           : null,
@@ -269,12 +294,17 @@ export async function importParticipants(data: ParticipantFormValues[]) {
 
     // CRITICAL DEBUG: Let's test with absolutely minimal data first
     console.log("=== TESTING MINIMAL INSERT FIRST ===");
+
+    // Use a date of birth that would calculate to age 25
+    const testDateOfBirth = new Date("1999-01-01");
+    const testCalculatedAge = calculateAge(testDateOfBirth);
+
     const minimalTestData = {
       firstName: "Debug",
       lastName: "Test",
       sex: "male",
-      age: 25,
-      dateOfBirth: null,
+      age: testCalculatedAge,
+      dateOfBirth: testDateOfBirth,
       contact: "0700000000",
       isPWD: "no",
       isMother: "no",
@@ -299,6 +329,10 @@ export async function importParticipants(data: ParticipantFormValues[]) {
       expectedImpact: null,
       isWillingToParticipate: "yes",
     };
+
+    console.log(
+      `Using calculated age ${testCalculatedAge} from DOB ${testDateOfBirth.toISOString()}`
+    );
 
     try {
       console.log("Testing minimal insert...");

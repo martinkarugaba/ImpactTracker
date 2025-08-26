@@ -54,7 +54,7 @@ import {
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { toast } from "sonner";
 import { z } from "zod";
-import { ChevronDown, LayoutGrid } from "lucide-react";
+import { ChevronDown, LayoutGrid, Search, Loader2 } from "lucide-react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Badge } from "@/components/ui/badge";
@@ -344,6 +344,12 @@ interface DataTableProps<TData, TValue> {
   showRowSelection?: boolean;
   pageSize?: number;
   onRowSelectionChange?: (selectedRows: TData[]) => void;
+  actionButtons?: React.ReactNode;
+  searchValue?: string;
+  onSearchChange?: (search: string) => void;
+  isLoading?: boolean;
+  rowSelection?: Record<string, boolean>;
+  onRowSelectionStateChange?: (selection: Record<string, boolean>) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -356,6 +362,12 @@ export function DataTable<TData, TValue>({
   showRowSelection = false,
   pageSize = 10,
   onRowSelectionChange,
+  actionButtons,
+  searchValue,
+  onSearchChange,
+  isLoading = false,
+  rowSelection: externalRowSelection,
+  onRowSelectionStateChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -363,11 +375,39 @@ export function DataTable<TData, TValue>({
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+  const [rowSelection, setRowSelection] = React.useState(
+    externalRowSelection || {}
+  );
+
+  // Use ref to track previous external selection to prevent unnecessary updates
+  const prevExternalRowSelection = React.useRef(externalRowSelection);
+
+  // Update internal row selection when external selection changes
+  React.useEffect(() => {
+    if (externalRowSelection !== undefined) {
+      // Only update if the external selection actually changed
+      const hasChanged =
+        JSON.stringify(prevExternalRowSelection.current) !==
+        JSON.stringify(externalRowSelection);
+
+      if (hasChanged) {
+        prevExternalRowSelection.current = externalRowSelection;
+        setRowSelection(externalRowSelection);
+      }
+    }
+  }, [externalRowSelection]);
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize,
   });
+
+  // Update pagination state when pageSize prop changes
+  React.useEffect(() => {
+    setPagination(prev => ({
+      ...prev,
+      pageSize,
+    }));
+  }, [pageSize]);
 
   const table = useReactTable({
     data,
@@ -379,7 +419,16 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: updater => {
+      const newSelection =
+        typeof updater === "function" ? updater(rowSelection) : updater;
+      setRowSelection(newSelection);
+
+      // Always call external callback for user interactions
+      if (onRowSelectionStateChange) {
+        onRowSelectionStateChange(newSelection);
+      }
+    },
     onPaginationChange: setPagination,
     state: {
       sorting,
@@ -400,115 +449,150 @@ export function DataTable<TData, TValue>({
     }
   }, [rowSelection, onRowSelectionChange, table]);
 
+  // Check if header should be shown
+  const showHeader = filterColumn || showColumnToggle || actionButtons;
+
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between py-4">
-        {filterColumn && (
+      {showHeader && (
+        <div className="flex items-center justify-between py-4">
           <div className="flex items-center gap-2">
-            <Input
-              placeholder={filterPlaceholder}
-              value={
-                (table.getColumn(filterColumn)?.getFilterValue() as string) ??
-                ""
-              }
-              onChange={event =>
-                table
-                  .getColumn(filterColumn)
-                  ?.setFilterValue(event.target.value)
-              }
-              className="max-w-sm"
-            />
-          </div>
-        )}
-        {showColumnToggle && (
-          <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <LayoutGrid className="mr-2 h-4 w-4" />
-                  <span className="hidden lg:inline">Customize Columns</span>
-                  <span className="lg:hidden">Columns</span>
-                  <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                {table && table.getAllColumns
-                  ? table
-                      .getAllColumns()
-                      .filter(
-                        column =>
-                          typeof column.accessorFn !== "undefined" &&
-                          column.getCanHide()
-                      )
-                      .map(column => {
-                        return (
-                          <DropdownMenuCheckboxItem
-                            key={column.id}
-                            className="capitalize"
-                            checked={column.getIsVisible()}
-                            onCheckedChange={value =>
-                              column.toggleVisibility(!!value)
-                            }
-                          >
-                            {column.id}
-                          </DropdownMenuCheckboxItem>
-                        );
-                      })
-                  : null}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )}
-      </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map(row => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map(cell => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
+            {filterColumn && (
+              <div className="relative max-w-sm">
+                <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                <Input
+                  placeholder={filterPlaceholder}
+                  value={searchValue ?? ""}
+                  onChange={event => {
+                    const value = event.target.value;
+                    if (onSearchChange) {
+                      onSearchChange(value);
+                    } else {
+                      table.getColumn(filterColumn)?.setFilterValue(value);
+                    }
+                  }}
+                  className="max-w-sm pl-9"
+                />
+              </div>
             )}
-          </TableBody>
-        </Table>
+          </div>
+          <div className="flex items-center gap-2">
+            {actionButtons}
+            {showColumnToggle && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <LayoutGrid className="mr-2 h-4 w-4" />
+                    <span className="hidden lg:inline">Customize Columns</span>
+                    <span className="lg:hidden">Columns</span>
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  {table && table.getAllColumns
+                    ? table
+                        .getAllColumns()
+                        .filter(
+                          column =>
+                            typeof column.accessorFn !== "undefined" &&
+                            column.getCanHide()
+                        )
+                        .map(column => {
+                          return (
+                            <DropdownMenuCheckboxItem
+                              key={column.id}
+                              className="capitalize"
+                              checked={column.getIsVisible()}
+                              onCheckedChange={value =>
+                                column.toggleVisibility(!!value)
+                              }
+                            >
+                              {column.id}
+                            </DropdownMenuCheckboxItem>
+                          );
+                        })
+                    : null}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
+        </div>
+      )}
+      <div className="overflow-hidden rounded-md border">
+        <div className="relative">
+          <Table>
+            <TableHeader className="bg-muted text-muted-foreground">
+              {table.getHeaderGroups().map(headerGroup => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map(header => {
+                    return (
+                      <TableHead
+                        className="text-muted-foreground"
+                        key={header.id}
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    <div className="flex items-center justify-center">
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map(row => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map(cell => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+          {isLoading && (
+            <div className="bg-background/80 absolute inset-0 flex items-center justify-center backdrop-blur-sm">
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span className="text-muted-foreground text-sm">
+                  Loading participants...
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       {showPagination && (
         <div className="flex items-center justify-between space-x-2 py-4">

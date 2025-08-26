@@ -11,7 +11,8 @@ export function transformParticipantData(
   return {
     ...formData,
     cluster_id: clusterId,
-    age: parseInt(formData.age, 10) || 18,
+    age: formData.age ? parseInt(formData.age, 10) : undefined,
+    dateOfBirth: formData.dateOfBirth || undefined,
     noOfTrainings: parseInt(formData.noOfTrainings || "0", 10) || 0,
     numberOfChildren: parseInt(formData.numberOfChildren || "0", 10) || 0,
     monthlyIncome: parseInt(formData.monthlyIncome || "0", 10) || 0,
