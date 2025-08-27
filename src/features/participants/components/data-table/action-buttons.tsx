@@ -1,6 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Download, Plus } from "lucide-react";
 import { BulkDeleteButton } from "./bulk-delete-button";
 import { ImportParticipants } from "../import/import-participants";
@@ -27,6 +35,8 @@ export function ActionButtons({
   onImport,
   onFixOrganizations,
 }: ActionButtonsProps) {
+  const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
+
   return (
     <>
       {onImport && (
@@ -43,7 +53,7 @@ export function ActionButtons({
           size="sm"
           variant="outline"
           className="flex items-center gap-1"
-          onClick={onExportData}
+          onClick={() => setIsExportDialogOpen(true)}
         >
           <Download className="h-4 w-4" />
           <span>Export</span>
@@ -77,6 +87,27 @@ export function ActionButtons({
         <Plus className="h-4 w-4" />
         <span>Add Participant</span>
       </Button>
+
+      {/* Export Coming Soon Dialog */}
+      <Dialog open={isExportDialogOpen} onOpenChange={setIsExportDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Export Functionality</DialogTitle>
+            <DialogDescription>
+              Export functionality is coming soon! We're working on implementing
+              secure export features with proper permissions and audit logging.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end">
+            <Button
+              variant="outline"
+              onClick={() => setIsExportDialogOpen(false)}
+            >
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

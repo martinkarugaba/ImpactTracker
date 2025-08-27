@@ -11,17 +11,26 @@ import { Footer } from "./components/footer";
 export default function LandingPage() {
   return (
     <div className="bg-background relative flex min-h-screen flex-col overflow-x-hidden">
-      <Header />
-      <main className="flex-1">
-        <HeroSection />
-        <FeaturesSection />
-        <TestimonialsSection />
-        <PricingSection />
-        <FaqSection />
-        <ContactSection />
-        <CTASection />
-      </main>
-      <Footer />
+      {/* Global gradient overlays */}
+      <div className="from-background via-background to-secondary/5 absolute inset-0 bg-gradient-to-br"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,var(--primary)/8,transparent_60%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,var(--secondary)/6,transparent_60%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_40%,var(--primary)/4,transparent_80%)]"></div>
+
+      {/* Content */}
+      <div className="relative z-10 flex min-h-screen flex-col">
+        <Header />
+        <main className="flex-1">
+          <HeroSection />
+          <FeaturesSection />
+          <TestimonialsSection />
+          <PricingSection />
+          <FaqSection />
+          <ContactSection />
+          <CTASection />
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 }

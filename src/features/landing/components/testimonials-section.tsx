@@ -67,15 +67,15 @@ export function TestimonialsSection() {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="mb-6 text-base italic">
+                <p className="mb-6 text-lg italic">
                   &quot;{testimonial.quote}&quot;
                 </p>
               </CardContent>
               <CardFooter className="flex flex-col items-start">
-                <div className="text-base font-semibold">
+                <div className="text-lg font-semibold">
                   {testimonial.author}
                 </div>
-                <div className="text-muted-foreground text-sm">
+                <div className="text-muted-foreground text-base">
                   {testimonial.role}
                 </div>
               </CardFooter>
@@ -92,19 +92,19 @@ export function TestimonialsSection() {
           <div className="flex flex-wrap justify-center gap-x-12 gap-y-6">
             <div className="text-center">
               <div className="text-primary text-3xl font-bold">500+</div>
-              <div className="text-muted-foreground text-sm">
+              <div className="text-muted-foreground text-base">
                 Active businesses
               </div>
             </div>
             <div className="text-center">
               <div className="text-primary text-3xl font-bold">10,000+</div>
-              <div className="text-muted-foreground text-sm">
+              <div className="text-muted-foreground text-base">
                 KPIs tracked monthly
               </div>
             </div>
             <div className="text-center">
               <div className="text-primary text-3xl font-bold">30%</div>
-              <div className="text-muted-foreground text-sm">
+              <div className="text-muted-foreground text-base">
                 Average performance increase
               </div>
             </div>

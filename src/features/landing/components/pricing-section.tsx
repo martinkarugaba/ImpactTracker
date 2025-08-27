@@ -70,51 +70,60 @@ const tiers = [
 
 export function PricingSection() {
   return (
-    <section id="pricing" className="bg-secondary/5 py-20">
+    <section id="pricing" className="py-24">
       <Container>
         <div className="mb-16 text-center">
-          <h2 className="mb-2 text-3xl font-bold tracking-tight">
+          <h2 className="mb-4 text-4xl font-bold tracking-tight">
             Simple, Transparent Pricing
           </h2>
-          <p className="text-muted-foreground mx-auto max-w-2xl text-xl">
-            Choose the perfect plan for your business needs
+          <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
+            Choose the perfect plan for your organization's needs
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {tiers.map((tier, index) => (
             <Card
               key={index}
-              className={`border ${tier.featured ? "border-primary relative shadow-lg" : "border-border/40"} flex flex-col`}
+              className={`relative flex h-full flex-col transition-shadow duration-200 hover:shadow-lg ${
+                tier.featured
+                  ? "border-primary ring-primary/20 shadow-lg ring-1"
+                  : "border-border"
+              }`}
             >
+              {/* Featured badge */}
               {tier.featured && (
-                <div className="absolute -top-4 right-0 left-0 flex justify-center">
-                  <span className="bg-primary text-primary-foreground rounded-full px-3 py-1 text-xs font-medium">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <div className="bg-primary text-primary-foreground rounded-full px-3 py-1 text-xs font-medium">
                     Most Popular
-                  </span>
+                  </div>
                 </div>
               )}
-              <CardHeader>
-                <CardTitle className="text-xl">{tier.name}</CardTitle>
-                <div className="mt-4 flex items-baseline text-5xl font-extrabold">
-                  {tier.price}
+
+              <CardHeader className="pb-6">
+                <CardTitle className="text-center text-2xl font-semibold">
+                  {tier.name}
+                </CardTitle>
+                <div className="mt-4 flex items-baseline justify-center">
+                  <span className="text-4xl font-bold">{tier.price}</span>
                   {tier.period && (
-                    <span className="text-muted-foreground ml-1 text-2xl font-medium">
+                    <span className="text-muted-foreground ml-1 text-lg">
                       {tier.period}
                     </span>
                   )}
                 </div>
-                <CardDescription className="mt-4 text-base">
+                <CardDescription className="mt-3 text-center text-base">
                   {tier.description}
                 </CardDescription>
               </CardHeader>
+
               <CardContent className="flex-grow">
                 <ul className="space-y-3">
                   {tier.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-start">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="text-primary mt-0.5 mr-3 h-5 w-5"
+                        className="text-primary mt-0.5 mr-3 h-4 w-4 flex-shrink-0"
                         viewBox="0 0 20 20"
                         fill="currentColor"
                       >
@@ -124,11 +133,12 @@ export function PricingSection() {
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span>{feature}</span>
+                      <span className="text-base">{feature}</span>
                     </li>
                   ))}
                 </ul>
               </CardContent>
+
               <CardFooter>
                 <Button
                   asChild

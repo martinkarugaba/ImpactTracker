@@ -93,7 +93,11 @@ export function ParticipantsContainer({
     search: searchValue || undefined,
     filters: {
       project: filters.project !== "all" ? filters.project : undefined,
+      organization:
+        filters.organization !== "all" ? filters.organization : undefined,
       district: filters.district !== "all" ? filters.district : undefined,
+      subCounty: filters.subCounty !== "all" ? filters.subCounty : undefined,
+      enterprise: filters.enterprise !== "all" ? filters.enterprise : undefined,
       sex: filters.sex !== "all" ? filters.sex : undefined,
       isPWD: filters.isPWD !== "all" ? filters.isPWD : undefined,
       ageGroup: filters.ageGroup !== "all" ? filters.ageGroup : undefined,
@@ -196,7 +200,10 @@ export function ParticipantsContainer({
     setPagination(prev => ({ ...prev, page: 1 }));
   }, [
     filters.project,
+    filters.organization,
     filters.district,
+    filters.subCounty,
+    filters.enterprise,
     filters.sex,
     filters.isPWD,
     filters.ageGroup,
@@ -231,8 +238,8 @@ export function ParticipantsContainer({
   };
 
   const handleExport = () => {
-    // TODO: Implement export functionality
-    toast("Export functionality coming soon!");
+    // Placeholder function - will be implemented with proper permissions and audit logging
+    console.log("Export functionality coming soon!");
   };
 
   const handlePaginationChange = (page: number, pageSize: number) => {
