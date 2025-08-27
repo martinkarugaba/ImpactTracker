@@ -61,7 +61,10 @@ export function ParticipantsContainer({
   const [filters, setFilters] = useState<ParticipantFiltersType>({
     search: "",
     project: "all",
+    organization: "all",
     district: "all",
+    subCounty: "all",
+    enterprise: "all",
     sex: "all",
     isPWD: "all",
     ageGroup: "all",
@@ -74,7 +77,7 @@ export function ParticipantsContainer({
     useState<Participant | null>(null);
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 10,
+    pageSize: 20,
   });
   const [searchValue, setSearchValue] = useState("");
   const [activeTab, setActiveTab] = useState("participants");
@@ -101,7 +104,11 @@ export function ParticipantsContainer({
   console.log("🔍 Current filters state:", filters);
   console.log("🔍 Filters being passed to useParticipants:", {
     project: filters.project !== "all" ? filters.project : undefined,
+    organization:
+      filters.organization !== "all" ? filters.organization : undefined,
     district: filters.district !== "all" ? filters.district : undefined,
+    subCounty: filters.subCounty !== "all" ? filters.subCounty : undefined,
+    enterprise: filters.enterprise !== "all" ? filters.enterprise : undefined,
     sex: filters.sex !== "all" ? filters.sex : undefined,
     isPWD: filters.isPWD !== "all" ? filters.isPWD : undefined,
     ageGroup: filters.ageGroup !== "all" ? filters.ageGroup : undefined,
@@ -147,6 +154,42 @@ export function ParticipantsContainer({
     locationIds.subCountyIds,
     locationIds.countryIds
   );
+
+  // Create filter options from unique participant data
+  const filterOptions = useMemo(() => {
+    const uniqueDistricts = [
+      ...new Set(
+        participants.map((p: Participant) => p.district).filter(Boolean)
+      ),
+    ].map(id => ({
+      id: id as string,
+      name: locationNames.districts[id as string] || (id as string),
+    }));
+
+    const uniqueSubCounties = [
+      ...new Set(
+        participants.map((p: Participant) => p.subCounty).filter(Boolean)
+      ),
+    ].map(id => ({
+      id: id as string,
+      name: locationNames.subCounties[id as string] || (id as string),
+    }));
+
+    const uniqueEnterprises = [
+      ...new Set(
+        participants.map((p: Participant) => p.enterprise).filter(Boolean)
+      ),
+    ].map(enterprise => ({
+      id: enterprise as string,
+      name: enterprise as string,
+    }));
+
+    return {
+      districts: uniqueDistricts,
+      subCounties: uniqueSubCounties,
+      enterprises: uniqueEnterprises,
+    };
+  }, [participants, locationNames.districts, locationNames.subCounties]);
 
   // Reset pagination when filters change
   useEffect(() => {
@@ -222,16 +265,6 @@ export function ParticipantsContainer({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      {/* <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Participants</h2>
-          <p className="text-muted-foreground">
-            Manage and track all project participants
-          </p>
-        </div>
-      </div> */}
-
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2">
@@ -330,6 +363,10 @@ export function ParticipantsContainer({
                             newFilters.sex = "";
                             newFilters.ageGroup = "";
                             newFilters.isPWD = "";
+                            newFilters.organization = "";
+                            newFilters.district = "";
+                            newFilters.subCounty = "";
+                            newFilters.enterprise = "";
                             break;
                         }
 
@@ -356,7 +393,10 @@ export function ParticipantsContainer({
             onFiltersChange={setFilters}
             projects={projects}
             _clusters={clusters}
-            _organizations={organizations}
+            organizations={organizations}
+            districts={filterOptions.districts}
+            subCounties={filterOptions.subCounties}
+            enterprises={filterOptions.enterprises}
             searchTerm={searchValue}
             onSearchChange={handleSearchChange}
           />
@@ -371,14 +411,17 @@ export function ParticipantsContainer({
           </div>
         </TabsContent>
 
-        <TabsContent value="participants" className="space-y-6">
+        <TabsContent value="participants" className="space-y-4">
           {/* Filters */}
           <ParticipantFilters
             filters={filters}
             onFiltersChange={setFilters}
             projects={projects}
             _clusters={clusters}
-            _organizations={organizations}
+            organizations={organizations}
+            districts={filterOptions.districts}
+            subCounties={filterOptions.subCounties}
+            enterprises={filterOptions.enterprises}
             searchTerm={searchValue}
             onSearchChange={handleSearchChange}
           />

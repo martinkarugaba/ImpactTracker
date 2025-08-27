@@ -31,7 +31,7 @@ export function NavMain({
   const pathname = usePathname();
   return (
     <Collapsible defaultOpen className="group/collapsible">
-      <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+      <SidebarGroup>
         <SidebarGroupLabel asChild>
           <CollapsibleTrigger>
             Admin
@@ -48,7 +48,7 @@ export function NavMain({
                     tooltip={item.title}
                     isActive={pathname === item.url}
                   >
-                    <Link className="text-lg" href={item.url}>
+                    <Link href={item.url}>
                       {item.icon && <item.icon />}
                       <span>{item.title}</span>
                     </Link>

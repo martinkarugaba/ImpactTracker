@@ -71,7 +71,10 @@ export type ParticipantMetricsResponse = {
 export type ParticipantFilters = {
   search: string;
   project: string;
+  organization: string;
   district: string;
+  subCounty: string;
+  enterprise: string;
   sex: string;
   isPWD: string;
   ageGroup: string;

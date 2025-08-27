@@ -20,7 +20,10 @@ interface ParticipantFiltersProps {
     acronym: string;
   }>;
   _clusters: Array<{ id: string; name: string }>;
-  _organizations: Array<{ id: string; name: string }>;
+  organizations: Array<{ id: string; name: string }>;
+  districts?: Array<{ id: string; name: string }>;
+  subCounties?: Array<{ id: string; name: string }>;
+  enterprises?: Array<{ id: string; name: string }>;
   searchTerm?: string;
   onSearchChange?: (search: string) => void;
 }
@@ -30,7 +33,10 @@ export function ParticipantFilters({
   onFiltersChange,
   projects,
   _clusters,
-  _organizations,
+  organizations = [],
+  districts = [],
+  subCounties = [],
+  enterprises = [],
   searchTerm: _searchTerm,
   onSearchChange: _onSearchChange,
 }: ParticipantFiltersProps) {
@@ -48,7 +54,10 @@ export function ParticipantFilters({
     onFiltersChange({
       search: "",
       project: "all",
+      organization: "all",
       district: "all",
+      subCounty: "all",
+      enterprise: "all",
       sex: "all",
       isPWD: "all",
       ageGroup: "all",
@@ -78,7 +87,7 @@ export function ParticipantFilters({
         )}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="flex flex-wrap items-center justify-between">
         {/* Project Filter */}
         <Select
           value={filters.project}
@@ -92,6 +101,78 @@ export function ParticipantFilters({
             {projects.map(project => (
               <SelectItem key={project.id} value={project.id}>
                 {project.acronym}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Organization Filter */}
+        <Select
+          value={filters.organization}
+          onValueChange={value => updateFilter("organization", value)}
+        >
+          <SelectTrigger className="h-9">
+            <SelectValue placeholder="Organization" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Organizations</SelectItem>
+            {organizations.map(org => (
+              <SelectItem key={org.id} value={org.id}>
+                {org.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* District Filter */}
+        <Select
+          value={filters.district}
+          onValueChange={value => updateFilter("district", value)}
+        >
+          <SelectTrigger className="h-9">
+            <SelectValue placeholder="District" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Districts</SelectItem>
+            {districts.map(district => (
+              <SelectItem key={district.id} value={district.id}>
+                {district.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* SubCounty Filter */}
+        <Select
+          value={filters.subCounty}
+          onValueChange={value => updateFilter("subCounty", value)}
+        >
+          <SelectTrigger className="h-9">
+            <SelectValue placeholder="Sub County" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Sub Counties</SelectItem>
+            {subCounties.map(subCounty => (
+              <SelectItem key={subCounty.id} value={subCounty.id}>
+                {subCounty.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Enterprise Filter */}
+        <Select
+          value={filters.enterprise}
+          onValueChange={value => updateFilter("enterprise", value)}
+        >
+          <SelectTrigger className="h-9">
+            <SelectValue placeholder="Enterprise" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Enterprises</SelectItem>
+            {enterprises.map(enterprise => (
+              <SelectItem key={enterprise.id} value={enterprise.id}>
+                {enterprise.name}
               </SelectItem>
             ))}
           </SelectContent>

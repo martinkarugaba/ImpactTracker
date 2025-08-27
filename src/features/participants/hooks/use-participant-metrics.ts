@@ -26,6 +26,8 @@ export function useParticipantMetrics(
       // If filters are provided and active, use the filtered getParticipants
       if (hasActiveFilters) {
         const result = await getParticipants(clusterId, {
+          page: 1,
+          limit: 10000, // Get all filtered participants for metrics
           search: filters.search || undefined,
           filters: {
             project: filters.project !== "all" ? filters.project : undefined,
@@ -42,5 +44,6 @@ export function useParticipantMetrics(
       const result = await getAllParticipantsForMetrics(clusterId);
       return result.data?.data || [];
     },
+    staleTime: 0, // Always fetch fresh data when filters change
   });
 }

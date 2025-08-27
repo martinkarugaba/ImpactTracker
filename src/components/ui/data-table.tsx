@@ -360,7 +360,7 @@ export function DataTable<TData, TValue>({
   showColumnToggle = true,
   showPagination = true,
   showRowSelection = false,
-  pageSize = 10,
+  pageSize = 20,
   onRowSelectionChange,
   actionButtons,
   searchValue,
