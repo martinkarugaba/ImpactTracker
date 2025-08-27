@@ -10,9 +10,9 @@ import * as motion from "motion/react-client";
 
 const features = [
   {
-    title: "Custom Dashboards",
+    title: "Participant Tracking",
     description:
-      "Create personalized dashboards with drag-and-drop simplicity to visualize the metrics that matter most to your business.",
+      "Easily manage participant data, track progress, and generate reports. Gain a holistic view of your beneficiaries and their engagement.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -26,15 +26,60 @@ const features = [
         strokeLinejoin="round"
         className="h-10 w-10"
       >
-        <rect width="18" height="18" x="3" y="3" rx="2" />
-        <path d="M9 8h7M8 12h6m-5 4h4" />
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="m22 2-5 10-3-3-5 5" />
+      </svg>
+    ),
+  },
+  {
+    title: "Training Management",
+    description:
+      "Plan, schedule, and monitor training programs. Track attendance, assess participant performance, and ensure effective knowledge transfer.",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-10 w-10"
+      >
+        <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+        <path d="M6 12v5c3 3 9 3 12 0v-5" />
+      </svg>
+    ),
+  },
+  {
+    title: "VSLA Monitoring",
+    description:
+      "Monitor Village Savings and Loan Associations (VSLAs) with ease. Track group performance, manage transactions, and promote financial inclusion.",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-10 w-10"
+      >
+        <line x1="12" y1="1" x2="12" y2="23" />
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
       </svg>
     ),
   },
   {
     title: "Real-time Analytics",
     description:
-      "Monitor your KPIs in real-time with automatic data syncing, ensuring you always have the latest insights.",
+      "Monitor your impact metrics in real-time with automatic data syncing, ensuring you always have the latest insights into your programs.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -53,57 +98,9 @@ const features = [
     ),
   },
   {
-    title: "Goal Tracking",
+    title: "Impact Reporting",
     description:
-      "Set targets for your KPIs and track progress over time, with alerts when goals are met or missed.",
-    icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="h-10 w-10"
-      >
-        <path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h1" />
-        <path d="M15 3h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1" />
-        <path d="M3 10h18" />
-        <path d="m8 15 4 4 4-4" />
-        <path d="M12 19v-9" />
-      </svg>
-    ),
-  },
-  {
-    title: "Data Integration",
-    description:
-      "Connect to your existing tools and data sources to automatically pull in metrics from across your organization.",
-    icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="h-10 w-10"
-      >
-        <path d="M4 11h16" />
-        <path d="M12 5h4.5a2.5 2.5 0 0 1 0 5H12V5Z" />
-        <path d="M12 11.5V19" />
-      </svg>
-    ),
-  },
-  {
-    title: "Automated Reporting",
-    description:
-      "Schedule and distribute reports automatically to keep stakeholders informed without manual effort.",
+      "Generate comprehensive impact reports automatically. Share results with stakeholders and donors to demonstrate program effectiveness.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -126,9 +123,9 @@ const features = [
     ),
   },
   {
-    title: "Customizable Alerts",
+    title: "Multi-Organization Support",
     description:
-      "Configure alerts for critical changes in your KPIs, delivered via email, SMS, or integrated notifications.",
+      "Manage multiple organizations, projects, and clusters from a single dashboard. Perfect for umbrella organizations and consortiums.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -142,8 +139,9 @@ const features = [
         strokeLinejoin="round"
         className="h-10 w-10"
       >
-        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+        <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
+        <path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9" />
+        <path d="M12 3v6" />
       </svg>
     ),
   },
@@ -176,11 +174,11 @@ export function FeaturesSection() {
           className="mb-12 text-center"
         >
           <h2 className="mb-2 text-3xl font-bold tracking-tight">
-            Powerful Features
+            Powerful Features for Impact Tracking
           </h2>
           <p className="text-muted-foreground mx-auto max-w-2xl text-xl">
-            Everything you need to track, analyze, and improve your key
-            performance indicators
+            Everything you need to track participants, manage training programs,
+            and monitor VSLAs with comprehensive analytics and reporting
           </p>
         </motion.div>
 

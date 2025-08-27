@@ -23,10 +23,10 @@ export function Header() {
             <MainNavigationMenu />
           </div>
           <div className="flex items-center gap-4">
+            <ModeToggle />
             {!isLoading && !session && <AuthButtons />}
             {session && (
               <>
-                <ModeToggle />
                 <Button
                   variant="outline"
                   asChild

@@ -109,7 +109,8 @@ export const participants = pgTable("participants", {
   parish: text("parish").notNull(),
   village: text("village").notNull(),
   sex: text("sex").notNull(),
-  age: integer("age").notNull(),
+  age: integer("age"), // Made optional - can be null if only dateOfBirth is provided
+  dateOfBirth: timestamp("date_of_birth"),
   isPWD: text("is_pwd").notNull().default("no"),
   isMother: text("is_mother").notNull().default("no"),
   isRefugee: text("is_refugee").notNull().default("no"),

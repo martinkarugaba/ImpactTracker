@@ -3,11 +3,10 @@
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Plus, FileDown, Upload } from "lucide-react";
-import { ReusableDataTable } from "@/components/ui/reusable-data-table";
-import { getParticipantColumns } from "./table/columns";
+import { ParticipantsDataTable } from "./participants-data-table";
 import { CompactParticipantMetrics } from "./metrics/compact-participant-metrics";
 import { DetailedParticipantMetrics } from "./metrics/detailed-participant-metrics";
+import { ParticipantMetricsCharts } from "./metrics/participant-metrics-charts";
 import { ParticipantFilters } from "./participant-filters";
 import { ImportParticipants } from "./import/import-participants";
 import { useParticipants } from "../hooks/use-participants";
@@ -42,12 +41,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Switch } from "@/components/ui/switch";
-import { ChevronDown } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChevronDown, BarChart3, Users } from "lucide-react";
 
 interface ParticipantsContainerProps {
   clusterId: string;
-  projects: Array<{ id: string; name: string }>;
+  projects: Array<{ id: string; name: string; acronym: string }>;
   clusters: Array<{ id: string; name: string }>;
   organizations?: Array<{ id: string; name: string }>;
 }
@@ -62,7 +61,10 @@ export function ParticipantsContainer({
   const [filters, setFilters] = useState<ParticipantFiltersType>({
     search: "",
     project: "all",
+    organization: "all",
     district: "all",
+    subCounty: "all",
+    enterprise: "all",
     sex: "all",
     isPWD: "all",
     ageGroup: "all",
@@ -73,12 +75,12 @@ export function ParticipantsContainer({
     useState<Participant | null>(null);
   const [deletingParticipant, setDeletingParticipant] =
     useState<Participant | null>(null);
-  const [applyFiltersToMetrics, setApplyFiltersToMetrics] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 10,
+    pageSize: 20,
   });
   const [searchValue, setSearchValue] = useState("");
+  const [activeTab, setActiveTab] = useState("participants");
 
   // Fetch participants with filters and pagination
   const {
@@ -90,23 +92,34 @@ export function ParticipantsContainer({
     limit: pagination.pageSize,
     search: searchValue || undefined,
     filters: {
-      project: filters.project || undefined,
-      district: filters.district || undefined,
-      sex: filters.sex || undefined,
-      isPWD: filters.isPWD || undefined,
-      ageGroup: filters.ageGroup || undefined,
+      project: filters.project !== "all" ? filters.project : undefined,
+      district: filters.district !== "all" ? filters.district : undefined,
+      sex: filters.sex !== "all" ? filters.sex : undefined,
+      isPWD: filters.isPWD !== "all" ? filters.isPWD : undefined,
+      ageGroup: filters.ageGroup !== "all" ? filters.ageGroup : undefined,
     },
   });
 
-  // Fetch metrics
+  // Debug log to see what filters are being applied
+  console.log("🔍 Current filters state:", filters);
+  console.log("🔍 Filters being passed to useParticipants:", {
+    project: filters.project !== "all" ? filters.project : undefined,
+    organization:
+      filters.organization !== "all" ? filters.organization : undefined,
+    district: filters.district !== "all" ? filters.district : undefined,
+    subCounty: filters.subCounty !== "all" ? filters.subCounty : undefined,
+    enterprise: filters.enterprise !== "all" ? filters.enterprise : undefined,
+    sex: filters.sex !== "all" ? filters.sex : undefined,
+    isPWD: filters.isPWD !== "all" ? filters.isPWD : undefined,
+    ageGroup: filters.ageGroup !== "all" ? filters.ageGroup : undefined,
+  });
+
+  // Always apply filters to metrics - they should reflect the current filter state
   const {
     data: metricsData,
     isLoading: isMetricsLoading,
     error: metricsError,
-  } = useParticipantMetrics(
-    clusterId,
-    applyFiltersToMetrics ? filters : undefined
-  );
+  } = useParticipantMetrics(clusterId, filters);
 
   const participants = useMemo(() => {
     const data = participantsData as ParticipantsResponse;
@@ -142,6 +155,42 @@ export function ParticipantsContainer({
     locationIds.countryIds
   );
 
+  // Create filter options from unique participant data
+  const filterOptions = useMemo(() => {
+    const uniqueDistricts = [
+      ...new Set(
+        participants.map((p: Participant) => p.district).filter(Boolean)
+      ),
+    ].map(id => ({
+      id: id as string,
+      name: locationNames.districts[id as string] || (id as string),
+    }));
+
+    const uniqueSubCounties = [
+      ...new Set(
+        participants.map((p: Participant) => p.subCounty).filter(Boolean)
+      ),
+    ].map(id => ({
+      id: id as string,
+      name: locationNames.subCounties[id as string] || (id as string),
+    }));
+
+    const uniqueEnterprises = [
+      ...new Set(
+        participants.map((p: Participant) => p.enterprise).filter(Boolean)
+      ),
+    ].map(enterprise => ({
+      id: enterprise as string,
+      name: enterprise as string,
+    }));
+
+    return {
+      districts: uniqueDistricts,
+      subCounties: uniqueSubCounties,
+      enterprises: uniqueEnterprises,
+    };
+  }, [participants, locationNames.districts, locationNames.subCounties]);
+
   // Reset pagination when filters change
   useEffect(() => {
     setPagination(prev => ({ ...prev, page: 1 }));
@@ -151,29 +200,21 @@ export function ParticipantsContainer({
     filters.sex,
     filters.isPWD,
     filters.ageGroup,
+    searchValue, // Also reset when search changes
   ]);
 
-  // Ensure local state stays in sync with server data
-  useEffect(() => {
-    const data = participantsData as ParticipantsResponse;
-    if (data?.success && data.data?.pagination) {
-      const serverPage = data.data.pagination.page;
-      // Only update if the server page is different and we're not in the middle of a page change
-      if (serverPage && serverPage !== pagination.page) {
-        setPagination(prev => ({ ...prev, page: serverPage }));
-      }
-    }
-  }, [participantsData, pagination.page]);
+  // Don't sync pagination state with server response to prevent flickering
+  // The server pagination is handled by React Query and will be reflected in the paginationData
 
-  const handleEdit = (participant: Participant) => {
+  const _handleEdit = (participant: Participant) => {
     setEditingParticipant(participant);
   };
 
-  const handleDelete = (participant: Participant) => {
+  const _handleDelete = (participant: Participant) => {
     setDeletingParticipant(participant);
   };
 
-  const handleView = (participant: Participant) => {
+  const _handleView = (participant: Participant) => {
     router.push(`/dashboard/participants/${participant.id}`);
   };
 
@@ -195,14 +236,10 @@ export function ParticipantsContainer({
   };
 
   const handlePaginationChange = (page: number, pageSize: number) => {
-    // Use a function to ensure we always have the latest state
-    setPagination(current => {
-      // Only update if values actually changed to prevent unnecessary rerenders
-      if (current.page === page && current.pageSize === pageSize) {
-        return current;
-      }
-      return { page, pageSize };
-    });
+    console.log(
+      `ParticipantsContainer: Setting pagination to page=${page}, pageSize=${pageSize}`
+    );
+    setPagination({ page, pageSize });
   };
 
   const handleSearchChange = (search: string) => {
@@ -210,13 +247,6 @@ export function ParticipantsContainer({
     // Reset to first page when searching
     setPagination(prev => ({ ...prev, page: 1 }));
   };
-
-  const columns = getParticipantColumns({
-    onEdit: handleEdit,
-    onDelete: handleDelete,
-    onView: handleView,
-    locationNames,
-  });
 
   if (participantsError || metricsError) {
     return (
@@ -235,167 +265,239 @@ export function ParticipantsContainer({
 
   return (
     <div className="space-y-6">
-      {/* Metrics Cards */}
-      <CompactParticipantMetrics
-        participants={metricsParticipants}
-        isLoading={isMetricsLoading}
-      />
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="metrics" className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Metrics
+          </TabsTrigger>
+          <TabsTrigger value="participants" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Participants
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Overview Cards */}
-      <div className="w-full">
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-medium">Participant Demographics</h3>
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1.5"
-              >
-                <ChevronDown className="h-3.5 w-3.5" />
-                Show Detailed Metrics
-              </Button>
-            </SheetTrigger>
-            <SheetContent className="w-full sm:max-w-xl md:max-w-2xl lg:max-w-4xl">
-              <SheetHeader className="mb-6">
-                <SheetTitle>Participant Metrics</SheetTitle>
-                <SheetDescription>
-                  Detailed breakdown of participant demographics and statistics
-                </SheetDescription>
-                <div className="mt-4 flex items-center justify-end">
-                  <div className="flex items-center gap-2">
-                    <label
-                      className="text-muted-foreground text-sm"
-                      htmlFor="filter-toggle"
-                    >
-                      Apply filters to metrics
-                    </label>
-                    <Switch
-                      id="filter-toggle"
-                      checked={applyFiltersToMetrics}
-                      onCheckedChange={setApplyFiltersToMetrics}
+        <TabsContent value="metrics" className="space-y-6">
+          {/* Metrics Cards */}
+          <div className="space-y-3">
+            {/* Metrics Header with Filter Status */}
+            {(() => {
+              const hasActiveFilters = Object.entries(filters).some(
+                ([key, value]) => {
+                  if (key === "search") return value && value.trim() !== "";
+                  return value && value !== "all" && value !== "";
+                }
+              );
+
+              if (hasActiveFilters) {
+                return (
+                  <div className="text-muted-foreground flex items-center gap-2 text-sm">
+                    <div className="flex items-center gap-1">
+                      <div className="bg-primary h-2 w-2 rounded-full"></div>
+                      <span>Metrics reflect current filters</span>
+                    </div>
+                  </div>
+                );
+              }
+              return null;
+            })()}
+
+            <CompactParticipantMetrics
+              participants={metricsParticipants}
+              isLoading={isMetricsLoading}
+            />
+          </div>
+
+          {/* Overview Cards */}
+          <div className="w-full">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-medium">Participant Demographics</h3>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-1.5"
+                  >
+                    <ChevronDown className="h-3.5 w-3.5" />
+                    Show Detailed Metrics
+                  </Button>
+                </SheetTrigger>
+                <SheetContent className="w-full sm:max-w-xl md:max-w-2xl lg:max-w-4xl">
+                  <SheetHeader className="mb-6">
+                    <SheetTitle>Participant Metrics</SheetTitle>
+                    <SheetDescription>
+                      Detailed breakdown of participant demographics and
+                      statistics. Metrics automatically reflect your current
+                      filter selections.
+                    </SheetDescription>
+                  </SheetHeader>
+                  <div className="overflow-y-auto pr-1">
+                    <DetailedParticipantMetrics
+                      participants={metricsParticipants}
+                      isLoading={isMetricsLoading}
+                      onFilterChange={filter => {
+                        const newFilters = { ...filters };
+
+                        switch (filter.type) {
+                          case "gender":
+                            newFilters.sex = filter.value;
+                            break;
+                          case "age":
+                            // Handle age-based filters
+                            const isYoung = filter.value.includes("young");
+                            const isFemale = filter.value.includes("female");
+
+                            newFilters.ageGroup = isYoung ? "young" : "older";
+                            newFilters.sex = isFemale ? "female" : "male";
+                            break;
+                          case "disability":
+                            newFilters.isPWD = "true";
+                            if (filter.value !== "all") {
+                              newFilters.sex = filter.value;
+                            }
+                            break;
+                          case "all":
+                            // Reset filters
+                            newFilters.sex = "";
+                            newFilters.ageGroup = "";
+                            newFilters.isPWD = "";
+                            newFilters.organization = "";
+                            newFilters.district = "";
+                            newFilters.subCounty = "";
+                            newFilters.enterprise = "";
+                            break;
+                        }
+
+                        setFilters(newFilters);
+                      }}
+                      activeFilters={{
+                        gender: filters.sex,
+                        age:
+                          filters.ageGroup &&
+                          filters.sex &&
+                          `${filters.ageGroup}-${filters.sex}`,
+                        disability: filters.isPWD === "true",
+                      }}
                     />
                   </div>
-                </div>
-              </SheetHeader>
-              <div className="overflow-y-auto pr-1">
-                <DetailedParticipantMetrics
-                  participants={metricsParticipants}
-                  isLoading={isMetricsLoading}
-                  onFilterChange={filter => {
-                    const newFilters = { ...filters };
+                </SheetContent>
+              </Sheet>
+            </div>
+          </div>
 
-                    switch (filter.type) {
-                      case "gender":
-                        newFilters.sex = filter.value;
-                        break;
-                      case "age":
-                        // Handle age-based filters
-                        const isYoung = filter.value.includes("young");
-                        const isFemale = filter.value.includes("female");
+          {/* Filters for Metrics */}
+          <ParticipantFilters
+            filters={filters}
+            onFiltersChange={setFilters}
+            projects={projects}
+            _clusters={clusters}
+            organizations={organizations}
+            districts={filterOptions.districts}
+            subCounties={filterOptions.subCounties}
+            enterprises={filterOptions.enterprises}
+            searchTerm={searchValue}
+            onSearchChange={handleSearchChange}
+          />
 
-                        newFilters.ageGroup = isYoung ? "young" : "older";
-                        newFilters.sex = isFemale ? "female" : "male";
-                        break;
-                      case "disability":
-                        newFilters.isPWD = "true";
-                        if (filter.value !== "all") {
-                          newFilters.sex = filter.value;
-                        }
-                        break;
-                      case "all":
-                        // Reset filters
-                        newFilters.sex = "";
-                        newFilters.ageGroup = "";
-                        newFilters.isPWD = "";
-                        break;
-                    }
+          {/* Charts */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Visual Analytics</h3>
+            <ParticipantMetricsCharts
+              participants={metricsParticipants}
+              isLoading={isMetricsLoading}
+            />
+          </div>
+        </TabsContent>
 
-                    setFilters(newFilters);
-                  }}
-                  activeFilters={{
-                    gender: filters.sex,
-                    age:
-                      filters.ageGroup &&
-                      filters.sex &&
-                      `${filters.ageGroup}-${filters.sex}`,
-                    disability: filters.isPWD === "true",
-                  }}
-                />
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </div>
+        <TabsContent value="participants" className="space-y-4">
+          {/* Filters */}
+          <ParticipantFilters
+            filters={filters}
+            onFiltersChange={setFilters}
+            projects={projects}
+            _clusters={clusters}
+            organizations={organizations}
+            districts={filterOptions.districts}
+            subCounties={filterOptions.subCounties}
+            enterprises={filterOptions.enterprises}
+            searchTerm={searchValue}
+            onSearchChange={handleSearchChange}
+          />
 
-      {/* Header with Action Buttons */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Participants</h2>
-          <p className="text-muted-foreground">
-            Manage and track all project participants
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={handleExport}
-            className="flex items-center gap-2"
-          >
-            <FileDown className="h-4 w-4" />
-            Export
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => setIsImportDialogOpen(true)}
-            className="flex items-center gap-2"
-          >
-            <Upload className="h-4 w-4" />
-            Import
-          </Button>
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Participant
-          </Button>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <ParticipantFilters
-        filters={filters}
-        onFiltersChange={setFilters}
-        projects={projects}
-        _clusters={clusters}
-        _organizations={organizations}
-      />
-
-      {/* Participants Table */}
-      <ReusableDataTable
-        columns={columns}
-        data={participants}
-        filterColumn="fullName"
-        filterPlaceholder="Search participants..."
-        showColumnToggle={true}
-        showPagination={true}
-        showRowSelection={true}
-        pageSize={pagination.pageSize}
-        onRowClick={handleView}
-        isLoading={isParticipantsLoading || locationNames.isLoading}
-        serverSidePagination={true}
-        paginationData={(() => {
-          const data = participantsData as ParticipantsResponse;
-          return data?.success && data.data
-            ? {
-                ...data.data.pagination,
-                // Ensure the page matches our local state to prevent flickering
-                page: pagination.page,
+          {/* Participants Table */}
+          <ParticipantsDataTable
+            data={participants}
+            clusterId={clusterId}
+            pagination={(() => {
+              const data = participantsData as ParticipantsResponse;
+              if (data?.success && data.data) {
+                return {
+                  page: pagination.page,
+                  limit: pagination.pageSize,
+                  total: data.data.pagination.total,
+                  totalPages: data.data.pagination.totalPages,
+                };
               }
-            : undefined;
-        })()}
-        onPaginationChange={handlePaginationChange}
-        searchValue={searchValue}
-        onSearchChange={handleSearchChange}
-      />
+              return {
+                page: pagination.page,
+                limit: pagination.pageSize,
+                total: 0,
+                totalPages: 0,
+              };
+            })()}
+            selectedProject={
+              projects.find(p => p.id === filters.project)
+                ? {
+                    id: projects.find(p => p.id === filters.project)!.id,
+                    name: projects.find(p => p.id === filters.project)!.name,
+                    acronym: "",
+                    description: null,
+                    status: "active" as const,
+                    startDate: null,
+                    endDate: null,
+                    createdAt: null,
+                    updatedAt: null,
+                  }
+                : null
+            }
+            selectedOrg={null}
+            isLoading={isParticipantsLoading || locationNames.isLoading}
+            onPaginationChange={handlePaginationChange}
+            onPageChange={page =>
+              handlePaginationChange(page, pagination.pageSize)
+            }
+            searchTerm={searchValue}
+            onSearchChange={handleSearchChange}
+            onAddParticipant={async () => {
+              setIsCreateDialogOpen(true);
+            }}
+            onEditParticipant={(data, id) => {
+              const participant = participants.find(p => p.id === id);
+              if (participant) {
+                setEditingParticipant(participant);
+              }
+            }}
+            onDeleteParticipant={id => {
+              const participant = participants.find(p => p.id === id);
+              if (participant) {
+                setDeletingParticipant(participant);
+              }
+            }}
+            onDeleteMultipleParticipants={ids => {
+              // TODO: Implement bulk delete
+              toast.success(`Selected ${ids.length} participants for deletion`);
+            }}
+            onExportData={handleExport}
+            onImport={async data => {
+              // TODO: Implement import
+              toast.success(`Imported ${data.length} participants`);
+              setIsImportDialogOpen(false);
+            }}
+          />
+        </TabsContent>
+      </Tabs>
 
       {/* Create/Edit Dialog */}
       <Dialog
@@ -437,8 +539,7 @@ export function ParticipantsContainer({
           </DialogHeader>
           <ImportParticipants
             clusterId={clusterId}
-            projects={projects}
-            onImport={async () => {
+            onImportComplete={async () => {
               setIsImportDialogOpen(false);
             }}
           />

@@ -39,7 +39,11 @@ const RegisterFormSchema = z
 
 type FormValues = z.infer<typeof RegisterFormSchema>;
 
-export function RegisterForm() {
+interface RegisterFormProps {
+  onSuccess?: () => void;
+}
+
+export function RegisterForm({ onSuccess }: RegisterFormProps = {}) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -61,6 +65,7 @@ export function RegisterForm() {
 
       if (result.success) {
         toast.success("Your account has been created successfully.");
+        onSuccess?.(); // Call the success callback if provided
         router.push("/auth/login");
       } else {
         toast.error(

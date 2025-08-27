@@ -28,37 +28,51 @@ import { useQuery } from "@tanstack/react-query";
 import { getOrganizationId } from "@/features/auth/actions";
 import { getCurrentOrganizationWithCluster } from "@/features/organizations/actions/organizations";
 
-const formSchema = z.object({
-  firstName: z.string().min(2, "First name must be at least 2 characters"),
-  lastName: z.string().min(2, "Last name must be at least 2 characters"),
-  country: z.string().min(2, "Country is required"),
-  district: z.string().min(2, "District is required"),
-  subCounty: z.string().min(2, "Sub-county is required"), // We keep this as a single string for the form
-  parish: z.string().min(2, "Parish is required"),
-  village: z.string().min(2, "Village is required"),
-  sex: z.enum(["male", "female", "other"]),
-  age: z.string().min(1, "Age is required"),
-  isPWD: z.enum(["yes", "no"]),
-  isMother: z.enum(["yes", "no"]),
-  isRefugee: z.enum(["yes", "no"]),
-  designation: z.string().min(2, "Designation is required"),
-  enterprise: z.string().min(2, "Enterprise is required"),
-  contact: z.string().min(10, "Contact must be at least 10 characters"),
-  project_id: z.string().min(1, "Project is required"),
-  cluster_id: z.string().min(1, "Cluster is required"),
-  organization_id: z.string().min(1, "Organization is required"),
-  noOfTrainings: z.string().min(0),
-  isActive: z.enum(["yes", "no"]),
-  isPermanentResident: z.enum(["yes", "no"]),
-  areParentsAlive: z.enum(["yes", "no"]),
-  numberOfChildren: z.string().min(0),
-  employmentStatus: z.string(),
-  monthlyIncome: z.string(),
-  mainChallenge: z.string().optional(),
-  skillOfInterest: z.string().optional(),
-  expectedImpact: z.string().optional(),
-  isWillingToParticipate: z.enum(["yes", "no"]),
-});
+const formSchema = z
+  .object({
+    firstName: z.string().min(2, "First name must be at least 2 characters"),
+    lastName: z.string().min(2, "Last name must be at least 2 characters"),
+    country: z.string().min(2, "Country is required"),
+    district: z.string().min(2, "District is required"),
+    subCounty: z.string().min(2, "Sub-county is required"), // We keep this as a single string for the form
+    parish: z.string().min(2, "Parish is required"),
+    village: z.string().min(2, "Village is required"),
+    sex: z.enum(["male", "female", "other"]),
+    age: z.string().optional(), // Made optional since it can be calculated from dateOfBirth
+    dateOfBirth: z.string().optional(),
+    isPWD: z.enum(["yes", "no"]),
+    isMother: z.enum(["yes", "no"]),
+    isRefugee: z.enum(["yes", "no"]),
+    designation: z.string().min(2, "Designation is required"),
+    enterprise: z.string().min(2, "Enterprise is required"),
+    contact: z.string().min(10, "Contact must be at least 10 characters"),
+    project_id: z.string().min(1, "Project is required"),
+    cluster_id: z.string().min(1, "Cluster is required"),
+    organization_id: z.string().min(1, "Organization is required"),
+    noOfTrainings: z.string().min(0),
+    isActive: z.enum(["yes", "no"]),
+    isPermanentResident: z.enum(["yes", "no"]),
+    areParentsAlive: z.enum(["yes", "no"]),
+    numberOfChildren: z.string().min(0),
+    employmentStatus: z.string(),
+    monthlyIncome: z.string(),
+    mainChallenge: z.string().optional(),
+    skillOfInterest: z.string().optional(),
+    expectedImpact: z.string().optional(),
+    isWillingToParticipate: z.enum(["yes", "no"]),
+  })
+  .refine(
+    data => {
+      // Require at least one of age or dateOfBirth
+      const hasAge = data.age && data.age.trim() !== "";
+      const hasDateOfBirth = data.dateOfBirth && data.dateOfBirth.trim() !== "";
+      return hasAge || hasDateOfBirth;
+    },
+    {
+      message: "Either age or date of birth is required",
+      path: ["age"], // This will show the error on the age field
+    }
+  );
 
 export type ParticipantFormValues = z.infer<typeof formSchema>;
 

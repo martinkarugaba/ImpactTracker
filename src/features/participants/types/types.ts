@@ -4,6 +4,7 @@ import { type participants } from "@/lib/db/schema";
 export type Participant = InferSelectModel<typeof participants> & {
   organizationName?: string;
   projectName?: string;
+  projectAcronym?: string;
   clusterName?: string;
   districtName?: string;
   subCountyName?: string;
@@ -70,7 +71,10 @@ export type ParticipantMetricsResponse = {
 export type ParticipantFilters = {
   search: string;
   project: string;
+  organization: string;
   district: string;
+  subCounty: string;
+  enterprise: string;
   sex: string;
   isPWD: string;
   ageGroup: string;

@@ -226,7 +226,15 @@ export function ParticipantDetails({
     return <Badge variant="outline">{sex}</Badge>;
   };
 
-  const getAgeBadge = (age: number) => {
+  const getAgeBadge = (age: number | null) => {
+    if (age === null) {
+      return (
+        <Badge variant="outline" className="text-muted-foreground">
+          Age Unknown
+        </Badge>
+      );
+    }
+
     let className = "";
 
     if (age <= 35) {

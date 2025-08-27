@@ -19,19 +19,20 @@ export function HeroSection() {
                 <span className="bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"></span>
                 <span className="bg-primary relative inline-flex h-2 w-2 rounded-full"></span>
               </span>
-              Now with AI-powered insights
+              Now with advanced analytics
             </div>
             <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-              Track Your KPIs with{" "}
+              Track Your Impact with{" "}
               <span className="relative">
                 <span className="text-primary relative z-10">Precision</span>
                 <span className="bg-primary/20 absolute bottom-0 left-0 -z-10 h-3 w-full"></span>
               </span>
             </h1>
             <p className="text-muted-foreground max-w-2xl text-lg md:text-xl">
-              The ultimate KPI tracking platform for businesses of all sizes.
-              Monitor, analyze, and improve your performance metrics with our
-              powerful dashboard.
+              Empower your non-profit with ImpactTrack, the all-in-one platform
+              for participant tracking, training management, and VSLA
+              monitoring. Gain insights, optimize programs, and demonstrate your
+              impact.
             </p>
             <div className="flex flex-col gap-4 pt-4 sm:flex-row">
               <Button size="lg" className="group" asChild>
@@ -80,20 +81,20 @@ export function HeroSection() {
             </div>
             <div className="pt-6">
               <p className="text-muted-foreground mb-2 text-sm">
-                Trusted by leading companies
+                Trusted by NGOs and development organizations
               </p>
               <div className="flex flex-wrap items-center gap-6 opacity-70">
                 <div className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-lg font-bold text-transparent">
-                  Company A
+                  CARE International
                 </div>
                 <div className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-lg font-bold text-transparent">
-                  Company B
+                  Oxfam
                 </div>
                 <div className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-lg font-bold text-transparent">
-                  Company C
+                  World Vision
                 </div>
                 <div className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-lg font-bold text-transparent">
-                  Company D
+                  Save the Children
                 </div>
               </div>
             </div>
