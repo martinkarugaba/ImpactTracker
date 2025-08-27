@@ -9,7 +9,7 @@ export async function requireAuth(config?: AuthConfig) {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/auth/signin");
+    redirect("/?auth=required");
   }
 
   if (config?.roles) {
@@ -29,7 +29,7 @@ export async function requireRole(role: Role) {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/auth/signin");
+    redirect("/?auth=required");
   }
 
   if (session.user.role !== role) {
@@ -43,7 +43,7 @@ export async function requireAnyRole(roles: Role[]) {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/auth/signin");
+    redirect("/?auth=required");
   }
 
   if (!hasAnyRole(session.user.role as Role, roles)) {
@@ -57,7 +57,7 @@ export async function requireAllRoles(roles: Role[]) {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/auth/signin");
+    redirect("/?auth=required");
   }
 
   if (!hasAllRoles(session.user.role as Role, roles)) {

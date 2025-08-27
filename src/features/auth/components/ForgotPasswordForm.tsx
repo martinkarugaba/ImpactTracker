@@ -95,7 +95,7 @@ export function ForgotPasswordForm() {
 
           <Button
             variant="outline"
-            onClick={() => router.push("/auth/login")}
+            onClick={() => router.push("/?auth=login")}
             className="w-full"
           >
             Return to login
@@ -150,7 +150,7 @@ export function ForgotPasswordForm() {
           </Button>
           <div className="text-center">
             <Link
-              href="/auth/login"
+              href="/?auth=login"
               className="text-primary hover:text-primary/90 text-sm"
             >
               Back to login

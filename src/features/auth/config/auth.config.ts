@@ -10,7 +10,6 @@ import bcrypt from "bcryptjs";
 export const authConfig: NextAuthConfig = {
   secret: process.env.AUTH_SECRET,
   pages: {
-    signIn: "/auth/login",
     error: "/auth/error",
   },
   session: {
