@@ -49,15 +49,32 @@ export function ActionButtons({
       )}
 
       {onExportData && (
-        <Button
-          size="sm"
-          variant="outline"
-          className="flex items-center gap-1"
-          onClick={() => setIsExportDialogOpen(true)}
-        >
-          <Download className="h-4 w-4" />
-          <span>Export</span>
-        </Button>
+        <>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsExportDialogOpen(true)}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Export
+          </Button>
+
+          <Dialog
+            open={isExportDialogOpen}
+            onOpenChange={setIsExportDialogOpen}
+          >
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Export Functionality</DialogTitle>
+                <DialogDescription>
+                  Export functionality is coming soon! We&apos;re working on
+                  implementing comprehensive export features with proper
+                  security and audit logging.
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        </>
       )}
 
       {onFixOrganizations && (
@@ -88,7 +105,7 @@ export function ActionButtons({
         <span>Add Participant</span>
       </Button>
 
-      {/* Export Coming Soon Dialog */}
+      {/* Export Coming Soon Dialog - keeping for reference but not used */}
       <Dialog open={isExportDialogOpen} onOpenChange={setIsExportDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>

@@ -4,6 +4,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { type Participant } from "../../types/types";
 import { type ParticipantFormValues } from "../participant-form";
 import { getParticipantColumns } from "./columns";
+import { type VisibilityState } from "@tanstack/react-table";
 
 interface TableContentProps {
   data: Participant[];
@@ -19,17 +20,21 @@ interface TableContentProps {
   onEditParticipant: (data: ParticipantFormValues, id: string) => void;
   onDeleteParticipant: (id: string) => void;
   actionButtons: React.ReactNode;
+  columnVisibility?: VisibilityState;
+  onColumnVisibilityChange?: (visibility: VisibilityState) => void;
 }
 
 export function TableContent({
   data,
   pagination,
   isLoading,
-  searchValue,
-  onSearchChange,
+  searchValue: _searchValue,
+  onSearchChange: _onSearchChange,
   onEditParticipant,
   onDeleteParticipant,
-  actionButtons,
+  actionButtons: _actionButtons,
+  columnVisibility: _columnVisibility,
+  onColumnVisibilityChange: _onColumnVisibilityChange,
 }: TableContentProps) {
   const columns = getParticipantColumns({
     onEdit: (participant: Participant) => {
@@ -47,16 +52,11 @@ export function TableContent({
     <DataTable
       columns={columns}
       data={data}
-      filterColumn="firstName"
-      filterPlaceholder="Search participants..."
-      showColumnToggle={true}
+      showColumnToggle={false} // Handled at top level
       showPagination={false}
       showRowSelection={false}
       pageSize={pagination.limit}
-      searchValue={searchValue}
-      onSearchChange={onSearchChange}
       isLoading={isLoading}
-      actionButtons={actionButtons}
     />
   );
 }

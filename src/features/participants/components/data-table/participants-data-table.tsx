@@ -4,7 +4,6 @@ import { type Project } from "@/features/projects/types";
 import { type Organization } from "@/features/organizations/types";
 import { type Participant } from "../../types/types";
 import { type ParticipantFormValues } from "../participant-form";
-import { ActionButtons } from "./action-buttons";
 import { PaginationControls } from "./pagination-controls";
 import { TableContent } from "./table-content";
 import { useTableState } from "./use-table-state";
@@ -32,6 +31,7 @@ interface ParticipantsDataTableProps {
   onExportData?: () => void;
   onImport?: (data: unknown[]) => void;
   onFixOrganizations?: () => void;
+  columnVisibility?: Record<string, boolean>;
 }
 
 export function ParticipantsDataTable({
@@ -40,20 +40,21 @@ export function ParticipantsDataTable({
   selectedProject: _selectedProject,
   selectedOrg: _selectedOrg,
   isLoading,
-  clusterId,
+  clusterId: _clusterId,
   onPaginationChange,
   onPageChange,
   onSearchChange,
   searchTerm,
-  onAddParticipant,
+  onAddParticipant: _onAddParticipant,
   onEditParticipant,
   onDeleteParticipant,
   onDeleteMultipleParticipants: _onDeleteMultipleParticipants,
-  onExportData,
-  onImport,
-  onFixOrganizations,
+  onExportData: _onExportData,
+  onImport: _onImport,
+  onFixOrganizations: _onFixOrganizations,
+  columnVisibility: _columnVisibility,
 }: ParticipantsDataTableProps) {
-  const { search, selectedRows, handleSearchChange, handleClearSelection } =
+  const { search, selectedRows, handleSearchChange } =
     useTableState(searchTerm);
 
   const handleSearchChangeWithCallback = (value: string) => {
@@ -61,21 +62,9 @@ export function ParticipantsDataTable({
     onSearchChange?.(value);
   };
 
-  const actionButtons = (
-    <ActionButtons
-      clusterId={clusterId}
-      selectedRows={selectedRows}
-      onAddParticipant={onAddParticipant}
-      onDeleteParticipant={onDeleteParticipant}
-      onClearSelection={handleClearSelection}
-      onExportData={onExportData}
-      onImport={onImport}
-      onFixOrganizations={onFixOrganizations}
-    />
-  );
-
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
+      {/* Table Content */}
       <TableContent
         data={data}
         pagination={pagination}
@@ -84,9 +73,10 @@ export function ParticipantsDataTable({
         onSearchChange={handleSearchChangeWithCallback}
         onEditParticipant={onEditParticipant}
         onDeleteParticipant={onDeleteParticipant}
-        actionButtons={actionButtons}
+        actionButtons={null} // Remove action buttons from table header
       />
 
+      {/* Pagination */}
       <PaginationControls
         pagination={pagination}
         selectedCount={selectedRows.length}

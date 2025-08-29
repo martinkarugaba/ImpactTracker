@@ -23,7 +23,7 @@ export function HeroSection() {
               Now with advanced analytics
             </div>
             <h1 className="max-w-5xl text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-              Track your impact with{" "}
+              Track your Impact with{" "}
               <span className="relative">
                 <span className="from-primary via-primary/90 to-primary/70 bg-gradient-to-br bg-clip-text text-transparent">
                   Precision
