@@ -35,6 +35,14 @@ export function useFilterState({
     });
   };
 
+  const removeFilter = (key: keyof ParticipantFiltersType) => {
+    const newFilters = {
+      ...filters,
+      [key]: key === "search" ? "" : "all",
+    };
+    onFiltersChange(newFilters);
+  };
+
   const hasActiveFilters = Object.entries(filters).some(([key, value]) => {
     if (key === "search") return false; // Exclude search from this check
     return value !== "" && value !== "all";
@@ -43,6 +51,7 @@ export function useFilterState({
   return {
     updateFilter,
     clearFilters,
+    removeFilter,
     hasActiveFilters,
   };
 }

@@ -26,7 +26,6 @@ export function BulkDeleteButton({
       <div className="flex items-center gap-2">
         <Button
           variant="destructive"
-          size="sm"
           onClick={handleBulkDelete}
           className="flex items-center gap-2"
         >

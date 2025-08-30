@@ -2,7 +2,7 @@
 
 import { auth } from "@/features/auth/auth";
 import { db } from "@/lib/db";
-import { participants } from "@/lib/db/schema";
+import { participants, organizations } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 // Mapping function to determine organization based on subcounty
@@ -17,6 +17,9 @@ function mapSubCountyToOrgKeyword(subCountyName: string): string | null {
 
   // Balinda Children's Foundation subcounties
   const balindaChildren = ["kyarusozi", "kyembogo"];
+
+  // Note: Kyarusozi town council should be assigned to Balinda Children's Foundation Uganda
+  // If participants from Kyarusozi are assigned to Blessed Pillars, this will correct them
 
   if (blessedPillars.includes(s)) return "blessed pillars";
   if (kaziWomen.includes(s)) return "kazi women";
@@ -272,6 +275,227 @@ export async function previewOrganizationAssignmentFix(clusterId?: string) {
     };
   } catch (error) {
     console.error("Error previewing organization assignment fix:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
+// Specific function to check and fix Kyarusozi town council assignments
+export async function fixKyarusoziAssignments() {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return { success: false, error: "Not authenticated" };
+    }
+
+    console.log("Checking Kyarusozi town council assignments...");
+
+    // Find all participants from Kyarusozi
+    const kyarusoziParticipants = await db.query.participants.findMany({
+      where: eq(participants.subCounty, "Kyarusozi"),
+      columns: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        subCounty: true,
+        organization_id: true,
+      },
+    });
+
+    console.log(
+      `Found ${kyarusoziParticipants.length} participants from Kyarusozi`
+    );
+
+    // Get organization IDs
+    const organizations = await db.query.organizations.findMany({
+      columns: {
+        id: true,
+        name: true,
+      },
+    });
+
+    const blessedPillarsOrg = organizations.find(org =>
+      org.name.toLowerCase().includes("blessed pillars")
+    );
+    const balindaOrg = organizations.find(org =>
+      org.name.toLowerCase().includes("balinda")
+    );
+
+    if (!balindaOrg) {
+      return {
+        success: false,
+        error: "Balinda Children's Foundation not found",
+      };
+    }
+
+    // Find participants incorrectly assigned to Blessed Pillars
+    const incorrectAssignments = kyarusoziParticipants.filter(
+      p => p.organization_id === blessedPillarsOrg?.id
+    );
+
+    console.log(
+      `Found ${incorrectAssignments.length} participants incorrectly assigned to Blessed Pillars`
+    );
+
+    if (incorrectAssignments.length === 0) {
+      return {
+        success: true,
+        message: "No incorrect assignments found for Kyarusozi participants",
+        details: {
+          totalKyarusoziParticipants: kyarusoziParticipants.length,
+          incorrectAssignments: 0,
+          correctOrganization: balindaOrg.name,
+        },
+      };
+    }
+
+    // Update the incorrect assignments
+    const updatePromises = incorrectAssignments.map(participant =>
+      db
+        .update(participants)
+        .set({ organization_id: balindaOrg.id })
+        .where(eq(participants.id, participant.id))
+    );
+
+    await Promise.all(updatePromises);
+
+    console.log(
+      `Successfully corrected ${incorrectAssignments.length} assignments`
+    );
+
+    return {
+      success: true,
+      message: `Corrected ${incorrectAssignments.length} Kyarusozi participants from Blessed Pillars to Balinda Children's Foundation`,
+      details: {
+        totalKyarusoziParticipants: kyarusoziParticipants.length,
+        correctedAssignments: incorrectAssignments.length,
+        incorrectlyAssignedParticipants: incorrectAssignments.map(p => ({
+          id: p.id,
+          name: `${p.firstName} ${p.lastName}`,
+        })),
+        fromOrganization: blessedPillarsOrg?.name || "Unknown",
+        toOrganization: balindaOrg.name,
+      },
+    };
+  } catch (error) {
+    console.error("Error fixing Kyarusozi assignments:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
+// Generic function to assign participants from a subcounty to a specific organization
+export async function assignParticipantsBySubCounty(
+  subCounty: string,
+  organizationId: string
+) {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return { success: false, error: "Not authenticated" };
+    }
+
+    console.log(
+      `Assigning participants from ${subCounty} to organization ${organizationId}...`
+    );
+
+    // Find all participants from the specified subcounty
+    const participantsToUpdate = await db.query.participants.findMany({
+      where: eq(participants.subCounty, subCounty),
+      columns: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        subCounty: true,
+        organization_id: true,
+      },
+    });
+
+    console.log(
+      `Found ${participantsToUpdate.length} participants from ${subCounty}`
+    );
+
+    if (participantsToUpdate.length === 0) {
+      return {
+        success: true,
+        message: `No participants found from ${subCounty}`,
+        details: {
+          subCounty,
+          participantsFound: 0,
+          participantsUpdated: 0,
+        },
+      };
+    }
+
+    // Get organization details for logging
+    const organization = await db.query.organizations.findFirst({
+      where: eq(organizations.id, organizationId),
+      columns: {
+        id: true,
+        name: true,
+      },
+    });
+
+    if (!organization) {
+      return { success: false, error: "Organization not found" };
+    }
+
+    // Filter participants that actually need updating
+    const participantsNeedingUpdate = participantsToUpdate.filter(
+      p => p.organization_id !== organizationId
+    );
+
+    console.log(
+      `${participantsNeedingUpdate.length} participants need organization update`
+    );
+
+    if (participantsNeedingUpdate.length === 0) {
+      return {
+        success: true,
+        message: `All participants from ${subCounty} are already assigned to ${organization.name}`,
+        details: {
+          subCounty,
+          organizationName: organization.name,
+          participantsFound: participantsToUpdate.length,
+          participantsUpdated: 0,
+        },
+      };
+    }
+
+    // Update the participants
+    const updatePromises = participantsNeedingUpdate.map(participant =>
+      db
+        .update(participants)
+        .set({ organization_id: organizationId })
+        .where(eq(participants.id, participant.id))
+    );
+
+    await Promise.all(updatePromises);
+
+    console.log(
+      `Successfully updated ${participantsNeedingUpdate.length} participants`
+    );
+
+    return {
+      success: true,
+      message: `Successfully assigned ${participantsNeedingUpdate.length} participants from ${subCounty} to ${organization.name}`,
+      details: {
+        subCounty,
+        organizationName: organization.name,
+        participantsFound: participantsToUpdate.length,
+        participantsUpdated: participantsNeedingUpdate.length,
+        updatedParticipants: participantsNeedingUpdate.map(p => ({
+          id: p.id,
+          name: `${p.firstName} ${p.lastName}`,
+        })),
+      },
+    };
+  } catch (error) {
+    console.error("Error assigning participants by subcounty:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred",

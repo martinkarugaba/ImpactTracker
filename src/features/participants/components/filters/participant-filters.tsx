@@ -36,16 +36,26 @@ export function ParticipantFilters({
   searchTerm: _searchTerm,
   onSearchChange: _onSearchChange,
 }: ParticipantFiltersProps) {
-  const { updateFilter, clearFilters, hasActiveFilters } = useFilterState({
-    filters,
-    onFiltersChange,
-  });
+  const { updateFilter, clearFilters, removeFilter, hasActiveFilters } =
+    useFilterState({
+      filters,
+      onFiltersChange,
+    });
 
   return (
     <div className="space-y-0">
       <FilterHeader
         hasActiveFilters={hasActiveFilters}
         onClearFilters={clearFilters}
+        filters={filters}
+        filterOptions={{
+          projects,
+          organizations,
+          districts,
+          subCounties,
+          enterprises,
+        }}
+        onRemoveFilter={removeFilter}
       />
 
       <div className="flex flex-wrap items-center justify-between">

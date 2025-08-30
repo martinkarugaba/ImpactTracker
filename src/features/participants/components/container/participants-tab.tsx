@@ -26,6 +26,7 @@ import {
 } from "../../types/types";
 import toast from "react-hot-toast";
 import { ParticipantFilters } from "../filters";
+import { OrganizationAssignmentButton } from "../actions/organization-assignment-button";
 
 interface ParticipantsTabProps {
   participants: Participant[];
@@ -126,9 +127,13 @@ export function ParticipantsTab({
 
           {/* Right side - Action buttons */}
           <div className="flex items-center gap-2">
+            <OrganizationAssignmentButton
+              subCounties={filterOptions.subCounties}
+              organizations={organizations}
+            />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button variant="outline">
                   <LayoutGrid className="mr-2 h-4 w-4" />
                   <span className="hidden lg:inline">Customize Columns</span>
                   <span className="lg:hidden">Columns</span>
@@ -157,13 +162,12 @@ export function ParticipantsTab({
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button variant="outline" size="sm" onClick={handleExport}>
+            <Button variant="outline" onClick={handleExport}>
               <Download className="mr-2 h-4 w-4" />
               Export
             </Button>
             <Button
               variant="outline"
-              size="sm"
               onClick={() => setIsImportDialogOpen(true)}
             >
               <Upload className="mr-2 h-4 w-4" />
