@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ModeToggle } from "@/features/themes/components/mode-toggle";
 import { ThemeSelector } from "@/features/themes/components/theme-selector";
+import { Separator } from "@/components/ui/separator";
 
 interface SiteHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   heading?: string;
@@ -27,20 +28,22 @@ export function SiteHeader({
       )}
       {...props}
     >
-      <div className="container flex h-12 items-center md:h-14">
+      <div className="container flex h-8 items-center md:h-14">
         {/* Mobile: Show sidebar trigger and title */}
         <div className="flex items-center gap-3 md:hidden">
           <SidebarTrigger />
           <h1 className="text-lg font-medium">{title}</h1>
         </div>
-
         {/* Desktop: Show full header */}
-        <div className="mr-4 hidden md:flex">
+        <div className="hidden md:flex">
           <SidebarTrigger />
         </div>
-
+        <Separator
+          orientation="vertical"
+          className="mx-2 data-[orientation=vertical]:h-4"
+        />
         <div className="flex flex-1 flex-col justify-center md:flex-row md:items-center md:justify-between">
-          <div className="container hidden py-2 md:block md:py-4">
+          <div className="container hidden py-2 md:block md:py-2">
             <h1 className="text-lg font-medium">{title}</h1>
           </div>
           <div className="ml-auto flex items-center gap-2">

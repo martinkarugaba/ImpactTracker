@@ -66,7 +66,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps = {}) {
       if (result.success) {
         toast.success("Your account has been created successfully.");
         onSuccess?.(); // Call the success callback if provided
-        router.push("/auth/login");
+        router.push("/?auth=login");
       } else {
         toast.error(
           result.error || "Failed to create account. Please try again."

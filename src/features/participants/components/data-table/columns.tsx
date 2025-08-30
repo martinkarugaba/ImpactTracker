@@ -6,18 +6,7 @@ import { type LocationNames } from "../../hooks/use-location-names";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { capitalizeWords, calculateAge, formatContact } from "@/lib/utils";
-import {
-  User,
-  UserCheck,
-  MapPin,
-  Building2,
-  FolderOpen,
-  Phone,
-  Briefcase,
-  Store,
-  Users,
-  Flag,
-} from "lucide-react";
+import { Phone, Flag } from "lucide-react";
 import { ActionCell } from "./action-cell";
 
 interface GetParticipantColumnsProps {
@@ -64,12 +53,7 @@ export function getParticipantColumns({
     },
     {
       id: "fullName",
-      header: () => (
-        <div className="flex items-center gap-2">
-          <User className="h-4 w-4" />
-          Name
-        </div>
-      ),
+      header: "Name",
       enableHiding: true,
       enableSorting: true,
       accessorFn: row => {
@@ -92,12 +76,7 @@ export function getParticipantColumns({
     },
     {
       id: "sex",
-      header: () => (
-        <div className="flex items-center gap-2">
-          <Users className="h-4 w-4" />
-          Gender
-        </div>
-      ),
+      header: "Gender",
       enableHiding: true,
       enableSorting: true,
       accessorFn: row => row.sex,
@@ -137,12 +116,7 @@ export function getParticipantColumns({
     },
     {
       id: "age",
-      header: () => (
-        <div className="flex items-center gap-2">
-          <UserCheck className="h-4 w-4" />
-          Age
-        </div>
-      ),
+      header: "Age",
       enableHiding: true,
       enableSorting: true,
       accessorFn: row => {
@@ -201,12 +175,7 @@ export function getParticipantColumns({
     },
     {
       id: "district",
-      header: () => (
-        <div className="flex items-center gap-2">
-          <MapPin className="h-4 w-4" />
-          District
-        </div>
-      ),
+      header: "District",
       enableHiding: true,
       enableSorting: true,
       accessorFn: row => {
@@ -235,12 +204,7 @@ export function getParticipantColumns({
     },
     {
       id: "subCounty",
-      header: () => (
-        <div className="flex items-center gap-2">
-          <MapPin className="h-4 w-4" />
-          Sub County
-        </div>
-      ),
+      header: "Sub County",
       enableHiding: true,
       enableSorting: true,
       accessorFn: row => {
@@ -267,12 +231,7 @@ export function getParticipantColumns({
     },
     {
       id: "country",
-      header: () => (
-        <div className="flex items-center gap-2">
-          <Flag className="h-4 w-4" />
-          Country
-        </div>
-      ),
+      header: "Country",
       enableHiding: true,
       enableSorting: true,
       accessorFn: row => {
@@ -298,12 +257,7 @@ export function getParticipantColumns({
     },
     {
       id: "organization",
-      header: () => (
-        <div className="flex items-center gap-2">
-          <Building2 className="h-4 w-4" />
-          Organization
-        </div>
-      ),
+      header: "Organization",
       enableHiding: true,
       enableSorting: true,
       accessorFn: row => row.organizationName || row.organization_id,
@@ -331,12 +285,7 @@ export function getParticipantColumns({
     },
     {
       id: "project",
-      header: () => (
-        <div className="flex items-center gap-2">
-          <FolderOpen className="h-4 w-4" />
-          Project
-        </div>
-      ),
+      header: "Project",
       enableHiding: true,
       enableSorting: true,
       accessorFn: row => row.projectAcronym || "UNK",
@@ -359,12 +308,7 @@ export function getParticipantColumns({
     },
     {
       accessorKey: "designation",
-      header: () => (
-        <div className="flex items-center gap-2">
-          <Briefcase className="h-4 w-4" />
-          Designation
-        </div>
-      ),
+      header: "Designation",
       enableHiding: true,
       enableSorting: true,
       cell: ({ row }) => {
@@ -380,12 +324,7 @@ export function getParticipantColumns({
     },
     {
       accessorKey: "enterprise",
-      header: () => (
-        <div className="flex items-center gap-2">
-          <Store className="h-4 w-4" />
-          Enterprise
-        </div>
-      ),
+      header: "Enterprise",
       enableHiding: true,
       enableSorting: true,
       cell: ({ row }) => {
@@ -403,12 +342,7 @@ export function getParticipantColumns({
     },
     {
       id: "contact",
-      header: () => (
-        <div className="flex items-center gap-2">
-          <Phone className="h-4 w-4" />
-          Contact
-        </div>
-      ),
+      header: "Contact",
       enableHiding: true,
       enableSorting: true,
       accessorFn: row => formatContact(row.contact || ""),

@@ -63,7 +63,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         setIsSubmitted(true);
         toast.success("Your password has been reset successfully.");
         setTimeout(() => {
-          router.push("/auth/login");
+          router.push("/?auth=login");
         }, 2000);
       } else {
         toast.error(

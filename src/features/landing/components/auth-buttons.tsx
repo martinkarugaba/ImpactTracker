@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,10 +11,29 @@ import {
 } from "@/components/ui/dialog";
 import { LoginForm } from "@/features/auth/components/LoginForm";
 import { RegisterForm } from "@/features/auth/components/RegisterForm";
+import { useSearchParams } from "next/navigation";
 
-export function AuthButtons() {
-  const [loginOpen, setLoginOpen] = useState(false);
+interface AuthButtonsProps {
+  openLoginModal?: boolean;
+}
+
+export function AuthButtons({ openLoginModal = false }: AuthButtonsProps) {
+  const [loginOpen, setLoginOpen] = useState(openLoginModal);
   const [registerOpen, setRegisterOpen] = useState(false);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    // Check if user was redirected due to auth requirement
+    if (searchParams.get("auth") === "required") {
+      setLoginOpen(true);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (openLoginModal) {
+      setLoginOpen(true);
+    }
+  }, [openLoginModal]);
 
   return (
     <>

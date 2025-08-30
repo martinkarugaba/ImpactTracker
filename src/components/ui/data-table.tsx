@@ -54,8 +54,15 @@ import {
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { toast } from "sonner";
 import { z } from "zod";
-import { ChevronDown, LayoutGrid, Search, Loader2 } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  LayoutGrid,
+  Search,
+  Loader2,
+} from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -455,7 +462,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="w-full">
       {showHeader && (
-        <div className="flex items-center justify-between py-4">
+        <div className="mt-4 mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             {filterColumn && (
               <div className="relative max-w-sm">
@@ -530,12 +537,54 @@ export function DataTable<TData, TValue>({
                         className="text-muted-foreground"
                         key={header.id}
                       >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
+                        {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                          <div
+                            className={cn(
+                              "flex h-full cursor-pointer items-center justify-between gap-2 select-none",
+                              header.column.getCanSort() &&
+                                "hover:text-foreground"
+                            )}
+                            onClick={header.column.getToggleSortingHandler()}
+                            onKeyDown={e => {
+                              if (
+                                header.column.getCanSort() &&
+                                (e.key === "Enter" || e.key === " ")
+                              ) {
+                                e.preventDefault();
+                                header.column.getToggleSortingHandler()?.(e);
+                              }
+                            }}
+                            tabIndex={
+                              header.column.getCanSort() ? 0 : undefined
+                            }
+                          >
+                            {flexRender(
                               header.column.columnDef.header,
                               header.getContext()
                             )}
+                            {{
+                              asc: (
+                                <ChevronUp
+                                  className="shrink-0 opacity-60"
+                                  size={16}
+                                  aria-hidden="true"
+                                />
+                              ),
+                              desc: (
+                                <ChevronDown
+                                  className="shrink-0 opacity-60"
+                                  size={16}
+                                  aria-hidden="true"
+                                />
+                              ),
+                            }[header.column.getIsSorted() as string] ?? null}
+                          </div>
+                        ) : (
+                          flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )
+                        )}
                       </TableHead>
                     );
                   })}

@@ -5,6 +5,7 @@ import { type ParticipantFormValues } from "../components/participant-form";
 import {
   getParticipants,
   getAllParticipantsForMetrics,
+  getAllFilteredParticipantsForExport,
   createParticipant,
   updateParticipant,
   deleteParticipant,
@@ -21,7 +22,10 @@ export function useParticipants(
     filters?: {
       cluster?: string;
       project?: string;
+      organization?: string;
       district?: string;
+      subCounty?: string;
+      enterprise?: string;
       sex?: string;
       isPWD?: string;
       ageGroup?: string;
@@ -49,7 +53,10 @@ export function useParticipantsMetrics(
     filters?: {
       cluster?: string;
       project?: string;
+      organization?: string;
       district?: string;
+      subCounty?: string;
+      enterprise?: string;
       sex?: string;
       isPWD?: string;
       ageGroup?: string;
@@ -128,6 +135,36 @@ export function useBulkCreateParticipants() {
           queryKey: ["participants", variables[0].cluster_id],
         });
       }
+    },
+  });
+}
+
+export function useExportParticipants() {
+  return useMutation({
+    mutationFn: async (params: {
+      clusterId: string;
+      filters?: {
+        cluster?: string;
+        project?: string;
+        organization?: string;
+        district?: string;
+        subCounty?: string;
+        enterprise?: string;
+        sex?: string;
+        isPWD?: string;
+        ageGroup?: string;
+      };
+      search?: string;
+    }) => {
+      const result = await getAllFilteredParticipantsForExport(
+        params.clusterId,
+        params.filters,
+        params.search
+      );
+      if (!result.success) {
+        throw new Error(result.error || "Failed to export participants");
+      }
+      return result.data?.data || [];
     },
   });
 }

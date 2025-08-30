@@ -5,51 +5,58 @@ import * as motion from "motion/react-client";
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden py-20 md:py-32">
+    <section className="relative overflow-hidden py-24 md:py-32 lg:py-40">
       <Container className="relative z-10">
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+        <div className="flex flex-col items-center space-y-16">
+          {/* Content Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="flex flex-col space-y-6"
+            className="flex flex-col items-center space-y-8 text-center"
           >
-            <div className="border-border/40 bg-background/50 text-muted-foreground inline-flex items-center rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm">
-              <span className="relative mr-2 flex h-2 w-2">
+            <div className="border-primary/20 from-primary/10 via-primary/5 to-primary/10 text-primary inline-flex items-center rounded-full border bg-gradient-to-r px-6 py-2 text-sm font-medium backdrop-blur-sm">
+              <span className="relative mr-3 flex h-2 w-2">
                 <span className="bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"></span>
                 <span className="bg-primary relative inline-flex h-2 w-2 rounded-full"></span>
               </span>
               Now with advanced analytics
             </div>
-            <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-              Track Your Impact with{" "}
+            <h1 className="max-w-5xl text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl">
+              Track your Impact with{" "}
               <span className="relative">
-                <span className="text-primary relative z-10">Precision</span>
-                <span className="bg-primary/20 absolute bottom-0 left-0 -z-10 h-3 w-full"></span>
+                <span className="from-primary via-primary/90 to-primary/70 bg-gradient-to-br bg-clip-text text-transparent">
+                  Precision
+                </span>
               </span>
             </h1>
-            <p className="text-muted-foreground max-w-2xl text-lg md:text-xl">
-              Empower your non-profit with ImpactTrack, the all-in-one platform
-              for participant tracking, training management, and VSLA
-              monitoring. Gain insights, optimize programs, and demonstrate your
-              impact.
+            <p className="text-muted-foreground/80 max-w-4xl text-lg md:text-xl lg:text-2xl">
+              Empower your non-profit with{" "}
+              <span className="text-foreground font-semibold">ImpactTrack</span>
+              , the all-in-one platform for participant tracking, training
+              management, and VSLA monitoring. Gain insights, optimize programs,
+              and demonstrate your impact.
             </p>
-            <div className="flex flex-col gap-4 pt-4 sm:flex-row">
-              <Button size="lg" className="group" asChild>
+            <div className="flex flex-col gap-6 pt-8 sm:flex-row">
+              <Button
+                size="lg"
+                className="group shadow-primary/25 hover:shadow-primary/30 h-14 px-8 text-base font-semibold shadow-lg transition-all hover:shadow-xl"
+                asChild
+              >
                 <Link href="/signup">
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center gap-3">
                     Get Started for Free
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
+                      width="20"
+                      height="20"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="h-4 w-4 transition-transform group-hover:translate-x-1"
+                      className="h-5 w-5 transition-transform group-hover:translate-x-1"
                     >
                       <path d="M5 12h14" />
                       <path d="m12 5 7 7-7 7" />
@@ -57,20 +64,25 @@ export function HeroSection() {
                   </span>
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="group" asChild>
+              <Button
+                size="lg"
+                variant="outline"
+                className="group border-border/50 bg-background/50 hover:bg-background/80 h-14 px-8 text-base font-semibold backdrop-blur-sm"
+                asChild
+              >
                 <Link href="#demo">
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center gap-3">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
+                      width="20"
+                      height="20"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="h-4 w-4 transition-transform group-hover:scale-110"
+                      className="h-5 w-5 transition-transform group-hover:scale-110"
                     >
                       <polygon points="5 3 19 12 5 21 5 3"></polygon>
                     </svg>
@@ -79,45 +91,56 @@ export function HeroSection() {
                 </Link>
               </Button>
             </div>
-            <div className="pt-6">
-              <p className="text-muted-foreground mb-2 text-sm">
+            <div className="pt-8">
+              <p className="text-muted-foreground/60 mb-4 text-sm font-medium">
                 Trusted by NGOs and development organizations
               </p>
-              <div className="flex flex-wrap items-center gap-6 opacity-70">
-                <div className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-lg font-bold text-transparent">
-                  CARE International
+              <div className="flex flex-wrap items-center justify-center gap-8 opacity-60">
+                <div className="from-primary/60 to-primary/40 bg-gradient-to-r bg-clip-text text-xl font-bold text-transparent">
+                  Organization Alpha
                 </div>
-                <div className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-lg font-bold text-transparent">
-                  Oxfam
+                <div className="from-primary/60 to-primary/40 bg-gradient-to-r bg-clip-text text-xl font-bold text-transparent">
+                  NGO Partner Beta
                 </div>
-                <div className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-lg font-bold text-transparent">
-                  World Vision
+                <div className="from-primary/60 to-primary/40 bg-gradient-to-r bg-clip-text text-xl font-bold text-transparent">
+                  Client Organization
                 </div>
-                <div className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-lg font-bold text-transparent">
-                  Save the Children
+                <div className="from-primary/60 to-primary/40 bg-gradient-to-r bg-clip-text text-xl font-bold text-transparent">
+                  Development Partner
                 </div>
               </div>
             </div>
           </motion.div>
+
+          {/* Dashboard Preview Section */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="from-primary/20 via-secondary/20 to-primary/10 relative h-[400px] rounded-2xl bg-gradient-to-br p-4 shadow-2xl lg:h-[500px]"
+            className="w-full max-w-6xl"
           >
-            <div className="from-primary/5 to-secondary/5 absolute inset-0 rounded-2xl bg-gradient-to-br backdrop-blur-sm"></div>
-            <div className="border-border/20 absolute inset-0 rounded-2xl border"></div>
-            <div className="absolute inset-0 flex items-center justify-center rounded-2xl">
-              <div className="text-muted-foreground text-lg font-medium">
-                Dashboard Preview
+            <div className="border-border/50 from-card/80 via-card/60 to-card/40 relative h-[300px] overflow-hidden rounded-3xl border bg-gradient-to-br p-6 shadow-2xl backdrop-blur-xl md:h-[400px] lg:h-[500px]">
+              <div className="from-primary/5 to-secondary/5 absolute inset-0 bg-gradient-to-br via-transparent"></div>
+              <div className="from-background/50 to-background/20 absolute inset-[1px] rounded-[calc(1.5rem-1px)] bg-gradient-to-br"></div>
+              <div className="relative z-10 flex h-full items-center justify-center">
+                <div className="text-center">
+                  <div className="text-muted-foreground/60 text-2xl font-semibold md:text-3xl">
+                    Dashboard Preview
+                  </div>
+                  <div className="text-muted-foreground/40 mt-2 text-sm">
+                    Coming Soon
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
         </div>
       </Container>
       <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(45%_40%_at_50%_60%,var(--sidebar-primary)_0,transparent_100%)] opacity-20"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--primary)_0,transparent_50%)] opacity-5"></div>
+        <div className="from-primary/10 via-background to-secondary/10 absolute inset-0 bg-gradient-to-br"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,var(--primary)/15,transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,var(--secondary)/10,transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--primary)/5,transparent_70%)]"></div>
       </div>
     </section>
   );

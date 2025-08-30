@@ -20,7 +20,10 @@ export async function getParticipants(
     filters?: {
       cluster?: string;
       project?: string;
+      organization?: string;
       district?: string;
+      subCounty?: string;
+      enterprise?: string;
       sex?: string;
       isPWD?: string;
       ageGroup?: string;
@@ -49,10 +52,31 @@ export async function getParticipants(
           eq(participants.project_id, params.filters.project)
         );
       }
+      if (
+        params.filters.organization &&
+        params.filters.organization !== "all"
+      ) {
+        console.log("Adding organization filter:", params.filters.organization);
+        whereConditions.push(
+          eq(participants.organization_id, params.filters.organization)
+        );
+      }
       if (params.filters.district && params.filters.district !== "all") {
         console.log("Adding district filter:", params.filters.district);
         whereConditions.push(
           eq(participants.district, params.filters.district)
+        );
+      }
+      if (params.filters.subCounty && params.filters.subCounty !== "all") {
+        console.log("Adding subCounty filter:", params.filters.subCounty);
+        whereConditions.push(
+          eq(participants.subCounty, params.filters.subCounty)
+        );
+      }
+      if (params.filters.enterprise && params.filters.enterprise !== "all") {
+        console.log("Adding enterprise filter:", params.filters.enterprise);
+        whereConditions.push(
+          eq(participants.enterprise, params.filters.enterprise)
         );
       }
       if (params.filters.sex && params.filters.sex !== "all") {
@@ -370,6 +394,159 @@ export async function getAllParticipantsForMetrics(
     return {
       success: false,
       error: "Failed to fetch participants metrics",
+    };
+  }
+}
+
+export async function getAllFilteredParticipantsForExport(
+  clusterId: string,
+  filters?: {
+    cluster?: string;
+    project?: string;
+    organization?: string;
+    district?: string;
+    subCounty?: string;
+    enterprise?: string;
+    sex?: string;
+    isPWD?: string;
+    ageGroup?: string;
+  },
+  search?: string
+): Promise<ParticipantsResponse> {
+  try {
+    console.log("🔍 getAllFilteredParticipantsForExport called with:", {
+      clusterId,
+      filters,
+      search,
+    });
+
+    const whereConditions = [eq(participants.cluster_id, clusterId)];
+
+    // Add filter conditions (same logic as getParticipants)
+    if (filters) {
+      console.log("📝 Processing export filters:", filters);
+
+      if (filters.project && filters.project !== "all") {
+        console.log("Adding project filter:", filters.project);
+        whereConditions.push(eq(participants.project_id, filters.project));
+      }
+      if (filters.organization && filters.organization !== "all") {
+        console.log("Adding organization filter:", filters.organization);
+        whereConditions.push(
+          eq(participants.organization_id, filters.organization)
+        );
+      }
+      if (filters.district && filters.district !== "all") {
+        console.log("Adding district filter:", filters.district);
+        whereConditions.push(eq(participants.district, filters.district));
+      }
+      if (filters.subCounty && filters.subCounty !== "all") {
+        console.log("Adding subCounty filter:", filters.subCounty);
+        whereConditions.push(eq(participants.subCounty, filters.subCounty));
+      }
+      if (filters.enterprise && filters.enterprise !== "all") {
+        console.log("Adding enterprise filter:", filters.enterprise);
+        whereConditions.push(eq(participants.enterprise, filters.enterprise));
+      }
+      if (filters.sex && filters.sex !== "all") {
+        console.log("Adding sex filter:", filters.sex);
+        whereConditions.push(eq(participants.sex, filters.sex));
+      }
+      if (filters.isPWD && filters.isPWD !== "all") {
+        console.log("Adding isPWD filter:", filters.isPWD);
+        if (filters.isPWD === "true") {
+          whereConditions.push(eq(participants.isPWD, "yes"));
+        } else if (filters.isPWD === "false") {
+          whereConditions.push(eq(participants.isPWD, "no"));
+        }
+      }
+      if (filters.ageGroup && filters.ageGroup !== "all") {
+        console.log("Adding ageGroup filter:", filters.ageGroup);
+        if (filters.ageGroup === "young") {
+          whereConditions.push(
+            sql`${participants.age} >= 15 AND ${participants.age} <= 35`
+          );
+        } else if (filters.ageGroup === "adult") {
+          whereConditions.push(
+            sql`${participants.age} >= 36 AND ${participants.age} <= 59`
+          );
+        } else if (filters.ageGroup === "older") {
+          whereConditions.push(sql`${participants.age} >= 60`);
+        }
+      }
+    }
+
+    // Add search condition if search term is provided
+    if (search) {
+      const searchTerm = `%${search.toLowerCase()}%`;
+      whereConditions.push(
+        sql`(LOWER(${participants.firstName}) LIKE ${searchTerm} OR 
+             LOWER(${participants.lastName}) LIKE ${searchTerm} OR
+             LOWER(${participants.designation}) LIKE ${searchTerm} OR
+             LOWER(${participants.enterprise}) LIKE ${searchTerm})`
+      );
+    }
+
+    // Get all filtered participants without pagination
+    const participantsData = await db.query.participants.findMany({
+      where: and(...whereConditions),
+      orderBy: [asc(participants.firstName), asc(participants.lastName)],
+      with: {
+        cluster: true,
+        project: true,
+      },
+    });
+
+    // Get organization names for all participants
+    const organizationIds = [
+      ...new Set(participantsData.map(p => p.organization_id)),
+    ];
+
+    let orgs: Array<{ id: string; name: string }> = [];
+    if (organizationIds.length > 0) {
+      orgs = await db.query.organizations.findMany({
+        where: (organizations, { inArray }) =>
+          inArray(organizations.id, organizationIds),
+        columns: {
+          id: true,
+          name: true,
+        },
+      });
+    }
+
+    const orgMap = new Map(orgs.map(org => [org.id, org.name]));
+
+    // Enhance participant data with organization, project, and location names
+    const data = participantsData.map(participant => ({
+      ...participant,
+      organizationName: orgMap.get(participant.organization_id) || "Unknown",
+      projectName: participant.project?.name || "Unknown",
+      projectAcronym: participant.project?.acronym || "UNK",
+      clusterName: participant.cluster?.name || "Unknown",
+      districtName: participant.district,
+      subCountyName: participant.subCounty,
+      countyName: participant.country,
+    }));
+
+    return {
+      success: true,
+      data: {
+        data,
+        pagination: {
+          page: 1,
+          limit: data.length,
+          total: data.length,
+          totalPages: 1,
+          hasNext: false,
+          hasPrev: false,
+        },
+      },
+    };
+  } catch (error) {
+    console.error("Error getting filtered participants for export:", error);
+    return {
+      success: false,
+      error: "Failed to get participants for export",
     };
   }
 }
