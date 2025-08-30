@@ -27,7 +27,7 @@ interface AdvancedAssignmentDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   subCounties: Array<{ id: string; name: string }>;
-  organizations: Array<{ id: string; name: string }>;
+  organizations: Array<{ id: string; name: string; acronym?: string }>;
 }
 
 export function AdvancedAssignmentDialog({
@@ -95,13 +95,26 @@ export function AdvancedAssignmentDialog({
   const selectedSubCountyName = subCounties.find(
     sc => sc.id === selectedSubCounty
   )?.name;
-  const selectedOrganizationName = organizations.find(
+
+  const selectedOrg = organizations.find(
     org => org.id === selectedOrganization
-  )?.name;
+  );
+
+  // Helper function to get organization display name
+  const getOrgDisplayName = (org: { name: string; acronym?: string }) => {
+    if (org.acronym && org.acronym.trim()) {
+      return `${org.acronym} (${org.name})`;
+    }
+    return org.name;
+  };
+
+  const selectedOrganizationName = selectedOrg
+    ? getOrgDisplayName(selectedOrg)
+    : undefined;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Assign Participants by Subcounty</DialogTitle>
           <DialogDescription>
@@ -141,10 +154,10 @@ export function AdvancedAssignmentDialog({
                 <SelectTrigger>
                   <SelectValue placeholder="Select an organization" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[200px] overflow-y-auto">
                   {organizations.map(org => (
                     <SelectItem key={org.id} value={org.id}>
-                      {org.name}
+                      {getOrgDisplayName(org)}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -23,6 +23,7 @@ import {
   Users,
 } from "lucide-react";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 
 interface ActivityColumnsProps {
   onEdit: (activity: Activity) => void;
@@ -70,9 +71,20 @@ export function getActivityColumns({
       header: "Title",
       cell: ({ row }) => {
         const activity = row.original;
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const router = useRouter();
+
         return (
           <div className="flex flex-col space-y-1">
-            <div className="font-medium">{activity.title}</div>
+            <Button
+              variant="link"
+              className="h-auto justify-start p-0 text-left font-medium"
+              onClick={() =>
+                router.push(`/dashboard/activities/${activity.id}`)
+              }
+            >
+              {activity.title}
+            </Button>
           </div>
         );
       },

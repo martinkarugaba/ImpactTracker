@@ -141,9 +141,79 @@ export async function deleteActivityParticipant(
   }
 }
 
+export async function addActivityParticipants(
+  activityId: string,
+  participants: Array<{
+    participant_id: string;
+    participantName: string;
+    role: string;
+    attendance_status: string;
+    feedback?: string;
+  }>
+): Promise<ActivityParticipantsResponse> {
+  try {
+    const newParticipants = [];
+
+    for (const participant of participants) {
+      // Check if participant is already added to this activity
+      const existingParticipant = await db.query.activityParticipants.findFirst(
+        {
+          where: (activityParticipants, { and, eq }) =>
+            and(
+              eq(activityParticipants.activity_id, activityId),
+              eq(
+                activityParticipants.participant_id,
+                participant.participant_id
+              )
+            ),
+        }
+      );
+
+      if (existingParticipant) {
+        console.log(
+          `Participant ${participant.participantName} already added to activity`
+        );
+        continue;
+      }
+
+      const [newParticipant] = await db
+        .insert(activityParticipants)
+        .values({
+          activity_id: activityId,
+          participant_id: participant.participant_id,
+          attendance_status: participant.attendance_status,
+          role: participant.role,
+          feedback: participant.feedback || null,
+        })
+        .returning();
+
+      newParticipants.push({
+        ...newParticipant,
+        participantName: participant.participantName,
+        participantEmail: "",
+      });
+    }
+
+    revalidatePath(`/dashboard/activities/${activityId}`);
+    revalidatePath("/dashboard/activities");
+
+    return {
+      success: true,
+      data: newParticipants,
+    };
+  } catch (error) {
+    console.error("Error adding activity participants:", error);
+    return {
+      success: false,
+      error: "Failed to add participants",
+    };
+  }
+}
+
 export async function bulkUpdateActivityParticipants(
   activityId: string,
   participants: Array<{
+    participant_id?: string;
     participantName: string;
     role: string;
     attendance_status: string;
@@ -157,15 +227,22 @@ export async function bulkUpdateActivityParticipants(
       .where(eq(activityParticipants.activity_id, activityId));
 
     // Then insert new participants
-    // Note: For now, we're using a placeholder UUID for participant_id
-    // In a real app, you'd want to match participants to actual participant records
     const newParticipants = [];
     for (const participant of participants) {
+      // Ensure we have a participant_id
+      if (!participant.participant_id) {
+        console.error(
+          "Missing participant_id for:",
+          participant.participantName
+        );
+        continue;
+      }
+
       const [newParticipant] = await db
         .insert(activityParticipants)
         .values({
           activity_id: activityId,
-          participant_id: crypto.randomUUID(), // Temporary placeholder - should match actual participants
+          participant_id: participant.participant_id,
           attendance_status: participant.attendance_status,
           role: participant.role,
           feedback: participant.feedback || null,
