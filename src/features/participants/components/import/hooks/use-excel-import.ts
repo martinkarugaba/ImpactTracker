@@ -5,20 +5,27 @@ import * as XLSX from "xlsx";
 import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
 import { getOrganizationId } from "@/features/auth/actions";
-import { getCurrentOrganizationWithCluster } from "@/features/organizations/actions/organizations";
-import { type ParsedData } from "../types";
-import { type ParticipantFormValues } from "../../participant-form";
+import {
+  getCurrentOrganizationWithCluster,
+  getOrganizationsByCluster,
+} from "@/features/organizations/actions/organizations";
+import { importParticipants } from "@/features/participants/actions/import-participants";
+import { type ValidationError } from "@/features/participants/components/import/types";
+import { type ParticipantFormValues } from "@/features/participants/components/participant-form";
 
-export function useExcelImport(
-  clusterId: string
-  // projectId: string | null = null
-) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [parsedData, setParsedData] = useState<ParsedData | null>(null);
-  const [availableSheets, setAvailableSheets] = useState<string[]>([]);
-  const [selectedSheet, setSelectedSheet] = useState<string>("");
+export function useExcelImport(clusterId: string) {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [parsedData, setParsedData] = useState<ParticipantFormValues[] | null>(
+    null
+  );
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>(
+    []
+  );
+  const [sheets, setSheets] = useState<string[]>([]);
   const [workbook, setWorkbook] = useState<XLSX.WorkBook | null>(null);
 
+  // Fetch organization data for context
   const { data: organizationId } = useQuery({
     queryKey: ["organizationId"] as const,
     queryFn: getOrganizationId,
@@ -34,190 +41,475 @@ export function useExcelImport(
     enabled: !!organizationId,
   });
 
-  const processSheet = (wb: XLSX.WorkBook, sheetName: string) => {
+  // Fetch all organizations in the cluster for mapping
+  const { data: clusterOrganizations } = useQuery({
+    queryKey: [
+      "clusterOrganizations",
+      organization?.cluster?.id || organization?.cluster_id,
+    ] as const,
+    queryFn: async () => {
+      const clusterIdRef =
+        organization?.cluster?.id || organization?.cluster_id;
+      if (!clusterIdRef) return [] as Array<{ id: string; name: string }>;
+      const result = await getOrganizationsByCluster(clusterIdRef);
+      if (result.success && Array.isArray(result.data)) {
+        return result.data.map((o: { id: string; name: string }) => ({
+          id: o.id,
+          name: o.name,
+        }));
+      }
+      return [] as Array<{ id: string; name: string }>;
+    },
+    enabled: !!(organization?.cluster?.id || organization?.cluster_id),
+  });
+
+  const validateParticipantData = (
+    data: Record<string, unknown>,
+    _rowIndex: number
+  ): {
+    participant: ParticipantFormValues | null;
+    errors: ValidationError[];
+  } => {
+    const errors: ValidationError[] = [];
+
+    // Extract and validate name - only require first name, last name is optional
+    let firstName = "";
+    let lastName = "";
+    const nameStr = (data.Name ||
+      data.name ||
+      data.FullName ||
+      data.full_name) as string;
+    if (nameStr) {
+      const nameParts = nameStr.trim().split(/\s+/);
+      firstName = nameParts[0] || "";
+      lastName = nameParts.slice(1).join(" ") || "";
+    } else {
+      firstName = (data.FirstName ||
+        data.first_name ||
+        data.firstName ||
+        "") as string;
+      lastName = (data.LastName ||
+        data.last_name ||
+        data.lastName ||
+        "") as string;
+    }
+
+    // Use default for missing first name
+    if (!firstName.trim()) {
+      firstName = "Unknown"; // Default value instead of error
+    }
+
+    // Validate and normalize sex - use default if missing
+    let sex = (data.Sex || data.sex || data.Gender || data.gender || "")
+      .toString()
+      .toLowerCase();
+    if (sex === "f" || sex === "female") {
+      sex = "female";
+    } else if (sex === "m" || sex === "male") {
+      sex = "male";
+    } else {
+      sex = "other"; // Default value instead of error
+    }
+
+    // Validate age - use default if missing or invalid
+    const ageValue = parseInt(String(data.Age || data.age || "0"), 10);
+    const finalAge =
+      ageValue && ageValue >= 1 && ageValue <= 120 ? ageValue : 18; // Default to 18 if invalid
+
+    // Extract date of birth - look for various column names
+    const dateOfBirthRaw =
+      data["Date of birth"] || // Your exact column name
+      data["Date of Birth"] ||
+      data["DateOfBirth"] ||
+      data["date_of_birth"] ||
+      data.dateOfBirth ||
+      data.DOB ||
+      data.dob ||
+      data["Birth Date"] ||
+      data["BirthDate"] ||
+      data.birthDate ||
+      data["Date Of Birth"] ||
+      data["DATE OF BIRTH"] ||
+      data["date of birth"] || // lowercase version
+      data.DateBirth ||
+      data["Birth day"] ||
+      data["Birthday"] ||
+      data.birthday ||
+      "";
+
+    let dateOfBirth = "";
+    if (dateOfBirthRaw) {
+      console.log(
+        "Raw date of birth value:",
+        dateOfBirthRaw,
+        typeof dateOfBirthRaw
+      );
+      try {
+        // Handle Excel date serial numbers or date strings
+        let dateValue: Date;
+        if (typeof dateOfBirthRaw === "number") {
+          // Excel serial date number
+          dateValue = new Date((dateOfBirthRaw - 25569) * 86400 * 1000);
+          console.log("Parsed Excel serial date:", dateValue);
+        } else {
+          // Date string
+          dateValue = new Date(dateOfBirthRaw.toString());
+          console.log("Parsed date string:", dateValue);
+        }
+
+        // Check if the date is valid
+        if (
+          !isNaN(dateValue.getTime()) &&
+          dateValue.getFullYear() > 1900 &&
+          dateValue.getFullYear() <= new Date().getFullYear()
+        ) {
+          dateOfBirth = dateValue.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+          console.log("Final dateOfBirth:", dateOfBirth);
+        } else {
+          console.log("Date validation failed:", {
+            isNaN: isNaN(dateValue.getTime()),
+            year: dateValue.getFullYear(),
+            currentYear: new Date().getFullYear(),
+          });
+        }
+      } catch (error) {
+        console.warn("Failed to parse date of birth:", dateOfBirthRaw, error);
+      }
+    } else {
+      console.log("No date of birth raw value found in row");
+    }
+
+    // Validate contact - use empty string if missing
+    const contact = (
+      data["Phone No."] ||
+      data.Phone ||
+      data.Contact ||
+      data.contact ||
+      ""
+    )
+      .toString()
+      .trim();
+
+    // Map subcounty to organization based on specified requirements
+    const mapSubCountyToOrgKeyword = (subCountyName: string) => {
+      const s = subCountyName.trim().toLowerCase();
+
+      // Blessed Pillars Foundation subcounties
+      const blessedPillars = ["ruteete", "kiko", "harugongo"];
+
+      // Kazi Women Foundation subcounties
+      const kaziWomen = ["bugaaki", "hakibaale", "busoro"];
+
+      // Balinda Children's Foundation subcounties
+      const balindaChildren = ["kyarusozi", "kyembogo"];
+
+      if (blessedPillars.includes(s)) return "blessed pillars";
+      if (kaziWomen.includes(s)) return "kazi women";
+      if (balindaChildren.includes(s)) return "balinda";
+      return null; // Return null for unmapped subcounties
+    };
+
+    const resolveOrganizationId = (keyword: string | null): string | null => {
+      if (!keyword || !clusterOrganizations) return null;
+      const lowerKeyword = keyword.toLowerCase();
+      const found = clusterOrganizations.find(org =>
+        org.name.toLowerCase().includes(lowerKeyword)
+      );
+      return found ? found.id : null;
+    };
+
+    const subCountyName = (
+      data.SubCounty ||
+      data["Sub County"] ||
+      data.subCounty ||
+      data.Subcounty ||
+      data.subcounty ||
+      data["Sub-County"] ||
+      data["Sub_County"] ||
+      data["sub county"] ||
+      data["sub-county"] ||
+      data["sub_county"] ||
+      ""
+    ).toString();
+    const orgKeyword = mapSubCountyToOrgKeyword(subCountyName);
+    const mappedOrgId = resolveOrganizationId(orgKeyword);
+
+    // Use mapped organization ID or fall back to current user's organization
+    const organizationIdToUse = mappedOrgId || organizationId || "";
+
+    // Extract PWD status with debugging
+    const pwdRaw =
+      data.Disability ||
+      data["Disability?"] ||
+      data.isPWD ||
+      data.PWD ||
+      data.pwd ||
+      data["Person with Disability"] ||
+      data["Person With Disability"] ||
+      data["PERSON WITH DISABILITY"] ||
+      data["Disabled"] ||
+      data.disabled ||
+      data["Special Needs"] ||
+      data["special needs"] ||
+      "";
+    console.log("PWD raw value:", pwdRaw, "Type:", typeof pwdRaw);
+
+    const isPWDValue = pwdRaw
+      .toString()
+      .toLowerCase()
+      .match(/(yes|true|1|disabled|pwd|disability|special needs)/i)
+      ? "yes"
+      : "no";
+    console.log("Final isPWD value:", isPWDValue);
+
+    // Create participant object
+    const participant: ParticipantFormValues = {
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      sex: sex as "male" | "female" | "other",
+      age: finalAge.toString(),
+      dateOfBirth: dateOfBirth || undefined, // Include date of birth
+      contact: contact.trim(),
+      isPWD: isPWDValue,
+      isMother: "no",
+      isRefugee: "no",
+      project_id: (data.Project || data.project_id || "").toString(),
+      cluster_id: clusterId,
+      organization_id: organizationIdToUse || "",
+      country: (data.Country || data.country || "Uganda").toString(),
+      district: (
+        data.District ||
+        data.district ||
+        organization?.district ||
+        ""
+      ).toString(),
+      subCounty: subCountyName,
+      parish: (data.Parish || data.parish || "").toString(),
+      village: (data.Village || data.village || "").toString(),
+      designation: (
+        data["Employment status"] ||
+        data.Designation ||
+        data.designation ||
+        "Other"
+      ).toString(),
+      enterprise: (
+        data["Skill of Interest"] ||
+        data.Enterprise ||
+        data.enterprise ||
+        "Other"
+      ).toString(),
+      noOfTrainings: "0",
+      isActive: "yes",
+      isPermanentResident: (
+        data["Permanent Resident"] ||
+        data.isPermanentResident ||
+        ""
+      )
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
+      areParentsAlive: (
+        data["Both parents alive"] ||
+        data.areParentsAlive ||
+        ""
+      )
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
+      numberOfChildren: String(
+        parseInt(
+          String(data["No. of children"] || data.numberOfChildren || "0"),
+          10
+        ) || "0"
+      ),
+      employmentStatus: (
+        data["Employment status"] ||
+        data.employmentStatus ||
+        "unemployed"
+      )
+        .toString()
+        .toLowerCase(),
+      monthlyIncome: String(
+        parseInt(
+          String(data["Monthly income (UGX)"] || data.monthlyIncome || "0"),
+          10
+        ) || "0"
+      ),
+      mainChallenge: (
+        data["Main Challenge"] ||
+        data.mainChallenge ||
+        ""
+      ).toString(),
+      skillOfInterest: (
+        data["Skill of Interest"] ||
+        data.skillOfInterest ||
+        ""
+      ).toString(),
+      expectedImpact: (
+        data["Expected Impact"] ||
+        data.expectedImpact ||
+        ""
+      ).toString(),
+      isWillingToParticipate: (
+        data["Willingness to Participate"] ||
+        data.isWillingToParticipate ||
+        ""
+      )
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
+    };
+
+    return {
+      participant: participant, // Always return participant since we use defaults for missing data
+      errors,
+    };
+  };
+
+  const parseFile = async (file: File): Promise<{ sheets: string[] }> => {
+    setIsProcessing(true);
     try {
-      setIsLoading(true);
-      const worksheet = wb.Sheets[sheetName];
+      const data = await file.arrayBuffer();
+      const wb = XLSX.read(data);
+      setWorkbook(wb);
+      setSheets(wb.SheetNames);
+      return { sheets: wb.SheetNames };
+    } catch (error) {
+      console.error("Parse error:", error);
+      toast.error("Failed to parse Excel file");
+      return { sheets: [] };
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const validateData = async (
+    file: File,
+    sheetName: string
+  ): Promise<{ errors: ValidationError[] }> => {
+    setIsProcessing(true);
+    try {
+      if (!workbook) {
+        const data = await file.arrayBuffer();
+        const wb = XLSX.read(data);
+        setWorkbook(wb);
+      }
+
+      const worksheet = workbook!.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(worksheet) as Record<
         string,
         unknown
       >[];
 
-      const errors: string[] = [];
-      const participants = jsonData.map((row, index) => {
-        let firstName = "";
-        let lastName = "";
-        const nameStr = (row.Name || row.name) as string;
-        if (nameStr) {
-          const nameParts = nameStr.split(" ");
-          firstName = nameParts[0];
-          lastName = nameParts.slice(1).join(" ");
+      const validParticipants: ParticipantFormValues[] = [];
+
+      jsonData.forEach((row, index) => {
+        // Debug: Log the first row to see column headers
+        if (index === 0) {
+          console.log("Excel columns found:", Object.keys(row));
+          console.log("Sample row data:", row);
+
+          // Specifically check for your columns
+          console.log("Date of birth column:", row["Date of birth"]);
+          console.log("PWD column:", row["PWD"]);
+          console.log("Name column:", row["Name"]);
+          console.log("District column:", row["District"]);
         }
 
-        let sex = (row.Sex || row.sex || "").toString().toLowerCase();
-        if (sex === "f" || sex === "female") {
-          sex = "female";
-        } else if (sex === "m" || sex === "male") {
-          sex = "male";
-        } else {
-          sex = "other";
+        // Skip completely empty rows
+        const hasAnyData = Object.values(row).some(
+          value =>
+            value !== null && value !== undefined && String(value).trim() !== ""
+        );
+
+        if (!hasAnyData) {
+          return; // Skip empty rows
         }
 
-        if (!organizationId) {
-          errors.push(
-            `Row ${index + 1}: No organization assigned to current user`
-          );
-          return null;
+        const { participant } = validateParticipantData(row, index);
+
+        // Debug: Log participant data for first few rows
+        if (index < 3) {
+          console.log(`Row ${index + 1} participant:`, {
+            firstName: participant?.firstName,
+            lastName: participant?.lastName,
+            dateOfBirth: participant?.dateOfBirth,
+            isPWD: participant?.isPWD,
+            age: participant?.age,
+          });
         }
 
-        const data = {
-          firstName: firstName || "Unknown",
-          lastName: lastName || "",
-          sex: sex as "male" | "female" | "other",
-          age: String(parseInt(String(row.Age || row.age || "18"), 10) || "18"),
-          contact: (
-            row["Phone No."] ||
-            row.Phone ||
-            row.contact ||
-            ""
-          ).toString(),
-          isPWD: (row.Disability || row["Disability?"] || "")
-            .toString()
-            .toLowerCase()
-            .includes("yes")
-            ? "yes"
-            : "no",
-          isMother: "no",
-          isRefugee: "no",
-          project_id: row.Project?.toString() || "",
-          cluster_id: clusterId,
-          organization_id: organizationId,
-          country: "Uganda",
-          // Instead of sending district/subCounty IDs directly, store the names
-          // The district/subCounty IDs will be set by the DataPreview component
-          district: (row.District || organization?.district || "").toString(),
-          subCounty: (row.SubCounty || row["Sub County"] || "").toString(),
-          parish: (row.Parish || "").toString(),
-          village: (row.Village || "").toString(),
-          designation: (row["Employment status"] || "Other").toString(),
-          enterprise: (row["Skill of Interest"] || "Other").toString(),
-          noOfTrainings: "0",
-          isActive: "yes",
-          isPermanentResident: (row["Permanent Resident"] || "")
-            .toString()
-            .toLowerCase()
-            .includes("yes")
-            ? "yes"
-            : "no",
-          areParentsAlive: (row["Both parents alive"] || "")
-            .toString()
-            .toLowerCase()
-            .includes("yes")
-            ? "yes"
-            : "no",
-          numberOfChildren: String(
-            parseInt(String(row["No. of children"] || "0"), 10) || "0"
-          ),
-          employmentStatus: (row["Employment status"] || "unemployed")
-            .toString()
-            .toLowerCase(),
-          monthlyIncome: String(
-            parseInt(String(row["Monthly income (UGX)"] || "0"), 10) || "0"
-          ),
-          mainChallenge: (row["Main Challenge"] || "").toString(),
-          skillOfInterest: (row["Skill of Interest"] || "").toString(),
-          expectedImpact: (row["Expected Impact"] || "").toString(),
-          isWillingToParticipate: (row["Willingness to Participate"] || "")
-            .toString()
-            .toLowerCase()
-            .includes("yes")
-            ? "yes"
-            : "no",
-        } as ParticipantFormValues;
-
-        return data;
+        if (participant) {
+          validParticipants.push(participant);
+        }
       });
 
-      const validParticipants = participants.filter(
-        (p): p is ParticipantFormValues => p !== null
-      );
-      setParsedData({
-        data: validParticipants,
-        errors,
-        rawData: jsonData,
-      });
+      setValidationErrors([]); // No errors since we use defaults
+      setParsedData(validParticipants);
+
+      return { errors: [] }; // No validation errors
     } catch (error) {
-      console.error("Processing error:", error);
-      const errorMsg =
-        error instanceof Error
-          ? error.message
-          : "Failed to process sheet. Please check the format.";
-      toast.error(errorMsg);
+      console.error("Validation error:", error);
+      const errorList: ValidationError[] = [
+        {
+          row: 1,
+          field: "general",
+          message: error instanceof Error ? error.message : "Validation failed",
+        },
+      ];
+      setValidationErrors(errorList);
+      return { errors: errorList };
     } finally {
-      setIsLoading(false);
+      setIsProcessing(false);
     }
   };
 
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const loadingToastId = toast.loading("Reading Excel file...");
+  const importData = async (
+    data: ParticipantFormValues[]
+  ): Promise<{ success: boolean; imported?: number; error?: string }> => {
+    setIsImporting(true);
     try {
-      setIsLoading(true);
-      const data = await file.arrayBuffer();
-      const wb = XLSX.read(data);
-      setWorkbook(wb);
-
-      if (wb.SheetNames.length === 1) {
-        setAvailableSheets(wb.SheetNames);
-        setSelectedSheet(wb.SheetNames[0]);
-        processSheet(wb, wb.SheetNames[0]);
+      const result = await importParticipants(data);
+      if (result.success) {
+        return { success: true, imported: data.length };
       } else {
-        setAvailableSheets(wb.SheetNames);
-        setSelectedSheet("");
-        setParsedData(null);
+        return { success: false, error: result.error };
       }
-      toast.success("Excel file loaded successfully", { id: loadingToastId });
     } catch (error) {
       console.error("Import error:", error);
-      const errorMsg =
-        error instanceof Error
-          ? error.message
-          : "Failed to import participants. Please check your Excel file format.";
-      toast.error(errorMsg, { id: loadingToastId });
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Import failed",
+      };
     } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSheetSelect = (sheetName: string) => {
-    setSelectedSheet(sheetName);
-    if (workbook) {
-      setIsLoading(true);
-      // Small delay to ensure UI updates before processing begins
-      setTimeout(() => {
-        processSheet(workbook, sheetName);
-      }, 100);
+      setIsImporting(false);
     }
   };
 
   const resetImport = () => {
     setParsedData(null);
-    setSelectedSheet("");
-    setAvailableSheets([]);
+    setValidationErrors([]);
+    setSheets([]);
     setWorkbook(null);
+    setIsProcessing(false);
+    setIsImporting(false);
   };
 
   return {
-    isLoading,
+    sheets,
     parsedData,
-    availableSheets,
-    selectedSheet,
-    handleFileUpload,
-    handleSheetSelect,
+    validationErrors,
+    isProcessing,
+    isImporting,
+    parseFile,
+    validateData,
+    importData,
     resetImport,
   };
 }

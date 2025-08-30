@@ -5,6 +5,12 @@
 
 @import "./themes.css";
 
+/* Font utilities */
+.font-public-sans {
+  font-family:
+    var(--font-public-sans), "Noto Sans", system-ui, Arial, sans-serif;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

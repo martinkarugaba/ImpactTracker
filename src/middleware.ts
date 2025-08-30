@@ -31,9 +31,9 @@ export async function middleware(request: NextRequest) {
           `User ${session.user.id} not found in database, signing out`
         );
 
-        // Create a response that redirects to the sign-in page
+        // Create a response that redirects to the home page
         const response = NextResponse.redirect(
-          new URL("/auth/login", request.url)
+          new URL("/?auth=required", request.url)
         );
 
         // Set a cookie to indicate the user was logged out due to not existing in the database

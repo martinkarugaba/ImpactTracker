@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Public_Sans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/features/themes/providers/theme-provider";
 import { Toaster } from "react-hot-toast";
@@ -16,6 +16,16 @@ const inter = Inter({
   adjustFontFallback: true,
   fallback: ["system-ui", "Arial", "sans-serif"],
   variable: "--font-inter", // Use CSS variable for more flexibility
+});
+
+// Configure Public Sans font
+const publicSans = Public_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+  adjustFontFallback: true,
+  fallback: ["Noto Sans", "system-ui", "Arial", "sans-serif"],
+  variable: "--font-public-sans", // Use CSS variable for more flexibility
 });
 
 export const metadata: Metadata = {
@@ -41,7 +51,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans`} suppressHydrationWarning>
+      <body
+        className={`${inter.variable} ${publicSans.variable} font-sans`}
+        suppressHydrationWarning
+      >
         <SessionProvider>
           <QueryProvider>
             <ThemeProvider

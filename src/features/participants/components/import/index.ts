@@ -1,7 +1,6 @@
-export * from "./import-participants";
-export * from "./data-preview";
-export * from "./file-upload";
-export * from "./sheet-selector";
-export * from "./validation-errors";
+export { ImportParticipants } from "./import-participants";
+export { FileUpload } from "./file-upload";
+export { SheetSelector } from "./sheet-selector";
+export { ValidationErrors } from "./validation-errors";
+export { DataPreview } from "./data-preview";
 export * from "./types";
-export * from "./hooks/use-excel-import";

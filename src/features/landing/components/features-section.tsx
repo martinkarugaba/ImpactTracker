@@ -10,9 +10,9 @@ import * as motion from "motion/react-client";
 
 const features = [
   {
-    title: "Custom Dashboards",
+    title: "Participant Tracking",
     description:
-      "Create personalized dashboards with drag-and-drop simplicity to visualize the metrics that matter most to your business.",
+      "Easily manage participant data, track progress, and generate reports. Gain a holistic view of your beneficiaries and their engagement.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -24,17 +24,39 @@ const features = [
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="h-10 w-10"
+        className="h-8 w-8"
       >
-        <rect width="18" height="18" x="3" y="3" rx="2" />
-        <path d="M9 8h7M8 12h6m-5 4h4" />
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="m22 2-5 10-3-3-5 5" />
+      </svg>
+    ),
+  },
+  {
+    title: "Training Management",
+    description:
+      "Plan, schedule, and monitor training programs with comprehensive tracking and assessment tools.",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-8 w-8"
+      >
+        <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+        <path d="M6 12v5c3 3 9 3 12 0v-5" />
       </svg>
     ),
   },
   {
     title: "Real-time Analytics",
-    description:
-      "Monitor your KPIs in real-time with automatic data syncing, ensuring you always have the latest insights.",
+    description: "Monitor impact metrics in real-time with automatic syncing.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -46,16 +68,16 @@ const features = [
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="h-10 w-10"
+        className="h-8 w-8"
       >
         <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
       </svg>
     ),
   },
   {
-    title: "Goal Tracking",
+    title: "VSLA Monitoring",
     description:
-      "Set targets for your KPIs and track progress over time, with alerts when goals are met or missed.",
+      "Monitor Village Savings and Loan Associations with transaction tracking and group performance metrics.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -67,20 +89,17 @@ const features = [
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="h-10 w-10"
+        className="h-8 w-8"
       >
-        <path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h1" />
-        <path d="M15 3h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1" />
-        <path d="M3 10h18" />
-        <path d="m8 15 4 4 4-4" />
-        <path d="M12 19v-9" />
+        <line x1="12" y1="1" x2="12" y2="23" />
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
       </svg>
     ),
   },
   {
-    title: "Data Integration",
+    title: "Impact Reporting",
     description:
-      "Connect to your existing tools and data sources to automatically pull in metrics from across your organization.",
+      "Generate comprehensive reports automatically to demonstrate program effectiveness to stakeholders.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -92,30 +111,7 @@ const features = [
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="h-10 w-10"
-      >
-        <path d="M4 11h16" />
-        <path d="M12 5h4.5a2.5 2.5 0 0 1 0 5H12V5Z" />
-        <path d="M12 11.5V19" />
-      </svg>
-    ),
-  },
-  {
-    title: "Automated Reporting",
-    description:
-      "Schedule and distribute reports automatically to keep stakeholders informed without manual effort.",
-    icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="h-10 w-10"
+        className="h-8 w-8"
       >
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
         <path d="M14 2v6h6" />
@@ -126,9 +122,9 @@ const features = [
     ),
   },
   {
-    title: "Customizable Alerts",
+    title: "Multi-Organization Support",
     description:
-      "Configure alerts for critical changes in your KPIs, delivered via email, SMS, or integrated notifications.",
+      "Manage multiple organizations and projects from a unified dashboard.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -140,10 +136,11 @@ const features = [
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="h-10 w-10"
+        className="h-8 w-8"
       >
-        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+        <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
+        <path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9" />
+        <path d="M12 3v6" />
       </svg>
     ),
   },
@@ -166,52 +163,248 @@ const item = {
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="bg-secondary/10 scroll-mt-16 py-20">
-      <Container>
+    <section id="features" className="relative scroll-mt-16 py-24 md:py-32">
+      {/* Background gradient */}
+      <div className="from-primary/5 via-secondary/5 to-background absolute inset-0 bg-gradient-to-br opacity-70"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,var(--primary)/10,transparent_50%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,var(--secondary)/8,transparent_50%)]"></div>
+
+      <Container className="relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-12 text-center"
+          className="mb-20 text-center"
         >
-          <h2 className="mb-2 text-3xl font-bold tracking-tight">
+          <div className="bg-primary/10 text-primary mx-auto mb-6 inline-flex items-center rounded-full px-4 py-2 text-sm font-medium">
+            <span className="relative mr-2 flex h-2 w-2">
+              <span className="bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"></span>
+              <span className="bg-primary relative inline-flex h-2 w-2 rounded-full"></span>
+            </span>
             Powerful Features
+          </div>
+          <h2 className="from-foreground via-foreground/90 to-foreground/70 bg-gradient-to-br bg-clip-text text-4xl font-bold tracking-tight text-transparent md:text-5xl lg:text-6xl">
+            Built for Impact
           </h2>
-          <p className="text-muted-foreground mx-auto max-w-2xl text-xl">
-            Everything you need to track, analyze, and improve your key
-            performance indicators
+          <p className="text-muted-foreground/80 mx-auto mt-6 max-w-3xl text-lg md:text-xl">
+            Everything you need to track participants, manage training programs,
+            and monitor VSLAs with comprehensive analytics and reporting
           </p>
         </motion.div>
 
+        {/* Bento Grid Layout */}
         <motion.div
           variants={container}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+          className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4"
         >
-          {features.map((feature, index) => (
-            <motion.div key={index} variants={item}>
-              <Card className="group border-border/40 bg-card/50 hover:border-primary/50 hover:shadow-primary/5 relative overflow-hidden border backdrop-blur-sm transition-all duration-300 hover:shadow-lg">
-                <div className="from-primary/5 to-secondary/5 absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-                <CardHeader>
-                  <div className="text-primary mb-4 transition-transform duration-300 group-hover:scale-110">
-                    {feature.icon}
+          {/* Large Feature - Participant Tracking */}
+          <motion.div variants={item} className="md:col-span-2">
+            <Card className="group from-card/80 via-card/60 to-card/40 hover:shadow-primary/10 relative h-full overflow-hidden border-0 bg-gradient-to-br backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+              <div className="from-background/50 to-background/20 absolute inset-[1px] rounded-[calc(var(--radius)-1px)] bg-gradient-to-br"></div>
+
+              <CardHeader className="relative z-10 pb-6">
+                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 text-blue-600 transition-all duration-300 group-hover:scale-110 group-hover:from-blue-500/30 group-hover:to-indigo-500/30">
+                  {features[0].icon}
+                </div>
+                <CardTitle className="text-3xl font-bold tracking-tight">
+                  {features[0].title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="relative z-10">
+                <CardDescription className="text-muted-foreground/80 mb-8 text-lg leading-relaxed">
+                  {features[0].description}
+                </CardDescription>
+                <div className="flex flex-wrap gap-2">
+                  <span className="rounded-full bg-gradient-to-r from-blue-500/20 to-indigo-500/20 px-3 py-1.5 text-sm font-medium text-blue-700 dark:text-blue-300">
+                    Data Management
+                  </span>
+                  <span className="rounded-full bg-gradient-to-r from-blue-500/20 to-indigo-500/20 px-3 py-1.5 text-sm font-medium text-blue-700 dark:text-blue-300">
+                    Progress Tracking
+                  </span>
+                  <span className="rounded-full bg-gradient-to-r from-blue-500/20 to-indigo-500/20 px-3 py-1.5 text-sm font-medium text-blue-700 dark:text-blue-300">
+                    Reporting
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Medium Feature - Training Management */}
+          <motion.div variants={item}>
+            <Card className="group from-card/80 via-card/60 to-card/40 hover:shadow-primary/10 relative h-full overflow-hidden border-0 bg-gradient-to-br backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl">
+              <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 via-transparent to-emerald-500/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+              <div className="from-background/50 to-background/20 absolute inset-[1px] rounded-[calc(var(--radius)-1px)] bg-gradient-to-br"></div>
+
+              <CardHeader className="relative z-10">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 text-green-600 transition-all duration-300 group-hover:scale-110 group-hover:from-green-500/30 group-hover:to-emerald-500/30">
+                  {features[1].icon}
+                </div>
+                <CardTitle className="text-xl font-semibold">
+                  {features[1].title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="relative z-10">
+                <CardDescription className="text-muted-foreground/80 text-base leading-relaxed">
+                  {features[1].description}
+                </CardDescription>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Tall Feature - VSLA Monitoring */}
+          <motion.div variants={item} className="md:row-span-2">
+            <Card className="group from-card/80 via-card/60 to-card/40 hover:shadow-primary/10 relative h-full overflow-hidden border-0 bg-gradient-to-br backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl">
+              <div className="from-muted/8 to-muted/4 absolute inset-0 bg-gradient-to-br via-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+              <div className="from-background/50 to-background/20 absolute inset-[1px] rounded-[calc(var(--radius)-1px)] bg-gradient-to-br"></div>
+
+              <CardHeader className="relative z-10">
+                <div className="bg-muted/20 text-muted-foreground group-hover:bg-muted/30 mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110">
+                  {features[3].icon}
+                </div>
+                <CardTitle className="text-xl font-semibold">
+                  {features[3].title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="relative z-10 space-y-6">
+                <CardDescription className="text-muted-foreground/80 text-base leading-relaxed">
+                  {features[3].description}
+                </CardDescription>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-muted/20 text-muted-foreground flex h-8 w-8 items-center justify-center rounded-lg">
+                      <svg
+                        className="h-4 w-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium">
+                      Group Performance
+                    </span>
                   </div>
-                  <CardTitle className="relative">
-                    {feature.title}
-                    <div className="bg-primary absolute bottom-0 left-0 h-0.5 w-0 transition-all duration-300 group-hover:w-full"></div>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base">
-                    {feature.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+                  <div className="flex items-center gap-3">
+                    <div className="bg-muted/20 text-muted-foreground flex h-8 w-8 items-center justify-center rounded-lg">
+                      <svg
+                        className="h-4 w-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium">
+                      Transaction Management
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="bg-muted/20 text-muted-foreground flex h-8 w-8 items-center justify-center rounded-lg">
+                      <svg
+                        className="h-4 w-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium">
+                      Financial Inclusion
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Medium Feature - Real-time Analytics */}
+          <motion.div variants={item}>
+            <Card className="group from-card/80 via-card/60 to-card/40 hover:shadow-primary/10 relative h-full overflow-hidden border-0 bg-gradient-to-br backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl">
+              <div className="from-muted/8 to-muted/4 absolute inset-0 bg-gradient-to-br via-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+              <div className="from-background/50 to-background/20 absolute inset-[1px] rounded-[calc(var(--radius)-1px)] bg-gradient-to-br"></div>
+
+              <CardHeader className="relative z-10">
+                <div className="bg-muted/20 text-muted-foreground group-hover:bg-muted/30 mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110">
+                  {features[2].icon}
+                </div>
+                <CardTitle className="text-xl font-semibold">
+                  {features[2].title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="relative z-10">
+                <CardDescription className="text-muted-foreground/80 mb-6 text-base leading-relaxed">
+                  {features[2].description}
+                </CardDescription>
+                <div className="bg-muted/20 rounded-lg p-4">
+                  <div className="text-foreground text-3xl font-bold">95%</div>
+                  <div className="text-muted-foreground text-xs font-medium">
+                    Data Accuracy
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Medium Feature - Impact Reporting */}
+          <motion.div variants={item}>
+            <Card className="group from-card/80 via-card/60 to-card/40 hover:shadow-primary/10 relative h-full overflow-hidden border-0 bg-gradient-to-br backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl">
+              <div className="from-muted/8 to-muted/4 absolute inset-0 bg-gradient-to-br via-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+              <div className="from-background/50 to-background/20 absolute inset-[1px] rounded-[calc(var(--radius)-1px)] bg-gradient-to-br"></div>
+
+              <CardHeader className="relative z-10">
+                <div className="bg-muted/20 text-muted-foreground group-hover:bg-muted/30 mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110">
+                  {features[4].icon}
+                </div>
+                <CardTitle className="text-xl font-semibold">
+                  {features[4].title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="relative z-10">
+                <CardDescription className="text-muted-foreground/80 text-base leading-relaxed">
+                  {features[4].description}
+                </CardDescription>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Medium Feature - Multi-Organization Support */}
+          <motion.div variants={item}>
+            <Card className="group from-card/80 via-card/60 to-card/40 hover:shadow-primary/10 relative h-full overflow-hidden border-0 bg-gradient-to-br backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl">
+              <div className="from-muted/8 to-muted/4 absolute inset-0 bg-gradient-to-br via-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+              <div className="from-background/50 to-background/20 absolute inset-[1px] rounded-[calc(var(--radius)-1px)] bg-gradient-to-br"></div>
+
+              <CardHeader className="relative z-10">
+                <div className="bg-muted/20 text-muted-foreground group-hover:bg-muted/30 mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110">
+                  {features[5].icon}
+                </div>
+                <CardTitle className="text-lg font-semibold">
+                  {features[5].title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="relative z-10">
+                <CardDescription className="text-muted-foreground/80 text-base leading-relaxed">
+                  {features[5].description}
+                </CardDescription>
+              </CardContent>
+            </Card>
+          </motion.div>
         </motion.div>
       </Container>
     </section>

@@ -25,33 +25,52 @@ const transporter = createTransport({
 
 export async function login(email: string, password: string) {
   try {
+    console.log("=== LOGIN FUNCTION CALLED ===");
+    console.log("Email:", email);
+    console.log("Password provided:", !!password);
+
     const result = await signIn("credentials", {
       email,
       password,
       redirect: false,
     });
 
+    console.log("SignIn result:", result);
+
+    // Check if signIn returned an error
     if (result?.error) {
-      // Handle specific error messages
-      if (result.error.includes("Incorrect password")) {
-        return {
-          success: false,
-          error: "The password you entered is incorrect",
-        };
-      }
-      if (result.error.includes("User not found")) {
-        return { success: false, error: "No account found with this email" };
-      }
-      // Handle other credential errors
-      if (result.error.includes("credentials")) {
-        return { success: false, error: "Invalid email or password" };
-      }
-      return { success: false, error: result.error };
+      console.error("SignIn error:", result.error);
+      return {
+        success: false,
+        error: "Invalid email or password",
+      };
     }
 
-    return { success: true };
+    // Check if signIn was successful
+    if (result?.ok) {
+      console.log("Login successful");
+      return { success: true };
+    }
+
+    // If we get here, something unexpected happened
+    console.error("Unexpected signIn result:", result);
+    return {
+      success: false,
+      error: "An unexpected error occurred during login",
+    };
   } catch (error) {
     console.error("Login error:", error);
+
+    // Check if it's a specific NextAuth error
+    if (error instanceof Error) {
+      if (error.message.includes("CredentialsSignin")) {
+        return {
+          success: false,
+          error: "Invalid email or password",
+        };
+      }
+    }
+
     return {
       success: false,
       error: "An unexpected error occurred during login",

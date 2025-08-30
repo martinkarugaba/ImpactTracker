@@ -74,6 +74,7 @@ interface ReusableDataTableProps<TData, TValue> {
   isLoading?: boolean;
   searchValue?: string;
   onSearchChange?: (search: string) => void;
+  onSortingChange?: (sorting: SortingState) => void;
 }
 
 export function ReusableDataTable<TData, TValue>({
@@ -94,6 +95,7 @@ export function ReusableDataTable<TData, TValue>({
   isLoading = false,
   searchValue,
   onSearchChange,
+  onSortingChange,
 }: ReusableDataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -108,6 +110,26 @@ export function ReusableDataTable<TData, TValue>({
       ? paginationData?.limit || pageSize
       : pageSize,
   });
+
+  // Debug pagination state
+  console.log(`ReusableDataTable initial pagination state:`, {
+    pageIndex: pagination.pageIndex,
+    pageSize: pagination.pageSize,
+    serverSidePagination,
+    paginationDataPage: paginationData?.page,
+    paginationDataLimit: paginationData?.limit,
+    paginationDataTotal: paginationData?.total,
+    paginationDataTotalPages: paginationData?.totalPages,
+    paginationDataHasNext: paginationData?.hasNext,
+    paginationDataHasPrev: paginationData?.hasPrev,
+  });
+
+  // Notify parent of sorting changes
+  React.useEffect(() => {
+    if (onSortingChange) {
+      onSortingChange(sorting);
+    }
+  }, [sorting, onSortingChange]);
 
   // Handle search for server-side pagination
   const [searchInput, setSearchInput] = React.useState(searchValue || "");
@@ -128,13 +150,42 @@ export function ReusableDataTable<TData, TValue>({
   // Update local pagination state when server pagination data changes
   React.useEffect(() => {
     if (serverSidePagination && paginationData) {
-      setPagination(prev => ({
-        ...prev,
-        pageIndex: paginationData.page - 1,
-        pageSize: paginationData.limit,
-      }));
+      console.log("ReusableDataTable: Server pagination data changed:", {
+        currentPageIndex: pagination.pageIndex,
+        currentPageSize: pagination.pageSize,
+        newServerPage: paginationData.page,
+        newServerPageSize: paginationData.limit,
+        total: paginationData.total,
+        totalPages: paginationData.totalPages,
+      });
+
+      const newPageIndex = paginationData.page - 1; // Convert 1-indexed to 0-indexed
+      const newPageSize = paginationData.limit;
+
+      // Only update if there's actually a change to prevent infinite loops
+      setPagination(prev => {
+        if (prev.pageIndex === newPageIndex && prev.pageSize === newPageSize) {
+          console.log(
+            "ReusableDataTable: No change in pagination, skipping update"
+          );
+          return prev;
+        }
+
+        console.log(
+          `ReusableDataTable: Updating pagination state to pageIndex=${newPageIndex}, pageSize=${newPageSize}`
+        );
+        return {
+          pageIndex: newPageIndex,
+          pageSize: newPageSize,
+        };
+      });
     }
-  }, [serverSidePagination, paginationData]);
+  }, [
+    serverSidePagination,
+    paginationData,
+    pagination.pageIndex,
+    pagination.pageSize,
+  ]);
 
   interface PaginationState {
     pageIndex: number;
@@ -148,21 +199,17 @@ export function ReusableDataTable<TData, TValue>({
   // Handle pagination changes for server-side pagination
   const handlePaginationChange = React.useCallback(
     (updater: PaginationUpdater) => {
+      const newPagination =
+        typeof updater === "function" ? updater(pagination) : updater;
+
+      // If using server-side pagination, convert 0-indexed to 1-indexed and notify parent
       if (serverSidePagination && onPaginationChange) {
-        if (typeof updater === "function") {
-          const newPagination = updater(pagination);
-          onPaginationChange(
-            newPagination.pageIndex + 1,
-            newPagination.pageSize
-          );
-          setPagination(newPagination);
-        } else {
-          onPaginationChange(updater.pageIndex + 1, updater.pageSize);
-          setPagination(updater);
-        }
-      } else {
-        setPagination(updater);
+        const oneIndexedPage = newPagination.pageIndex + 1;
+        onPaginationChange(oneIndexedPage, newPagination.pageSize);
       }
+
+      // Always update local state
+      setPagination(newPagination);
     },
     [serverSidePagination, onPaginationChange, pagination]
   );
@@ -222,17 +269,7 @@ export function ReusableDataTable<TData, TValue>({
     };
   }, [serverSidePagination, paginationData, table]);
 
-  // Handle navigation between pages
-  const handleGoToPage = React.useCallback(
-    (page: number) => {
-      if (serverSidePagination && onPaginationChange) {
-        onPaginationChange(page, pagination.pageSize);
-      } else {
-        table.setPageIndex(page - 1);
-      }
-    },
-    [serverSidePagination, onPaginationChange, pagination.pageSize, table]
-  );
+  // We now use direct pagination methods in the button handlers instead of this function
 
   // Get columns that can be hidden for the column toggle dropdown
 
@@ -385,8 +422,10 @@ export function ReusableDataTable<TData, TValue>({
                 onValueChange={value => {
                   const newSize = Number(value);
                   if (serverSidePagination && onPaginationChange) {
+                    // For server-side pagination, we need to call the parent handler
                     onPaginationChange(getPageInfo().currentPage, newSize);
                   } else {
+                    // For client-side pagination, just use the table's built-in method
                     table.setPageSize(newSize);
                   }
                 }}
@@ -413,7 +452,13 @@ export function ReusableDataTable<TData, TValue>({
               <Button
                 variant="outline"
                 className="hidden h-8 w-8 p-0 lg:flex"
-                onClick={() => handleGoToPage(1)}
+                onClick={() => {
+                  if (serverSidePagination && onPaginationChange) {
+                    onPaginationChange(1, pagination.pageSize);
+                  } else {
+                    table.setPageIndex(0); // Go to first page (0-indexed)
+                  }
+                }}
                 disabled={!getPageInfo().hasPrev}
               >
                 <span className="sr-only">Go to first page</span>
@@ -424,8 +469,15 @@ export function ReusableDataTable<TData, TValue>({
                 className="size-8"
                 size="icon"
                 onClick={() => {
-                  const pageInfo = getPageInfo();
-                  handleGoToPage(Math.max(pageInfo.currentPage - 1, 1));
+                  if (serverSidePagination && onPaginationChange) {
+                    const currentPage = getPageInfo().currentPage;
+                    onPaginationChange(
+                      Math.max(currentPage - 1, 1),
+                      pagination.pageSize
+                    );
+                  } else {
+                    table.previousPage(); // Use built-in method for client-side
+                  }
                 }}
                 disabled={!getPageInfo().hasPrev}
               >
@@ -437,10 +489,16 @@ export function ReusableDataTable<TData, TValue>({
                 className="size-8"
                 size="icon"
                 onClick={() => {
-                  const pageInfo = getPageInfo();
-                  handleGoToPage(
-                    Math.min(pageInfo.currentPage + 1, pageInfo.pageCount)
-                  );
+                  if (serverSidePagination && onPaginationChange) {
+                    const currentPage = getPageInfo().currentPage;
+                    const pageCount = getPageInfo().pageCount;
+                    onPaginationChange(
+                      Math.min(currentPage + 1, pageCount),
+                      pagination.pageSize
+                    );
+                  } else {
+                    table.nextPage(); // Use built-in method for client-side
+                  }
                 }}
                 disabled={!getPageInfo().hasNext}
               >
@@ -451,7 +509,16 @@ export function ReusableDataTable<TData, TValue>({
                 variant="outline"
                 className="hidden size-8 lg:flex"
                 size="icon"
-                onClick={() => handleGoToPage(getPageInfo().pageCount)}
+                onClick={() => {
+                  if (serverSidePagination && onPaginationChange) {
+                    onPaginationChange(
+                      getPageInfo().pageCount,
+                      pagination.pageSize
+                    );
+                  } else {
+                    table.setPageIndex(table.getPageCount() - 1); // Go to last page (0-indexed)
+                  }
+                }}
                 disabled={!getPageInfo().hasNext}
               >
                 <span className="sr-only">Go to last page</span>

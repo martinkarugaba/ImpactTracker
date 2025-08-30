@@ -29,7 +29,7 @@ export function NavDocuments({
 }) {
   return (
     <Collapsible defaultOpen className="group/collapsible">
-      <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+      <SidebarGroup>
         <SidebarGroupLabel asChild>
           <CollapsibleTrigger>
             My KPIs
@@ -41,8 +41,8 @@ export function NavDocuments({
             <SidebarMenu>
               {items.map(item => (
                 <SidebarMenuItem key={item.name}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url} className="text-lg" title={item.name}>
+                  <SidebarMenuButton asChild tooltip={item.name}>
+                    <Link href={item.url} title={item.name}>
                       {item.icon && <item.icon />}
                       <span>{item.name}</span>
                     </Link>

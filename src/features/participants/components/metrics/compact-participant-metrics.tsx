@@ -6,8 +6,6 @@ import {
   IconUserCheck,
   IconUser,
   IconGauge,
-  IconTrendingUp,
-  IconMapPin,
   IconCalendar,
   IconActivity,
 } from "@tabler/icons-react";
@@ -30,15 +28,24 @@ export function CompactParticipantMetrics({
     totalMales,
     femalePercent,
     malePercent,
+    total15to35,
+    totalOver35,
+    femalesYoung,
+    femalesOlder,
+    malesYoung,
+    malesOlder,
     disabled,
-    disabledPercent,
+    disabledMales,
+    disabledFemales,
+    totalDisabled15to35,
+    totalDisabledOver35,
     formatPercent,
   } = metrics;
 
   if (isLoading) {
     return (
       <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
-        {Array.from({ length: 8 }).map((_, i) => (
+        {Array.from({ length: 14 }).map((_, i) => (
           <MetricCard
             key={i}
             title="Loading..."
@@ -54,108 +61,160 @@ export function CompactParticipantMetrics({
     );
   }
 
-  // Calculate additional metrics
-  const avgAge =
-    participants.length > 0
-      ? Math.round(
-          participants.reduce((sum, p) => sum + (p.age || 0), 0) /
-            participants.length
-        )
-      : 0;
-
-  const youthCount = participants.filter(p => (p.age || 0) <= 35).length;
-  const elderCount = participants.filter(p => (p.age || 0) >= 60).length;
-
-  // Get unique districts
-  const uniqueDistricts = new Set(
-    participants.map(p => p.district).filter(Boolean)
-  ).size;
-
-  // Get unique projects
-  const uniqueProjects = new Set(
-    participants.map(p => p.project_id).filter(Boolean)
-  ).size;
-
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
+      {/* Total Participants */}
       <MetricCard
         title="Total Participants"
         value={totalParticipants}
         footer={{
-          title: `Across ${uniqueProjects} projects`,
-          description: "Active participant count",
+          title: "All participants",
+          description: "Total count",
         }}
         icon={<IconUsers className="size-4 text-blue-600" />}
       />
 
+      {/* Total Female */}
       <MetricCard
-        title="Female Participants"
+        title="Total Female"
         value={totalFemales}
         footer={{
-          title: `${formatPercent(femalePercent)} of total`,
-          description: "Gender distribution",
+          title: `${formatPercent(femalePercent)}% of total`,
+          description: "Female participants",
         }}
         icon={<IconUserCheck className="size-4 text-pink-600" />}
       />
 
+      {/* Total Male */}
       <MetricCard
-        title="Male Participants"
+        title="Total Male"
         value={totalMales}
         footer={{
-          title: `${formatPercent(malePercent)} of total`,
-          description: "Gender distribution",
+          title: `${formatPercent(malePercent)}% of total`,
+          description: "Male participants",
         }}
         icon={<IconUser className="size-4 text-blue-500" />}
       />
 
+      {/* 15-35 Age Group */}
       <MetricCard
-        title="PWD Participants"
+        title="15-35 Years"
+        value={total15to35}
+        footer={{
+          title: `${((total15to35 / totalParticipants) * 100).toFixed(1)}% of total`,
+          description: "Young adults",
+        }}
+        icon={<IconCalendar className="size-4 text-green-600" />}
+      />
+
+      {/* >35 Age Group */}
+      <MetricCard
+        title="> 35 Years"
+        value={totalOver35}
+        footer={{
+          title: `${((totalOver35 / totalParticipants) * 100).toFixed(1)}% of total`,
+          description: "Older adults",
+        }}
+        icon={<IconActivity className="size-4 text-orange-600" />}
+      />
+
+      {/* Female 15-35 */}
+      <MetricCard
+        title="Female 15-35"
+        value={femalesYoung.length}
+        footer={{
+          title: `${((femalesYoung.length / totalParticipants) * 100).toFixed(1)}% of total`,
+          description: "Young women",
+        }}
+        icon={<IconUserCheck className="size-4 text-pink-500" />}
+      />
+
+      {/* Female >35 */}
+      <MetricCard
+        title="Female > 35"
+        value={femalesOlder.length}
+        footer={{
+          title: `${((femalesOlder.length / totalParticipants) * 100).toFixed(1)}% of total`,
+          description: "Older women",
+        }}
+        icon={<IconUserCheck className="size-4 text-pink-700" />}
+      />
+
+      {/* Male 15-35 */}
+      <MetricCard
+        title="Male 15-35"
+        value={malesYoung.length}
+        footer={{
+          title: `${((malesYoung.length / totalParticipants) * 100).toFixed(1)}% of total`,
+          description: "Young men",
+        }}
+        icon={<IconUser className="size-4 text-blue-400" />}
+      />
+
+      {/* Male >35 */}
+      <MetricCard
+        title="Male > 35"
+        value={malesOlder.length}
+        footer={{
+          title: `${((malesOlder.length / totalParticipants) * 100).toFixed(1)}% of total`,
+          description: "Older men",
+        }}
+        icon={<IconUser className="size-4 text-blue-700" />}
+      />
+
+      {/* PWDs Total */}
+      <MetricCard
+        title="PWDs"
         value={disabled.length}
         footer={{
-          title: `${formatPercent(disabledPercent)} of total`,
+          title: `${((disabled.length / totalParticipants) * 100).toFixed(1)}% of total`,
           description: "Persons with disabilities",
         }}
         icon={<IconGauge className="size-4 text-purple-600" />}
       />
 
+      {/* PWDs Female */}
       <MetricCard
-        title="Youth (≤35)"
-        value={youthCount}
+        title="PWDs Female"
+        value={disabledFemales.length}
         footer={{
-          title: `${((youthCount / totalParticipants) * 100).toFixed(1)}% youth`,
-          description: "Young participants",
+          title: `${disabled.length > 0 ? ((disabledFemales.length / disabled.length) * 100).toFixed(1) : 0}% of PWDs`,
+          description: "Female PWDs",
         }}
-        icon={<IconTrendingUp className="size-4 text-green-600" />}
+        icon={<IconUserCheck className="size-4 text-purple-500" />}
       />
 
+      {/* PWDs Male */}
       <MetricCard
-        title="Elders (≥60)"
-        value={elderCount}
+        title="PWDs Male"
+        value={disabledMales.length}
         footer={{
-          title: `${((elderCount / totalParticipants) * 100).toFixed(1)}% elders`,
-          description: "Senior participants",
+          title: `${disabled.length > 0 ? ((disabledMales.length / disabled.length) * 100).toFixed(1) : 0}% of PWDs`,
+          description: "Male PWDs",
         }}
-        icon={<IconActivity className="size-4 text-orange-600" />}
+        icon={<IconUser className="size-4 text-purple-400" />}
       />
 
+      {/* PWDs 15-35 */}
       <MetricCard
-        title="Districts Covered"
-        value={uniqueDistricts}
+        title="PWDs 15-35"
+        value={totalDisabled15to35}
         footer={{
-          title: "Geographic reach",
-          description: "Coverage area",
+          title: `${disabled.length > 0 ? ((totalDisabled15to35 / disabled.length) * 100).toFixed(1) : 0}% of PWDs`,
+          description: "Young PWDs",
         }}
-        icon={<IconMapPin className="size-4 text-indigo-600" />}
+        icon={<IconCalendar className="size-4 text-purple-500" />}
       />
 
+      {/* PWDs > 35 */}
       <MetricCard
-        title="Average Age"
-        value={`${avgAge} years`}
+        title="PWDs > 35"
+        value={totalDisabledOver35}
         footer={{
-          title: "Participant average",
-          description: "Age demographics",
+          title: `${disabled.length > 0 ? ((totalDisabledOver35 / disabled.length) * 100).toFixed(1) : 0}% of PWDs`,
+          description: "Older PWDs",
         }}
-        icon={<IconCalendar className="size-4 text-teal-600" />}
+        icon={<IconActivity className="size-4 text-purple-700" />}
       />
     </div>
   );

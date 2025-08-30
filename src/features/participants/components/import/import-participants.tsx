@@ -13,265 +13,468 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FileUpload } from "./file-upload";
-import { SheetSelector } from "./sheet-selector";
-import { ValidationErrors } from "./validation-errors";
-import { DataPreview } from "./data-preview";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { useExcelImport } from "./hooks/use-excel-import";
 import {
-  useLocationSearch,
-  useDistrictSearch,
-  useSubCountySearch,
+  useCountries,
+  useDistricts,
 } from "@/features/locations/hooks/use-locations-query";
 
 interface ImportParticipantsProps {
-  onImport: (data: ParticipantFormValues[]) => Promise<void>;
   clusterId: string;
-  projects: { id: string; name: string }[];
+  onImportComplete?: () => void;
+  trigger?: React.ReactNode;
+  buttonText?: string;
+  className?: string;
 }
 
 export function ImportParticipants({
-  onImport,
   clusterId,
-  projects = [], // Default to empty array
+  onImportComplete,
+  trigger,
+  buttonText = "Import from Excel",
+  className,
 }: ImportParticipantsProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<string>("");
-  const [selectedCountry, setSelectedCountry] = useState<string>("");
-  const [selectedDistrict, setSelectedDistrict] = useState<string>("");
-  const [selectedSubCounty, setSelectedSubCounty] = useState<string>("");
+  const [file, setFile] = useState<File | null>(null);
+  const [selectedSheet, setSelectedSheet] = useState<string>("");
+  const [currentStep, setCurrentStep] = useState<
+    "upload" | "selectSheet" | "validate" | "preview" | "import"
+  >("upload");
 
-  // Search states
-  const [countrySearch, setCountrySearch] = useState<string>("");
-  const [districtSearch, setDistrictSearch] = useState<string>("");
-  const [subCountySearch, setSubCountySearch] = useState<string>("");
+  // Global defaults for preview
+  const [globalDefaults, setGlobalDefaults] = useState({
+    countryId: "",
+    districtId: "",
+    subcountyId: "",
+    parishId: "",
+    villageId: "",
+  });
 
-  // Get filtered locations from the database based on search terms
-  const { data: countriesData, isLoading: isLoadingCountries } =
-    useLocationSearch(countrySearch);
-
-  const { data: districtsData, isLoading: isLoadingDistricts } =
-    useDistrictSearch({
-      countryId: selectedCountry,
-      searchTerm: districtSearch,
-    });
-
-  const { data: subCountiesData, isLoading: isLoadingSubCounties } =
-    useSubCountySearch({
-      districtId: selectedDistrict,
-      searchTerm: subCountySearch,
-    });
+  // Location queries
+  const { data: countriesData } = useCountries();
+  const { data: districtsData } = useDistricts({
+    countryId: globalDefaults.countryId || undefined,
+  });
 
   const {
-    isLoading,
+    sheets,
     parsedData,
-    availableSheets,
-    selectedSheet,
-    handleFileUpload,
-    handleSheetSelect,
+    validationErrors,
+    isProcessing,
+    isImporting,
+    parseFile,
+    validateData,
+    importData,
     resetImport,
   } = useExcelImport(clusterId);
 
-  // Handlers for filtering options
-  const handleProjectSelect = (value: string) => {
-    setSelectedProject(value);
+  const handleFileSelect = async (selectedFile: File) => {
+    setFile(selectedFile);
+    const result = await parseFile(selectedFile);
+
+    if (result.sheets.length === 1) {
+      setSelectedSheet(result.sheets[0]);
+      setCurrentStep("validate");
+    } else {
+      setCurrentStep("selectSheet");
+    }
   };
 
-  const handleCountrySelect = (value: string) => {
-    setSelectedCountry(value);
-    // Reset district and subcounty selections when country changes
-    setSelectedDistrict("");
-    setSelectedSubCounty("");
-    // Reset search terms
-    setDistrictSearch("");
-    setSubCountySearch("");
+  const handleSheetSelect = (sheet: string) => {
+    setSelectedSheet(sheet);
+    setCurrentStep("validate");
   };
 
-  const handleDistrictSelect = (value: string) => {
-    setSelectedDistrict(value);
-    // Clear subcounty when district changes
-    setSelectedSubCounty("");
-    // Reset subcounty search
-    setSubCountySearch("");
-  };
+  const handleValidate = async () => {
+    if (!file || !selectedSheet) return;
 
-  const handleSubCountySelect = (value: string) => {
-    setSelectedSubCounty(value);
-  };
+    const validationResult = await validateData(file, selectedSheet);
 
-  const handleCountrySearch = (searchTerm: string) => {
-    setCountrySearch(searchTerm);
-  };
-
-  const handleDistrictSearch = (searchTerm: string) => {
-    setDistrictSearch(searchTerm);
-  };
-
-  const handleSubCountySearch = (searchTerm: string) => {
-    setSubCountySearch(searchTerm);
+    if (validationResult.errors.length === 0) {
+      setCurrentStep("preview");
+    } else {
+      toast.error(
+        `Found ${validationResult.errors.length} validation errors. Please review.`
+      );
+    }
   };
 
   const handleImport = async () => {
-    if (!parsedData?.data || parsedData.data.length === 0) {
+    if (!parsedData || parsedData.length === 0) {
       toast.error("No data to import");
       return;
     }
 
-    // Make sure required IDs are set
-    if (selectedProject && !parsedData.data[0].project_id) {
-      toast.error("Please select a project");
-      return;
-    }
-
-    if (!selectedCountry) {
-      toast.error("Please select a country");
-      return;
-    }
-
-    if (!selectedDistrict) {
-      toast.error("Please select a district");
-      return;
-    }
-
-    const toastId = toast.loading(
-      `Importing ${parsedData.data.length} participants...`
-    );
     try {
-      // Apply the selected project, country, district, and subcounty to all participants
-      const updatedData = parsedData.data.map(participant => ({
-        ...participant,
-        project_id: selectedProject || participant.project_id,
-        country: selectedCountry, // Use the selected country UUID
-        district: selectedDistrict, // Use the selected district UUID
-        subCounty: selectedSubCounty || participant.subCounty, // Use the selected subcounty UUID if available
-      }));
+      setCurrentStep("import");
+      const result = await importData(parsedData as ParticipantFormValues[]);
 
-      await onImport(updatedData);
-      toast.success(
-        `Successfully imported ${parsedData.data.length} participants`,
-        {
-          id: toastId,
-        }
-      );
-      setIsOpen(false);
-      resetImport();
+      if (result.success) {
+        toast.success(`Successfully imported ${result.imported} participants`);
+        handleClose();
+        onImportComplete?.();
+      } else {
+        toast.error(result.error || "Import failed");
+        setCurrentStep("preview");
+      }
     } catch (error) {
       console.error("Import error:", error);
-      toast.error(
-        error instanceof Error
-          ? `Import failed: ${error.message}`
-          : "Failed to import participants",
-        { id: toastId }
-      );
+      toast.error("Failed to import participants");
+      setCurrentStep("preview");
+    }
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    setFile(null);
+    setSelectedSheet("");
+    setCurrentStep("upload");
+    resetImport();
+  };
+
+  const handleBack = () => {
+    switch (currentStep) {
+      case "selectSheet":
+        setCurrentStep("upload");
+        break;
+      case "validate":
+        if (sheets.length > 1) {
+          setCurrentStep("selectSheet");
+        } else {
+          setCurrentStep("upload");
+        }
+        break;
+      case "preview":
+        setCurrentStep("validate");
+        break;
+      default:
+        setCurrentStep("upload");
+    }
+  };
+
+  const canProceed = () => {
+    switch (currentStep) {
+      case "upload":
+        return !!file;
+      case "selectSheet":
+        return !!selectedSheet;
+      case "validate":
+        return true; // Can always try to validate
+      case "preview":
+        return (
+          parsedData && parsedData.length > 0 && validationErrors.length === 0
+        );
+      default:
+        return false;
+    }
+  };
+
+  const getStepTitle = () => {
+    switch (currentStep) {
+      case "upload":
+        return "Upload Excel File";
+      case "selectSheet":
+        return "Select Worksheet";
+      case "validate":
+        return "Validate Data";
+      case "preview":
+        return "Preview & Import";
+      case "import":
+        return "Importing...";
+      default:
+        return "Import Participants";
+    }
+  };
+
+  const getStepDescription = () => {
+    switch (currentStep) {
+      case "upload":
+        return "Select an Excel file containing participant data";
+      case "selectSheet":
+        return "Choose which worksheet contains the participant data";
+      case "validate":
+        return "Checking data format and required fields";
+      case "preview":
+        return "Review the data before importing";
+      case "import":
+        return "Processing import, please wait...";
+      default:
+        return "";
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          onClick={() => setIsOpen(true)}
-          className="gap-2"
-        >
-          <Upload className="h-4 w-4" />
-          Import
-        </Button>
+        {trigger || (
+          <Button variant="outline" className={className}>
+            <Upload className="mr-2 h-4 w-4" />
+            {buttonText}
+          </Button>
+        )}
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] w-[1400px] max-w-[95vw] overflow-y-auto">
-        <DialogHeader className="w-full">
-          <div className="flex items-center justify-between">
-            <div>
-              <DialogTitle>Import Participants</DialogTitle>
-              <DialogDescription>
-                Import participants from an Excel file
-              </DialogDescription>
+      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{getStepTitle()}</DialogTitle>
+          <DialogDescription>{getStepDescription()}</DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-6">
+          {/* Upload Step */}
+          {currentStep === "upload" && (
+            <div className="space-y-4">
+              <div className="border-muted flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-6">
+                <input
+                  type="file"
+                  accept=".xlsx,.xls"
+                  onChange={e => {
+                    const selectedFile = e.target.files?.[0];
+                    if (selectedFile) {
+                      handleFileSelect(selectedFile);
+                    }
+                  }}
+                  className="hidden"
+                  id="file-upload"
+                />
+                <label
+                  htmlFor="file-upload"
+                  className="flex cursor-pointer flex-col items-center gap-2"
+                >
+                  <Upload className="text-muted-foreground h-8 w-8" />
+                  <div className="text-center">
+                    <p className="text-muted-foreground text-sm">
+                      Click to upload or drag and drop an Excel file
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      .xlsx or .xls files only
+                    </p>
+                  </div>
+                </label>
+              </div>
+              {file && (
+                <p className="text-muted-foreground text-sm">
+                  Selected: {file.name}
+                </p>
+              )}
             </div>
-            <div className="flex items-center gap-2">
-              {parsedData && !parsedData.errors?.length && (
-                <>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setSelectedProject("");
-                      setSelectedCountry("");
-                      setSelectedDistrict("");
-                      setSelectedSubCounty("");
-                      resetImport();
-                    }}
+          )}
+
+          {/* Sheet Selection */}
+          {currentStep === "selectSheet" && (
+            <div className="space-y-4">
+              <Label>Select Worksheet</Label>
+              <Select value={selectedSheet} onValueChange={handleSheetSelect}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose a worksheet" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sheets.map(sheet => (
+                    <SelectItem key={sheet} value={sheet}>
+                      {sheet}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* Validation Step */}
+          {currentStep === "validate" && (
+            <div className="space-y-4">
+              <div className="text-center">
+                <p className="text-muted-foreground text-sm">
+                  Validating data from sheet: <strong>{selectedSheet}</strong>
+                </p>
+                {isProcessing && (
+                  <p className="mt-2 text-sm text-blue-600">
+                    Processing file...
+                  </p>
+                )}
+              </div>
+
+              {validationErrors.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-destructive font-medium">
+                    Validation Errors
+                  </h4>
+                  <div className="max-h-40 overflow-y-auto rounded border">
+                    {validationErrors.slice(0, 10).map((error, index) => (
+                      <div key={index} className="border-b p-2 text-sm">
+                        <span className="font-medium">Row {error.row}:</span>{" "}
+                        {error.message}
+                      </div>
+                    ))}
+                    {validationErrors.length > 10 && (
+                      <div className="text-muted-foreground p-2 text-xs">
+                        ... and {validationErrors.length - 10} more errors
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Preview Step */}
+          {currentStep === "preview" && parsedData && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-medium">Data Preview</h3>
+                <div className="text-muted-foreground text-sm">
+                  {parsedData.length} participants ready to import
+                </div>
+              </div>
+
+              {/* Global defaults */}
+              <div className="grid grid-cols-2 gap-4 rounded-lg border p-4">
+                <div className="space-y-2">
+                  <Label>Default Country</Label>
+                  <Select
+                    value={globalDefaults.countryId}
+                    onValueChange={value =>
+                      setGlobalDefaults({
+                        ...globalDefaults,
+                        countryId: value,
+                      })
+                    }
                   >
-                    Cancel
-                  </Button>
-                  <Button onClick={handleImport} disabled={isLoading}>
-                    Import
-                  </Button>
-                </>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {countriesData?.data?.data?.map(country => (
+                        <SelectItem key={country.id} value={country.id}>
+                          {country.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Default District</Label>
+                  <Select
+                    value={globalDefaults.districtId}
+                    onValueChange={value =>
+                      setGlobalDefaults({
+                        ...globalDefaults,
+                        districtId: value,
+                      })
+                    }
+                    disabled={!globalDefaults.countryId}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select district" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {districtsData?.data?.data?.map(district => (
+                        <SelectItem key={district.id} value={district.id}>
+                          {district.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Data table */}
+              <div className="rounded-lg border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Sex</TableHead>
+                      <TableHead>Age</TableHead>
+                      <TableHead>Contact</TableHead>
+                      <TableHead>Sub County</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {parsedData.slice(0, 5).map((participant, index) => (
+                      <TableRow key={index}>
+                        <TableCell>
+                          {participant.firstName} {participant.lastName}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{participant.sex}</Badge>
+                        </TableCell>
+                        <TableCell>{participant.age}</TableCell>
+                        <TableCell>{participant.contact}</TableCell>
+                        <TableCell>{participant.subCounty || "N/A"}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                {parsedData.length > 5 && (
+                  <div className="text-muted-foreground border-t p-2 text-center text-sm">
+                    ... and {parsedData.length - 5} more participants
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Import Step */}
+          {currentStep === "import" && (
+            <div className="py-8 text-center">
+              <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
+              <p className="text-muted-foreground text-sm">
+                Importing participants...
+              </p>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex justify-between border-t pt-4">
+            <div>
+              {currentStep !== "upload" && currentStep !== "import" && (
+                <Button variant="outline" onClick={handleBack}>
+                  Back
+                </Button>
+              )}
+            </div>
+
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={handleClose}>
+                Cancel
+              </Button>
+
+              {currentStep === "validate" && (
+                <Button onClick={handleValidate} disabled={isProcessing}>
+                  {isProcessing ? "Validating..." : "Validate"}
+                </Button>
+              )}
+
+              {currentStep === "preview" && (
+                <Button
+                  onClick={handleImport}
+                  disabled={!canProceed() || isImporting}
+                >
+                  {isImporting
+                    ? "Importing..."
+                    : `Import ${parsedData?.length || 0} Participants`}
+                </Button>
               )}
             </div>
           </div>
-        </DialogHeader>
-
-        {!parsedData ? (
-          <div className="space-y-4">
-            <FileUpload onFileUpload={handleFileUpload} isLoading={isLoading} />
-            {availableSheets && availableSheets.length > 0 && (
-              <SheetSelector
-                sheets={availableSheets}
-                selectedSheet={selectedSheet}
-                onSheetSelect={handleSheetSelect}
-                isLoading={isLoading}
-              />
-            )}
-          </div>
-        ) : parsedData.errors && parsedData.errors.length > 0 ? (
-          <ValidationErrors errors={parsedData.errors} />
-        ) : (
-          <div className="space-y-4">
-            <DataPreview
-              data={parsedData.data}
-              projects={projects}
-              countryOptions={
-                countriesData?.data?.data?.map(
-                  (country: { id: string; name: string; code: string }) => ({
-                    value: country.id,
-                    label: `${country.name} (${country.code})`,
-                  })
-                ) || []
-              }
-              selectedCountry={selectedCountry}
-              selectedProject={selectedProject}
-              selectedDistrict={selectedDistrict}
-              selectedSubCounty={selectedSubCounty}
-              onCountrySelect={handleCountrySelect}
-              onProjectSelect={handleProjectSelect}
-              onDistrictSelect={handleDistrictSelect}
-              onSubCountySelect={handleSubCountySelect}
-              onSearchCountry={handleCountrySearch}
-              onSearchDistrict={handleDistrictSearch}
-              onSearchSubCounty={handleSubCountySearch}
-              districtOptions={
-                districtsData?.data?.data?.map(
-                  (district: { id: string; name: string }) => ({
-                    value: district.id,
-                    label: district.name,
-                  })
-                ) || []
-              }
-              subCountyOptions={
-                subCountiesData?.data?.data?.map(
-                  (subCounty: { id: string; name: string }) => ({
-                    value: subCounty.id,
-                    label: subCounty.name,
-                  })
-                ) || []
-              }
-              isLoadingCountries={isLoadingCountries}
-              isLoadingDistricts={isLoadingDistricts}
-              isLoadingSubCounties={isLoadingSubCounties}
-            />
-            {/* Action buttons moved to header */}
-          </div>
-        )}
+        </div>
       </DialogContent>
     </Dialog>
   );
