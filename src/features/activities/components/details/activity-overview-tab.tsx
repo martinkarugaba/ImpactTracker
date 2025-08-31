@@ -16,8 +16,8 @@ import {
 import { format } from "date-fns";
 import { Activity } from "../../types/types";
 import { ActivityNotesCard } from "../cards/activity-notes-card";
-import { ConceptNotesTable } from "../concept-notes/concept-notes-table";
-import { ActivityReportsTable } from "../activity-reports/activity-reports-table";
+import { ConceptNotesCards } from "../concept-notes/concept-notes-cards";
+import { ActivityReportsCards } from "../activity-reports/activity-reports-cards";
 
 interface ActivityOverviewTabProps {
   activity: Activity;
@@ -287,7 +287,7 @@ export function ActivityOverviewTab({
               </div>
             </div>
             <div className="rounded-lg border border-gray-200 bg-gray-50/30 dark:border-gray-700 dark:bg-gray-800/30">
-              <ConceptNotesTable
+              <ConceptNotesCards
                 key={`concept-notes-${activity.id}-${refreshKey}`}
                 activityId={activity.id}
                 onCreateConceptNote={onCreateConceptNote}
@@ -313,7 +313,7 @@ export function ActivityOverviewTab({
               </div>
             </div>
             <div className="rounded-lg border border-gray-200 bg-gray-50/30 dark:border-gray-700 dark:bg-gray-800/30">
-              <ActivityReportsTable
+              <ActivityReportsCards
                 key={`activity-reports-${activity.id}-${activityReportsRefreshKey}`}
                 activityId={activity.id}
                 onCreateActivityReport={onCreateActivityReport}
