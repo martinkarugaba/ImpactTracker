@@ -401,24 +401,30 @@ export function ParticipantDetails({
 
       {/* Contact & Basic Info */}
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
+        <Card className="relative overflow-hidden">
+          <div className="absolute top-0 left-0 h-full w-1 bg-blue-500"></div>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
               <Phone className="h-5 w-5" />
               Contact Information
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-3">
-              <Phone className="text-muted-foreground h-4 w-4" />
-              <span className="font-mono">{participant.contact}</span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-950/50">
+                <Phone className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              </div>
+              <span className="font-mono text-lg font-semibold">
+                {participant.contact}
+              </span>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="relative overflow-hidden">
+          <div className="absolute top-0 left-0 h-full w-1 bg-amber-500"></div>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-amber-700 dark:text-amber-300">
               <Briefcase className="h-5 w-5" />
               Professional Info
             </CardTitle>
@@ -426,13 +432,13 @@ export function ParticipantDetails({
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Designation:</span>
-              <Badge variant="outline">{participant.designation}</Badge>
+              <span className="font-medium">{participant.designation}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Enterprise:</span>
-              <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
+              <span className="font-semibold text-amber-700 dark:text-amber-300">
                 {participant.enterprise}
-              </Badge>
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Employment:</span>
@@ -443,9 +449,10 @@ export function ParticipantDetails({
       </div>
 
       {/* Location Information */}
-      <Card>
+      <Card className="relative overflow-hidden">
+        <div className="absolute top-0 left-0 h-full w-1 bg-green-500"></div>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-green-700 dark:text-green-300">
             <MapPin className="h-5 w-5" />
             Location Details
           </CardTitle>
@@ -455,20 +462,20 @@ export function ParticipantDetails({
             <div>
               <span className="text-muted-foreground text-sm">Country</span>
               <div className="mt-1">
-                <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                <span className="font-semibold text-green-700 dark:text-green-300">
                   {participant.country}
-                </Badge>
+                </span>
               </div>
             </div>
             <div>
               <span className="text-muted-foreground text-sm">District</span>
-              <p className="mt-1 font-medium">{participant.district}</p>
+              <p className="mt-1 text-lg font-semibold">
+                {participant.district}
+              </p>
             </div>
             <div>
               <span className="text-muted-foreground text-sm">Sub County</span>
-              <p className="text-muted-foreground mt-1">
-                {participant.subCounty}
-              </p>
+              <p className="mt-1 font-medium">{participant.subCounty}</p>
             </div>
             <div>
               <span className="text-muted-foreground text-sm">Parish</span>
@@ -486,16 +493,17 @@ export function ParticipantDetails({
 
       {/* Organization & Project Info */}
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
+        <Card className="relative overflow-hidden">
+          <div className="absolute top-0 left-0 h-full w-1 bg-purple-500"></div>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
               <Building2 className="h-5 w-5" />
               Organization
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100 text-sm font-bold text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100 text-base font-bold text-purple-800 dark:bg-purple-900 dark:text-purple-200">
                 {participant.organizationName
                   ?.split(" ")
                   .map(word => word[0])
@@ -504,7 +512,7 @@ export function ParticipantDetails({
                   .slice(0, 3) || "ORG"}
               </div>
               <div>
-                <p className="font-medium">
+                <p className="text-lg font-semibold">
                   {participant.organizationName || "Unknown Organization"}
                 </p>
                 <p className="text-muted-foreground text-sm">Organization</p>
@@ -513,9 +521,10 @@ export function ParticipantDetails({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="relative overflow-hidden">
+          <div className="absolute top-0 left-0 h-full w-1 bg-emerald-500"></div>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300">
               <FolderOpen className="h-5 w-5" />
               Project & Cluster
             </CardTitle>
@@ -524,9 +533,9 @@ export function ParticipantDetails({
             <div>
               <span className="text-muted-foreground text-sm">Project</span>
               <div className="mt-1">
-                <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200">
+                <span className="text-lg font-semibold text-emerald-700 dark:text-emerald-300">
                   {participant.projectName || "Unknown Project"}
-                </Badge>
+                </span>
               </div>
             </div>
             <div>
@@ -541,9 +550,10 @@ export function ParticipantDetails({
 
       {/* Personal & Social Information */}
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
+        <Card className="relative overflow-hidden">
+          <div className="absolute top-0 left-0 h-full w-1 bg-indigo-500"></div>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-indigo-700 dark:text-indigo-300">
               <Users className="h-5 w-5" />
               Personal Information
             </CardTitle>
@@ -574,9 +584,10 @@ export function ParticipantDetails({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="relative overflow-hidden">
+          <div className="absolute top-0 left-0 h-full w-1 bg-rose-500"></div>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-rose-700 dark:text-rose-300">
               <Home className="h-5 w-5" />
               Family & Financial
             </CardTitle>
@@ -584,13 +595,15 @@ export function ParticipantDetails({
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Number of Children:</span>
-              <Badge variant="outline">{participant.numberOfChildren}</Badge>
+              <span className="text-lg font-semibold">
+                {participant.numberOfChildren}
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Monthly Income:</span>
-              <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+              <span className="text-lg font-semibold text-rose-600 dark:text-rose-400">
                 {formatCurrency(participant.monthlyIncome)}
-              </Badge>
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Trainings Attended:</span>
@@ -601,9 +614,10 @@ export function ParticipantDetails({
       </div>
 
       {/* Challenges & Interests */}
-      <Card>
+      <Card className="relative overflow-hidden">
+        <div className="absolute top-0 left-0 h-full w-1 bg-orange-500"></div>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-orange-700 dark:text-orange-300">
             <Target className="h-5 w-5" />
             Challenges & Interests
           </CardTitle>
@@ -659,9 +673,10 @@ export function ParticipantDetails({
       </Card>
 
       {/* Timestamps */}
-      <Card>
+      <Card className="relative overflow-hidden">
+        <div className="absolute top-0 left-0 h-full w-1 bg-slate-400"></div>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
             <Calendar className="h-5 w-5" />
             Record Information
           </CardTitle>

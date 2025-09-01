@@ -27,6 +27,7 @@ interface ParticipantsDataTableProps {
   onAddParticipant: () => void;
   onEditParticipant: (data: ParticipantFormValues, id: string) => void;
   onDeleteParticipant: (id: string) => void;
+  onViewParticipant?: (participant: Participant) => void;
   onDeleteMultipleParticipants: (ids: string[]) => void;
   onExportData?: () => void;
   onImport?: (data: unknown[]) => void;
@@ -48,6 +49,7 @@ export function ParticipantsDataTable({
   onAddParticipant: _onAddParticipant,
   onEditParticipant,
   onDeleteParticipant,
+  onViewParticipant,
   onDeleteMultipleParticipants: _onDeleteMultipleParticipants,
   onExportData: _onExportData,
   onImport: _onImport,
@@ -73,6 +75,7 @@ export function ParticipantsDataTable({
         onSearchChange={handleSearchChangeWithCallback}
         onEditParticipant={onEditParticipant}
         onDeleteParticipant={onDeleteParticipant}
+        onViewParticipant={onViewParticipant}
         actionButtons={null} // Remove action buttons from table header
         columnVisibility={columnVisibility}
       />

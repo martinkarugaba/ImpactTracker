@@ -44,20 +44,36 @@ export function ParticipantFilters({
 
   return (
     <div className="space-y-0">
-      <FilterHeader
-        hasActiveFilters={hasActiveFilters}
-        onClearFilters={clearFilters}
-        filters={filters}
-        filterOptions={{
-          projects,
-          organizations,
-          districts,
-          subCounties,
-          enterprises,
-        }}
-        onRemoveFilter={removeFilter}
-      />
+      {/* Filter Header - Only show when there are active filters */}
+      <div className="overflow-hidden">
+        <div
+          className={`transform transition-all duration-300 ease-in-out ${
+            hasActiveFilters
+              ? "translate-y-0 opacity-100"
+              : "-translate-y-full opacity-0"
+          }`}
+          style={{
+            height: hasActiveFilters ? "auto" : "0",
+            marginBottom: hasActiveFilters ? "1rem" : "0",
+          }}
+        >
+          <FilterHeader
+            hasActiveFilters={hasActiveFilters}
+            onClearFilters={clearFilters}
+            filters={filters}
+            filterOptions={{
+              projects,
+              organizations,
+              districts,
+              subCounties,
+              enterprises,
+            }}
+            onRemoveFilter={removeFilter}
+          />
+        </div>
+      </div>
 
+      {/* Filter Controls - Always visible */}
       <div className="flex flex-wrap items-center justify-between">
         <OrganizationFilters
           filters={filters}

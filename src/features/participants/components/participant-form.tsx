@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -22,11 +22,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import toast from "react-hot-toast";
 import { type Project } from "@/features/projects/types";
 import { useQuery } from "@tanstack/react-query";
 import { getOrganizationId } from "@/features/auth/actions";
 import { getCurrentOrganizationWithCluster } from "@/features/organizations/actions/organizations";
+import {
+  useCountries,
+  useDistricts,
+  useSubCounties,
+  useParishes,
+  useVillages,
+} from "@/features/locations/hooks/use-locations-query";
 
 const formSchema = z
   .object({
@@ -91,6 +99,91 @@ export function ParticipantForm({
   projects,
   clusterId: propClusterId,
 }: ParticipantFormProps) {
+  // Location state for cascading selects
+  const [selectedCountryId, setSelectedCountryId] = useState<string>("");
+  const [selectedDistrictId, setSelectedDistrictId] = useState<string>("");
+  const [selectedSubCountyId, setSelectedSubCountyId] = useState<string>("");
+  const [selectedParishId, setSelectedParishId] = useState<string>("");
+
+  // Search state for filtering by names
+  const [countrySearch, setCountrySearch] = useState<string>("");
+  const [districtSearch, setDistrictSearch] = useState<string>("");
+  const [subCountySearch, setSubCountySearch] = useState<string>("");
+  const [parishSearch, setParishSearch] = useState<string>("");
+  const [villageSearch, setVillageSearch] = useState<string>("");
+
+  // Location queries - use search functionality when available
+  const { data: countriesData } = useCountries({
+    page: 1,
+    limit: 1000,
+    search: countrySearch || undefined,
+  });
+
+  const { data: districtsData } = useDistricts({
+    countryId: selectedCountryId,
+    page: 1,
+    limit: 1000,
+    search: districtSearch || undefined,
+  });
+
+  const { data: subCountiesData } = useSubCounties({
+    districtId: selectedDistrictId,
+  });
+
+  const { data: parishesData } = useParishes({
+    subCountyId: selectedSubCountyId,
+  });
+
+  const { data: villagesData } = useVillages({
+    parishId: selectedParishId,
+  }); // Transform data to ComboboxOption format
+  const countryOptions: ComboboxOption[] =
+    countriesData?.data?.data?.map(country => ({
+      value: country.id,
+      label: country.name,
+    })) || [];
+
+  const districtOptions: ComboboxOption[] =
+    districtsData?.data?.data?.map(district => ({
+      value: district.id,
+      label: district.name,
+    })) || [];
+
+  const subCountyOptions: ComboboxOption[] =
+    subCountiesData?.data?.data
+      ?.filter(
+        subCounty =>
+          !subCountySearch ||
+          subCounty.name.toLowerCase().includes(subCountySearch.toLowerCase())
+      )
+      ?.map(subCounty => ({
+        value: subCounty.id,
+        label: subCounty.name,
+      })) || [];
+
+  const parishOptions: ComboboxOption[] =
+    parishesData?.data?.data
+      ?.filter(
+        parish =>
+          !parishSearch ||
+          parish.name.toLowerCase().includes(parishSearch.toLowerCase())
+      )
+      ?.map(parish => ({
+        value: parish.id,
+        label: parish.name,
+      })) || [];
+
+  const villageOptions: ComboboxOption[] =
+    villagesData?.data?.data
+      ?.filter(
+        village =>
+          !villageSearch ||
+          village.name.toLowerCase().includes(villageSearch.toLowerCase())
+      )
+      ?.map(village => ({
+        value: village.id,
+        label: village.name,
+      })) || [];
   const { data: organizationId } = useQuery({
     queryKey: ["organizationId"],
     queryFn: getOrganizationId,
@@ -170,11 +263,11 @@ export function ParticipantForm({
     defaultValues: initialData || {
       firstName: "",
       lastName: "",
-      country: "",
-      district: "",
-      subCounty: "",
-      parish: "",
-      village: "",
+      country: "", // Will store country ID
+      district: "", // Will store district ID
+      subCounty: "", // Will store subCounty ID
+      parish: "", // Will store parish ID
+      village: "", // Will store village ID
       sex: "male",
       age: "",
       isPWD: "no",
@@ -199,6 +292,62 @@ export function ParticipantForm({
       isWillingToParticipate: "yes",
     },
   });
+
+  // Effect to update local state when form values change (for cascading)
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === "country") {
+        setSelectedCountryId(value.country || "");
+        // Reset dependent fields and searches
+        form.setValue("district", "");
+        form.setValue("subCounty", "");
+        form.setValue("parish", "");
+        form.setValue("village", "");
+        setSelectedDistrictId("");
+        setSelectedSubCountyId("");
+        setSelectedParishId("");
+        setDistrictSearch("");
+        setSubCountySearch("");
+        setParishSearch("");
+        setVillageSearch("");
+      } else if (name === "district") {
+        setSelectedDistrictId(value.district || "");
+        // Reset dependent fields and searches
+        form.setValue("subCounty", "");
+        form.setValue("parish", "");
+        form.setValue("village", "");
+        setSelectedSubCountyId("");
+        setSelectedParishId("");
+        setSubCountySearch("");
+        setParishSearch("");
+        setVillageSearch("");
+      } else if (name === "subCounty") {
+        setSelectedSubCountyId(value.subCounty || "");
+        // Reset dependent fields and searches
+        form.setValue("parish", "");
+        form.setValue("village", "");
+        setSelectedParishId("");
+        setParishSearch("");
+        setVillageSearch("");
+      } else if (name === "parish") {
+        setSelectedParishId(value.parish || "");
+        // Reset dependent fields and searches
+        form.setValue("village", "");
+        setVillageSearch("");
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+
+  // Set initial selected values for editing
+  useEffect(() => {
+    if (initialData) {
+      setSelectedCountryId(initialData.country || "");
+      setSelectedDistrictId(initialData.district || "");
+      setSelectedSubCountyId(initialData.subCounty || "");
+      setSelectedParishId(initialData.parish || "");
+    }
+  }, [initialData]);
 
   // Set organization_id and cluster_id when organization data is available
   useEffect(() => {
@@ -324,7 +473,14 @@ export function ParticipantForm({
               <FormItem>
                 <FormLabel>Country</FormLabel>
                 <FormControl>
-                  <Input placeholder="Country" {...field} />
+                  <Combobox
+                    options={countryOptions}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    onSearchChange={setCountrySearch}
+                    placeholder="Select country"
+                    emptyMessage="No countries found"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -337,7 +493,15 @@ export function ParticipantForm({
               <FormItem>
                 <FormLabel>District</FormLabel>
                 <FormControl>
-                  <Input placeholder="District" {...field} />
+                  <Combobox
+                    options={districtOptions}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    onSearchChange={setDistrictSearch}
+                    placeholder="Select district"
+                    emptyMessage="No districts found"
+                    disabled={!selectedCountryId}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -350,7 +514,14 @@ export function ParticipantForm({
               <FormItem>
                 <FormLabel>Sub County</FormLabel>
                 <FormControl>
-                  <Input placeholder="Sub County" {...field} />
+                  <Combobox
+                    options={subCountyOptions}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    placeholder="Select sub county"
+                    emptyMessage="No sub counties found"
+                    disabled={!selectedDistrictId}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -363,7 +534,15 @@ export function ParticipantForm({
               <FormItem>
                 <FormLabel>Parish</FormLabel>
                 <FormControl>
-                  <Input placeholder="Parish" {...field} />
+                  <Combobox
+                    options={parishOptions}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    onSearchChange={setParishSearch}
+                    placeholder="Select parish"
+                    emptyMessage="No parishes found"
+                    disabled={!selectedSubCountyId}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -376,7 +555,15 @@ export function ParticipantForm({
               <FormItem>
                 <FormLabel>Village</FormLabel>
                 <FormControl>
-                  <Input placeholder="Village" {...field} />
+                  <Combobox
+                    options={villageOptions}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    onSearchChange={setVillageSearch}
+                    placeholder="Select village"
+                    emptyMessage="No villages found"
+                    disabled={!selectedParishId}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
