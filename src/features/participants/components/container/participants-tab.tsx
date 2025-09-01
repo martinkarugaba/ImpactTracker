@@ -55,6 +55,7 @@ interface ParticipantsTabProps {
   onAddParticipant: () => void;
   onEditParticipant: (data: unknown, id: string) => void;
   onDeleteParticipant: (id: string) => void;
+  onViewParticipant?: (participant: Participant) => void;
   onExportData: () => void;
   onImport: (data: unknown[]) => void;
   setIsImportDialogOpen: (open: boolean) => void;
@@ -80,6 +81,7 @@ export function ParticipantsTab({
   onAddParticipant,
   onEditParticipant,
   onDeleteParticipant,
+  onViewParticipant,
   onExportData: _onExportData,
   onImport: _onImport,
   setIsImportDialogOpen,
@@ -272,6 +274,7 @@ export function ParticipantsTab({
           }}
           onEditParticipant={onEditParticipant}
           onDeleteParticipant={onDeleteParticipant}
+          onViewParticipant={onViewParticipant}
           onDeleteMultipleParticipants={ids => {
             // TODO: Implement bulk delete
             toast.success(`Selected ${ids.length} participants for deletion`);

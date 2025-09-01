@@ -45,8 +45,8 @@ export function ParticipantsContainer({
 
   return (
     <div className="space-y-6">
-      {/* Enhanced Tabs with Better Visual Hierarchy */}
-      <div className="rounded-lg border border-gray-200 bg-white p-1 shadow-sm dark:border-gray-800 dark:bg-gray-950">
+      {/* Enhanced Tabs with Minimal Styling */}
+      <div className="bg-transparent">
         <Tabs
           value={state.activeTab}
           onValueChange={state.setActiveTab}
@@ -116,6 +116,7 @@ export function ParticipantsContainer({
                 state.setDeletingParticipant(participant);
               }
             }}
+            onViewParticipant={state.handleView}
             onExportData={() => {}}
             onImport={() => {}}
             setIsImportDialogOpen={state.setIsImportDialogOpen}
@@ -133,6 +134,10 @@ export function ParticipantsContainer({
         setEditingParticipant={state.setEditingParticipant}
         deletingParticipant={state.deletingParticipant}
         setDeletingParticipant={state.setDeletingParticipant}
+        onSuccess={() => {
+          // This will trigger a refetch of participants data
+          window.location.reload();
+        }}
       />
     </div>
   );
