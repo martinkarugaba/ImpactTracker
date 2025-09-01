@@ -18,6 +18,7 @@ interface TableContentProps {
   onSearchChange: (value: string) => void;
   onEditParticipant: (data: ParticipantFormValues, id: string) => void;
   onDeleteParticipant: (id: string) => void;
+  onViewParticipant?: (participant: Participant) => void;
   actionButtons: React.ReactNode;
   columnVisibility?: Record<string, boolean>;
 }
@@ -30,6 +31,7 @@ export function TableContent({
   onSearchChange: _onSearchChange,
   onEditParticipant,
   onDeleteParticipant,
+  onViewParticipant,
   actionButtons: _actionButtons,
   columnVisibility,
 }: TableContentProps) {
@@ -41,7 +43,12 @@ export function TableContent({
       onDeleteParticipant(participant.id);
     },
     onView: (participant: Participant) => {
-      onEditParticipant({} as ParticipantFormValues, participant.id);
+      if (onViewParticipant) {
+        onViewParticipant(participant);
+      } else {
+        // Fallback to edit if no view handler provided
+        onEditParticipant({} as ParticipantFormValues, participant.id);
+      }
     },
   });
 

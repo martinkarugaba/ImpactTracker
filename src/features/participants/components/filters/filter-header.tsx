@@ -78,7 +78,7 @@ export function FilterHeader({
     }));
 
   return (
-    <div className="border-border/40 bg-muted/30 flex items-center justify-between space-y-0 rounded-lg border p-3">
+    <div className="bg-muted/30 flex items-center justify-between space-y-0 rounded-lg p-3">
       {/* Active Filter Badges Container - Uses transform for zero layout shift */}
       <div className="flex-1 overflow-hidden">
         <div

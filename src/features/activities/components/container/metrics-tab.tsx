@@ -76,7 +76,7 @@ export function MetricsTab({
         {/* Activity Charts/Visualizations */}
         <div className="grid gap-4 md:grid-cols-2">
           {/* Status Distribution Chart */}
-          <div className="rounded-lg border p-4">
+          <div className="rounded-md bg-gray-50 p-4 dark:bg-gray-900/50">
             <h4 className="mb-3 font-medium">Activities by Status</h4>
             <div className="space-y-2">
               {Object.entries(metrics.byStatus || {}).map(([status, count]) => (
@@ -89,7 +89,7 @@ export function MetricsTab({
           </div>
 
           {/* Type Distribution Chart */}
-          <div className="rounded-lg border p-4">
+          <div className="rounded-md bg-gray-50 p-4 dark:bg-gray-900/50">
             <h4 className="mb-3 font-medium">Activities by Type</h4>
             <div className="space-y-2">
               {Object.entries(metrics.byType || {}).map(([type, count]) => (
@@ -104,7 +104,7 @@ export function MetricsTab({
 
         {/* Recent Activities Summary */}
         {metricsActivities.length > 0 && (
-          <div className="rounded-lg border p-4">
+          <div className="rounded-md bg-gray-50 p-4 dark:bg-gray-900/50">
             <h4 className="mb-3 font-medium">Recent Activities</h4>
             <div className="space-y-2">
               {metricsActivities.slice(0, 5).map(activity => (
