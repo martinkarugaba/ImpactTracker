@@ -1,65 +1,66 @@
 "use client";
 
-import { type Project } from "@/features/projects/types";
-import { type Organization } from "@/features/organizations/types";
-import { type Participant } from "../../types/types";
-import { type ParticipantFormValues } from "../participant-form";
+import { type Activity } from "../../types/types";
 import { PaginationControls } from "./pagination-controls";
 import { TableContent } from "./table-content";
 import { useTableState } from "./use-table-state";
+import { type VisibilityState } from "@tanstack/react-table";
 
-interface ParticipantsDataTableProps {
-  data: Participant[];
+interface ActivitiesDataTableProps {
+  data: Activity[];
   pagination: {
     page: number;
     limit: number;
     total: number;
     totalPages: number;
   };
-  selectedProject: Project | null;
-  selectedOrg: Organization | null;
   isLoading: boolean;
-  clusterId: string;
+  clusterId?: string;
   onPaginationChange: (page: number, limit: number) => void;
   onPageChange: (page: number) => void;
   onSearchChange?: (search: string) => void;
   searchTerm?: string;
-  onAddParticipant: () => void;
-  onEditParticipant: (data: ParticipantFormValues, id: string) => void;
-  onDeleteParticipant: (id: string) => void;
-  onDeleteMultipleParticipants: (ids: string[]) => void;
+  onAddActivity: () => void;
+  onEditActivity: (activity: Activity) => void;
+  onDeleteActivity: (activity: Activity) => void;
+  onDeleteMultipleActivities?: (ids: string[]) => void;
   onExportData?: () => void;
   onImport?: (data: unknown[]) => void;
-  onFixOrganizations?: () => void;
-  columnVisibility?: Record<string, boolean>;
+  columnVisibility?: VisibilityState;
 }
 
-export function ParticipantsDataTable({
+export function ActivitiesDataTable({
   data,
   pagination,
-  selectedProject: _selectedProject,
-  selectedOrg: _selectedOrg,
   isLoading,
   clusterId: _clusterId,
   onPaginationChange,
   onPageChange,
   onSearchChange,
   searchTerm,
-  onAddParticipant: _onAddParticipant,
-  onEditParticipant,
-  onDeleteParticipant,
-  onDeleteMultipleParticipants: _onDeleteMultipleParticipants,
+  onAddActivity: _onAddActivity,
+  onEditActivity,
+  onDeleteActivity,
+  onDeleteMultipleActivities: _onDeleteMultipleActivities,
   onExportData: _onExportData,
   onImport: _onImport,
-  onFixOrganizations: _onFixOrganizations,
   columnVisibility,
-}: ParticipantsDataTableProps) {
-  const { search, selectedRows, handleSearchChange } =
-    useTableState(searchTerm);
+}: ActivitiesDataTableProps) {
+  const {
+    search,
+    selectedRows: _selectedRows,
+    handleSearchChange,
+  } = useTableState(searchTerm);
 
   const handleSearchChangeWithCallback = (value: string) => {
     handleSearchChange(value);
     onSearchChange?.(value);
+  };
+
+  const handleViewActivity = (activity: Activity) => {
+    // Navigate to activity details page
+    // This will be handled by the router in the tab component
+    onEditActivity(activity);
   };
 
   return (
@@ -71,16 +72,17 @@ export function ParticipantsDataTable({
         isLoading={isLoading}
         searchValue={search}
         onSearchChange={handleSearchChangeWithCallback}
-        onEditParticipant={onEditParticipant}
-        onDeleteParticipant={onDeleteParticipant}
+        onEditActivity={onEditActivity}
+        onDeleteActivity={onDeleteActivity}
+        onViewActivity={handleViewActivity}
         actionButtons={null} // Remove action buttons from table header
         columnVisibility={columnVisibility}
+        onColumnVisibilityChange={() => {}} // Handle at parent level
       />
 
       {/* Pagination */}
       <PaginationControls
         pagination={pagination}
-        selectedCount={selectedRows.length}
         onPaginationChange={onPaginationChange}
         onPageChange={onPageChange}
       />

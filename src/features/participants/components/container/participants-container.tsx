@@ -45,73 +45,83 @@ export function ParticipantsContainer({
 
   return (
     <div className="space-y-6">
-      {/* Tabs */}
-      <Tabs
-        value={state.activeTab}
-        onValueChange={state.setActiveTab}
-        className="w-full"
-      >
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="metrics" className="flex items-center gap-2">
-            <BarChart3 className="h-4 w-4" />
-            Metrics
-          </TabsTrigger>
-          <TabsTrigger value="participants" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            Participants
-          </TabsTrigger>
-        </TabsList>
+      {/* Enhanced Tabs with Better Visual Hierarchy */}
+      <div className="rounded-lg border border-gray-200 bg-white p-1 shadow-sm dark:border-gray-800 dark:bg-gray-950">
+        <Tabs
+          value={state.activeTab}
+          onValueChange={state.setActiveTab}
+          className="w-full"
+        >
+          <TabsList className="grid h-12 w-full grid-cols-2 rounded-md bg-gray-100 p-1 dark:bg-gray-900">
+            <TabsTrigger
+              value="metrics"
+              className="flex items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-blue-400"
+            >
+              <BarChart3 className="h-4 w-4" />
+              <span className="hidden sm:inline">Analytics</span>
+              <span className="sm:hidden">Stats</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="participants"
+              className="flex items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-green-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-green-400"
+            >
+              <Users className="h-4 w-4" />
+              <span className="hidden sm:inline">Participants</span>
+              <span className="sm:hidden">People</span>
+            </TabsTrigger>
+          </TabsList>
 
-        <MetricsTab
-          metricsParticipants={state.metricsParticipants}
-          isMetricsLoading={state.isMetricsLoading}
-          filters={state.filters}
-          onFiltersChange={state.setFilters}
-          projects={projects}
-          clusters={clusters}
-          organizations={organizations}
-          filterOptions={filterOptions}
-          searchValue={state.searchValue}
-          onSearchChange={state.handleSearchChange}
-        />
+          <MetricsTab
+            metricsParticipants={state.metricsParticipants}
+            isMetricsLoading={state.isMetricsLoading}
+            filters={state.filters}
+            onFiltersChange={state.setFilters}
+            projects={projects}
+            clusters={clusters}
+            organizations={organizations}
+            filterOptions={filterOptions}
+            searchValue={state.searchValue}
+            onSearchChange={state.handleSearchChange}
+          />
 
-        <ParticipantsTab
-          participants={state.participants}
-          clusterId={clusterId}
-          pagination={state.pagination}
-          participantsData={state.participantsData}
-          filters={state.filters}
-          onFiltersChange={state.setFilters}
-          projects={projects}
-          clusters={clusters}
-          organizations={organizations}
-          filterOptions={filterOptions}
-          searchValue={state.searchValue}
-          onSearchChange={state.handleSearchChange}
-          isParticipantsLoading={state.isParticipantsLoading}
-          locationNamesLoading={state.locationNames.isLoading}
-          onPaginationChange={state.handlePaginationChange}
-          onPageChange={page =>
-            state.handlePaginationChange(page, state.pagination.pageSize)
-          }
-          onAddParticipant={() => state.setIsCreateDialogOpen(true)}
-          onEditParticipant={(data, id) => {
-            const participant = state.participants.find(p => p.id === id);
-            if (participant) {
-              state.setEditingParticipant(participant);
+          <ParticipantsTab
+            participants={state.participants}
+            clusterId={clusterId}
+            pagination={state.pagination}
+            participantsData={state.participantsData}
+            filters={state.filters}
+            onFiltersChange={state.setFilters}
+            projects={projects}
+            clusters={clusters}
+            organizations={organizations}
+            filterOptions={filterOptions}
+            searchValue={state.searchValue}
+            onSearchChange={state.handleSearchChange}
+            isParticipantsLoading={state.isParticipantsLoading}
+            locationNamesLoading={state.locationNames.isLoading}
+            onPaginationChange={state.handlePaginationChange}
+            onPageChange={page =>
+              state.handlePaginationChange(page, state.pagination.pageSize)
             }
-          }}
-          onDeleteParticipant={id => {
-            const participant = state.participants.find(p => p.id === id);
-            if (participant) {
-              state.setDeletingParticipant(participant);
-            }
-          }}
-          onExportData={() => {}}
-          onImport={() => {}}
-          setIsImportDialogOpen={state.setIsImportDialogOpen}
-        />
-      </Tabs>
+            onAddParticipant={() => state.setIsCreateDialogOpen(true)}
+            onEditParticipant={(data, id) => {
+              const participant = state.participants.find(p => p.id === id);
+              if (participant) {
+                state.setEditingParticipant(participant);
+              }
+            }}
+            onDeleteParticipant={id => {
+              const participant = state.participants.find(p => p.id === id);
+              if (participant) {
+                state.setDeletingParticipant(participant);
+              }
+            }}
+            onExportData={() => {}}
+            onImport={() => {}}
+            setIsImportDialogOpen={state.setIsImportDialogOpen}
+          />
+        </Tabs>
+      </div>
 
       <ParticipantDialogs
         clusterId={clusterId}

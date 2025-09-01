@@ -1,14 +1,21 @@
 import { Activity } from "../../types/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Users, Building } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar, MapPin, Users, Building, Edit, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 
 interface ActivityHeaderProps {
   activity: Activity;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export function ActivityHeader({ activity }: ActivityHeaderProps) {
+export function ActivityHeader({
+  activity,
+  onEdit,
+  onDelete,
+}: ActivityHeaderProps) {
   const getTypeBadge = (type: string) => {
     const typeColors = {
       meeting:
@@ -101,6 +108,33 @@ export function ActivityHeader({ activity }: ActivityHeaderProps) {
               </p>
             )}
           </div>
+
+          {/* Action Buttons */}
+          {(onEdit || onDelete) && (
+            <div className="flex gap-2">
+              {onEdit && (
+                <Button
+                  onClick={onEdit}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                  size="sm"
+                >
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit
+                </Button>
+              )}
+              {onDelete && (
+                <Button
+                  onClick={onDelete}
+                  variant="outline"
+                  className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  size="sm"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </CardHeader>
       <CardContent>

@@ -92,9 +92,14 @@ export function ParticipantsTab({
     district: true,
     subCounty: false,
     country: false,
+    organization: true,
+    project: true,
+    designation: false,
+    enterprise: false,
+    contact: false,
   });
 
-  // Available columns for toggle
+  // Available columns for toggle - matching actual column IDs
   const availableColumns = [
     { id: "fullName", label: "Name" },
     { id: "sex", label: "Gender" },
@@ -102,6 +107,11 @@ export function ParticipantsTab({
     { id: "district", label: "District" },
     { id: "subCounty", label: "Sub County" },
     { id: "country", label: "Country" },
+    { id: "organization", label: "Organization" },
+    { id: "project", label: "Project" },
+    { id: "designation", label: "Designation" },
+    { id: "enterprise", label: "Enterprise" },
+    { id: "contact", label: "Contact" },
   ];
 
   const handleExport = () => {
@@ -110,30 +120,66 @@ export function ParticipantsTab({
   };
 
   return (
-    <TabsContent value="participants" className="mt-4">
-      <div className="space-y-4">
-        {/* Action Buttons Section - At the very top */}
-        <div className="flex items-center justify-between gap-4">
-          {/* Left side - Search */}
-          <div className="relative max-w-sm">
-            <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-            <Input
-              placeholder="Search participants..."
-              value={searchValue}
-              onChange={e => onSearchChange(e.target.value)}
-              className="w-80 pl-9"
-            />
+    <TabsContent value="participants" className="mt-6">
+      <div className="space-y-6">
+        {/* Enhanced Header Section with Better Visual Hierarchy */}
+        <div className="space-y-4">
+          {/* Top Row: Search and Primary Action */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            {/* Search - Most Important Action */}
+            <div className="relative max-w-md flex-1">
+              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Input
+                placeholder="Search participants..."
+                value={searchValue}
+                onChange={e => onSearchChange(e.target.value)}
+                className="h-10 border-gray-300 bg-white pl-10 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
+              />
+            </div>
+
+            {/* Primary Action - Add Participant */}
+            <Button
+              onClick={onAddParticipant}
+              className="h-10 bg-green-600 px-6 text-white hover:bg-green-700 focus:ring-green-500 dark:bg-green-700 dark:hover:bg-green-800"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Participant
+            </Button>
           </div>
 
-          {/* Right side - Action buttons */}
-          <div className="flex items-center gap-2">
-            <OrganizationAssignmentButton
-              subCounties={filterOptions.subCounties}
-              organizations={organizations}
-            />
+          {/* Second Row: Secondary Actions and View Controls */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            {/* Left side - Secondary Actions */}
+            <div className="flex items-center gap-2">
+              <OrganizationAssignmentButton
+                subCounties={filterOptions.subCounties}
+                organizations={organizations}
+              />
+              <Button
+                variant="outline"
+                onClick={() => setIsImportDialogOpen(true)}
+                className="h-9 border-blue-200 text-blue-700 hover:border-blue-300 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-300 dark:hover:bg-blue-950/50"
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                Import
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleExport}
+                className="h-9 border-purple-200 text-purple-700 hover:border-purple-300 hover:bg-purple-50 dark:border-purple-800 dark:text-purple-300 dark:hover:bg-purple-950/50"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Export
+              </Button>
+            </div>
+
+            {/* Right side - View Customization */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline">
+                <Button
+                  variant="outline"
+                  className="h-9 border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                >
                   <LayoutGrid className="mr-2 h-4 w-4" />
                   <span className="hidden lg:inline">Customize Columns</span>
                   <span className="lg:hidden">Columns</span>
@@ -162,21 +208,6 @@ export function ParticipantsTab({
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button variant="outline" onClick={handleExport}>
-              <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setIsImportDialogOpen(true)}
-            >
-              <Upload className="mr-2 h-4 w-4" />
-              Import
-            </Button>
-            <Button onClick={onAddParticipant}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Participant
-            </Button>
           </div>
         </div>
 

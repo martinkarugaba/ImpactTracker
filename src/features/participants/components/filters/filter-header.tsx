@@ -78,9 +78,9 @@ export function FilterHeader({
     }));
 
   return (
-    <div className="space-y-0">
+    <div className="border-border/40 bg-muted/30 flex items-center justify-between space-y-0 rounded-lg border p-3">
       {/* Active Filter Badges Container - Uses transform for zero layout shift */}
-      <div className="overflow-hidden">
+      <div className="flex-1 overflow-hidden">
         <div
           className={`transform transition-all duration-300 ease-in-out ${
             activeFilters.length > 0
@@ -89,15 +89,18 @@ export function FilterHeader({
           }`}
           style={{
             height: activeFilters.length > 0 ? "auto" : "0",
-            marginBottom: activeFilters.length > 0 ? "0.75rem" : "0",
+            marginBottom: activeFilters.length > 0 ? "0" : "0",
           }}
         >
-          <div className="flex min-h-[2rem] flex-wrap items-center gap-2 pb-1">
+          <div className="flex min-h-[2rem] flex-wrap items-center gap-2">
+            <span className="text-muted-foreground text-sm font-medium">
+              Active filters:
+            </span>
             {activeFilters.map((filter, index) => (
               <Badge
                 key={filter.key}
                 variant="outline"
-                className="animate-in fade-in-0 slide-in-from-left-1 flex items-center gap-1 px-2 py-0.5 text-xs duration-200"
+                className="bg-background border-border hover:bg-muted/50 animate-in fade-in-0 slide-in-from-left-1 flex items-center gap-1 px-2 py-1 text-xs duration-200"
                 style={{
                   animationDelay: `${index * 50}ms`,
                 }}
@@ -106,10 +109,10 @@ export function FilterHeader({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="hover:bg-muted h-3 w-3 cursor-pointer rounded-full p-0"
+                  className="hover:bg-destructive/20 hover:text-destructive h-3.5 w-3.5 cursor-pointer rounded-full p-0 transition-colors"
                   onClick={() => onRemoveFilter(filter.key)}
                 >
-                  <X className="h-2 w-2" />
+                  <X className="h-2.5 w-2.5" />
                   <span className="sr-only">Remove {filter.label} filter</span>
                 </Button>
               </Badge>
@@ -119,7 +122,7 @@ export function FilterHeader({
       </div>
 
       {/* Clear All Button - Slides in smoothly when needed */}
-      <div className="overflow-hidden">
+      <div className="ml-4 overflow-hidden">
         <div
           className={`transform transition-all duration-300 ease-in-out ${
             hasActiveFilters
@@ -130,14 +133,14 @@ export function FilterHeader({
             height: hasActiveFilters ? "auto" : "0",
           }}
         >
-          <div className="flex items-center justify-start">
+          <div className="flex items-center justify-end">
             <Button
-              variant="ghost"
+              variant="outline"
               onClick={onClearFilters}
-              className="h-9 px-3"
+              className="text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground h-8 px-3 text-sm transition-colors"
             >
-              Clear all filters
-              <X className="ml-2 h-4 w-4" />
+              Clear all
+              <X className="ml-1.5 h-3.5 w-3.5" />
             </Button>
           </div>
         </div>

@@ -32,6 +32,8 @@ interface ActivityFiltersComponentProps {
   organizations: Array<{ id: string; name: string }>;
   clusters?: Array<{ id: string; name: string }>;
   projects?: Array<{ id: string; name: string }>;
+  searchValue?: string;
+  onSearchChange?: (search: string) => void;
 }
 
 export function ActivityFiltersComponent({
@@ -40,6 +42,8 @@ export function ActivityFiltersComponent({
   organizations,
   clusters = [],
   projects = [],
+  searchValue,
+  onSearchChange,
 }: ActivityFiltersComponentProps) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -89,8 +93,14 @@ export function ActivityFiltersComponent({
           <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
           <Input
             placeholder="Search activities..."
-            value={filters.search || ""}
-            onChange={e => updateFilters("search", e.target.value)}
+            value={searchValue || filters.search || ""}
+            onChange={e => {
+              if (onSearchChange) {
+                onSearchChange(e.target.value);
+              } else {
+                updateFilters("search", e.target.value);
+              }
+            }}
             className="pl-8"
           />
         </div>
@@ -309,12 +319,18 @@ export function ActivityFiltersComponent({
       {/* Active Filters Display */}
       {activeFiltersCount > 0 && (
         <div className="flex flex-wrap gap-2">
-          {filters.search && (
+          {(searchValue || filters.search) && (
             <Badge variant="secondary" className="flex items-center gap-1">
-              Search: {filters.search}
+              Search: {searchValue || filters.search}
               <X
                 className="h-3 w-3 cursor-pointer"
-                onClick={() => updateFilters("search", "")}
+                onClick={() => {
+                  if (onSearchChange) {
+                    onSearchChange("");
+                  } else {
+                    updateFilters("search", "");
+                  }
+                }}
               />
             </Badge>
           )}
