@@ -139,7 +139,7 @@ export function ConceptNotesCards({
       </div>
 
       {/* Notes Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="space-y-4">
         {conceptNotes.map(note => (
           <Card
             key={note.id}

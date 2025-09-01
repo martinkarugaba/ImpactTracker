@@ -144,7 +144,7 @@ export function ActivityReportsCards({
       </div>
 
       {/* Reports Grid */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="space-y-4">
         {activityReports.map(report => (
           <Card
             key={report.id}

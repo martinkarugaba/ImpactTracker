@@ -52,7 +52,7 @@ export function ParticipantsDataTable({
   onExportData: _onExportData,
   onImport: _onImport,
   onFixOrganizations: _onFixOrganizations,
-  columnVisibility: _columnVisibility,
+  columnVisibility,
 }: ParticipantsDataTableProps) {
   const { search, selectedRows, handleSearchChange } =
     useTableState(searchTerm);
@@ -74,6 +74,7 @@ export function ParticipantsDataTable({
         onEditParticipant={onEditParticipant}
         onDeleteParticipant={onDeleteParticipant}
         actionButtons={null} // Remove action buttons from table header
+        columnVisibility={columnVisibility}
       />
 
       {/* Pagination */}

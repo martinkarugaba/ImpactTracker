@@ -72,7 +72,14 @@ export function useParticipantContainerState({
     data: metricsData,
     isLoading: isMetricsLoading,
     error: metricsError,
-  } = useParticipantMetrics(clusterId, filters);
+  } = useParticipantMetrics(
+    clusterId,
+    {
+      ...filters,
+      search: searchValue || filters.search, // Ensure search value is included
+    },
+    searchValue
+  );
 
   // Computed values
   const participants = useMemo(() => {
