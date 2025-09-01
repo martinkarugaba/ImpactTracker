@@ -51,6 +51,18 @@ export async function fixOrganizationAssignments(clusterId?: string) {
       return { success: false, error: "Not authenticated" };
     }
 
+    // Check if user has permission to fix organizations (super_admin or cluster_manager only)
+    if (
+      session.user.role !== "super_admin" &&
+      session.user.role !== "cluster_manager"
+    ) {
+      return {
+        success: false,
+        error:
+          "Access denied. Only super administrators and cluster managers can fix organization assignments.",
+      };
+    }
+
     console.log("Starting organization assignment fix...");
 
     // Get all participants (optionally filter by cluster)
@@ -161,6 +173,18 @@ export async function previewOrganizationAssignmentFix(clusterId?: string) {
     const session = await auth();
     if (!session?.user) {
       return { success: false, error: "Not authenticated" };
+    }
+
+    // Check if user has permission to preview organization fixes (super_admin or cluster_manager only)
+    if (
+      session.user.role !== "super_admin" &&
+      session.user.role !== "cluster_manager"
+    ) {
+      return {
+        success: false,
+        error:
+          "Access denied. Only super administrators and cluster managers can preview organization assignments.",
+      };
     }
 
     // Get all participants (optionally filter by cluster)
@@ -290,6 +314,18 @@ export async function fixKyarusoziAssignments() {
       return { success: false, error: "Not authenticated" };
     }
 
+    // Check if user has permission to fix Kyarusozi assignments (super_admin or cluster_manager only)
+    if (
+      session.user.role !== "super_admin" &&
+      session.user.role !== "cluster_manager"
+    ) {
+      return {
+        success: false,
+        error:
+          "Access denied. Only super administrators and cluster managers can fix Kyarusozi assignments.",
+      };
+    }
+
     console.log("Checking Kyarusozi town council assignments...");
 
     // Find all participants from Kyarusozi
@@ -397,6 +433,18 @@ export async function assignParticipantsBySubCounty(
     const session = await auth();
     if (!session?.user) {
       return { success: false, error: "Not authenticated" };
+    }
+
+    // Check if user has permission to assign participants by subcounty (super_admin or cluster_manager only)
+    if (
+      session.user.role !== "super_admin" &&
+      session.user.role !== "cluster_manager"
+    ) {
+      return {
+        success: false,
+        error:
+          "Access denied. Only super administrators and cluster managers can assign participants by subcounty.",
+      };
     }
 
     console.log(

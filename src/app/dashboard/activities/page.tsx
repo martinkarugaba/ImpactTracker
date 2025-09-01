@@ -1,13 +1,10 @@
 import { Suspense } from "react";
-import { ActivitiesContainer } from "@/features/activities/components/activities-container";
+import { ActivitiesContainerNew } from "@/features/activities/components/container/activities-container-new";
 import { MetricCard } from "@/components/ui/metric-card";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SiteHeader } from "@/features/dashboard/components/site-header";
 import { ActivitiesTableSkeleton } from "@/features/activities/components/table/activities-table-skeleton";
-import { getOrganizations } from "@/features/organizations/actions/organizations";
-import { getClusters } from "@/features/clusters/actions/clusters";
-import { getProjects } from "@/features/projects/actions/projects";
 import { IconActivity } from "@tabler/icons-react";
 
 // Loading component for the page
@@ -76,55 +73,7 @@ function ActivitiesPageSkeleton() {
 
 // Main activities page content
 async function ActivitiesPageContent() {
-  try {
-    // Fetch all required data in parallel
-    const [organizationsResult, clustersResult, projectsResult] =
-      await Promise.allSettled([
-        getOrganizations(),
-        getClusters().catch(() => ({ success: false, data: [] })), // Graceful fallback for optional data
-        getProjects().catch(() => ({ success: false, data: [] })), // Graceful fallback for optional data
-      ]);
-
-    // Extract organizations (required)
-    const organizations =
-      organizationsResult.status === "fulfilled" &&
-      organizationsResult.value.success
-        ? organizationsResult.value.data || []
-        : [];
-
-    // Extract clusters (optional)
-    const clusters =
-      clustersResult.status === "fulfilled" && clustersResult.value.success
-        ? clustersResult.value.data || []
-        : [];
-
-    // Extract projects (optional)
-    const projects =
-      projectsResult.status === "fulfilled" && projectsResult.value.success
-        ? projectsResult.value.data || []
-        : [];
-
-    return (
-      <ActivitiesContainer
-        organizations={organizations}
-        clusters={clusters}
-        projects={projects}
-      />
-    );
-  } catch (error) {
-    console.error("Error loading activities page data:", error);
-
-    return (
-      <div className="flex h-96 items-center justify-center px-6">
-        <div className="text-center">
-          <h3 className="text-lg font-semibold">Error loading activities</h3>
-          <p className="text-muted-foreground mt-2">
-            Failed to load page data. Please try refreshing the page.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  return <ActivitiesContainerNew />;
 }
 
 // Main page component with proper metadata

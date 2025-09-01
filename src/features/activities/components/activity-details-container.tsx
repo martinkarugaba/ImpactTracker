@@ -9,21 +9,9 @@ import type {
   ActivityReport,
 } from "../types/types";
 import { ActivityHeader } from "./details/activity-header";
-import { ActivityInformationCard } from "./cards/activity-information-card";
-import { ActivityNotesCard } from "./cards/activity-notes-card";
-import { ConceptNotesTable } from "./concept-notes/concept-notes-table";
-import { ActivityReportsTable } from "./activity-reports/activity-reports-table";
-import { AttendanceListCard } from "./cards/attendance-list-card";
-import { ActivityReportCard } from "./cards/activity-report-card";
+import { ActivityDetailsTabs } from "./details/activity-details-tabs";
 import { Button } from "@/components/ui/button";
-import {
-  Edit,
-  Trash2,
-  ArrowLeft,
-  FileText,
-  Users,
-  ClipboardList,
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { ActivityFormDialog } from "./forms/activity-form-dialog";
 import { ConceptNoteDialog } from "./dialogs/concept-note-dialog";
 import { ActivityReportDialog } from "./dialogs/activity-report-dialog";
@@ -38,7 +26,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useDeleteActivity } from "../hooks/use-activities";
+import {
+  useDeleteActivity,
+  useAddActivityParticipants,
+} from "../hooks/use-activities";
 import {
   createConceptNote,
   updateConceptNote,
@@ -49,7 +40,6 @@ import {
   getActivityReport,
   deleteActivityReport,
 } from "../actions/activity-reports";
-import { bulkUpdateActivityParticipants } from "../actions/participants";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
@@ -82,6 +72,7 @@ export function ActivityDetailsContainer({
   const [refreshKey, setRefreshKey] = useState(0);
   const [activityReportsRefreshKey, setActivityReportsRefreshKey] = useState(0);
   const deleteActivity = useDeleteActivity();
+  const addActivityParticipants = useAddActivityParticipants();
   const router = useRouter();
 
   const handleEdit = () => {
@@ -203,13 +194,16 @@ export function ActivityDetailsContainer({
     participants: Partial<ActivityParticipant>[]
   ) => {
     try {
-      await bulkUpdateActivityParticipants(
-        activity.id,
-        participants as Parameters<typeof bulkUpdateActivityParticipants>[1]
-      );
-      toast.success("Attendance list updated successfully.");
+      await addActivityParticipants.mutateAsync({
+        activityId: activity.id,
+        participants: participants as Parameters<
+          typeof addActivityParticipants.mutateAsync
+        >[0]["participants"],
+      });
+      toast.success("Participants added successfully.");
+      setIsAttendanceListDialogOpen(false); // Close the dialog
     } catch (_error) {
-      toast.error("Failed to update attendance list. Please try again.");
+      toast.error("Failed to add participants. Please try again.");
     }
   };
 
@@ -230,102 +224,33 @@ export function ActivityDetailsContainer({
         <Button
           onClick={handleGoBack}
           variant="ghost"
-          size="lg"
+          size="sm"
           className="text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="mr-2 h-5 w-5" />
+          <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
       </div>
 
       {/* Activity Header */}
-      <ActivityHeader activity={activity} />
+      <ActivityHeader
+        activity={activity}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
 
-      {/* Action Buttons */}
-      <div className="flex items-center gap-3">
-        <Button
-          onClick={handleEdit}
-          className="bg-primary text-primary-foreground hover:bg-primary/90"
-          size="lg"
-        >
-          <Edit className="mr-2 h-5 w-5" />
-          Edit Activity
-        </Button>
-        <Button
-          onClick={handleDelete}
-          variant="outline"
-          className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
-          size="lg"
-        >
-          <Trash2 className="mr-2 h-5 w-5" />
-          Delete Activity
-        </Button>
-      </div>
-
-      {/* Additional Action Buttons */}
-      <div className="flex flex-wrap items-center gap-3">
-        <Button
-          onClick={handleCreateConceptNote}
-          variant="outline"
-          className="border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 hover:text-indigo-800 dark:border-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300 dark:hover:bg-indigo-900 dark:hover:text-indigo-200"
-          size="lg"
-        >
-          <FileText className="mr-2 h-5 w-5" />
-          Create Concept Note
-        </Button>
-        <Button
-          onClick={handleCreateActivityReport}
-          variant="outline"
-          className="border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 dark:hover:bg-emerald-900 dark:hover:text-emerald-200"
-          size="lg"
-        >
-          <ClipboardList className="mr-2 h-5 w-5" />
-          Update Activity Report
-        </Button>
-        <Button
-          onClick={handleManageAttendance}
-          variant="outline"
-          className="border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 hover:text-amber-800 dark:border-amber-800 dark:bg-amber-900/50 dark:text-amber-300 dark:hover:bg-amber-900 dark:hover:text-amber-200"
-          size="lg"
-        >
-          <Users className="mr-2 h-5 w-5" />
-          Manage Attendance
-        </Button>
-      </div>
-
-      {/* Activity Details Grid */}
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Left Column */}
-        <div className="space-y-6">
-          <ActivityInformationCard activity={activity} />
-          <ActivityNotesCard activity={activity} />
-        </div>
-
-        {/* Right Column */}
-        <div className="space-y-6">
-          <AttendanceListCard activity={activity} />
-          <ActivityReportCard activity={activity} />
-        </div>
-      </div>
-
-      {/* Concept Notes Table */}
-      <ConceptNotesTable
-        key={`concept-notes-${activity.id}-${refreshKey}`}
-        activityId={activity.id}
+      {/* Activity Details Tabs */}
+      <ActivityDetailsTabs
+        activity={activity}
         onCreateConceptNote={handleCreateConceptNote}
         onEditConceptNote={handleEditConceptNote}
         onDeleteConceptNote={handleDeleteConceptNote}
-        refreshKey={refreshKey}
-      />
-
-      {/* Activity Reports Table */}
-      <ActivityReportsTable
-        key={`activity-reports-${activity.id}-${activityReportsRefreshKey}`}
-        activityId={activity.id}
         onCreateActivityReport={handleCreateActivityReport}
         onEditActivityReport={handleEditActivityReport}
         onDeleteActivityReport={handleDeleteActivityReport}
-        refreshKey={activityReportsRefreshKey}
+        onManageAttendance={handleManageAttendance}
+        refreshKey={refreshKey}
+        activityReportsRefreshKey={activityReportsRefreshKey}
       />
 
       {/* Edit Activity Dialog */}
@@ -396,6 +321,15 @@ export function ActivityDetailsContainer({
         open={isAttendanceListDialogOpen}
         onOpenChange={setIsAttendanceListDialogOpen}
         activityId={activity.id}
+        activity={
+          activity.cluster_id && activity.project_id && activity.organization_id
+            ? {
+                cluster_id: activity.cluster_id,
+                project_id: activity.project_id,
+                organization_id: activity.organization_id,
+              }
+            : undefined
+        }
         onSubmit={handleAttendanceListSubmit}
       />
     </div>

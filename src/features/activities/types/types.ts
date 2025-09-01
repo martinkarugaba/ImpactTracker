@@ -18,6 +18,14 @@ export type ActivityParticipant = InferSelectModel<
 > & {
   participantName?: string;
   participantEmail?: string;
+  participant?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    contact: string;
+    designation: string;
+    organizationName?: string;
+  };
 };
 
 export type ConceptNote = InferSelectModel<typeof conceptNotes>;

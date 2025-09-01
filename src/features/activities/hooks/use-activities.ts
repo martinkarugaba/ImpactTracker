@@ -9,6 +9,11 @@ import {
   deleteActivity,
   getActivityMetrics,
 } from "../actions";
+import {
+  getActivityParticipants,
+  addActivityParticipants,
+  bulkUpdateActivityParticipants,
+} from "../actions/participants";
 import { type NewActivity } from "../types/types";
 
 export function useActivities(
@@ -55,6 +60,58 @@ export function useActivityMetrics(clusterId?: string) {
   });
 }
 
+export function useActivityParticipants(activityId: string) {
+  return useQuery({
+    queryKey: ["activity-participants", activityId],
+    queryFn: () => getActivityParticipants(activityId),
+    enabled: !!activityId,
+  });
+}
+
+export function useAddActivityParticipants() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      activityId,
+      participants,
+    }: {
+      activityId: string;
+      participants: Parameters<typeof addActivityParticipants>[1];
+    }) => addActivityParticipants(activityId, participants),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["activity-participants", variables.activityId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["activity", variables.activityId],
+      });
+    },
+  });
+}
+
+export function useUpdateActivityParticipants() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      activityId,
+      participants,
+    }: {
+      activityId: string;
+      participants: Parameters<typeof bulkUpdateActivityParticipants>[1];
+    }) => bulkUpdateActivityParticipants(activityId, participants),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["activity-participants", variables.activityId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["activity", variables.activityId],
+      });
+    },
+  });
+}
+
 export function useCreateActivity() {
   const queryClient = useQueryClient();
 
@@ -88,6 +145,9 @@ export function useUpdateActivity() {
       });
       queryClient.invalidateQueries({
         queryKey: ["activity", variables.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["activity-participants", variables.id],
       });
       queryClient.invalidateQueries({
         queryKey: ["activity-metrics"],
