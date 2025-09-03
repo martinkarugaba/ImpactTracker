@@ -1,10 +1,15 @@
 "use client";
 
 import * as React from "react";
-import { Moon, Sun } from "lucide-react";
+import { IconBrightness } from "@tabler/icons-react";
 import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function ModeToggle() {
   const { theme, setTheme } = useTheme();
@@ -28,8 +33,8 @@ export function ModeToggle() {
 
   if (!mounted) {
     return (
-      <Button variant="outline" size="icon" disabled>
-        <div className="h-[1.2rem] w-[1.2rem]" />
+      <Button variant="outline" size="sm" disabled className="h-8">
+        <IconBrightness className="h-4 w-4" />
         <span className="sr-only">Toggle theme</span>
       </Button>
     );
@@ -38,29 +43,23 @@ export function ModeToggle() {
   const isDark = theme === "dark";
 
   return (
-    <Button
-      variant="outline"
-      size="icon"
-      onClick={toggleTheme}
-      className="relative overflow-hidden"
-    >
-      <Sun
-        className={`absolute h-[1.2rem] w-[1.2rem] transition-all duration-500 ${
-          isDark
-            ? "scale-0 rotate-90 opacity-0"
-            : "scale-100 rotate-0 opacity-100"
-        }`}
-      />
-      <Moon
-        className={`absolute h-[1.2rem] w-[1.2rem] transition-all duration-500 ${
-          isDark
-            ? "scale-100 rotate-0 opacity-100"
-            : "scale-0 -rotate-90 opacity-0"
-        }`}
-      />
-      <span className="sr-only">
-        Switch to {isDark ? "light" : "dark"} theme
-      </span>
-    </Button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={toggleTheme}
+          className="relative h-8 overflow-hidden"
+        >
+          <IconBrightness className="h-4 w-4" />
+          <span className="sr-only">
+            Switch to {isDark ? "light" : "dark"} theme
+          </span>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>Switch to {isDark ? "light" : "dark"} mode</p>
+      </TooltipContent>
+    </Tooltip>
   );
 }

@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { type Icon } from "@tabler/icons-react";
+import { IconBrightness } from "@tabler/icons-react";
+import { useTheme } from "next-themes";
 
 import {
   SidebarGroup,
@@ -10,6 +12,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Switch } from "@/components/ui/switch";
+import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 
 export function NavSecondary({
@@ -22,6 +26,13 @@ export function NavSecondary({
     icon: Icon;
   }[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+  const { setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
@@ -36,6 +47,25 @@ export function NavSecondary({
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
+          <SidebarMenuItem className="group-data-[collapsible=icon]:hidden">
+            <SidebarMenuButton asChild>
+              <label className="flex cursor-pointer items-center gap-2">
+                <IconBrightness />
+                <span>Dark Mode</span>
+                {mounted ? (
+                  <Switch
+                    className="ml-auto"
+                    checked={resolvedTheme !== "light"}
+                    onCheckedChange={() =>
+                      setTheme(resolvedTheme === "dark" ? "light" : "dark")
+                    }
+                  />
+                ) : (
+                  <Skeleton className="ml-auto h-4 w-8 rounded-full" />
+                )}
+              </label>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
