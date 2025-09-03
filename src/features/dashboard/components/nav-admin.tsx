@@ -31,7 +31,7 @@ export function NavMain({
   const pathname = usePathname();
   return (
     <Collapsible defaultOpen className="group/collapsible">
-      <SidebarGroup>
+      <SidebarGroup className="">
         <SidebarGroupLabel asChild>
           <CollapsibleTrigger>
             Admin
@@ -42,13 +42,16 @@ export function NavMain({
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map(item => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem className="" key={item.title}>
                   <SidebarMenuButton
                     asChild
                     tooltip={item.title}
                     isActive={pathname === item.url}
                   >
-                    <Link href={item.url}>
+                    <Link
+                      className="text-lg group-data-[state=closed]/collapsible:mx-4"
+                      href={item.url}
+                    >
                       {item.icon && <item.icon />}
                       <span>{item.title}</span>
                     </Link>
