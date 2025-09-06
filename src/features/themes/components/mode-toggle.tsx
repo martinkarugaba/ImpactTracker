@@ -33,7 +33,7 @@ export function ModeToggle() {
 
   if (!mounted) {
     return (
-      <Button variant="outline" size="sm" disabled className="h-8">
+      <Button variant="ghost" size="sm" disabled className="h-8 border-2">
         <IconBrightness className="h-4 w-4" />
         <span className="sr-only">Toggle theme</span>
       </Button>
