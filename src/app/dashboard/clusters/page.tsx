@@ -1,4 +1,4 @@
-import { SiteHeader } from "@/features/dashboard/components/site-header";
+import { PageTitle } from "@/features/dashboard/components/page-title";
 import { getClusters } from "@/features/clusters/actions/clusters";
 import { redirect } from "next/navigation";
 import { auth } from "@/features/auth/auth";
@@ -21,7 +21,7 @@ export default async function Page() {
 
     return (
       <>
-        <SiteHeader title="Clusters" />
+        <PageTitle title="Clusters" />
         <div className="flex flex-1 flex-col px-6">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
@@ -34,7 +34,7 @@ export default async function Page() {
   } catch (error) {
     return (
       <>
-        <SiteHeader title="Clusters" />
+        <PageTitle title="Clusters" />
         <div className="container space-y-6 py-6">
           <div className="mx-auto max-w-7xl">
             <Card>

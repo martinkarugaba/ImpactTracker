@@ -17,7 +17,7 @@ import { AdvancedAssignmentDialog } from "./advanced-assignment-dialog";
 interface OrganizationAssignmentButtonProps {
   className?: string;
   subCounties?: Array<{ id: string; name: string }>;
-  organizations?: Array<{ id: string; name: string; acronym?: string }>;
+  organizations?: Array<{ id: string; name: string; acronym: string }>;
 }
 
 export function OrganizationAssignmentButton({
@@ -48,7 +48,7 @@ export function OrganizationAssignmentButton({
     <>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" size="sm" className={className}>
+          <Button variant="outline" className={className}>
             <Settings className="mr-2 h-4 w-4" />
             Fix Organizations
           </Button>

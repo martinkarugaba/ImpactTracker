@@ -2,8 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Pencil, Users } from "lucide-react";
-import Link from "next/link";
+import { Pencil } from "lucide-react";
 import { useState, useEffect } from "react";
 import { VSLA } from "../../types";
 import { EditVSLADialog } from "../edit-vsla-dialog";
@@ -95,12 +94,6 @@ export function VSLADetailsHeader({ vsla }: VSLADetailsHeaderProps) {
               Edit VSLA
             </Button>
           </EditVSLADialog>
-          <Button variant="outline" size="sm" asChild>
-            <Link href={`/dashboard/vslas/${vsla.id}/members`}>
-              <Users className="mr-2 h-4 w-4" />
-              Manage Members
-            </Link>
-          </Button>
         </div>
       </div>
     </div>

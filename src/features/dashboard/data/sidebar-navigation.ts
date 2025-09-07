@@ -14,7 +14,7 @@ import {
   IconNote,
   IconReport,
   IconSearch,
-  IconSettings,
+  IconUser,
   IconUsers,
   IconUsersGroup,
 } from "@tabler/icons-react";
@@ -107,14 +107,9 @@ export const navigationData = {
   // ],
   navSecondary: [
     {
-      title: "Members",
-      url: "/dashboard/members",
-      icon: IconUsersGroup,
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings,
+      title: "Profile",
+      url: "/dashboard/profile",
+      icon: IconUser,
     },
     {
       title: "Get Help",

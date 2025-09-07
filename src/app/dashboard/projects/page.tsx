@@ -1,4 +1,4 @@
-import { SiteHeader } from "@/features/dashboard/components/site-header";
+import { PageTitle } from "@/features/dashboard/components/page-title";
 import { ProjectsTable } from "@/features/projects/components/projects-table";
 import { Card, CardContent } from "@/components/ui/card";
 import { getProjects } from "@/features/projects/actions/projects";
@@ -22,7 +22,7 @@ export default async function Page() {
 
   return (
     <>
-      <SiteHeader title="Projects" />
+      <PageTitle title="Projects" />
       <div className="flex flex-1 flex-col px-6">
         <div className="@container/main flex flex-1 flex-col gap-2">
           <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">

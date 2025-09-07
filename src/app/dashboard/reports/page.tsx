@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SiteHeader } from "@/features/dashboard/components/site-header";
+import { PageTitle } from "@/features/dashboard/components/page-title";
 import { ReportsContainer } from "@/features/reports/components";
 
 // Loading component for the reports page
@@ -81,7 +81,7 @@ export const metadata = {
 export default function ReportsPage() {
   return (
     <>
-      <SiteHeader title="Reports" />
+      <PageTitle title="Reports" />
       <div className="container mx-auto px-6 py-6">
         <Suspense fallback={<ReportsPageSkeleton />}>
           <ReportsPageContent />

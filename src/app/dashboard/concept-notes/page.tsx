@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { SiteHeader } from "@/features/dashboard/components/site-header";
+import { PageTitle } from "@/features/dashboard/components/page-title";
 import { ConceptNotesContainer } from "@/features/concept-notes/components";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -78,7 +78,7 @@ export const metadata = {
 export default function ConceptNotesPage() {
   return (
     <>
-      <SiteHeader title="Concept Notes" />
+      <PageTitle title="Concept Notes" />
       <div className="container mx-auto px-6 py-6">
         <Suspense fallback={<ConceptNotesPageSkeleton />}>
           <ConceptNotesContainer />

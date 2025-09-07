@@ -44,8 +44,8 @@ export function ParticipantsDataTable({
   clusterId: _clusterId,
   onPaginationChange,
   onPageChange,
-  onSearchChange,
-  searchTerm,
+  onSearchChange: _onSearchChange,
+  searchTerm: _searchTerm,
   onAddParticipant: _onAddParticipant,
   onEditParticipant,
   onDeleteParticipant,
@@ -56,13 +56,7 @@ export function ParticipantsDataTable({
   onFixOrganizations: _onFixOrganizations,
   columnVisibility,
 }: ParticipantsDataTableProps) {
-  const { search, selectedRows, handleSearchChange } =
-    useTableState(searchTerm);
-
-  const handleSearchChangeWithCallback = (value: string) => {
-    handleSearchChange(value);
-    onSearchChange?.(value);
-  };
+  const { selectedRows } = useTableState();
 
   return (
     <div className="space-y-4">
@@ -71,12 +65,12 @@ export function ParticipantsDataTable({
         data={data}
         pagination={pagination}
         isLoading={isLoading}
-        searchValue={search}
-        onSearchChange={handleSearchChangeWithCallback}
+        searchValue=""
+        onSearchChange={() => {}}
         onEditParticipant={onEditParticipant}
         onDeleteParticipant={onDeleteParticipant}
         onViewParticipant={onViewParticipant}
-        actionButtons={null} // Remove action buttons from table header
+        actionButtons={null} // No longer needed since actions moved to parent
         columnVisibility={columnVisibility}
       />
 
