@@ -7,7 +7,7 @@ interface OrganizationFiltersProps {
   filters: ParticipantFiltersType;
   updateFilter: (key: keyof ParticipantFiltersType, value: string) => void;
   projects: Array<{ id: string; name: string; acronym: string }>;
-  organizations: Array<{ id: string; name: string }>;
+  organizations: Array<{ id: string; name: string; acronym: string }>;
   enterprises: Array<{ id: string; name: string }>;
 }
 
@@ -23,6 +23,13 @@ export function OrganizationFilters({
     id: project.id,
     name: project.name,
     label: project.acronym,
+  }));
+
+  // Transform organizations to include acronym as label
+  const organizationOptions = organizations.map(organization => ({
+    id: organization.id,
+    name: organization.name,
+    label: organization.acronym,
   }));
 
   return (
@@ -41,7 +48,7 @@ export function OrganizationFilters({
         value={filters.organization}
         onValueChange={value => updateFilter("organization", value)}
         placeholder="Organization"
-        options={organizations}
+        options={organizationOptions}
         allLabel="All Organizations"
       />
 

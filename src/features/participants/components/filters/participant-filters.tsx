@@ -16,7 +16,7 @@ interface ParticipantFiltersProps {
     acronym: string;
   }>;
   _clusters: Array<{ id: string; name: string }>;
-  organizations: Array<{ id: string; name: string }>;
+  organizations: Array<{ id: string; name: string; acronym: string }>;
   districts?: Array<{ id: string; name: string }>;
   subCounties?: Array<{ id: string; name: string }>;
   enterprises?: Array<{ id: string; name: string }>;

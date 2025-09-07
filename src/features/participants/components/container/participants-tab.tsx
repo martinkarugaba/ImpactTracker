@@ -40,7 +40,7 @@ interface ParticipantsTabProps {
   onFiltersChange: (filters: ParticipantFiltersType) => void;
   projects: Array<{ id: string; name: string; acronym: string }>;
   clusters: Array<{ id: string; name: string }>;
-  organizations: Array<{ id: string; name: string }>;
+  organizations: Array<{ id: string; name: string; acronym: string }>;
   filterOptions: {
     districts: Array<{ id: string; name: string }>;
     subCounties: Array<{ id: string; name: string }>;
@@ -156,6 +156,7 @@ export function ParticipantsTab({
               <OrganizationAssignmentButton
                 subCounties={filterOptions.subCounties}
                 organizations={organizations}
+                className="h-9"
               />
               <Button
                 variant="outline"
@@ -227,7 +228,7 @@ export function ParticipantsTab({
           onSearchChange={onSearchChange}
         />
 
-        {/* Participants Table - Below filters */}
+        {/* Participants Table - Primary interface now includes search and add actions */}
         <ParticipantsDataTable
           data={participants}
           clusterId={clusterId}
@@ -269,9 +270,7 @@ export function ParticipantsTab({
           onPageChange={onPageChange}
           searchTerm={searchValue}
           onSearchChange={onSearchChange}
-          onAddParticipant={async () => {
-            onAddParticipant();
-          }}
+          onAddParticipant={onAddParticipant}
           onEditParticipant={onEditParticipant}
           onDeleteParticipant={onDeleteParticipant}
           onViewParticipant={onViewParticipant}

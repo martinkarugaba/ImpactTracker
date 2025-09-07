@@ -6,6 +6,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ModeToggle } from "@/features/themes/components/mode-toggle";
 import { ThemeSelector } from "@/features/themes/components/theme-selector";
 import { Separator } from "@/components/ui/separator";
+import { usePageTitle } from "@/features/dashboard/contexts/page-title-context";
 
 interface SiteHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   heading?: string;
@@ -17,9 +18,10 @@ interface SiteHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
 export function SiteHeader({
   children,
   className,
-  title,
   ...props
-}: SiteHeaderProps) {
+}: Omit<SiteHeaderProps, "title">) {
+  const { title } = usePageTitle();
+
   return (
     <header
       className={cn(

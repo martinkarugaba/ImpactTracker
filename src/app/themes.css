@@ -7,6 +7,8 @@ body {
   --header-height: calc(var(--spacing) * 12 + 1px);
 }
 
+/* first theme */
+
 .theme-scaled {
   @media (min-width: 1024px) {
     --radius: 0.6rem;
@@ -26,6 +28,7 @@ body {
   }
 }
 
+/* default */
 .theme-default,
 .theme-default-scaled {
   --primary: var(--color-neutral-600);
@@ -37,6 +40,7 @@ body {
   }
 }
 
+/* theme blue */
 .theme-blue,
 .theme-blue-scaled {
   --primary: var(--color-blue-600);
@@ -48,6 +52,7 @@ body {
   }
 }
 
+/* theme green */
 .theme-green,
 .theme-green-scaled {
   --primary: var(--color-lime-600);
@@ -59,6 +64,7 @@ body {
   }
 }
 
+/* theme amber */
 .theme-amber,
 .theme-amber-scaled {
   --primary: var(--color-amber-600);
@@ -70,6 +76,7 @@ body {
   }
 }
 
+/* theme mono */
 .theme-mono,
 .theme-mono-scaled {
   --font-sans: var(--font-mono);

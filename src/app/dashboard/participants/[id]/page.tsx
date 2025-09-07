@@ -1,5 +1,5 @@
 import { ParticipantDetails } from "@/features/participants/components/participant-details";
-import { SiteHeader } from "@/features/dashboard/components/site-header";
+import { PageTitle } from "@/features/dashboard/components/page-title";
 import { getParticipant } from "@/features/participants/actions/get-participant";
 import { notFound } from "next/navigation";
 
@@ -30,7 +30,7 @@ export default async function ParticipantDetailsPage({
 
   return (
     <>
-      <SiteHeader title={participantName} />
+      <PageTitle title={participantName} />
       <div className="container mx-auto px-6 py-6">
         <ParticipantDetails
           participantId={id}

@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { getOrganization } from "@/features/organizations/actions/organizations";
 import { getOrganizationMembers } from "@/features/organizations/actions/organization-members";
 import { auth } from "@/features/auth/auth";
-import { SiteHeader } from "@/features/dashboard/components/site-header";
+import { PageTitle } from "@/features/dashboard/components/page-title";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pencil, Users } from "lucide-react";
@@ -45,7 +45,7 @@ export default async function OrganizationDetailsPage({
 
   return (
     <>
-      <SiteHeader title={organization.name} />
+      <PageTitle title={organization.name} />
       <div className="container space-y-6 py-6">
         <div className="mx-auto max-w-7xl">
           {/* Header Section */}
