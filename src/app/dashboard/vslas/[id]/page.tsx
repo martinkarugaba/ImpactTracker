@@ -4,12 +4,7 @@ import { auth } from "@/features/auth/auth";
 import { SiteHeader } from "@/features/dashboard/components/site-header";
 import { VSLADetailsHeader } from "@/features/vslas/components/vsla-details/vsla-details-header";
 import { VSLAStatsOverview } from "@/features/vslas/components/vsla-details/vsla-stats-overview";
-import { VSLABasicInfo } from "@/features/vslas/components/vsla-details/vsla-basic-info";
-import { VSLAFinancialOverview } from "@/features/vslas/components/vsla-details/vsla-financial-overview";
-import { VSLAAffiliations } from "@/features/vslas/components/vsla-details/vsla-affiliations";
-import { VSLALocationDetails } from "@/features/vslas/components/vsla-details/vsla-location-details";
-import { VSLAMeetingInfo } from "@/features/vslas/components/vsla-details/vsla-meeting-info";
-import { VSLAMembersSection } from "@/features/vslas/components/vsla-details/vsla-members-section";
+import { VSLADetailsTabs } from "@/features/vslas/components/vsla-details/vsla-details-tabs";
 
 interface VSLADetailsPageProps {
   params: Promise<{ id: string }>;
@@ -46,26 +41,8 @@ export default async function VSLADetailsPage({
           {/* Stats Overview */}
           <VSLAStatsOverview vsla={vsla} />
 
-          {/* Main Content */}
-          <div className="grid gap-6">
-            {/* Basic Information Card */}
-            <VSLABasicInfo vsla={vsla} />
-
-            {/* Financial Overview Card */}
-            <VSLAFinancialOverview vsla={vsla} />
-
-            {/* Organization & Location Details */}
-            <div className="grid gap-6 md:grid-cols-2">
-              <VSLAAffiliations vsla={vsla} />
-              <VSLALocationDetails vsla={vsla} />
-            </div>
-
-            {/* Meeting Information Card */}
-            <VSLAMeetingInfo vsla={vsla} />
-
-            {/* Members Section */}
-            <VSLAMembersSection vsla={vsla} />
-          </div>
+          {/* Tabbed Content */}
+          <VSLADetailsTabs vsla={vsla} />
         </div>
       </div>
     </>
