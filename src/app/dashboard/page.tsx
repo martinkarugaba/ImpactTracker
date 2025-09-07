@@ -1,6 +1,6 @@
 import { ChartAreaInteractive } from "@/features/dashboard/components/chart-area-interactive";
 import { MetricCards } from "@/components/ui/metric-cards";
-import { SiteHeader } from "@/features/dashboard/components/site-header";
+import { PageTitle } from "@/features/dashboard/components/page-title";
 
 // import { DashboardTable } from "./dashboard-table";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,7 +10,7 @@ export default function Page() {
   try {
     return (
       <>
-        <SiteHeader title="Dashboard" />
+        <PageTitle title="Dashboard" />
         <div className="flex flex-1 flex-col px-2 sm:px-4 md:px-6">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-3 py-3 sm:gap-4 sm:py-4 md:gap-6 md:py-6">

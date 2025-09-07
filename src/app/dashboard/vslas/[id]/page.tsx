@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { getVSLA } from "@/features/vslas/actions/vslas";
 import { auth } from "@/features/auth/auth";
-import { SiteHeader } from "@/features/dashboard/components/site-header";
+import { PageTitle } from "@/features/dashboard/components/page-title";
 import { VSLADetailsHeader } from "@/features/vslas/components/vsla-details/vsla-details-header";
 import { VSLAStatsOverview } from "@/features/vslas/components/vsla-details/vsla-stats-overview";
 import { VSLADetailsTabs } from "@/features/vslas/components/vsla-details/vsla-details-tabs";
@@ -32,7 +32,7 @@ export default async function VSLADetailsPage({
 
   return (
     <>
-      <SiteHeader title={vsla.name} />
+      <PageTitle title={vsla.name} />
       <div className="container space-y-6 py-6 lg:px-6">
         <div className="mx-auto max-w-7xl">
           {/* Header Section */}

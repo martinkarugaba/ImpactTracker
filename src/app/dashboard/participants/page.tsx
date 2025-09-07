@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SiteHeader } from "@/features/dashboard/components/site-header";
+import { PageTitle } from "@/features/dashboard/components/page-title";
 import { getProjects } from "@/features/projects/actions/projects";
 import { getUserClusterId } from "@/features/auth/actions";
 import { getClusters } from "@/features/clusters/actions/clusters";
@@ -225,7 +225,7 @@ export const metadata = {
 export default function ParticipantsPage() {
   return (
     <>
-      <SiteHeader title="Participants" />
+      <PageTitle title="Participants" />
       <div className="container mx-auto px-6 py-6">
         <Suspense fallback={<ParticipantsPageSkeleton />}>
           <ParticipantsPageContent />

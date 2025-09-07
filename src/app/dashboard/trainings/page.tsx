@@ -1,4 +1,4 @@
-import { SiteHeader } from "@/features/dashboard/components/site-header";
+import { PageTitle } from "@/features/dashboard/components/page-title";
 import { TrainingsClient } from "@/features/trainings/components/trainings-client";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -56,7 +56,7 @@ export default async function Page(props: {
 
   return (
     <>
-      <SiteHeader title="Trainings" />
+      <PageTitle title="Trainings" />
       <div className="flex flex-1 flex-col">
         <div className="@container/main flex flex-1 flex-col gap-2 p-4 @xl/main:px-6">
           <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-0">

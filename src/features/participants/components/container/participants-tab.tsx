@@ -40,7 +40,7 @@ interface ParticipantsTabProps {
   onFiltersChange: (filters: ParticipantFiltersType) => void;
   projects: Array<{ id: string; name: string; acronym: string }>;
   clusters: Array<{ id: string; name: string }>;
-  organizations: Array<{ id: string; name: string }>;
+  organizations: Array<{ id: string; name: string; acronym: string }>;
   filterOptions: {
     districts: Array<{ id: string; name: string }>;
     subCounties: Array<{ id: string; name: string }>;
@@ -156,6 +156,7 @@ export function ParticipantsTab({
               <OrganizationAssignmentButton
                 subCounties={filterOptions.subCounties}
                 organizations={organizations}
+                className="h-9"
               />
               <Button
                 variant="outline"

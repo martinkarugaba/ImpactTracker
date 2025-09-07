@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { getActivity } from "@/features/activities/actions";
 import { auth } from "@/features/auth/auth";
-import { SiteHeader } from "@/features/dashboard/components/site-header";
+import { PageTitle } from "@/features/dashboard/components/page-title";
 import { ActivityDetailsContainer } from "@/features/activities/components/activity-details-container";
 import { getOrganizations } from "@/features/organizations/actions/organizations";
 import { getClusters } from "@/features/clusters/actions/clusters";
@@ -43,32 +43,27 @@ export default async function ActivityDetailsPage({
   const activity = activityResult.value.data;
 
   // Extract organizations, clusters, and projects
-  const organizations =
+  const _organizations =
     organizationsResult.status === "fulfilled" &&
     organizationsResult.value.success
       ? organizationsResult.value.data || []
       : [];
 
-  const clusters =
+  const _clusters =
     clustersResult.status === "fulfilled" && clustersResult.value.success
       ? clustersResult.value.data || []
       : [];
 
-  const projects =
+  const _projects =
     projectsResult.status === "fulfilled" && projectsResult.value.success
       ? projectsResult.value.data || []
       : [];
 
   return (
     <>
-      <SiteHeader title={activity.title} />
+      <PageTitle title={activity.title} />
       <div className="container mx-auto px-6 py-6">
-        <ActivityDetailsContainer
-          activity={activity}
-          organizations={organizations}
-          clusters={clusters}
-          projects={projects}
-        />
+        <ActivityDetailsContainer activity={activity} />
       </div>
     </>
   );

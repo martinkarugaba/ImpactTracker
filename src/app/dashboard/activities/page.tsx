@@ -3,7 +3,7 @@ import { ActivitiesContainerNew } from "@/features/activities/components/contain
 import { MetricCard } from "@/components/ui/metric-card";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SiteHeader } from "@/features/dashboard/components/site-header";
+import { PageTitle } from "@/features/dashboard/components/page-title";
 import { ActivitiesTableSkeleton } from "@/features/activities/components/table/activities-table-skeleton";
 import { IconActivity } from "@tabler/icons-react";
 
@@ -85,7 +85,7 @@ export const metadata = {
 export default function ActivitiesPage() {
   return (
     <>
-      <SiteHeader title="Activities" />
+      <PageTitle title="Activities" />
       <div className="container mx-auto px-6 py-6">
         <Suspense fallback={<ActivitiesPageSkeleton />}>
           <ActivitiesPageContent />

@@ -1,4 +1,4 @@
-import { SiteHeader } from "@/features/dashboard/components/site-header";
+import { PageTitle } from "@/features/dashboard/components/page-title";
 import { OrganizationsTable } from "@/features/organizations/components/organizations-table";
 import { Card, CardContent } from "@/components/ui/card";
 import { getOrganizations } from "@/features/organizations/actions/organizations";
@@ -21,7 +21,7 @@ export default async function Page() {
 
   return (
     <>
-      <SiteHeader title="Organisations" />
+      <PageTitle title="Organisations" />
       <div className="flex flex-1 flex-col">
         <div className="@container/main flex flex-1 flex-col gap-2">
           <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">

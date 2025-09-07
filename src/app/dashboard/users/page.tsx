@@ -1,4 +1,4 @@
-import { SiteHeader } from "@/features/dashboard/components/site-header";
+import { PageTitle } from "@/features/dashboard/components/page-title";
 import { Card, CardContent } from "@/components/ui/card";
 import { auth } from "@/features/auth/auth";
 import { redirect } from "next/navigation";
@@ -23,7 +23,7 @@ export default async function Page() {
 
     return (
       <>
-        <SiteHeader title="Users" />
+        <PageTitle title="Users" />
         <div className="flex flex-1 flex-col px-6">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
@@ -37,7 +37,7 @@ export default async function Page() {
     console.error("Error in users page:", error); // Debug log
     return (
       <>
-        <SiteHeader title="Users" />
+        <PageTitle title="Users" />
         <div className="container space-y-6 py-4">
           <div className="mx-auto max-w-7xl">
             <Card>

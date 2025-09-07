@@ -12,7 +12,7 @@ interface ParticipantsContainerProps {
   clusterId: string;
   projects: Array<{ id: string; name: string; acronym: string }>;
   clusters: Array<{ id: string; name: string }>;
-  organizations?: Array<{ id: string; name: string }>;
+  organizations?: Array<{ id: string; name: string; acronym: string }>;
 }
 
 export function ParticipantsContainer({
