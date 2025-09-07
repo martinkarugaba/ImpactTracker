@@ -1,7 +1,6 @@
 "use client";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Users } from "lucide-react";
 import { useParticipantContainerState } from "./use-participant-container-state";
 import { useFilterOptions } from "./use-filter-options";
 import { MetricsTab } from "./metrics-tab";
@@ -45,29 +44,32 @@ export function ParticipantsContainer({
 
   return (
     <div className="space-y-6">
-      {/* Enhanced Tabs with Minimal Styling */}
+      {/* Modern Tabs Design */}
       <div className="bg-transparent">
         <Tabs
           value={state.activeTab}
           onValueChange={state.setActiveTab}
           className="w-full"
         >
+          {/* Desktop Tabs */}
           <TabsList className="grid h-12 w-full grid-cols-2 rounded-md bg-gray-100 p-1 dark:bg-gray-900">
+            <TabsTrigger value="metrics">Analytics</TabsTrigger>
+            <TabsTrigger value="participants">Participants</TabsTrigger>
+          </TabsList>
+
+          {/* Mobile Tabs Fallback */}
+          <TabsList className="grid h-12 w-full grid-cols-2 rounded-md bg-gray-100 p-1 lg:hidden dark:bg-gray-900">
             <TabsTrigger
               value="metrics"
-              className="flex items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-blue-400"
+              className="rounded-sm px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-blue-400"
             >
-              <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline">Analytics</span>
-              <span className="sm:hidden">Stats</span>
+              Analytics
             </TabsTrigger>
             <TabsTrigger
               value="participants"
-              className="flex items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-green-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-green-400"
+              className="rounded-sm px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-green-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-green-400"
             >
-              <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Participants</span>
-              <span className="sm:hidden">People</span>
+              Participants
             </TabsTrigger>
           </TabsList>
 

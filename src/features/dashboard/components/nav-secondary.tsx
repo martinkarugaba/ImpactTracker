@@ -4,6 +4,7 @@ import * as React from "react";
 import { type Icon } from "@tabler/icons-react";
 import { IconBrightness } from "@tabler/icons-react";
 import { useTheme } from "next-themes";
+import { useSession } from "next-auth/react";
 
 import {
   SidebarGroup,
@@ -27,17 +28,26 @@ export function NavSecondary({
   }[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   const { setTheme, resolvedTheme } = useTheme();
+  const { data: session } = useSession();
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Filter out Profile link for non-super-admin users
+  const filteredItems = items.filter(item => {
+    if (item.title === "Profile") {
+      return session?.user?.role === "super_admin";
+    }
+    return true;
+  });
+
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
         <SidebarMenu>
-          {items.map(item => (
+          {filteredItems.map(item => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild tooltip={item.title}>
                 <Link href={item.url} title={item.title}>

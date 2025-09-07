@@ -9,5 +9,10 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
+  // Restrict to super admin only during development
+  if (session.user.role !== "super_admin") {
+    redirect("/dashboard");
+  }
+
   return <ProfileContainer />;
 }

@@ -227,7 +227,7 @@ export function ParticipantsTab({
           onSearchChange={onSearchChange}
         />
 
-        {/* Participants Table - Below filters */}
+        {/* Participants Table - Primary interface now includes search and add actions */}
         <ParticipantsDataTable
           data={participants}
           clusterId={clusterId}
@@ -269,9 +269,7 @@ export function ParticipantsTab({
           onPageChange={onPageChange}
           searchTerm={searchValue}
           onSearchChange={onSearchChange}
-          onAddParticipant={async () => {
-            onAddParticipant();
-          }}
+          onAddParticipant={onAddParticipant}
           onEditParticipant={onEditParticipant}
           onDeleteParticipant={onDeleteParticipant}
           onViewParticipant={onViewParticipant}
