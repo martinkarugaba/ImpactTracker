@@ -7,4 +7,13 @@ export type User = {
   role: (typeof userRole.enumValues)[number];
   created_at: Date;
   updated_at: Date;
+  cluster?: {
+    id: string;
+    name: string;
+  } | null;
+  organization?: {
+    id: string;
+    name: string;
+    acronym: string;
+  } | null;
 };

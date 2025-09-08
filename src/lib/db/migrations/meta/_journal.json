@@ -204,6 +204,13 @@
       "when": 1753519397334,
       "tag": "0028_lethal_hex",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1757269485502,
+      "tag": "0029_violet_smasher",
+      "breakpoints": true
     }
   ]
 }
