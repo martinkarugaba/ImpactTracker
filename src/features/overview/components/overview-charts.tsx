@@ -25,30 +25,30 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 // Chart configurations for consistent styling and dark mode
 const participantsChartConfig = {
-  count: {
+  participants: {
     label: "Participants",
-    color: "hsl(var(--chart-1))",
+    color: "var(--primary)",
   },
 } satisfies ChartConfig;
 
 const activitiesChartConfig = {
-  count: {
+  activities: {
     label: "Activities",
-    color: "hsl(var(--chart-2))",
+    color: "var(--primary)",
   },
 } satisfies ChartConfig;
 
 const vslasChartConfig = {
-  count: {
+  vslas: {
     label: "VSLAs",
-    color: "hsl(var(--chart-3))",
+    color: "var(--primary)",
   },
 } satisfies ChartConfig;
 
 const conceptNotesChartConfig = {
-  count: {
+  conceptNotes: {
     label: "Concept Notes",
-    color: "hsl(var(--chart-4))",
+    color: "var(--primary)",
   },
 } satisfies ChartConfig;
 
@@ -91,22 +91,22 @@ export function OverviewCharts() {
   // Transform data for individual charts
   const participantsData = trendData.map(item => ({
     period: item.month,
-    count: item.participants,
+    participants: item.participants,
   }));
 
   const activitiesData = trendData.map(item => ({
     period: item.month,
-    count: item.activities,
+    activities: item.activities,
   }));
 
   const vslasData = trendData.map(item => ({
     period: item.month,
-    count: item.vslas,
+    vslas: item.vslas,
   }));
 
   const conceptNotesData = trendData.map(item => ({
     period: item.month,
-    count: item.conceptNotes,
+    conceptNotes: item.conceptNotes,
   }));
 
   return (
@@ -115,7 +115,7 @@ export function OverviewCharts() {
       <Card className="@container/card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-[hsl(var(--chart-1))]" />
+            <div className="h-3 w-3 rounded-full bg-[var(--primary)]" />
             Participants Trend
           </CardTitle>
         </CardHeader>
@@ -136,12 +136,12 @@ export function OverviewCharts() {
                   >
                     <stop
                       offset="5%"
-                      stopColor="var(--color-count)"
+                      stopColor="var(--color-participants)"
                       stopOpacity={0.8}
                     />
                     <stop
                       offset="95%"
-                      stopColor="var(--color-count)"
+                      stopColor="var(--color-participants)"
                       stopOpacity={0.1}
                     />
                   </linearGradient>
@@ -157,8 +157,8 @@ export function OverviewCharts() {
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Area
                   type="natural"
-                  dataKey="count"
-                  stroke="var(--color-count)"
+                  dataKey="participants"
+                  stroke="var(--color-participants)"
                   fill="url(#fillParticipants)"
                   fillOpacity={0.6}
                 />
@@ -172,7 +172,7 @@ export function OverviewCharts() {
       <Card className="@container/card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-[hsl(var(--chart-2))]" />
+            <div className="h-3 w-3 rounded-full bg-[var(--primary)]" />
             Activities Trend
           </CardTitle>
         </CardHeader>
@@ -193,12 +193,12 @@ export function OverviewCharts() {
                   >
                     <stop
                       offset="5%"
-                      stopColor="var(--color-count)"
+                      stopColor="var(--color-activities)"
                       stopOpacity={1.0}
                     />
                     <stop
                       offset="95%"
-                      stopColor="var(--color-count)"
+                      stopColor="var(--color-activities)"
                       stopOpacity={0.8}
                     />
                   </linearGradient>
@@ -214,11 +214,11 @@ export function OverviewCharts() {
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Line
                   type="natural"
-                  dataKey="count"
-                  stroke="var(--color-count)"
+                  dataKey="activities"
+                  stroke="var(--color-activities)"
                   strokeWidth={3}
-                  dot={{ r: 4, fill: "var(--color-count)" }}
-                  activeDot={{ r: 6, fill: "var(--color-count)" }}
+                  dot={{ r: 4, fill: "var(--color-activities)" }}
+                  activeDot={{ r: 6, fill: "var(--color-activities)" }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -230,7 +230,7 @@ export function OverviewCharts() {
       <Card className="@container/card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-[hsl(var(--chart-3))]" />
+            <div className="h-3 w-3 rounded-full bg-[var(--primary)]" />
             VSLAs Trend
           </CardTitle>
         </CardHeader>
@@ -245,12 +245,12 @@ export function OverviewCharts() {
                   <linearGradient id="fillVslas" x1="0" y1="0" x2="0" y2="1">
                     <stop
                       offset="5%"
-                      stopColor="var(--color-count)"
+                      stopColor="var(--color-vslas)"
                       stopOpacity={1.0}
                     />
                     <stop
                       offset="95%"
-                      stopColor="var(--color-count)"
+                      stopColor="var(--color-vslas)"
                       stopOpacity={0.6}
                     />
                   </linearGradient>
@@ -265,7 +265,7 @@ export function OverviewCharts() {
                 <YAxis fontSize={12} tickLine={false} axisLine={false} />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar
-                  dataKey="count"
+                  dataKey="vslas"
                   fill="url(#fillVslas)"
                   radius={[6, 6, 0, 0]}
                 />
@@ -279,7 +279,7 @@ export function OverviewCharts() {
       <Card className="@container/card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-[hsl(var(--chart-4))]" />
+            <div className="h-3 w-3 rounded-full bg-[var(--primary)]" />
             Concept Notes Trend
           </CardTitle>
         </CardHeader>
@@ -300,12 +300,12 @@ export function OverviewCharts() {
                   >
                     <stop
                       offset="5%"
-                      stopColor="var(--color-count)"
+                      stopColor="var(--color-conceptNotes)"
                       stopOpacity={0.9}
                     />
                     <stop
                       offset="95%"
-                      stopColor="var(--color-count)"
+                      stopColor="var(--color-conceptNotes)"
                       stopOpacity={0.1}
                     />
                   </linearGradient>
@@ -321,8 +321,8 @@ export function OverviewCharts() {
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Area
                   type="natural"
-                  dataKey="count"
-                  stroke="var(--color-count)"
+                  dataKey="conceptNotes"
+                  stroke="var(--color-conceptNotes)"
                   fill="url(#fillConceptNotes)"
                   strokeWidth={2}
                 />
