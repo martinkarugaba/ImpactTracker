@@ -25,7 +25,7 @@ export function OverviewMetricCards() {
         {[1, 2, 3, 4].map(i => (
           <div
             key={i}
-            className="border-l-primary/20 from-primary/5 to-card space-y-3 rounded-lg border border-l-4 bg-gradient-to-t p-6 shadow-xs"
+            className="from-primary/5 to-card space-y-3 rounded-lg border bg-gradient-to-t p-6 shadow-xs"
           >
             <Skeleton className="h-4 w-24" />
             <Skeleton className="h-8 w-16" />
@@ -73,7 +73,6 @@ export function OverviewMetricCards() {
             )}
           </div>
         }
-        className="border-l-4 border-l-[hsl(var(--chart-1))]"
       />
 
       <MetricCard
@@ -98,7 +97,6 @@ export function OverviewMetricCards() {
             )}
           </div>
         }
-        className="border-l-4 border-l-[hsl(var(--chart-2))]"
       />
 
       <MetricCard
@@ -123,7 +121,6 @@ export function OverviewMetricCards() {
             )}
           </div>
         }
-        className="border-l-4 border-l-[hsl(var(--chart-3))]"
       />
 
       <MetricCard
@@ -148,7 +145,6 @@ export function OverviewMetricCards() {
             )}
           </div>
         }
-        className="border-l-4 border-l-[hsl(var(--chart-4))]"
       />
     </div>
   );

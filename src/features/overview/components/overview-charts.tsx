@@ -2,7 +2,12 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartConfig } from "@/components/ui/chart";
+import {
+  ChartContainer,
+  ChartConfig,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import {
   AreaChart,
   Area,
@@ -20,28 +25,28 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 // Chart configurations for consistent styling and dark mode
 const participantsChartConfig = {
-  participants: {
+  count: {
     label: "Participants",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
 
 const activitiesChartConfig = {
-  activities: {
+  count: {
     label: "Activities",
     color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig;
 
 const vslasChartConfig = {
-  vslas: {
+  count: {
     label: "VSLAs",
     color: "hsl(var(--chart-3))",
   },
 } satisfies ChartConfig;
 
 const conceptNotesChartConfig = {
-  conceptNotes: {
+  count: {
     label: "Concept Notes",
     color: "hsl(var(--chart-4))",
   },
@@ -131,12 +136,12 @@ export function OverviewCharts() {
                   >
                     <stop
                       offset="5%"
-                      stopColor="var(--color-participants)"
+                      stopColor="var(--color-count)"
                       stopOpacity={0.8}
                     />
                     <stop
                       offset="95%"
-                      stopColor="var(--color-participants)"
+                      stopColor="var(--color-count)"
                       stopOpacity={0.1}
                     />
                   </linearGradient>
@@ -149,10 +154,11 @@ export function OverviewCharts() {
                   axisLine={false}
                 />
                 <YAxis fontSize={12} tickLine={false} axisLine={false} />
+                <ChartTooltip content={<ChartTooltipContent />} />
                 <Area
                   type="natural"
                   dataKey="count"
-                  stroke="var(--color-participants)"
+                  stroke="var(--color-count)"
                   fill="url(#fillParticipants)"
                   fillOpacity={0.6}
                 />
@@ -187,12 +193,12 @@ export function OverviewCharts() {
                   >
                     <stop
                       offset="5%"
-                      stopColor="var(--color-activities)"
+                      stopColor="var(--color-count)"
                       stopOpacity={1.0}
                     />
                     <stop
                       offset="95%"
-                      stopColor="var(--color-activities)"
+                      stopColor="var(--color-count)"
                       stopOpacity={0.8}
                     />
                   </linearGradient>
@@ -205,13 +211,14 @@ export function OverviewCharts() {
                   axisLine={false}
                 />
                 <YAxis fontSize={12} tickLine={false} axisLine={false} />
+                <ChartTooltip content={<ChartTooltipContent />} />
                 <Line
                   type="natural"
                   dataKey="count"
-                  stroke="var(--color-activities)"
+                  stroke="var(--color-count)"
                   strokeWidth={3}
-                  dot={{ r: 4, fill: "var(--color-activities)" }}
-                  activeDot={{ r: 6, fill: "var(--color-activities)" }}
+                  dot={{ r: 4, fill: "var(--color-count)" }}
+                  activeDot={{ r: 6, fill: "var(--color-count)" }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -238,12 +245,12 @@ export function OverviewCharts() {
                   <linearGradient id="fillVslas" x1="0" y1="0" x2="0" y2="1">
                     <stop
                       offset="5%"
-                      stopColor="var(--color-vslas)"
+                      stopColor="var(--color-count)"
                       stopOpacity={1.0}
                     />
                     <stop
                       offset="95%"
-                      stopColor="var(--color-vslas)"
+                      stopColor="var(--color-count)"
                       stopOpacity={0.6}
                     />
                   </linearGradient>
@@ -256,6 +263,7 @@ export function OverviewCharts() {
                   axisLine={false}
                 />
                 <YAxis fontSize={12} tickLine={false} axisLine={false} />
+                <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar
                   dataKey="count"
                   fill="url(#fillVslas)"
@@ -292,12 +300,12 @@ export function OverviewCharts() {
                   >
                     <stop
                       offset="5%"
-                      stopColor="var(--color-conceptNotes)"
+                      stopColor="var(--color-count)"
                       stopOpacity={0.9}
                     />
                     <stop
                       offset="95%"
-                      stopColor="var(--color-conceptNotes)"
+                      stopColor="var(--color-count)"
                       stopOpacity={0.1}
                     />
                   </linearGradient>
@@ -310,10 +318,11 @@ export function OverviewCharts() {
                   axisLine={false}
                 />
                 <YAxis fontSize={12} tickLine={false} axisLine={false} />
+                <ChartTooltip content={<ChartTooltipContent />} />
                 <Area
                   type="natural"
                   dataKey="count"
-                  stroke="var(--color-conceptNotes)"
+                  stroke="var(--color-count)"
                   fill="url(#fillConceptNotes)"
                   strokeWidth={2}
                 />

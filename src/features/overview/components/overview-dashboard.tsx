@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { OverviewMetricCards } from "./overview-metric-cards";
 import { OverviewCharts } from "./overview-charts";
@@ -16,7 +17,17 @@ import {
   IconChartAreaLine,
   IconTarget,
   IconTrendingUp,
+  IconPlus,
+  IconUsersGroup,
+  IconActivity,
+  IconCashBanknote,
+  IconNote,
+  IconCamera,
+  IconReport,
+  IconFileText,
+  IconCalendarEvent,
 } from "@tabler/icons-react";
+import Link from "next/link";
 
 // Loading component for the overview sections
 function OverviewSectionLoading() {
@@ -50,9 +61,129 @@ export function OverviewDashboard() {
         </p>
       </div>
 
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <IconPlus className="h-5 w-5" />
+            Quick Actions
+          </CardTitle>
+          <CardDescription>
+            Quickly access common actions and create new records
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+            {/* Add Participant */}
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="border-primary/20 from-primary/5 to-card hover:from-primary/10 hover:to-card h-20 flex-col gap-1.5 bg-gradient-to-t"
+            >
+              <Link href="/dashboard/participants">
+                <IconUsersGroup className="text-primary h-5 w-5" />
+                <span className="text-xs font-medium">Add Participant</span>
+              </Link>
+            </Button>
+
+            {/* Schedule Activity */}
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="border-chart-2/20 from-chart-2/5 to-card hover:from-chart-2/10 hover:to-card h-20 flex-col gap-1.5 bg-gradient-to-t"
+            >
+              <Link href="/dashboard/activities">
+                <IconActivity className="h-5 w-5 text-[hsl(var(--chart-2))]" />
+                <span className="text-xs font-medium">Schedule Activity</span>
+              </Link>
+            </Button>
+
+            {/* Create VSLA */}
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="border-chart-3/20 from-chart-3/5 to-card hover:from-chart-3/10 hover:to-card h-20 flex-col gap-1.5 bg-gradient-to-t"
+            >
+              <Link href="/dashboard/vslas">
+                <IconCashBanknote className="h-5 w-5 text-[hsl(var(--chart-3))]" />
+                <span className="text-xs font-medium">Create VSLA</span>
+              </Link>
+            </Button>
+
+            {/* Submit Concept Note */}
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="border-chart-4/20 from-chart-4/5 to-card hover:from-chart-4/10 hover:to-card h-20 flex-col gap-1.5 bg-gradient-to-t"
+            >
+              <Link href="/dashboard/concept-notes">
+                <IconNote className="h-5 w-5 text-[hsl(var(--chart-4))]" />
+                <span className="text-xs font-medium">Concept Note</span>
+              </Link>
+            </Button>
+
+            {/* Add Success Story */}
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="border-chart-1/20 from-chart-1/5 to-card hover:from-chart-1/10 hover:to-card h-20 flex-col gap-1.5 bg-gradient-to-t"
+            >
+              <Link href="/dashboard/success-stories">
+                <IconCamera className="h-5 w-5 text-[hsl(var(--chart-1))]" />
+                <span className="text-xs font-medium">Success Story</span>
+              </Link>
+            </Button>
+
+            {/* Generate Report */}
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="border-chart-5/20 from-chart-5/5 to-card hover:from-chart-5/10 hover:to-card h-20 flex-col gap-1.5 bg-gradient-to-t"
+            >
+              <Link href="/dashboard/reports">
+                <IconReport className="h-5 w-5 text-[hsl(var(--chart-5))]" />
+                <span className="text-xs font-medium">Generate Report</span>
+              </Link>
+            </Button>
+
+            {/* View Calendar */}
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="border-secondary/40 from-secondary/10 to-card hover:from-secondary/20 hover:to-card h-20 flex-col gap-1.5 bg-gradient-to-t"
+            >
+              <Link href="/dashboard/activities">
+                <IconCalendarEvent className="text-secondary-foreground h-5 w-5" />
+                <span className="text-xs font-medium">View Calendar</span>
+              </Link>
+            </Button>
+
+            {/* All Documents */}
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="border-muted-foreground/20 from-muted/20 to-card hover:from-muted/30 hover:to-card h-20 flex-col gap-1.5 bg-gradient-to-t"
+            >
+              <Link href="/dashboard/concept-notes">
+                <IconFileText className="text-muted-foreground h-5 w-5" />
+                <span className="text-xs font-medium">All Documents</span>
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Tabbed Interface */}
       <Tabs defaultValue="metrics" className="space-y-8">
-        <TabsList className="grid h-11 w-full grid-cols-3">
+        <TabsList className="bg-muted/50 grid h-11 w-full grid-cols-3">
           <TabsTrigger
             value="metrics"
             className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex items-center gap-2"
