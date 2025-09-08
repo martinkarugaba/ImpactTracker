@@ -56,6 +56,7 @@ export type ConceptNotesFilters = {
   dateTo?: string;
   submissionDateFrom?: string;
   submissionDateTo?: string;
+  month?: string;
 };
 
 export type ConceptNotesMetrics = {

@@ -2,7 +2,12 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartConfig } from "@/components/ui/chart";
+import {
+  ChartContainer,
+  ChartConfig,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import {
   AreaChart,
   Area,
@@ -22,28 +27,28 @@ import { Skeleton } from "@/components/ui/skeleton";
 const participantsChartConfig = {
   participants: {
     label: "Participants",
-    color: "hsl(var(--chart-1))",
+    color: "var(--primary)",
   },
 } satisfies ChartConfig;
 
 const activitiesChartConfig = {
   activities: {
     label: "Activities",
-    color: "hsl(var(--chart-2))",
+    color: "var(--primary)",
   },
 } satisfies ChartConfig;
 
 const vslasChartConfig = {
   vslas: {
     label: "VSLAs",
-    color: "hsl(var(--chart-3))",
+    color: "var(--primary)",
   },
 } satisfies ChartConfig;
 
 const conceptNotesChartConfig = {
   conceptNotes: {
     label: "Concept Notes",
-    color: "hsl(var(--chart-4))",
+    color: "var(--primary)",
   },
 } satisfies ChartConfig;
 
@@ -86,22 +91,22 @@ export function OverviewCharts() {
   // Transform data for individual charts
   const participantsData = trendData.map(item => ({
     period: item.month,
-    count: item.participants,
+    participants: item.participants,
   }));
 
   const activitiesData = trendData.map(item => ({
     period: item.month,
-    count: item.activities,
+    activities: item.activities,
   }));
 
   const vslasData = trendData.map(item => ({
     period: item.month,
-    count: item.vslas,
+    vslas: item.vslas,
   }));
 
   const conceptNotesData = trendData.map(item => ({
     period: item.month,
-    count: item.conceptNotes,
+    conceptNotes: item.conceptNotes,
   }));
 
   return (
@@ -110,7 +115,7 @@ export function OverviewCharts() {
       <Card className="@container/card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-[hsl(var(--chart-1))]" />
+            <div className="h-3 w-3 rounded-full bg-[var(--primary)]" />
             Participants Trend
           </CardTitle>
         </CardHeader>
@@ -149,9 +154,10 @@ export function OverviewCharts() {
                   axisLine={false}
                 />
                 <YAxis fontSize={12} tickLine={false} axisLine={false} />
+                <ChartTooltip content={<ChartTooltipContent />} />
                 <Area
                   type="natural"
-                  dataKey="count"
+                  dataKey="participants"
                   stroke="var(--color-participants)"
                   fill="url(#fillParticipants)"
                   fillOpacity={0.6}
@@ -166,7 +172,7 @@ export function OverviewCharts() {
       <Card className="@container/card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-[hsl(var(--chart-2))]" />
+            <div className="h-3 w-3 rounded-full bg-[var(--primary)]" />
             Activities Trend
           </CardTitle>
         </CardHeader>
@@ -205,9 +211,10 @@ export function OverviewCharts() {
                   axisLine={false}
                 />
                 <YAxis fontSize={12} tickLine={false} axisLine={false} />
+                <ChartTooltip content={<ChartTooltipContent />} />
                 <Line
                   type="natural"
-                  dataKey="count"
+                  dataKey="activities"
                   stroke="var(--color-activities)"
                   strokeWidth={3}
                   dot={{ r: 4, fill: "var(--color-activities)" }}
@@ -223,7 +230,7 @@ export function OverviewCharts() {
       <Card className="@container/card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-[hsl(var(--chart-3))]" />
+            <div className="h-3 w-3 rounded-full bg-[var(--primary)]" />
             VSLAs Trend
           </CardTitle>
         </CardHeader>
@@ -256,8 +263,9 @@ export function OverviewCharts() {
                   axisLine={false}
                 />
                 <YAxis fontSize={12} tickLine={false} axisLine={false} />
+                <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar
-                  dataKey="count"
+                  dataKey="vslas"
                   fill="url(#fillVslas)"
                   radius={[6, 6, 0, 0]}
                 />
@@ -271,7 +279,7 @@ export function OverviewCharts() {
       <Card className="@container/card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-[hsl(var(--chart-4))]" />
+            <div className="h-3 w-3 rounded-full bg-[var(--primary)]" />
             Concept Notes Trend
           </CardTitle>
         </CardHeader>
@@ -310,9 +318,10 @@ export function OverviewCharts() {
                   axisLine={false}
                 />
                 <YAxis fontSize={12} tickLine={false} axisLine={false} />
+                <ChartTooltip content={<ChartTooltipContent />} />
                 <Area
                   type="natural"
-                  dataKey="count"
+                  dataKey="conceptNotes"
                   stroke="var(--color-conceptNotes)"
                   fill="url(#fillConceptNotes)"
                   strokeWidth={2}
