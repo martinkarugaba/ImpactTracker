@@ -3,7 +3,7 @@ import { TrainingsClient } from "@/features/trainings/components/trainings-clien
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getProjects } from "@/features/projects/actions/projects";
-import { getOrganizationId, getUserClusterId } from "@/features/auth/actions";
+import { getUserClusterId } from "@/features/auth/actions";
 import { getClusters } from "@/features/clusters/actions/clusters";
 
 function TrainingsTableSkeleton() {
@@ -29,9 +29,8 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
 
   // Search params will be passed directly to the TrainingsClient component
-  const organizationId = await getOrganizationId();
   const clusterId = await getUserClusterId();
-  const projectsResult = await getProjects(organizationId ?? undefined);
+  const projectsResult = await getProjects();
   const clustersResult = await getClusters();
 
   if (!clusterId) {

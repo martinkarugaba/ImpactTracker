@@ -16,9 +16,8 @@ function ProjectsTableSkeleton() {
 }
 
 export default async function Page() {
-  const organizationId = "default-organization-id"; // Replace with actual logic to fetch organizationId
   const clustersResult = await getClusters();
-  const projectsResult = await getProjects(organizationId);
+  const projectsResult = await getProjects();
 
   return (
     <>

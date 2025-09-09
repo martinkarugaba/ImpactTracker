@@ -70,7 +70,7 @@ export function ParticipantSelectionDialog({
   // Fetch projects for the form
   const { data: projectsResponse } = useQuery({
     queryKey: ["projects", activity?.cluster_id],
-    queryFn: () => getProjects(activity?.cluster_id),
+    queryFn: () => getProjects(),
     enabled: !!activity?.cluster_id,
   });
 
