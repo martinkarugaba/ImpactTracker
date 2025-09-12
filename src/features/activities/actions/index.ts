@@ -12,11 +12,6 @@ import {
   type ActivityMetricsResponse,
 } from "../types/types";
 
-// Export all session-related actions
-export * from "./sessions";
-// Export all attendance-related actions
-export * from "./attendance";
-
 export async function getActivities(
   clusterId?: string,
   params?: {

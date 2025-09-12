@@ -2,12 +2,26 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Plus, UserPlus, Loader2, Edit } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  Users,
+  Plus,
+  UserPlus,
+  Loader2,
+  Edit,
+  Calendar,
+  CheckCircle,
+  TrendingUp,
+} from "lucide-react";
 import { Activity } from "../../types/types";
-import { useActivityParticipants } from "../../hooks/use-activities";
+import {
+  useActivityParticipants,
+  useActivitySessions,
+} from "../../hooks/use-activities";
 import { DataTable } from "@/components/ui/data-table";
 import { createParticipantsTableColumns } from "./participants-table-columns";
 import { MetricCard } from "@/components/ui/metric-card";
+import { format } from "date-fns";
 
 interface ParticipantsTabProps {
   activity: Activity;
@@ -18,18 +32,23 @@ export function ParticipantsTab({
   activity,
   onManageAttendance,
 }: ParticipantsTabProps) {
-  // Fetch activity participants
+  // Fetch activity participants and sessions
   const {
     data: participantsResponse,
     isLoading: isLoadingParticipants,
     error: participantsError,
   } = useActivityParticipants(activity.id);
 
+  const { data: sessionsResponse, isLoading: _isLoadingSessions } =
+    useActivitySessions(activity.id);
+
   const participants = participantsResponse?.success
     ? participantsResponse.data || []
     : [];
 
-  // Attendance stats
+  const sessions = sessionsResponse?.data || [];
+
+  // Basic attendance stats (for single-day activities or overall stats)
   const stats = {
     total: participants.length,
     attended: participants.filter(p => p.attendance_status === "attended")
@@ -41,12 +60,12 @@ export function ParticipantsTab({
   const attendanceRate =
     stats.total > 0 ? Math.round((stats.attended / stats.total) * 100) : 0;
 
-  // Create columns without edit functionality for now (since we only have partial participant data)
+  // Create columns without edit functionality for now
   const columns = createParticipantsTableColumns();
 
   return (
     <div className="space-y-6">
-      {/* Simple Attendance Stats */}
+      {/* Session-Based Attendance Stats */}
       <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-4">
         <MetricCard
           title="Total Participants"
@@ -55,36 +74,98 @@ export function ParticipantsTab({
           icon={<Users className="h-4 w-4" />}
         />
         <MetricCard
-          title="Attended"
-          value={stats.attended}
-          description="Participants who attended the activity"
-          icon={<Users className="h-4 w-4" />}
+          title="Sessions Planned"
+          value={sessions.length}
+          description="Total activity sessions scheduled"
+          icon={<Calendar className="h-4 w-4" />}
           footer={{
-            title: "Present",
-            description: "Confirmed attendance",
+            title: "Multi-Day Activity",
+            description: `${sessions.filter(s => s.status === "scheduled").length} upcoming`,
           }}
         />
         <MetricCard
-          title="Absent"
-          value={stats.absent}
-          description="Participants who were absent"
-          icon={<Users className="h-4 w-4" />}
+          title="Sessions Completed"
+          value={sessions.filter(s => s.status === "completed").length}
+          description="Sessions that have been conducted"
+          icon={<CheckCircle className="h-4 w-4" />}
           footer={{
-            title: "Not Present",
-            description: "Confirmed absence",
+            title: "Progress",
+            description: `${Math.round((sessions.filter(s => s.status === "completed").length / Math.max(sessions.length, 1)) * 100)}% complete`,
           }}
         />
         <MetricCard
-          title="Attendance Rate"
+          title="Overall Attendance Rate"
           value={`${attendanceRate}%`}
-          description="Percentage of participants who attended"
-          icon={<Users className="h-4 w-4" />}
+          description="Average attendance across all sessions"
+          icon={<TrendingUp className="h-4 w-4" />}
           footer={{
-            title: "Success Rate",
-            description: "Overall participation",
+            title: "Participation",
+            description: `${stats.attended}/${stats.total} participants`,
           }}
         />
       </div>
+
+      {/* Session Overview */}
+      {sessions.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Session Overview
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {sessions.map(session => (
+                <div
+                  key={session.id}
+                  className="flex items-center justify-between rounded-lg border p-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="bg-muted flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium">
+                      {session.session_number}
+                    </div>
+                    <div>
+                      <p className="font-medium">
+                        Session {session.session_number}
+                      </p>
+                      <p className="text-muted-foreground text-sm">
+                        {format(new Date(session.session_date), "PPP")}
+                        {session.start_time && ` • ${session.start_time}`}
+                        {session.end_time && ` - ${session.end_time}`}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant={
+                        session.status === "completed"
+                          ? "default"
+                          : session.status === "cancelled"
+                            ? "destructive"
+                            : "secondary"
+                      }
+                    >
+                      {session.status === "scheduled"
+                        ? "Upcoming"
+                        : session.status === "in_progress"
+                          ? "In Progress"
+                          : session.status === "completed"
+                            ? "Completed"
+                            : "Cancelled"}
+                    </Badge>
+                    {session.status === "completed" && (
+                      <span className="text-muted-foreground text-sm">
+                        Attendance tracked
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Participant Management */}
       <Card>

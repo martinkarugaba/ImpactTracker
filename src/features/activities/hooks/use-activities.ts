@@ -8,17 +8,21 @@ import {
   updateActivity,
   deleteActivity,
   getActivityMetrics,
-  // Session actions
+} from "../actions";
+// Import session actions directly
+import {
   getActivitySessions,
   getActivitySession,
   createActivitySession,
   updateActivitySession,
   generateActivitySessions,
-  // Attendance actions
+} from "../actions/sessions";
+// Import attendance actions directly
+import {
   getSessionAttendance,
   markAttendance,
   getActivityAttendanceSummary,
-} from "../actions";
+} from "../actions/attendance";
 import {
   getActivityParticipants,
   addActivityParticipants,

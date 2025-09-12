@@ -16,6 +16,7 @@ import { ActivityFormDialog } from "./forms/activity-form-dialog";
 import { ConceptNoteDialog } from "./dialogs/concept-note-dialog";
 import { ActivityReportDialog } from "./dialogs/activity-report-dialog";
 import { AttendanceListDialog } from "./dialogs/attendance-list-dialog";
+import { SessionFormDialog } from "./dialogs/session-form-dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -67,8 +68,15 @@ export function ActivityDetailsContainer({
   >(undefined);
   const [isActivityReportDialogOpen, setIsActivityReportDialogOpen] =
     useState(false);
+  // Session dialog state
+  const [isSessionDialogOpen, setIsSessionDialogOpen] = useState(false);
+  const [editingSessionId, setEditingSessionId] = useState<string>();
+
+  // Attendance dialog state
   const [isAttendanceListDialogOpen, setIsAttendanceListDialogOpen] =
     useState(false);
+
+  // Dialog states
   const [refreshKey, setRefreshKey] = useState(0);
   const [activityReportsRefreshKey, setActivityReportsRefreshKey] = useState(0);
   const deleteActivity = useDeleteActivity();
@@ -157,8 +165,20 @@ export function ActivityDetailsContainer({
     }
   };
 
-  const handleManageAttendance = () => {
+  const handleManageAttendance = (sessionId?: string) => {
+    console.log("Managing attendance for session:", sessionId);
     setIsAttendanceListDialogOpen(true);
+  };
+
+  // Session handlers
+  const handleCreateSession = () => {
+    setEditingSessionId(undefined);
+    setIsSessionDialogOpen(true);
+  };
+
+  const handleEditSession = (sessionId: string) => {
+    setEditingSessionId(sessionId);
+    setIsSessionDialogOpen(true);
   };
 
   const handleConceptNoteSubmit = async (data: NewConceptNote) => {
@@ -249,6 +269,8 @@ export function ActivityDetailsContainer({
         onEditActivityReport={handleEditActivityReport}
         onDeleteActivityReport={handleDeleteActivityReport}
         onManageAttendance={handleManageAttendance}
+        onCreateSession={handleCreateSession}
+        onEditSession={handleEditSession}
         refreshKey={refreshKey}
         activityReportsRefreshKey={activityReportsRefreshKey}
       />
@@ -331,6 +353,19 @@ export function ActivityDetailsContainer({
             : undefined
         }
         onSubmit={handleAttendanceListSubmit}
+      />
+
+      {/* Session Form Dialog */}
+      <SessionFormDialog
+        open={isSessionDialogOpen}
+        onOpenChange={open => {
+          setIsSessionDialogOpen(open);
+          if (!open) {
+            setEditingSessionId(undefined);
+          }
+        }}
+        activityId={activity.id}
+        sessionId={editingSessionId}
       />
     </div>
   );
