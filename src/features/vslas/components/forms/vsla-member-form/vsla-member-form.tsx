@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
-import { createVSLAMember } from "../../actions/vsla-members";
+import { createVSLAMember } from "../../../actions/vsla-members";
 import { toast } from "sonner";
 
 const createVSLAMemberSchema = z.object({

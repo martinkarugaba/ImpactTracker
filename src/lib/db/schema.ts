@@ -881,9 +881,14 @@ export const activityReports = pgTable("activity_reports", {
 
 export const vslas = pgTable("vslas", {
   id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name").notNull(),
+  // Basic Information
+  name: text("name").notNull(), // Group name
   code: text("code").notNull().unique(),
   description: text("description"),
+  primary_business: text("primary_business").notNull(), // Agriculture, Bakery, Basket weaving, Boda-boda, Catering and cookery, Hairdressing and cosmetology, Leather and craft making, Others
+  primary_business_other: text("primary_business_other"), // Specify if "Others" is selected
+
+  // Organization/Project References
   organization_id: uuid("organization_id")
     .references(() => organizations.id)
     .notNull(),
@@ -893,20 +898,56 @@ export const vslas = pgTable("vslas", {
   project_id: uuid("project_id")
     .references(() => projects.id)
     .notNull(),
+
+  // Location Information
   country: text("country").notNull(),
+  region: text("region"), // New field for region
   district: text("district").notNull(),
+  county: text("county"), // New field for county
   sub_county: text("sub_county").notNull(),
   parish: text("parish").notNull(),
   village: text("village").notNull(),
   address: text("address"),
+
+  // Financial Information
   total_members: integer("total_members").notNull().default(0),
   total_savings: integer("total_savings").notNull().default(0),
   total_loans: integer("total_loans").notNull().default(0),
+
+  // Meeting Information
   meeting_frequency: text("meeting_frequency").notNull(), // weekly, monthly, etc.
   meeting_day: text("meeting_day"), // monday, tuesday, etc.
   meeting_time: text("meeting_time"),
+  meeting_location: text("meeting_location"), // New field for meeting location
+
+  // Dates
+  formation_date: timestamp("formation_date").notNull(), // Formation date
+  closing_date: timestamp("closing_date"), // Closing date (optional)
+
+  // Local Leadership
+  lc1_chairperson_name: text("lc1_chairperson_name"), // LC1 Chairperson Name
+  lc1_chairperson_contact: text("lc1_chairperson_contact"), // LC1 Chairperson Contact
+
+  // Governance
+  has_constitution: text("has_constitution").notNull().default("no"), // yes/no - VSLA has a constitution
+  has_signed_constitution: text("has_signed_constitution")
+    .notNull()
+    .default("no"), // yes/no - VSLA has a signed constitution
+
+  // Banking Information
+  bank_name: text("bank_name"), // Bank name
+  bank_branch: text("bank_branch"), // Bank branch
+  bank_account_number: text("bank_account_number"), // Bank account number
+  registration_certificate_number: text("registration_certificate_number"), // Registration certificate number
+
+  // SACCO Information
+  sacco_member: text("sacco_member").notNull().default("no"), // yes/no - SACCO Member
+
+  // Additional Information
+  notes: text("notes"), // Notes
+
+  // System fields
   status: text("status").notNull().default("active"), // active, inactive, suspended
-  formed_date: timestamp("formed_date").notNull(),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
 });

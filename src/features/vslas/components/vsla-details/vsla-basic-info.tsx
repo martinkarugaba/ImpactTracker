@@ -50,7 +50,7 @@ export function VSLABasicInfo({ vsla }: VSLABasicInfoProps) {
                   Formed Date
                 </span>
                 <span className="font-medium">
-                  {new Date(vsla.formed_date).toLocaleDateString()}
+                  {new Date(vsla.formation_date).toLocaleDateString()}
                 </span>
               </div>
             </div>

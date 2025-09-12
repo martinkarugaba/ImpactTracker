@@ -22,7 +22,7 @@ import {
   TrendingUp,
   ArrowUpDown,
 } from "lucide-react";
-import { VSLAMember } from "../../actions/vsla-members";
+import { VSLAMember } from "../../../actions/vsla-members";
 import { formatCurrency } from "@/lib/utils";
 
 interface CreateVSLAMembersColumnsProps {

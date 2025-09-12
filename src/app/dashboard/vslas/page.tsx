@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { VSLAsPageWrapper } from "@/features/vslas/components/vslas-page-wrapper";
-import { VSLAsPageSkeleton } from "@/features/vslas/components/vslas-page-skeleton";
+import { VSLAsPageWrapper } from "@/features/vslas/components/pages/vslas-page-wrapper";
+import { VSLAsPageSkeleton } from "@/features/vslas/components/pages/vslas-page-skeleton";
 import { PageTitle } from "@/features/dashboard/components/page-title";
 
 export default function VSLAsPage() {

@@ -11,8 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { deleteVSLA } from "../actions/vslas";
-import { VSLA } from "../types";
+import { deleteVSLA } from "../../actions/vslas";
+import { VSLA } from "../../types";
 import { Trash2 } from "lucide-react";
 
 interface DeleteVSLADialogProps {

@@ -8,7 +8,7 @@ import { VSLAFinancialOverview } from "./vsla-financial-overview";
 import { VSLAAffiliations } from "./vsla-affiliations";
 import { VSLALocationDetails } from "./vsla-location-details";
 import { VSLAMeetingInfo } from "./vsla-meeting-info";
-import { VSLAMembersManagement } from "../vsla-members-management/vsla-members-management";
+import { VSLAMembersManagement } from "../members";
 
 interface VSLADetailsTabsProps {
   vsla: VSLA;

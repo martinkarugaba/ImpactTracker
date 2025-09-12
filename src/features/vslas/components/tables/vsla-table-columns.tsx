@@ -21,7 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { VSLA } from "../types";
+import { VSLA } from "../../types";
 import { formatCurrency } from "@/lib/utils";
 
 export const columns: ColumnDef<VSLA>[] = [
