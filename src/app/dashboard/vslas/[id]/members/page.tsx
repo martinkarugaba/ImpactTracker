@@ -2,16 +2,15 @@ import { notFound, redirect } from "next/navigation";
 import { getVSLA } from "@/features/vslas/actions/vslas";
 import { auth } from "@/features/auth/auth";
 import { PageTitle } from "@/features/dashboard/components/page-title";
-import { VSLADetailsHeader } from "@/features/vslas/components/vsla-details/vsla-details-header";
-import { VSLADetailsTabs } from "@/features/vslas/components/vsla-details/vsla-details-tabs";
+import { VSLAMembersManagement } from "@/features/vslas/components/members/vsla-members-management/vsla-members-management";
 
-interface VSLADetailsPageProps {
+interface VSLAMembersPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function VSLADetailsPage({
+export default async function VSLAMembersPage({
   params,
-}: VSLADetailsPageProps) {
+}: VSLAMembersPageProps) {
   // Check authentication
   const session = await auth();
   if (!session?.user) {
@@ -31,14 +30,10 @@ export default async function VSLADetailsPage({
 
   return (
     <>
-      <PageTitle title={vsla.name} />
+      <PageTitle title={`Manage Members - ${vsla.name}`} />
       <div className="container space-y-6 py-6 lg:px-6">
         <div className="mx-auto max-w-7xl">
-          {/* Header Section */}
-          <VSLADetailsHeader vsla={vsla} />
-
-          {/* Tabbed Content */}
-          <VSLADetailsTabs vsla={vsla} />
+          <VSLAMembersManagement vsla={vsla} />
         </div>
       </div>
     </>

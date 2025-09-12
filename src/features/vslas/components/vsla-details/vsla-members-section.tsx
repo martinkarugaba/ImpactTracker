@@ -31,12 +31,6 @@ export async function VSLAMembersSection({ vsla }: VSLAMembersSectionProps) {
               vslaId={vsla.id}
               clusterId={vsla.cluster_id || ""}
             />
-            <AddVSLAMemberDialog vslaId={vsla.id}>
-              <Button size="sm">
-                <Plus className="mr-2 h-4 w-4" />
-                New Member
-              </Button>
-            </AddVSLAMemberDialog>
           </div>
         </div>
       </CardHeader>

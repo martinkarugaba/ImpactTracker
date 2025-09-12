@@ -4,11 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import { Plus, Filter, Download, Upload, ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { Plus, Filter, Download, Upload } from "lucide-react";
 import { VSLA } from "../../../types";
 import { VSLAMember, getVSLAMembers } from "../../../actions/vsla-members";
-import { AddVSLAMemberDialog, AddParticipantToVSLADialog } from "../../dialogs";
+import {
+  AddVSLAMemberDialog,
+  AddParticipantToVSLADialog,
+  EditVSLAMemberDialog,
+} from "../../dialogs";
 import { createVSLAMembersColumns } from "./vsla-members-columns";
 import { VSLAMembersStats } from "./vsla-members-stats";
 import { toast } from "sonner";
@@ -20,6 +23,7 @@ interface VSLAMembersManagementProps {
 export function VSLAMembersManagement({ vsla }: VSLAMembersManagementProps) {
   const [members, setMembers] = useState<VSLAMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [editingMember, setEditingMember] = useState<VSLAMember | null>(null);
 
   const loadMembers = useCallback(async () => {
     setIsLoading(true);
@@ -44,6 +48,7 @@ export function VSLAMembersManagement({ vsla }: VSLAMembersManagementProps) {
 
   const columns = createVSLAMembersColumns({
     onMemberUpdated: loadMembers,
+    onEditMember: setEditingMember,
   });
 
   const handleSuccess = () => {
@@ -56,12 +61,6 @@ export function VSLAMembersManagement({ vsla }: VSLAMembersManagementProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href={`/dashboard/vslas/${vsla.id}`}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to VSLA Details
-            </Link>
-          </Button>
           <div className="space-y-1">
             <h1 className="text-2xl font-bold">Member Management</h1>
             <p className="text-muted-foreground">
@@ -134,6 +133,15 @@ export function VSLAMembersManagement({ vsla }: VSLAMembersManagementProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Edit Member Dialog */}
+      {editingMember && (
+        <EditVSLAMemberDialog
+          member={editingMember}
+          open={!!editingMember}
+          onOpenChange={(open: boolean) => !open && setEditingMember(null)}
+        />
+      )}
     </div>
   );
 }
