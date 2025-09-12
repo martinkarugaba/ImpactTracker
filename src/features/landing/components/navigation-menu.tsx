@@ -15,7 +15,7 @@ export function MainNavigationMenu() {
     <NavigationMenu className="hidden md:flex">
       <NavigationMenuList>
         <NavigationMenuItem>
-          <Link href="#features" legacyBehavior passHref>
+          <Link href="#features" passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               Features
             </NavigationMenuLink>
