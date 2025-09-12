@@ -14,7 +14,7 @@ import { useSearchParams } from "next/navigation";
 import { Cluster } from "@/features/clusters/components/clusters-table";
 import { Organization } from "@/features/organizations/types";
 import { Project } from "@/features/projects/types";
-import { VSLAForm } from "./vsla-form/vsla-form";
+import { VSLAForm } from "../forms";
 
 type CreateVSLADialogProps = {
   organizations: Organization[];

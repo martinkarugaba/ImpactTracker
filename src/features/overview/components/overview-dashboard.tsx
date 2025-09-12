@@ -79,10 +79,10 @@ export function OverviewDashboard() {
               asChild
               variant="outline"
               size="sm"
-              className="border-primary/20 from-primary/5 to-card hover:from-primary/10 hover:to-card h-20 flex-col gap-1.5 bg-gradient-to-t"
+              className="to-card hover:to-card h-20 flex-col gap-1.5 border-blue-200 bg-gradient-to-t from-blue-50 hover:from-blue-100 dark:border-blue-800 dark:from-blue-950 dark:hover:from-blue-900"
             >
               <Link href="/dashboard/participants">
-                <IconUsersGroup className="text-primary h-5 w-5" />
+                <IconUsersGroup className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 <span className="text-xs font-medium">Add Participant</span>
               </Link>
             </Button>
@@ -92,10 +92,10 @@ export function OverviewDashboard() {
               asChild
               variant="outline"
               size="sm"
-              className="border-chart-2/20 from-chart-2/5 to-card hover:from-chart-2/10 hover:to-card h-20 flex-col gap-1.5 bg-gradient-to-t"
+              className="to-card hover:to-card h-20 flex-col gap-1.5 border-green-200 bg-gradient-to-t from-green-50 hover:from-green-100 dark:border-green-800 dark:from-green-950 dark:hover:from-green-900"
             >
               <Link href="/dashboard/activities">
-                <IconActivity className="h-5 w-5 text-[hsl(var(--chart-2))]" />
+                <IconActivity className="h-5 w-5 text-green-600 dark:text-green-400" />
                 <span className="text-xs font-medium">Schedule Activity</span>
               </Link>
             </Button>
@@ -105,10 +105,10 @@ export function OverviewDashboard() {
               asChild
               variant="outline"
               size="sm"
-              className="border-chart-3/20 from-chart-3/5 to-card hover:from-chart-3/10 hover:to-card h-20 flex-col gap-1.5 bg-gradient-to-t"
+              className="to-card hover:to-card h-20 flex-col gap-1.5 border-amber-200 bg-gradient-to-t from-amber-50 hover:from-amber-100 dark:border-amber-800 dark:from-amber-950 dark:hover:from-amber-900"
             >
               <Link href="/dashboard/vslas">
-                <IconCashBanknote className="h-5 w-5 text-[hsl(var(--chart-3))]" />
+                <IconCashBanknote className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                 <span className="text-xs font-medium">Create VSLA</span>
               </Link>
             </Button>
@@ -118,10 +118,10 @@ export function OverviewDashboard() {
               asChild
               variant="outline"
               size="sm"
-              className="border-chart-4/20 from-chart-4/5 to-card hover:from-chart-4/10 hover:to-card h-20 flex-col gap-1.5 bg-gradient-to-t"
+              className="to-card hover:to-card h-20 flex-col gap-1.5 border-purple-200 bg-gradient-to-t from-purple-50 hover:from-purple-100 dark:border-purple-800 dark:from-purple-950 dark:hover:from-purple-900"
             >
               <Link href="/dashboard/concept-notes">
-                <IconNote className="h-5 w-5 text-[hsl(var(--chart-4))]" />
+                <IconNote className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                 <span className="text-xs font-medium">Concept Note</span>
               </Link>
             </Button>
@@ -131,10 +131,10 @@ export function OverviewDashboard() {
               asChild
               variant="outline"
               size="sm"
-              className="border-chart-1/20 from-chart-1/5 to-card hover:from-chart-1/10 hover:to-card h-20 flex-col gap-1.5 bg-gradient-to-t"
+              className="to-card hover:to-card h-20 flex-col gap-1.5 border-pink-200 bg-gradient-to-t from-pink-50 hover:from-pink-100 dark:border-pink-800 dark:from-pink-950 dark:hover:from-pink-900"
             >
               <Link href="/dashboard/success-stories">
-                <IconCamera className="h-5 w-5 text-[hsl(var(--chart-1))]" />
+                <IconCamera className="h-5 w-5 text-pink-600 dark:text-pink-400" />
                 <span className="text-xs font-medium">Success Story</span>
               </Link>
             </Button>
@@ -144,11 +144,24 @@ export function OverviewDashboard() {
               asChild
               variant="outline"
               size="sm"
-              className="border-chart-5/20 from-chart-5/5 to-card hover:from-chart-5/10 hover:to-card h-20 flex-col gap-1.5 bg-gradient-to-t"
+              className="to-card hover:to-card h-20 flex-col gap-1.5 border-indigo-200 bg-gradient-to-t from-indigo-50 hover:from-indigo-100 dark:border-indigo-800 dark:from-indigo-950 dark:hover:from-indigo-900"
             >
               <Link href="/dashboard/reports">
-                <IconReport className="h-5 w-5 text-[hsl(var(--chart-5))]" />
+                <IconReport className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                 <span className="text-xs font-medium">Generate Report</span>
+              </Link>
+            </Button>
+
+            {/* Schedule Training */}
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="to-card hover:to-card h-20 flex-col gap-1.5 border-teal-200 bg-gradient-to-t from-teal-50 hover:from-teal-100 dark:border-teal-800 dark:from-teal-950 dark:hover:from-teal-900"
+            >
+              <Link href="/dashboard/trainings">
+                <IconTarget className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                <span className="text-xs font-medium">Schedule Training</span>
               </Link>
             </Button>
 
@@ -157,10 +170,10 @@ export function OverviewDashboard() {
               asChild
               variant="outline"
               size="sm"
-              className="border-secondary/40 from-secondary/10 to-card hover:from-secondary/20 hover:to-card h-20 flex-col gap-1.5 bg-gradient-to-t"
+              className="to-card hover:to-card h-20 flex-col gap-1.5 border-rose-200 bg-gradient-to-t from-rose-50 hover:from-rose-100 dark:border-rose-800 dark:from-rose-950 dark:hover:from-rose-900"
             >
               <Link href="/dashboard/activities">
-                <IconCalendarEvent className="text-secondary-foreground h-5 w-5" />
+                <IconCalendarEvent className="h-5 w-5 text-rose-600 dark:text-rose-400" />
                 <span className="text-xs font-medium">View Calendar</span>
               </Link>
             </Button>
@@ -170,10 +183,10 @@ export function OverviewDashboard() {
               asChild
               variant="outline"
               size="sm"
-              className="border-muted-foreground/20 from-muted/20 to-card hover:from-muted/30 hover:to-card h-20 flex-col gap-1.5 bg-gradient-to-t"
+              className="to-card hover:to-card h-20 flex-col gap-1.5 border-slate-200 bg-gradient-to-t from-slate-50 hover:from-slate-100 dark:border-slate-800 dark:from-slate-950 dark:hover:from-slate-900"
             >
               <Link href="/dashboard/concept-notes">
-                <IconFileText className="text-muted-foreground h-5 w-5" />
+                <IconFileText className="h-5 w-5 text-slate-600 dark:text-slate-400" />
                 <span className="text-xs font-medium">All Documents</span>
               </Link>
             </Button>
@@ -183,10 +196,10 @@ export function OverviewDashboard() {
 
       {/* Tabbed Interface */}
       <Tabs defaultValue="metrics" className="space-y-8">
-        <TabsList className="bg-muted/50 grid h-11 w-full grid-cols-3">
+        <TabsList className="bg-muted/30 border-border/50 grid h-10 w-full grid-cols-3 border">
           <TabsTrigger
             value="metrics"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex items-center gap-2"
+            className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border-border flex items-center gap-2 transition-all duration-200 data-[state=active]:shadow-sm"
           >
             <IconTarget className="h-4 w-4" />
             <span className="hidden sm:inline">Metrics</span>
@@ -194,7 +207,7 @@ export function OverviewDashboard() {
           </TabsTrigger>
           <TabsTrigger
             value="trends"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex items-center gap-2"
+            className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border-border flex items-center gap-2 transition-all duration-200 data-[state=active]:shadow-sm"
           >
             <IconChartAreaLine className="h-4 w-4" />
             <span className="hidden sm:inline">Trends</span>
@@ -202,7 +215,7 @@ export function OverviewDashboard() {
           </TabsTrigger>
           <TabsTrigger
             value="insights"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex items-center gap-2"
+            className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border-border flex items-center gap-2 transition-all duration-200 data-[state=active]:shadow-sm"
           >
             <IconTrendingUp className="h-4 w-4" />
             Insights

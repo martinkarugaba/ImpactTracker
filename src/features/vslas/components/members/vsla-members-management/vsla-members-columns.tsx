@@ -22,11 +22,12 @@ import {
   TrendingUp,
   ArrowUpDown,
 } from "lucide-react";
-import { VSLAMember } from "../../actions/vsla-members";
+import { VSLAMember } from "../../../actions/vsla-members";
 import { formatCurrency } from "@/lib/utils";
 
 interface CreateVSLAMembersColumnsProps {
   onMemberUpdated?: () => void;
+  onEditMember?: (member: VSLAMember) => void;
 }
 
 // Simple date formatting function
@@ -36,6 +37,7 @@ const formatDate = (date: Date | string) => {
 
 export function createVSLAMembersColumns({
   onMemberUpdated: _onMemberUpdated,
+  onEditMember,
 }: CreateVSLAMembersColumnsProps): ColumnDef<VSLAMember>[] {
   return [
     {
@@ -225,7 +227,7 @@ export function createVSLAMembersColumns({
                 Copy member ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onEditMember?.(member)}>
                 <Edit className="mr-2 h-4 w-4" />
                 Edit Member
               </DropdownMenuItem>

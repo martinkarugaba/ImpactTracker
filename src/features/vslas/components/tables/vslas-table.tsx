@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { type Row } from "@tanstack/react-table";
-import { ReusableDataTable } from "@/components/ui/reusable-data-table";
 import { Button } from "@/components/ui/button";
 import { Plus, Upload, Download } from "lucide-react";
 import { columns } from "./vsla-table-columns";
-import { VSLA } from "../types";
+import { VSLAsDataTable } from "./vslas-data-table";
+import { VSLA } from "../../types";
 
 interface VSLAsTableProps {
   data: VSLA[];
@@ -73,8 +73,8 @@ export function VSLAsTable({
     return column;
   });
 
-  // Custom actions for the table toolbar
-  const customActions = showActions ? (
+  // Action buttons for the table header
+  const actionButtons = showActions ? (
     <div className="flex items-center gap-2">
       {selectedRows.length > 0 && (
         <Button
@@ -111,7 +111,7 @@ export function VSLAsTable({
 
   return (
     <div className="w-full">
-      <ReusableDataTable
+      <VSLAsDataTable
         columns={enhancedColumns}
         data={data}
         filterColumn="name"
@@ -121,9 +121,9 @@ export function VSLAsTable({
         showRowSelection={true}
         pageSize={pageSize}
         onRowSelectionChange={setSelectedRows}
-        onRowClick={onRowClick}
-        customActions={customActions}
+        actionButtons={actionButtons}
         isLoading={isLoading}
+        onRowClick={onRowClick}
       />
     </div>
   );

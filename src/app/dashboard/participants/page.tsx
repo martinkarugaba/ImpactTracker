@@ -154,7 +154,7 @@ async function ParticipantsPageContent() {
 
     if (!clusterId) {
       return (
-        <div className="flex h-96 items-center justify-center px-6">
+        <div className="flex h-96 items-center justify-center">
           <div className="text-center">
             <h3 className="text-lg font-semibold">No cluster assigned</h3>
             <p className="text-muted-foreground mt-2">
@@ -204,7 +204,7 @@ async function ParticipantsPageContent() {
     console.error("Error loading participants page data:", error);
 
     return (
-      <div className="flex h-96 items-center justify-center px-6">
+      <div className="flex h-96 items-center justify-center">
         <div className="text-center">
           <h3 className="text-lg font-semibold">Error loading participants</h3>
           <p className="text-muted-foreground mt-2">
@@ -226,10 +226,14 @@ export default function ParticipantsPage() {
   return (
     <>
       <PageTitle title="Participants" />
-      <div className="container mx-auto px-6 py-6">
-        <Suspense fallback={<ParticipantsPageSkeleton />}>
-          <ParticipantsPageContent />
-        </Suspense>
+      <div className="flex flex-1 flex-col px-2 sm:px-4 md:px-6">
+        <div className="@container/main flex flex-1 flex-col gap-2">
+          <div className="flex flex-col gap-3 py-3 sm:gap-4 sm:py-4 md:gap-6 md:py-6">
+            <Suspense fallback={<ParticipantsPageSkeleton />}>
+              <ParticipantsPageContent />
+            </Suspense>
+          </div>
+        </div>
       </div>
     </>
   );

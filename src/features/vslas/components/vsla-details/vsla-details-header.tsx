@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { useState, useEffect } from "react";
 import { VSLA } from "../../types";
-import { EditVSLADialog } from "../edit-vsla-dialog";
+import { EditVSLADialog } from "../dialogs";
 import { Organization } from "@/features/organizations/types";
 import { Project } from "@/features/projects/types";
 import { Cluster } from "@/features/clusters/components/clusters-table";

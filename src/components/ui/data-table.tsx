@@ -592,18 +592,7 @@ export function DataTable<TData, TValue>({
               ))}
             </TableHeader>
             <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    <div className="flex items-center justify-center">
-                      <Loader2 className="h-6 w-6 animate-spin" />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : table.getRowModel().rows?.length ? (
+              {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map(row => (
                   <TableRow
                     key={row.id}
@@ -619,7 +608,7 @@ export function DataTable<TData, TValue>({
                     ))}
                   </TableRow>
                 ))
-              ) : (
+              ) : !isLoading ? (
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
@@ -627,6 +616,10 @@ export function DataTable<TData, TValue>({
                   >
                     No results.
                   </TableCell>
+                </TableRow>
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24" />
                 </TableRow>
               )}
             </TableBody>

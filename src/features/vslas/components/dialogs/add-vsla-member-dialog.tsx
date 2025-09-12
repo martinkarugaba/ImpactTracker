@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
-import { VSLAMemberForm } from "../vsla-member-form/vsla-member-form";
+import { VSLAMemberForm } from "../forms";
 
 interface AddVSLAMemberDialogProps {
   vslaId: string;

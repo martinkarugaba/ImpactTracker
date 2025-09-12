@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { getVSLA } from "@/features/vslas/actions/vslas";
 import { auth } from "@/features/auth/auth";
 import { PageTitle } from "@/features/dashboard/components/page-title";
-import { VSLAMembersManagement } from "@/features/vslas/components/vsla-members-management/vsla-members-management";
+import { VSLAMembersManagement } from "@/features/vslas/components/members/vsla-members-management/vsla-members-management";
 
 interface VSLAMembersPageProps {
   params: Promise<{ id: string }>;

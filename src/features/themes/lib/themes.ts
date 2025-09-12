@@ -16,6 +16,14 @@ export const THEMES = [
     value: "amber",
   },
   {
+    name: "Purple",
+    value: "purple",
+  },
+  {
+    name: "Mono",
+    value: "mono",
+  },
+  {
     name: "Scaled",
     value: "scaled",
   },

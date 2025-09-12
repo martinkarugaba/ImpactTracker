@@ -211,6 +211,13 @@
       "when": 1757269485502,
       "tag": "0029_violet_smasher",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1757665162859,
+      "tag": "0030_dry_pandemic",
+      "breakpoints": true
     }
   ]
 }

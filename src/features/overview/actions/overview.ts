@@ -8,6 +8,12 @@ import {
   vslaMembers,
   conceptNotes,
   organizationMembers,
+  trainings,
+  trainingParticipants,
+  activityReports,
+  projects,
+  clusters,
+  clusterUsers,
 } from "@/lib/db/schema";
 import { count, sum, sql, eq, and, gte, lte, desc } from "drizzle-orm";
 import { auth } from "@/features/auth/auth";
@@ -84,6 +90,63 @@ export interface KPIOverviewMetrics {
       submission_date: Date | null;
     }>;
   };
+  trainings: {
+    total: number;
+    thisMonth: number;
+    lastMonth: number;
+    growth: number;
+    totalParticipants: number;
+    completed: number;
+    ongoing: number;
+    planned: number;
+    recent: Array<{
+      id: string;
+      title: string;
+      status: string;
+      startDate: Date;
+      totalParticipants: number;
+    }>;
+  };
+  activityReports: {
+    total: number;
+    thisMonth: number;
+    lastMonth: number;
+    growth: number;
+    recent: Array<{
+      id: string;
+      title: string;
+      execution_date: Date;
+      cluster_name: string;
+      team_leader: string;
+    }>;
+  };
+  projects: {
+    total: number;
+    active: number;
+    completed: number;
+    thisMonth: number;
+    lastMonth: number;
+    growth: number;
+    recent: Array<{
+      id: string;
+      title: string;
+      status: string;
+      startDate: Date;
+      budget: number | null;
+    }>;
+  };
+  clusters: {
+    total: number;
+    active: number;
+    totalMembers: number;
+    thisMonth: number;
+    lastMonth: number;
+    growth: number;
+    byDistrict: Array<{
+      district: string;
+      count: number;
+    }>;
+  };
   reports: {
     total: number;
     thisMonth: number;
@@ -116,21 +179,39 @@ export async function getKPIOverviewMetrics(): Promise<{
     const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
 
-    // Get user's organization context (if applicable)
+    // Get user's organization and cluster context
     let userOrgId: string | undefined;
+    let userClusterIds: string[] = [];
 
-    // For non-super_admin users, find their organization
+    // For non-super_admin users, find their organization and clusters
     if (session.user.role !== "super_admin") {
+      // Get user's organization
       const userMembership = await db.query.organizationMembers.findFirst({
         where: eq(organizationMembers.user_id, session.user.id),
       });
       userOrgId = userMembership?.organization_id;
+
+      // Get user's clusters
+      const userClusters = await db.query.clusterUsers.findMany({
+        where: eq(clusterUsers.user_id, session.user.id),
+      });
+      userClusterIds = userClusters.map(uc => uc.cluster_id);
     }
 
-    // Participants metrics
-    const participantsQuery = userOrgId
-      ? eq(participants.organization_id, userOrgId)
-      : undefined;
+    // Participants metrics - filter by both organization and clusters
+    const participantsQuery =
+      userOrgId || userClusterIds.length > 0
+        ? userOrgId
+          ? and(
+              eq(participants.organization_id, userOrgId),
+              userClusterIds.length > 0
+                ? sql`${participants.cluster_id} = ANY(${userClusterIds})`
+                : undefined
+            )
+          : userClusterIds.length > 0
+            ? sql`${participants.cluster_id} = ANY(${userClusterIds})`
+            : undefined
+        : undefined;
 
     const [participantStats] = await db
       .select({
@@ -221,9 +302,19 @@ export async function getKPIOverviewMetrics(): Promise<{
       .limit(5);
 
     // Activities metrics
-    const activitiesQuery = userOrgId
-      ? eq(activities.organization_id, userOrgId)
-      : undefined;
+    const activitiesQuery =
+      userOrgId || userClusterIds.length > 0
+        ? userOrgId
+          ? and(
+              eq(activities.organization_id, userOrgId),
+              userClusterIds.length > 0
+                ? sql`${activities.cluster_id} = ANY(${userClusterIds})`
+                : undefined
+            )
+          : userClusterIds.length > 0
+            ? sql`${activities.cluster_id} = ANY(${userClusterIds})`
+            : undefined
+        : undefined;
 
     const [activityStats] = await db
       .select({
@@ -298,9 +389,19 @@ export async function getKPIOverviewMetrics(): Promise<{
       .limit(5);
 
     // VSLAs metrics
-    const vslasQuery = userOrgId
-      ? eq(vslas.organization_id, userOrgId)
-      : undefined;
+    const vslasQuery =
+      userOrgId || userClusterIds.length > 0
+        ? userOrgId
+          ? and(
+              eq(vslas.organization_id, userOrgId),
+              userClusterIds.length > 0
+                ? sql`${vslas.cluster_id} = ANY(${userClusterIds})`
+                : undefined
+            )
+          : userClusterIds.length > 0
+            ? sql`${vslas.cluster_id} = ANY(${userClusterIds})`
+            : undefined
+        : undefined;
 
     const [vslaStats] = await db
       .select({
@@ -369,31 +470,32 @@ export async function getKPIOverviewMetrics(): Promise<{
       .orderBy(desc(vslas.total_savings))
       .limit(5);
 
-    // Concept Notes metrics
-    const conceptNotesQuery = userOrgId
-      ? sql`EXISTS (SELECT 1 FROM ${activities} WHERE ${activities.id} = ${conceptNotes.activity_id} AND ${activities.organization_id} = ${userOrgId})`
-      : undefined;
+    // Concept notes metrics - filter through activities relationship
+    const conceptNotesQuery = undefined; // Will filter through activities relationship
 
     const [conceptNoteStats] = await db
       .select({
         total: count(),
       })
       .from(conceptNotes)
-      .where(conceptNotesQuery);
+      .innerJoin(activities, eq(conceptNotes.activity_id, activities.id))
+      .where(activitiesQuery);
 
     const [conceptNotesThisMonth] = await db
       .select({ count: count() })
       .from(conceptNotes)
+      .innerJoin(activities, eq(conceptNotes.activity_id, activities.id))
       .where(
-        and(conceptNotesQuery, gte(conceptNotes.created_at, thisMonthStart))
+        and(activitiesQuery, gte(conceptNotes.created_at, thisMonthStart))
       );
 
     const [conceptNotesLastMonth] = await db
       .select({ count: count() })
       .from(conceptNotes)
+      .innerJoin(activities, eq(conceptNotes.activity_id, activities.id))
       .where(
         and(
-          conceptNotesQuery,
+          activitiesQuery,
           gte(conceptNotes.created_at, lastMonthStart),
           lte(conceptNotes.created_at, lastMonthEnd)
         )
@@ -410,6 +512,209 @@ export async function getKPIOverviewMetrics(): Promise<{
       .from(conceptNotes)
       .where(conceptNotesQuery)
       .orderBy(desc(conceptNotes.created_at))
+      .limit(5);
+
+    // Trainings metrics
+    const trainingsQuery =
+      userOrgId || userClusterIds.length > 0
+        ? userOrgId
+          ? and(
+              eq(trainings.organization_id, userOrgId),
+              userClusterIds.length > 0
+                ? sql`${trainings.cluster_id} = ANY(${userClusterIds})`
+                : undefined
+            )
+          : userClusterIds.length > 0
+            ? sql`${trainings.cluster_id} = ANY(${userClusterIds})`
+            : undefined
+        : undefined;
+
+    const [trainingStats] = await db
+      .select({
+        total: count(),
+        completed: sum(
+          sql`CASE WHEN ${trainings.status} = 'completed' THEN 1 ELSE 0 END`
+        ).mapWith(Number),
+        ongoing: sum(
+          sql`CASE WHEN ${trainings.status} = 'ongoing' THEN 1 ELSE 0 END`
+        ).mapWith(Number),
+        planned: sum(
+          sql`CASE WHEN ${trainings.status} = 'planned' THEN 1 ELSE 0 END`
+        ).mapWith(Number),
+      })
+      .from(trainings)
+      .where(trainingsQuery);
+
+    // Training participants count
+    const [trainingParticipantCount] = await db
+      .select({
+        totalParticipants: count(),
+      })
+      .from(trainingParticipants)
+      .leftJoin(trainings, eq(trainingParticipants.training_id, trainings.id))
+      .where(trainingsQuery);
+
+    const [trainingsThisMonth] = await db
+      .select({ count: count() })
+      .from(trainings)
+      .where(and(trainingsQuery, gte(trainings.created_at, thisMonthStart)));
+
+    const [trainingsLastMonth] = await db
+      .select({ count: count() })
+      .from(trainings)
+      .where(
+        and(
+          trainingsQuery,
+          gte(trainings.created_at, lastMonthStart),
+          lte(trainings.created_at, lastMonthEnd)
+        )
+      );
+
+    // Recent trainings
+    const recentTrainings = await db
+      .select({
+        id: trainings.id,
+        title: trainings.name,
+        status: trainings.status,
+        startDate: trainings.trainingDate,
+        totalParticipants: trainings.numberOfParticipants,
+      })
+      .from(trainings)
+      .where(trainingsQuery)
+      .orderBy(desc(trainings.created_at))
+      .limit(5);
+
+    // Activity reports metrics - filter through activities relationship
+    const activityReportsQuery = undefined; // Will filter through activities relationship
+    const [activityReportStats] = await db
+      .select({
+        total: count(),
+      })
+      .from(activityReports)
+      .innerJoin(activities, eq(activityReports.activity_id, activities.id))
+      .where(activitiesQuery);
+
+    const [activityReportsThisMonth] = await db
+      .select({ count: count() })
+      .from(activityReports)
+      .innerJoin(activities, eq(activityReports.activity_id, activities.id))
+      .where(
+        and(activitiesQuery, gte(activityReports.created_at, thisMonthStart))
+      );
+
+    const [activityReportsLastMonth] = await db
+      .select({ count: count() })
+      .from(activityReports)
+      .innerJoin(activities, eq(activityReports.activity_id, activities.id))
+      .where(
+        and(
+          activitiesQuery,
+          gte(activityReports.created_at, lastMonthStart),
+          lte(activityReports.created_at, lastMonthEnd)
+        )
+      );
+
+    // Recent activity reports
+    const recentActivityReports = await db
+      .select({
+        id: activityReports.id,
+        title: activityReports.title,
+        execution_date: activityReports.execution_date,
+        cluster_name: activityReports.cluster_name,
+        team_leader: activityReports.team_leader,
+      })
+      .from(activityReports)
+      .where(activityReportsQuery)
+      .orderBy(desc(activityReports.created_at))
+      .limit(5);
+
+    // Projects metrics - projects don't have direct cluster/organization fields
+    const projectsQuery = undefined; // Projects are linked through participants
+
+    const [projectStats] = await db
+      .select({
+        total: count(),
+        active: sum(
+          sql`CASE WHEN ${projects.status} = 'active' THEN 1 ELSE 0 END`
+        ).mapWith(Number),
+        completed: sum(
+          sql`CASE WHEN ${projects.status} = 'completed' THEN 1 ELSE 0 END`
+        ).mapWith(Number),
+      })
+      .from(projects)
+      .where(projectsQuery);
+
+    const [projectsThisMonth] = await db
+      .select({ count: count() })
+      .from(projects)
+      .where(and(projectsQuery, gte(projects.createdAt, thisMonthStart)));
+
+    const [projectsLastMonth] = await db
+      .select({ count: count() })
+      .from(projects)
+      .where(
+        and(
+          projectsQuery,
+          gte(projects.createdAt, lastMonthStart),
+          lte(projects.createdAt, lastMonthEnd)
+        )
+      );
+
+    // Recent projects
+    const recentProjects = await db
+      .select({
+        id: projects.id,
+        title: projects.name,
+        status: projects.status,
+        startDate: projects.startDate,
+        budget: sql<number>`NULL`,
+      })
+      .from(projects)
+      .where(projectsQuery)
+      .orderBy(desc(projects.createdAt))
+      .limit(5);
+
+    // Clusters metrics - show only clusters the user belongs to
+    const clustersQuery =
+      userClusterIds.length > 0
+        ? sql`${clusters.id} = ANY(${userClusterIds})`
+        : undefined;
+
+    const [clusterStats] = await db
+      .select({
+        total: count(),
+        active: count(), // All clusters are considered active since there's no status field
+        totalMembers: sql<number>`0`, // No member count field in clusters table
+      })
+      .from(clusters)
+      .where(clustersQuery);
+
+    const [clustersThisMonth] = await db
+      .select({ count: count() })
+      .from(clusters)
+      .where(and(clustersQuery, gte(clusters.createdAt, thisMonthStart)));
+
+    const [clustersLastMonth] = await db
+      .select({ count: count() })
+      .from(clusters)
+      .where(
+        and(
+          clustersQuery,
+          gte(clusters.createdAt, lastMonthStart),
+          lte(clusters.createdAt, lastMonthEnd)
+        )
+      );
+
+    // Clusters by district - using first district from districts array
+    const clustersByDistrict = await db
+      .select({
+        district: sql<string>`${clusters.districts}[1]`,
+        count: count(),
+      })
+      .from(clusters)
+      .where(clustersQuery)
+      .groupBy(sql`${clusters.districts}[1]`)
+      .orderBy(desc(count()))
       .limit(5);
 
     // Calculate growth percentages
@@ -514,6 +819,75 @@ export async function getKPIOverviewMetrics(): Promise<{
           submission_date: c.submission_date,
         })),
       },
+      trainings: {
+        total: trainingStats?.total || 0,
+        thisMonth: trainingsThisMonth?.count || 0,
+        lastMonth: trainingsLastMonth?.count || 0,
+        growth: calculateGrowth(
+          trainingsThisMonth?.count || 0,
+          trainingsLastMonth?.count || 0
+        ),
+        totalParticipants: trainingParticipantCount?.totalParticipants || 0,
+        completed: trainingStats?.completed || 0,
+        ongoing: trainingStats?.ongoing || 0,
+        planned: trainingStats?.planned || 0,
+        recent: recentTrainings.map(t => ({
+          id: t.id,
+          title: t.title,
+          status: t.status,
+          startDate: t.startDate,
+          totalParticipants: t.totalParticipants,
+        })),
+      },
+      activityReports: {
+        total: activityReportStats?.total || 0,
+        thisMonth: activityReportsThisMonth?.count || 0,
+        lastMonth: activityReportsLastMonth?.count || 0,
+        growth: calculateGrowth(
+          activityReportsThisMonth?.count || 0,
+          activityReportsLastMonth?.count || 0
+        ),
+        recent: recentActivityReports.map(r => ({
+          id: r.id,
+          title: r.title,
+          execution_date: r.execution_date,
+          cluster_name: r.cluster_name,
+          team_leader: r.team_leader,
+        })),
+      },
+      projects: {
+        total: projectStats?.total || 0,
+        active: projectStats?.active || 0,
+        completed: projectStats?.completed || 0,
+        thisMonth: projectsThisMonth?.count || 0,
+        lastMonth: projectsLastMonth?.count || 0,
+        growth: calculateGrowth(
+          projectsThisMonth?.count || 0,
+          projectsLastMonth?.count || 0
+        ),
+        recent: recentProjects.map(p => ({
+          id: p.id,
+          title: p.title,
+          status: p.status,
+          startDate: p.startDate || new Date(), // Provide default date if null
+          budget: p.budget,
+        })),
+      },
+      clusters: {
+        total: clusterStats?.total || 0,
+        active: clusterStats?.active || 0,
+        totalMembers: clusterStats?.totalMembers || 0,
+        thisMonth: clustersThisMonth?.count || 0,
+        lastMonth: clustersLastMonth?.count || 0,
+        growth: calculateGrowth(
+          clustersThisMonth?.count || 0,
+          clustersLastMonth?.count || 0
+        ),
+        byDistrict: clustersByDistrict.map(c => ({
+          district: c.district,
+          count: c.count,
+        })),
+      },
       reports: {
         total: 0, // TODO: Implement when reports table is available
         thisMonth: 0,
@@ -543,6 +917,10 @@ export async function getKPITrendData(): Promise<{
     activities: number;
     vslas: number;
     conceptNotes: number;
+    trainings: number;
+    activityReports: number;
+    projects: number;
+    clusters: number;
   }>;
   error?: string;
 }> {
@@ -556,15 +934,22 @@ export async function getKPITrendData(): Promise<{
     // Get data for the last 6 months
     const months = [];
 
-    // Get user's organization context (if applicable)
+    // Get user's organization and cluster context
     let userOrgId: string | undefined;
 
-    // For non-super_admin users, find their organization
+    // For non-super_admin users, find their organization and clusters
     if (session.user.role !== "super_admin") {
+      // Get user's organization
       const userMembership = await db.query.organizationMembers.findFirst({
         where: eq(organizationMembers.user_id, session.user.id),
       });
       userOrgId = userMembership?.organization_id;
+
+      // Get user's clusters
+      const _userClusters = await db.query.clusterUsers.findMany({
+        where: eq(clusterUsers.user_id, session.user.id),
+      });
+      // Note: Trend data currently only filters by organization, not cluster
     }
 
     for (let i = 5; i >= 0; i--) {
@@ -585,6 +970,14 @@ export async function getKPITrendData(): Promise<{
       const conceptNotesQuery = userOrgId
         ? sql`EXISTS (SELECT 1 FROM ${activities} WHERE ${activities.id} = ${conceptNotes.activity_id} AND ${activities.organization_id} = ${userOrgId})`
         : undefined;
+      const trainingsQuery = userOrgId
+        ? eq(trainings.organization_id, userOrgId)
+        : undefined;
+      const activityReportsQuery = userOrgId
+        ? sql`EXISTS (SELECT 1 FROM ${activities} WHERE ${activities.id} = ${activityReports.activity_id} AND ${activities.organization_id} = ${userOrgId})`
+        : undefined;
+      const projectsQuery = undefined; // Projects don't have organization filtering
+      const clustersQuery = undefined; // Clusters don't have organization filtering
 
       const [participantCount] = await db
         .select({ count: count() })
@@ -630,6 +1023,50 @@ export async function getKPITrendData(): Promise<{
           )
         );
 
+      const [trainingCount] = await db
+        .select({ count: count() })
+        .from(trainings)
+        .where(
+          and(
+            trainingsQuery,
+            gte(trainings.created_at, startOfMonth),
+            lte(trainings.created_at, endOfMonth)
+          )
+        );
+
+      const [activityReportCount] = await db
+        .select({ count: count() })
+        .from(activityReports)
+        .where(
+          and(
+            activityReportsQuery,
+            gte(activityReports.created_at, startOfMonth),
+            lte(activityReports.created_at, endOfMonth)
+          )
+        );
+
+      const [projectCount] = await db
+        .select({ count: count() })
+        .from(projects)
+        .where(
+          and(
+            projectsQuery,
+            gte(projects.createdAt, startOfMonth),
+            lte(projects.createdAt, endOfMonth)
+          )
+        );
+
+      const [clusterCount] = await db
+        .select({ count: count() })
+        .from(clusters)
+        .where(
+          and(
+            clustersQuery,
+            gte(clusters.createdAt, startOfMonth),
+            lte(clusters.createdAt, endOfMonth)
+          )
+        );
+
       months.push({
         month: date.toLocaleDateString("en-US", {
           month: "short",
@@ -639,6 +1076,10 @@ export async function getKPITrendData(): Promise<{
         activities: activityCount?.count || 0,
         vslas: vslaCount?.count || 0,
         conceptNotes: conceptNoteCount?.count || 0,
+        trainings: trainingCount?.count || 0,
+        activityReports: activityReportCount?.count || 0,
+        projects: projectCount?.count || 0,
+        clusters: clusterCount?.count || 0,
       });
     }
 

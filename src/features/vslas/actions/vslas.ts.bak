@@ -1,0 +1,483 @@
+"use server";
+
+import { db } from "@/lib/db";
+import { vslas, organizations, clusters, projects } from "@/lib/db/schema";
+import { eq, inArray, and } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import { createVSLASchema, type CreateVSLAInput } from "../schemas/vsla-schema";
+
+"use server";
+
+import { db } from "@/lib/db";
+import { vslas, organizations, clusters, projects } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { CreateVSLAInput } from "../schemas/vsla-schema";
+import { getVSLAsFallback, checkVSLASchemaStatus } from "./vslas-fallback";
+
+export async function createVSLA(data: CreateVSLAInput) {
+  try {
+    const newVSLA = await db.insert(vslas).values(data).returning();
+    return { success: true, data: newVSLA[0] };
+  } catch (error) {
+    console.error("Error creating VSLA:", error);
+    return { success: false, error: "Failed to create VSLA" };
+  }
+}
+
+export async function getVSLAs() {
+  try {
+    // First check if the database schema has been updated
+    const { schemaUpdated } = await checkVSLASchemaStatus();
+    
+    if (!schemaUpdated) {
+      console.log("Using fallback VSLA query - schema not updated yet");
+      return await getVSLAsFallback();
+    }
+
+    // Use the full query with all new fields
+    const vslaList = await db
+      .select({
+        id: vslas.id,
+        name: vslas.name,
+        code: vslas.code,
+        description: vslas.description,
+        organization_id: vslas.organization_id,
+        cluster_id: vslas.cluster_id,
+        project_id: vslas.project_id,
+        country: vslas.country,
+        district: vslas.district,
+        sub_county: vslas.sub_county,
+        parish: vslas.parish,
+        village: vslas.village,
+        address: vslas.address,
+        total_members: vslas.total_members,
+        total_savings: vslas.total_savings,
+        total_loans: vslas.total_loans,
+        meeting_frequency: vslas.meeting_frequency,
+        meeting_day: vslas.meeting_day,
+        meeting_time: vslas.meeting_time,
+        status: vslas.status,
+        created_at: vslas.created_at,
+        updated_at: vslas.updated_at,
+        // New fields from comprehensive VSLA schema
+        primary_business: vslas.primary_business,
+        primary_business_other: vslas.primary_business_other,
+        region: vslas.region,
+        county: vslas.county,
+        meeting_location: vslas.meeting_location,
+        formation_date: vslas.formation_date,
+        closing_date: vslas.closing_date,
+        lc1_chairperson_name: vslas.lc1_chairperson_name,
+        lc1_chairperson_contact: vslas.lc1_chairperson_contact,
+        has_constitution: vslas.has_constitution,
+        has_signed_constitution: vslas.has_signed_constitution,
+        bank_name: vslas.bank_name,
+        bank_branch: vslas.bank_branch,
+        bank_account_number: vslas.bank_account_number,
+        registration_certificate_number: vslas.registration_certificate_number,
+        sacco_member: vslas.sacco_member,
+        notes: vslas.notes,
+        organization: {
+          id: organizations.id,
+          name: organizations.name,
+          acronym: organizations.acronym,
+        },
+        cluster: {
+          id: clusters.id,
+          name: clusters.name,
+        },
+        project: {
+          id: projects.id,
+          name: projects.name,
+          acronym: projects.acronym,
+        },
+      })
+      .from(vslas)
+      .leftJoin(organizations, eq(vslas.organization_id, organizations.id))
+      .leftJoin(clusters, eq(vslas.cluster_id, clusters.id))
+      .leftJoin(projects, eq(vslas.project_id, projects.id));
+
+    return { success: true, data: vslaList };
+  } catch (error) {
+    console.error("Error fetching VSLAs:", error);
+    
+    // If there's an error with the full query, try fallback
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    
+    if (errorMessage.includes("column") && errorMessage.includes("does not exist")) {
+      console.log("Schema error detected, using fallback query");
+      return await getVSLAsFallback();
+    }
+    
+    if (errorMessage.includes("ETIMEDOUT")) {
+      return { 
+        success: false, 
+        error: "Database connection timeout. Please check your network connection and try again." 
+      };
+    }
+    
+    return { success: false, error: "Failed to fetch VSLAs" };
+  }
+}
+
+export async function getVSLA(id: string) {
+  try {
+    const vsla = await db
+      .select({
+        id: vslas.id,
+        name: vslas.name,
+        code: vslas.code,
+        description: vslas.description,
+        organization_id: vslas.organization_id,
+        cluster_id: vslas.cluster_id,
+        project_id: vslas.project_id,
+        country: vslas.country,
+        district: vslas.district,
+        sub_county: vslas.sub_county,
+        parish: vslas.parish,
+        village: vslas.village,
+        address: vslas.address,
+        total_members: vslas.total_members,
+        total_savings: vslas.total_savings,
+        total_loans: vslas.total_loans,
+        meeting_frequency: vslas.meeting_frequency,
+        meeting_day: vslas.meeting_day,
+        meeting_time: vslas.meeting_time,
+        status: vslas.status,
+        created_at: vslas.created_at,
+        updated_at: vslas.updated_at,
+        organization: {
+          id: organizations.id,
+          name: organizations.name,
+          acronym: organizations.acronym,
+        },
+        cluster: {
+          id: clusters.id,
+          name: clusters.name,
+        },
+        project: {
+          id: projects.id,
+          name: projects.name,
+          acronym: projects.acronym,
+        },
+      })
+      .from(vslas)
+      .leftJoin(organizations, eq(vslas.organization_id, organizations.id))
+      .leftJoin(clusters, eq(vslas.cluster_id, clusters.id))
+      .leftJoin(projects, eq(vslas.project_id, projects.id))
+      .where(eq(vslas.id, id))
+      .limit(1);
+
+    if (!vsla.length) {
+      return { success: false, error: "VSLA not found" };
+    }
+
+    return { success: true, data: vsla[0] };
+  } catch (error) {
+    console.error("Error fetching VSLA:", error);
+    return { success: false, error: "Failed to fetch VSLA" };
+  }
+}
+
+export async function getVSLAs(organization_id?: string, cluster_id?: string) {
+  try {
+    // Build where conditions
+    const conditions = [];
+
+    if (organization_id) {
+      conditions.push(eq(vslas.organization_id, organization_id));
+    }
+
+    if (cluster_id) {
+      conditions.push(eq(vslas.cluster_id, cluster_id));
+    }
+
+    // Build the query with conditional where clause - use formation_date instead of formed_date
+    const baseQuery = db
+      .select({
+        id: vslas.id,
+        name: vslas.name,
+        code: vslas.code,
+        description: vslas.description,
+        primary_business: vslas.primary_business,
+        primary_business_other: vslas.primary_business_other,
+        organization_id: vslas.organization_id,
+        cluster_id: vslas.cluster_id,
+        project_id: vslas.project_id,
+        country: vslas.country,
+        region: vslas.region,
+        district: vslas.district,
+        county: vslas.county,
+        sub_county: vslas.sub_county,
+        parish: vslas.parish,
+        village: vslas.village,
+        address: vslas.address,
+        total_members: vslas.total_members,
+        total_savings: vslas.total_savings,
+        total_loans: vslas.total_loans,
+        meeting_frequency: vslas.meeting_frequency,
+        meeting_day: vslas.meeting_day,
+        meeting_time: vslas.meeting_time,
+        meeting_location: vslas.meeting_location,
+        formation_date: vslas.formation_date,
+        closing_date: vslas.closing_date,
+        lc1_chairperson_name: vslas.lc1_chairperson_name,
+        lc1_chairperson_contact: vslas.lc1_chairperson_contact,
+        has_constitution: vslas.has_constitution,
+        has_signed_constitution: vslas.has_signed_constitution,
+        bank_name: vslas.bank_name,
+        bank_branch: vslas.bank_branch,
+        bank_account_number: vslas.bank_account_number,
+        registration_certificate_number: vslas.registration_certificate_number,
+        sacco_member: vslas.sacco_member,
+        notes: vslas.notes,
+        status: vslas.status,
+        created_at: vslas.created_at,
+        updated_at: vslas.updated_at,
+        organization: {
+          id: organizations.id,
+          name: organizations.name,
+          acronym: organizations.acronym,
+        },
+        cluster: {
+          id: clusters.id,
+          name: clusters.name,
+        },
+        project: {
+          id: projects.id,
+          name: projects.name,
+          acronym: projects.acronym,
+        },
+      })
+      .from(vslas)
+      .leftJoin(organizations, eq(vslas.organization_id, organizations.id))
+      .leftJoin(clusters, eq(vslas.cluster_id, clusters.id))
+      .leftJoin(projects, eq(vslas.project_id, projects.id));
+
+    // Apply where conditions if any exist
+    const query =
+      conditions.length > 0
+        ? baseQuery.where(
+            conditions.length === 1 ? conditions[0] : and(...conditions)
+          )
+        : baseQuery;
+
+    const vslaList = await query;
+
+    return { success: true, data: vslaList };
+  } catch (error) {
+    console.error("Error fetching VSLAs:", error);
+    
+    // Provide more specific error messages based on the error type
+    if (error instanceof Error) {
+      if (
+        error.message.includes("column") &&
+        error.message.includes("does not exist")
+      ) {
+        return {
+          success: false,
+          error: "Database schema not up to date. Please run pending migrations.",
+        };
+      }
+      if (
+        error.message.includes("ETIMEDOUT") ||
+        error.message.includes("ECONNREFUSED")
+      ) {
+        return {
+          success: false,
+          error: "Database connection failed. Please check your connection.",
+        };
+      }
+    }
+    
+    return { success: false, error: "Failed to fetch VSLAs" };
+  }
+}
+
+export async function getVSLA(id: string) {
+  try {
+    const [vsla] = await db
+      .select({
+        id: vslas.id,
+        name: vslas.name,
+        code: vslas.code,
+        description: vslas.description,
+        primary_business: vslas.primary_business,
+        primary_business_other: vslas.primary_business_other,
+        organization_id: vslas.organization_id,
+        cluster_id: vslas.cluster_id,
+        project_id: vslas.project_id,
+        country: vslas.country,
+        region: vslas.region,
+        district: vslas.district,
+        county: vslas.county,
+        sub_county: vslas.sub_county,
+        parish: vslas.parish,
+        village: vslas.village,
+        address: vslas.address,
+        total_members: vslas.total_members,
+        total_savings: vslas.total_savings,
+        total_loans: vslas.total_loans,
+        meeting_frequency: vslas.meeting_frequency,
+        meeting_day: vslas.meeting_day,
+        meeting_time: vslas.meeting_time,
+        meeting_location: vslas.meeting_location,
+        formation_date: vslas.formation_date,
+        closing_date: vslas.closing_date,
+        lc1_chairperson_name: vslas.lc1_chairperson_name,
+        lc1_chairperson_contact: vslas.lc1_chairperson_contact,
+        has_constitution: vslas.has_constitution,
+        has_signed_constitution: vslas.has_signed_constitution,
+        bank_name: vslas.bank_name,
+        bank_branch: vslas.bank_branch,
+        bank_account_number: vslas.bank_account_number,
+        registration_certificate_number: vslas.registration_certificate_number,
+        sacco_member: vslas.sacco_member,
+        notes: vslas.notes,
+        status: vslas.status,
+        created_at: vslas.created_at,
+        updated_at: vslas.updated_at,
+        organization: {
+          id: organizations.id,
+          name: organizations.name,
+          acronym: organizations.acronym,
+        },
+        cluster: {
+          id: clusters.id,
+          name: clusters.name,
+        },
+        project: {
+          id: projects.id,
+          name: projects.name,
+          acronym: projects.acronym,
+        },
+      })
+      .from(vslas)
+      .leftJoin(organizations, eq(vslas.organization_id, organizations.id))
+      .leftJoin(clusters, eq(vslas.cluster_id, clusters.id))
+      .leftJoin(projects, eq(vslas.project_id, projects.id))
+      .where(eq(vslas.id, id));
+
+    if (!vsla) {
+      return { success: false, error: "VSLA not found" };
+    }
+
+    return { success: true, data: vsla };
+  } catch (error) {
+    console.error("Error fetching VSLA:", error);
+    
+    // Provide more specific error messages based on the error type
+    if (error instanceof Error) {
+      if (
+        error.message.includes("column") &&
+        error.message.includes("does not exist")
+      ) {
+        return {
+          success: false,
+          error: "Database schema not up to date. Please run pending migrations.",
+        };
+      }
+      if (
+        error.message.includes("ETIMEDOUT") ||
+        error.message.includes("ECONNREFUSED")
+      ) {
+        return {
+          success: false,
+          error: "Database connection failed. Please check your connection.",
+        };
+      }
+    }
+    
+    return { success: false, error: "Failed to fetch VSLA" };
+  }
+}
+
+export async function updateVSLA(id: string, data: Partial<CreateVSLAInput>) {
+  try {
+    const [vsla] = await db
+      .update(vslas)
+      .set({ ...data, updated_at: new Date() })
+      .where(eq(vslas.id, id))
+      .returning();
+
+    revalidatePath("/dashboard/vslas");
+    return { success: true, data: vsla };
+  } catch (error) {
+    console.error("Error updating VSLA:", error);
+    return { success: false, error: "Failed to update VSLA" };
+  }
+}
+
+export async function deleteVSLA(id: string) {
+  try {
+    await db.delete(vslas).where(eq(vslas.id, id));
+
+    revalidatePath("/dashboard/vslas");
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting VSLA:", error);
+    return { success: false, error: "Failed to delete VSLA" };
+  }
+}
+
+export async function deleteVSLAs(ids: string[]) {
+  try {
+    await db.delete(vslas).where(inArray(vslas.id, ids));
+
+    revalidatePath("/dashboard/vslas");
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting VSLAs:", error);
+    return { success: false, error: "Failed to delete VSLAs" };
+  }
+}
+
+export async function getVSLAsByOrganization(organizationId: string) {
+  try {
+    const vslaList = await db
+      .select({
+        id: vslas.id,
+        name: vslas.name,
+        code: vslas.code,
+        status: vslas.status,
+        total_members: vslas.total_members,
+        total_savings: vslas.total_savings,
+        total_loans: vslas.total_loans,
+      })
+      .from(vslas)
+      .where(eq(vslas.organization_id, organizationId));
+
+    return { success: true, data: vslaList };
+  } catch (error) {
+    console.error("Error fetching VSLAs by organization:", error);
+    return { success: false, error: "Failed to fetch VSLAs" };
+  }
+}
+
+export async function getVSLAsByCluster(clusterId: string) {
+  try {
+    const vslaList = await db
+      .select({
+        id: vslas.id,
+        name: vslas.name,
+        code: vslas.code,
+        status: vslas.status,
+        total_members: vslas.total_members,
+        total_savings: vslas.total_savings,
+        total_loans: vslas.total_loans,
+        organization: {
+          id: organizations.id,
+          name: organizations.name,
+          acronym: organizations.acronym,
+        },
+      })
+      .from(vslas)
+      .leftJoin(organizations, eq(vslas.organization_id, organizations.id))
+      .where(eq(vslas.cluster_id, clusterId));
+
+    return { success: true, data: vslaList };
+  } catch (error) {
+    console.error("Error fetching VSLAs by cluster:", error);
+    return { success: false, error: "Failed to fetch VSLAs" };
+  }
+}

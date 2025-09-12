@@ -3,7 +3,7 @@ import { TrainingsClient } from "@/features/trainings/components/trainings-clien
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getProjects } from "@/features/projects/actions/projects";
-import { getOrganizationId, getUserClusterId } from "@/features/auth/actions";
+import { getUserClusterId } from "@/features/auth/actions";
 import { getClusters } from "@/features/clusters/actions/clusters";
 
 function TrainingsTableSkeleton() {
@@ -29,9 +29,8 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
 
   // Search params will be passed directly to the TrainingsClient component
-  const organizationId = await getOrganizationId();
   const clusterId = await getUserClusterId();
-  const projectsResult = await getProjects(organizationId ?? undefined);
+  const projectsResult = await getProjects();
   const clustersResult = await getClusters();
 
   if (!clusterId) {
@@ -57,9 +56,9 @@ export default async function Page(props: {
   return (
     <>
       <PageTitle title="Trainings" />
-      <div className="flex flex-1 flex-col">
-        <div className="@container/main flex flex-1 flex-col gap-2 p-4 @xl/main:px-6">
-          <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-0">
+      <div className="flex flex-1 flex-col px-2 sm:px-4 md:px-6">
+        <div className="@container/main flex flex-1 flex-col gap-2">
+          <div className="flex flex-col gap-3 py-3 sm:gap-4 sm:py-4 md:gap-6 md:py-6">
             <Suspense fallback={<TrainingsTableSkeleton />}>
               <TrainingsClient
                 clusterId={clusterId}

@@ -13,8 +13,8 @@ import { useState } from "react";
 import { Cluster } from "@/features/clusters/components/clusters-table";
 import { Organization } from "@/features/organizations/types";
 import { Project } from "@/features/projects/types";
-import { VSLAForm } from "./vsla-form/vsla-form";
-import { VSLA } from "../types";
+import { VSLAForm } from "../forms";
+import { VSLA, type PrimaryBusiness } from "../../types";
 import { Edit } from "lucide-react";
 
 type EditVSLADialogProps = {
@@ -55,11 +55,15 @@ export function EditVSLADialog({
     name: vsla.name,
     code: vsla.code,
     description: vsla.description || "",
+    primary_business: vsla.primary_business as PrimaryBusiness,
+    primary_business_other: vsla.primary_business_other || "",
     organization_id: vsla.organization_id,
     cluster_id: vsla.cluster_id,
     project_id: vsla.project_id,
     country: vsla.country,
+    region: vsla.region || "",
     district: vsla.district,
+    county: vsla.county || "",
     sub_county: vsla.sub_county,
     parish: vsla.parish,
     village: vsla.village,
@@ -70,8 +74,20 @@ export function EditVSLADialog({
     meeting_frequency: vsla.meeting_frequency,
     meeting_day: vsla.meeting_day || "",
     meeting_time: vsla.meeting_time || "",
+    meeting_location: vsla.meeting_location || "",
+    formation_date: new Date(vsla.formation_date),
+    closing_date: vsla.closing_date ? new Date(vsla.closing_date) : undefined,
+    lc1_chairperson_name: vsla.lc1_chairperson_name || "",
+    lc1_chairperson_contact: vsla.lc1_chairperson_contact || "",
+    has_constitution: vsla.has_constitution as "yes" | "no",
+    has_signed_constitution: vsla.has_signed_constitution as "yes" | "no",
+    bank_name: vsla.bank_name || "",
+    bank_branch: vsla.bank_branch || "",
+    bank_account_number: vsla.bank_account_number || "",
+    registration_certificate_number: vsla.registration_certificate_number || "",
+    sacco_member: vsla.sacco_member as "yes" | "no",
+    notes: vsla.notes || "",
     status: vsla.status,
-    formed_date: new Date(vsla.formed_date),
   };
 
   return (

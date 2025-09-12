@@ -25,7 +25,8 @@ export function SiteHeader({
   return (
     <header
       className={cn(
-        "bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full rounded-none border-b px-2 backdrop-blur md:rounded-t-2xl lg:px-6",
+        "bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full rounded-none border-b backdrop-blur transition-[margin] duration-200 ease-linear group-data-[state=collapsed]:ml-0 md:rounded-t-2xl md:group-data-[state=expanded]:ml-64",
+        "px-2 sm:px-4 md:px-6",
         className
       )}
       {...props}

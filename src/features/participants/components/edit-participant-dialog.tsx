@@ -36,7 +36,7 @@ export function EditParticipantDialog({
   // Fetch projects for the form
   const { data: projectsResponse } = useQuery({
     queryKey: ["projects", participant.cluster_id],
-    queryFn: () => getProjects(participant.cluster_id),
+    queryFn: () => getProjects(),
   });
 
   const projects: Project[] = projectsResponse?.success

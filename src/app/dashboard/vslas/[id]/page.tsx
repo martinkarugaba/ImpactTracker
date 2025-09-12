@@ -3,7 +3,6 @@ import { getVSLA } from "@/features/vslas/actions/vslas";
 import { auth } from "@/features/auth/auth";
 import { PageTitle } from "@/features/dashboard/components/page-title";
 import { VSLADetailsHeader } from "@/features/vslas/components/vsla-details/vsla-details-header";
-import { VSLAStatsOverview } from "@/features/vslas/components/vsla-details/vsla-stats-overview";
 import { VSLADetailsTabs } from "@/features/vslas/components/vsla-details/vsla-details-tabs";
 
 interface VSLADetailsPageProps {
@@ -37,9 +36,6 @@ export default async function VSLADetailsPage({
         <div className="mx-auto max-w-7xl">
           {/* Header Section */}
           <VSLADetailsHeader vsla={vsla} />
-
-          {/* Stats Overview */}
-          <VSLAStatsOverview vsla={vsla} />
 
           {/* Tabbed Content */}
           <VSLADetailsTabs vsla={vsla} />

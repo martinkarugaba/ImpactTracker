@@ -29,10 +29,10 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
-import { createVSLAMember } from "../../actions/vsla-members";
+import { updateVSLAMember, VSLAMember } from "../../actions/vsla-members";
 import { toast } from "sonner";
 
-const createVSLAMemberSchema = z.object({
+const updateVSLAMemberSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
   last_name: z.string().min(1, "Last name is required"),
   phone: z.string().min(1, "Phone number is required"),
@@ -46,51 +46,49 @@ const createVSLAMemberSchema = z.object({
   status: z.string().min(1, "Status is required"),
 });
 
-export type CreateVSLAMemberInput = z.infer<typeof createVSLAMemberSchema>;
+export type UpdateVSLAMemberInput = z.infer<typeof updateVSLAMemberSchema>;
 
-interface VSLAMemberFormProps {
-  vslaId: string;
+interface EditVSLAMemberFormProps {
+  member: VSLAMember;
   onSuccess: () => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
-  initialData?: CreateVSLAMemberInput;
 }
 
-export function VSLAMemberForm({
-  vslaId,
+export function EditVSLAMemberForm({
+  member,
   onSuccess,
   isLoading,
   setIsLoading,
-  initialData,
-}: VSLAMemberFormProps) {
-  const form = useForm<CreateVSLAMemberInput>({
-    resolver: zodResolver(createVSLAMemberSchema),
-    defaultValues: initialData || {
-      first_name: "",
-      last_name: "",
-      phone: "",
-      email: "",
-      role: "member",
-      joined_date: new Date(),
-      total_savings: 0,
-      total_loans: 0,
-      status: "active",
+}: EditVSLAMemberFormProps) {
+  const form = useForm<UpdateVSLAMemberInput>({
+    resolver: zodResolver(updateVSLAMemberSchema),
+    defaultValues: {
+      first_name: member.first_name,
+      last_name: member.last_name,
+      phone: member.phone,
+      email: member.email || "",
+      role: member.role,
+      joined_date: new Date(member.joined_date),
+      total_savings: member.total_savings,
+      total_loans: member.total_loans,
+      status: member.status,
     },
   });
 
-  const onSubmit = async (data: CreateVSLAMemberInput) => {
+  const onSubmit = async (data: UpdateVSLAMemberInput) => {
     setIsLoading(true);
     try {
-      const result = await createVSLAMember({ ...data, vsla_id: vslaId });
+      const result = await updateVSLAMember(member.id, data);
 
       if (result.success) {
-        toast.success("VSLA member added successfully!");
+        toast.success("VSLA member updated successfully!");
         onSuccess();
       } else {
-        toast.error(result.error || "Failed to add VSLA member");
+        toast.error(result.error || "Failed to update VSLA member");
       }
     } catch (error) {
-      console.error("Error submitting VSLA member:", error);
+      console.error("Error updating VSLA member:", error);
       toast.error("An unexpected error occurred");
     } finally {
       setIsLoading(false);
@@ -169,14 +167,14 @@ export function VSLAMemberForm({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select role" />
+                      <SelectValue placeholder="Select a role" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
+                    <SelectItem value="member">Member</SelectItem>
                     <SelectItem value="chairperson">Chairperson</SelectItem>
                     <SelectItem value="secretary">Secretary</SelectItem>
                     <SelectItem value="treasurer">Treasurer</SelectItem>
-                    <SelectItem value="member">Member</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -209,97 +207,103 @@ export function VSLAMemberForm({
               </FormItem>
             )}
           />
-        </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <FormField
             control={form.control}
-            name="total_savings"
+            name="joined_date"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Total Savings</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="0"
-                    {...field}
-                    onChange={e =>
-                      field.onChange(parseInt(e.target.value) || 0)
-                    }
-                  />
-                </FormControl>
+              <FormItem className="flex flex-col">
+                <FormLabel>Joined Date</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={date =>
+                        date > new Date() || date < new Date("1900-01-01")
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="total_loans"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Total Loans</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="0"
-                    {...field}
-                    onChange={e =>
-                      field.onChange(parseInt(e.target.value) || 0)
-                    }
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+          <div className="md:col-span-2">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="total_savings"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Total Savings</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        {...field}
+                        onChange={e =>
+                          field.onChange(parseFloat(e.target.value) || 0)
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <FormField
-          control={form.control}
-          name="joined_date"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Joined Date</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={date =>
-                      date > new Date() || date < new Date("1900-01-01")
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              <FormField
+                control={form.control}
+                name="total_loans"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Total Loans</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        {...field}
+                        onChange={e =>
+                          field.onChange(parseFloat(e.target.value) || 0)
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+        </div>
 
         <div className="flex justify-end space-x-4">
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Saving..." : "Save Member"}
+            {isLoading ? "Updating..." : "Update Member"}
           </Button>
         </div>
       </form>
