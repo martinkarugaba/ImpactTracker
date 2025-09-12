@@ -6,6 +6,9 @@ import {
   timestamp,
   integer,
   pgEnum,
+  date,
+  time,
+  unique,
 } from "drizzle-orm/pg-core";
 
 export const organizations = pgTable("organizations", {
@@ -814,6 +817,7 @@ export const activitiesRelations = relations(activities, ({ one, many }) => ({
   activityParticipants: many(activityParticipants),
   conceptNotes: many(conceptNotes),
   activityReports: many(activityReports),
+  activitySessions: many(activitySessions),
 }));
 
 export const activityParticipantsRelations = relations(
@@ -976,6 +980,90 @@ export const activityReportsRelations = relations(
     activity: one(activities, {
       fields: [activityReports.activity_id],
       references: [activities.id],
+    }),
+  })
+);
+
+// Activity Sessions Table - For multi-day activities
+export const activitySessions = pgTable(
+  "activity_sessions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    activity_id: uuid("activity_id")
+      .references(() => activities.id, { onDelete: "cascade" })
+      .notNull(),
+    session_date: date("session_date").notNull(),
+    session_number: integer("session_number").notNull(),
+    start_time: time("start_time"),
+    end_time: time("end_time"),
+    venue: text("venue"),
+    notes: text("notes"),
+    status: text("status").notNull().default("scheduled"), // scheduled, completed, cancelled, postponed
+    created_at: timestamp("created_at").defaultNow(),
+    updated_at: timestamp("updated_at").defaultNow(),
+  },
+  table => ({
+    uniqueActivitySessionDate: unique("unique_activity_session_date").on(
+      table.activity_id,
+      table.session_date
+    ),
+    uniqueActivitySessionNumber: unique("unique_activity_session_number").on(
+      table.activity_id,
+      table.session_number
+    ),
+  })
+);
+
+// Daily Attendance Table - For tracking daily attendance per session
+export const dailyAttendance = pgTable(
+  "daily_attendance",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    session_id: uuid("session_id")
+      .references(() => activitySessions.id, { onDelete: "cascade" })
+      .notNull(),
+    participant_id: uuid("participant_id")
+      .references(() => participants.id, { onDelete: "cascade" })
+      .notNull(),
+    attendance_status: text("attendance_status").notNull().default("invited"), // invited, attended, absent, late, excused
+    check_in_time: timestamp("check_in_time"),
+    check_out_time: timestamp("check_out_time"),
+    notes: text("notes"),
+    recorded_by: text("recorded_by"),
+    created_at: timestamp("created_at").defaultNow(),
+    updated_at: timestamp("updated_at").defaultNow(),
+  },
+  table => ({
+    uniqueSessionParticipant: unique("unique_session_participant").on(
+      table.session_id,
+      table.participant_id
+    ),
+  })
+);
+
+// Activity Sessions Relations
+export const activitySessionsRelations = relations(
+  activitySessions,
+  ({ one, many }) => ({
+    activity: one(activities, {
+      fields: [activitySessions.activity_id],
+      references: [activities.id],
+    }),
+    dailyAttendance: many(dailyAttendance),
+  })
+);
+
+// Daily Attendance Relations
+export const dailyAttendanceRelations = relations(
+  dailyAttendance,
+  ({ one }) => ({
+    session: one(activitySessions, {
+      fields: [dailyAttendance.session_id],
+      references: [activitySessions.id],
+    }),
+    participant: one(participants, {
+      fields: [dailyAttendance.participant_id],
+      references: [participants.id],
     }),
   })
 );
