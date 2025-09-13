@@ -34,15 +34,15 @@ export function ActivitiesContainerNew({
   return (
     <div className="space-y-6">
       {/* Enhanced Tabs with Minimal Styling */}
-      <div className="bg-transparent">
+      <div className="mb-4 bg-transparent">
         <Tabs
           value={state.activeTab}
           onValueChange={value =>
             state.setActiveTab(value as "metrics" | "activities")
           }
-          className="w-full"
+          className="mb-4 w-full"
         >
-          <TabsList className="grid h-12 w-full grid-cols-2 rounded-md bg-gray-100 p-1 dark:bg-gray-900">
+          <TabsList className="grid h-10 w-full grid-cols-2 rounded-md bg-gray-100 p-1 dark:bg-gray-900">
             <TabsTrigger
               value="metrics"
               className="flex cursor-pointer items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-blue-400"

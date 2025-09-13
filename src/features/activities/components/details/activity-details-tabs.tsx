@@ -41,27 +41,27 @@ export function ActivityDetailsTabs({
   return (
     <Tabs defaultValue="overview" className="w-full">
       <TabsList className="grid w-full grid-cols-5">
-        <TabsTrigger value="overview" className="flex items-center gap-2">
+        <TabsTrigger value="overview">
           <Info className="h-4 w-4" />
           <span className="hidden sm:inline">Overview</span>
           <span className="sm:hidden">Info</span>
         </TabsTrigger>
-        <TabsTrigger value="sessions" className="flex items-center gap-2">
+        <TabsTrigger value="sessions">
           <Calendar className="h-4 w-4" />
           <span className="hidden sm:inline">Sessions</span>
           <span className="sm:hidden">Days</span>
         </TabsTrigger>
-        <TabsTrigger value="participants" className="flex items-center gap-2">
+        <TabsTrigger value="participants">
           <Users className="h-4 w-4" />
           <span className="hidden sm:inline">Participants</span>
           <span className="sm:hidden">People</span>
         </TabsTrigger>
-        <TabsTrigger value="demographics" className="flex items-center gap-2">
+        <TabsTrigger value="demographics">
           <UserCheck className="h-4 w-4" />
           <span className="hidden sm:inline">Demographics</span>
           <span className="sm:hidden">Demo</span>
         </TabsTrigger>
-        <TabsTrigger value="analytics" className="flex items-center gap-2">
+        <TabsTrigger value="analytics">
           <BarChart3 className="h-4 w-4" />
           <span className="hidden sm:inline">Analytics</span>
           <span className="sm:hidden">Stats</span>

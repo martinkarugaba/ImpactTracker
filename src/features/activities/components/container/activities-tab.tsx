@@ -87,7 +87,7 @@ export function ActivitiesTab({
   ];
 
   return (
-    <TabsContent value="activities" className="mt-4">
+    <TabsContent value="activities" className="mt-8">
       <div className="space-y-4">
         {/* Action Buttons Section - At the very top */}
         <div className="flex items-center justify-between gap-4">

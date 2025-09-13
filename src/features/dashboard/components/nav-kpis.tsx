@@ -17,6 +17,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 export function NavDocuments({
   items,
@@ -27,6 +28,17 @@ export function NavDocuments({
     icon: Icon;
   }[];
 }) {
+  const { data: session } = useSession();
+
+  // Filter out success stories for non-super admin users
+  const isSuperAdmin = session?.user?.role === "super_admin";
+  const filteredItems = items.filter(item => {
+    if (item.name === "Success stories" && !isSuperAdmin) {
+      return false;
+    }
+    return true;
+  });
+
   return (
     <Collapsible defaultOpen className="group/collapsible">
       <SidebarGroup>
@@ -39,7 +51,7 @@ export function NavDocuments({
         <CollapsibleContent>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map(item => (
+              {filteredItems.map(item => (
                 <SidebarMenuItem key={item.name}>
                   <SidebarMenuButton asChild tooltip={item.name}>
                     <Link href={item.url} title={item.name}>
