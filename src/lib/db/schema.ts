@@ -112,9 +112,10 @@ export const participants = pgTable("participants", {
   parish: text("parish").notNull(),
   village: text("village").notNull(),
   sex: text("sex").notNull(),
-  age: integer("age"), // Made optional - can be null if only dateOfBirth is provided
+  age: integer("age") /* Lines 115-116 omitted */,
   dateOfBirth: timestamp("date_of_birth"),
   isPWD: text("is_pwd").notNull().default("no"),
+  disabilityType: text("disability_type"), // New field for type of disability
   isMother: text("is_mother").notNull().default("no"),
   isRefugee: text("is_refugee").notNull().default("no"),
   designation: text("designation").notNull(),
@@ -125,6 +126,28 @@ export const participants = pgTable("participants", {
   numberOfChildren: integer("number_of_children").notNull().default(0),
   employmentStatus: text("employment_status").notNull().default("unemployed"),
   monthlyIncome: integer("monthly_income").notNull().default(0),
+
+  // New employment tracking fields
+  wageEmploymentStatus: text("wage_employment_status"), // "employed", "new_job", "sustained_job", "improved_job"
+  wageEmploymentSector: text("wage_employment_sector"), // "petty_trade", "food_drinks", "manufacturing", "agribusiness", etc.
+  wageEmploymentScale: text("wage_employment_scale"), // "micro", "small", "medium", "large"
+
+  selfEmploymentStatus: text("self_employment_status"), // "self_employed", "new_business", "sustained_business", "improved_business"
+  selfEmploymentSector: text("self_employment_sector"), // "petty_trade", "food_drinks", "agriculture", "crafts", etc.
+  businessScale: text("business_scale"), // "micro", "small", "medium", "large"
+
+  secondaryEmploymentStatus: text("secondary_employment_status"), // "secondary_employed", "new_secondary_job", "sustained_secondary_job", "improved_secondary_job"
+  secondaryEmploymentSector: text("secondary_employment_sector"), // "retail", "services", "transport", etc.
+  secondaryBusinessScale: text("secondary_business_scale"), // "micro", "small", "medium", "large"
+
+  // Financial inclusion fields
+  accessedLoans: text("accessed_loans").notNull().default("no"), // "yes", "no"
+  individualSaving: text("individual_saving").notNull().default("no"), // "yes", "no"
+  groupSaving: text("group_saving").notNull().default("no"), // "yes", "no" (VSLA/group saving)
+
+  // Location classification
+  locationSetting: text("location_setting"), // "urban", "rural"
+
   mainChallenge: text("main_challenge"),
   skillOfInterest: text("skill_of_interest"),
   expectedImpact: text("expected_impact"),

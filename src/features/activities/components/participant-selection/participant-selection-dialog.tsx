@@ -123,6 +123,7 @@ export function ParticipantSelectionDialog({
         age: data.age ? parseInt(data.age) : null,
         dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
         isPWD: data.isPWD,
+        disabilityType: null, // New demographic field
         isMother: data.isMother,
         isRefugee: data.isRefugee,
         designation: data.designation,
@@ -138,6 +139,22 @@ export function ParticipantSelectionDialog({
         numberOfChildren: parseInt(data.numberOfChildren),
         employmentStatus: data.employmentStatus,
         monthlyIncome: parseInt(data.monthlyIncome) || 0,
+        // New employment tracking fields with defaults
+        wageEmploymentStatus: null,
+        wageEmploymentSector: null,
+        wageEmploymentScale: null,
+        selfEmploymentStatus: null,
+        selfEmploymentSector: null,
+        businessScale: null,
+        secondaryEmploymentStatus: null,
+        secondaryEmploymentSector: null,
+        secondaryBusinessScale: null,
+        // Financial inclusion fields
+        accessedLoans: "no",
+        individualSaving: "no",
+        groupSaving: "no",
+        // Location classification
+        locationSetting: null,
         mainChallenge: data.mainChallenge || null,
         skillOfInterest: data.skillOfInterest || null,
         expectedImpact: data.expectedImpact || null,
