@@ -97,6 +97,16 @@ export type ActivityMetrics = {
   actualSpent: number;
   byType: Record<string, number>;
   byStatus: Record<string, number>;
+  // Session-based metrics for multi-day activities
+  multiDayActivities: number;
+  singleDayActivities: number;
+  totalSessions: number;
+  completedSessions: number;
+  scheduledSessions: number;
+  averageSessionsPerActivity: number;
+  averageActivityDuration: number;
+  sessionCompletionRate: number;
+  activitiesWithSessions: number;
 };
 
 export type ActivityMetricsResponse = {

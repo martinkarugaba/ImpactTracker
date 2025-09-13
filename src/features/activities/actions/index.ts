@@ -291,6 +291,7 @@ export async function getActivityMetrics(
       where: whereConditions.length > 0 ? and(...whereConditions) : undefined,
       with: {
         activityParticipants: true,
+        activitySessions: true,
       },
     });
 
@@ -298,6 +299,42 @@ export async function getActivityMetrics(
     const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     const endOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 2, 0);
+
+    // Calculate session-based metrics
+    const allSessions = allActivities.flatMap(a => a.activitySessions || []);
+    const activitiesWithSessions = allActivities.filter(
+      a => (a.activitySessions?.length || 0) > 0
+    );
+    const multiDayActivities = activitiesWithSessions.length;
+    const singleDayActivities = allActivities.length - multiDayActivities;
+
+    const totalSessions = allSessions.length;
+    const completedSessions = allSessions.filter(
+      s => s.status === "completed"
+    ).length;
+    const scheduledSessions = allSessions.filter(
+      s => s.status === "scheduled"
+    ).length;
+    const sessionCompletionRate =
+      totalSessions > 0 ? (completedSessions / totalSessions) * 100 : 0;
+
+    // Calculate average sessions per activity (only for activities that have sessions)
+    const averageSessionsPerActivity =
+      activitiesWithSessions.length > 0
+        ? totalSessions / activitiesWithSessions.length
+        : 0;
+
+    // Calculate average activity duration in days
+    const totalDuration = allActivities.reduce((sum, activity) => {
+      const start = new Date(activity.startDate);
+      const end = new Date(activity.endDate || activity.startDate);
+      const duration =
+        Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) +
+        1;
+      return sum + duration;
+    }, 0);
+    const averageActivityDuration =
+      allActivities.length > 0 ? totalDuration / allActivities.length : 0;
 
     const metrics: ActivityMetrics = {
       totalActivities: allActivities.length,
@@ -339,6 +376,17 @@ export async function getActivityMetrics(
       ),
       byType: {},
       byStatus: {},
+      // Session-based metrics
+      multiDayActivities,
+      singleDayActivities,
+      totalSessions,
+      completedSessions,
+      scheduledSessions,
+      averageSessionsPerActivity:
+        Math.round(averageSessionsPerActivity * 10) / 10,
+      averageActivityDuration: Math.round(averageActivityDuration * 10) / 10,
+      sessionCompletionRate: Math.round(sessionCompletionRate * 10) / 10,
+      activitiesWithSessions: activitiesWithSessions.length,
     };
 
     // Group by type

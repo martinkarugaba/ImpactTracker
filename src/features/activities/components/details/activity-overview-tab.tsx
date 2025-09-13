@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { Activity } from "../../types/types";
+import { useActivitySessions } from "../../hooks/use-activities";
 import { ActivityNotesCard } from "../cards/activity-notes-card";
 import { ConceptNotesCards } from "../concept-notes/concept-notes-cards";
 import { ActivityReportsCards } from "../activity-reports/activity-reports-cards";
@@ -42,6 +43,18 @@ export function ActivityOverviewTab({
   refreshKey,
   activityReportsRefreshKey,
 }: ActivityOverviewTabProps) {
+  // Fetch session data for multi-day activities
+  const { data: sessionsResponse } = useActivitySessions(activity.id);
+  const sessions = sessionsResponse?.data || [];
+  const hasMultipleSessions = sessions.length > 1;
+  const completedSessions = sessions.filter(
+    s => s.status === "completed"
+  ).length;
+  const sessionCompletionRate =
+    sessions.length > 0
+      ? Math.round((completedSessions / sessions.length) * 100)
+      : 0;
+
   const formatDate = (date: Date | string | null) => {
     if (!date) return "Not set";
     try {
@@ -122,26 +135,52 @@ export function ActivityOverviewTab({
           </CardContent>
         </Card>
 
-        <Card className="group relative overflow-hidden border-l-4 border-l-orange-500 transition-all hover:shadow-lg hover:shadow-orange-100/50 dark:hover:shadow-orange-900/20">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <p className="text-muted-foreground text-sm font-medium">
-                  Project
-                </p>
-                <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                  {activity.projectName || "General"}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Project context
-                </p>
+        {/* Session Metrics Card - Only show for multi-day activities */}
+        {hasMultipleSessions ? (
+          <Card className="group relative overflow-hidden border-l-4 border-l-indigo-500 transition-all hover:shadow-lg hover:shadow-indigo-100/50 dark:hover:shadow-indigo-900/20">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <p className="text-muted-foreground text-sm font-medium">
+                    Sessions
+                  </p>
+                  <div className="space-y-1">
+                    <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                      {completedSessions}/{sessions.length}
+                    </p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                      {sessionCompletionRate}% complete
+                    </p>
+                  </div>
+                </div>
+                <div className="rounded-full bg-indigo-100 p-3 dark:bg-indigo-900/30">
+                  <Calendar className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                </div>
               </div>
-              <div className="rounded-full bg-orange-100 p-3 dark:bg-orange-900/30">
-                <Building className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="group relative overflow-hidden border-l-4 border-l-orange-500 transition-all hover:shadow-lg hover:shadow-orange-100/50 dark:hover:shadow-orange-900/20">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <p className="text-muted-foreground text-sm font-medium">
+                    Project
+                  </p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                    {activity.projectName || "General"}
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Project context
+                  </p>
+                </div>
+                <div className="rounded-full bg-orange-100 p-3 dark:bg-orange-900/30">
+                  <Building className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Main Content */}
