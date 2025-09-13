@@ -54,20 +54,20 @@ export function ParticipantsContainer({
         >
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger
-              value="metrics"
-              className="flex items-center gap-2 data-[state=active]:text-blue-600"
-            >
-              <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline">Analytics</span>
-              <span className="sm:hidden">Stats</span>
-            </TabsTrigger>
-            <TabsTrigger
               value="participants"
               className="flex items-center gap-2 data-[state=active]:text-green-600"
             >
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">Participants</span>
               <span className="sm:hidden">People</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="metrics"
+              className="flex items-center gap-2 data-[state=active]:text-blue-600"
+            >
+              <BarChart3 className="h-4 w-4" />
+              <span className="hidden sm:inline">Analytics</span>
+              <span className="sm:hidden">Stats</span>
             </TabsTrigger>
           </TabsList>
 

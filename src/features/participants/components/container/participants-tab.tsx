@@ -129,20 +129,20 @@ export function ParticipantsTab({
           {/* Top Row: Search and Primary Action */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             {/* Search - Most Important Action */}
-            <div className="relative max-w-md flex-1">
+            <div className="relative flex-1">
               <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
               <Input
                 placeholder="Search participants..."
                 value={searchValue}
                 onChange={e => onSearchChange(e.target.value)}
-                className="h-10 border-gray-300 bg-white pl-10 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
+                className="h-8 w-full border-gray-300 bg-white pl-10 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
               />
             </div>
 
             {/* Primary Action - Add Participant */}
             <Button
               onClick={onAddParticipant}
-              className="h-10 bg-green-600 px-6 text-white hover:bg-green-700 focus:ring-green-500 dark:bg-green-700 dark:hover:bg-green-800"
+              className="h-8 bg-green-600 px-6 text-white hover:bg-green-700 focus:ring-green-500 dark:bg-green-700 dark:hover:bg-green-800"
             >
               <Plus className="mr-2 h-4 w-4" />
               Add Participant

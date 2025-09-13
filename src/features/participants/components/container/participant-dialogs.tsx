@@ -199,6 +199,9 @@ export function ParticipantDialogs({
     skillOfInterest: participant.skillOfInterest || "",
     expectedImpact: participant.expectedImpact || "",
     isWillingToParticipate: participant.isWillingToParticipate as "yes" | "no",
+    accessedLoans: "no" as const,
+    individualSaving: "no" as const,
+    groupSaving: "no" as const,
   });
   const confirmDelete = async () => {
     if (!deletingParticipant) return;

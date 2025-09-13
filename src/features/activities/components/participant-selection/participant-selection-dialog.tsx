@@ -236,6 +236,9 @@ export function ParticipantSelectionDialog({
                   skillOfInterest: "",
                   expectedImpact: "",
                   isWillingToParticipate: "yes",
+                  accessedLoans: "no",
+                  individualSaving: "no",
+                  groupSaving: "no",
                 }}
               />
               <div className="mt-4 flex justify-end gap-2">

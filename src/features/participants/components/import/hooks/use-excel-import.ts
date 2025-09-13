@@ -339,6 +339,29 @@ export function useExcelImport(clusterId: string) {
           10
         ) || "0"
       ),
+
+      // Add missing required fields
+      disabilityType: "", // Type of disability (empty by default)
+
+      // Employment tracking fields
+      wageEmploymentStatus: "",
+      wageEmploymentSector: "",
+      wageEmploymentScale: "",
+      selfEmploymentStatus: "",
+      selfEmploymentSector: "",
+      businessScale: "",
+      secondaryEmploymentStatus: "",
+      secondaryEmploymentSector: "",
+      secondaryBusinessScale: "",
+
+      // Financial inclusion fields
+      accessedLoans: "no",
+      individualSaving: "no",
+      groupSaving: "no",
+
+      // Location classification
+      locationSetting: "rural",
+
       mainChallenge: (
         data["Main Challenge"] ||
         data.mainChallenge ||
