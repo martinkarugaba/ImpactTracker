@@ -4,6 +4,8 @@ import {
   type activityParticipants,
   type conceptNotes,
   type activityReports,
+  type activitySessions,
+  type dailyAttendance,
 } from "@/lib/db/schema";
 
 export type Activity = InferSelectModel<typeof activities> & {
@@ -95,6 +97,16 @@ export type ActivityMetrics = {
   actualSpent: number;
   byType: Record<string, number>;
   byStatus: Record<string, number>;
+  // Session-based metrics for multi-day activities
+  multiDayActivities: number;
+  singleDayActivities: number;
+  totalSessions: number;
+  completedSessions: number;
+  scheduledSessions: number;
+  averageSessionsPerActivity: number;
+  averageActivityDuration: number;
+  sessionCompletionRate: number;
+  activitiesWithSessions: number;
 };
 
 export type ActivityMetricsResponse = {
@@ -181,3 +193,123 @@ export type ActivityReportsResponse = {
   data?: ActivityReport[];
   error?: string;
 };
+
+// Activity Sessions Types
+export type ActivitySession = InferSelectModel<typeof activitySessions>;
+
+export type NewActivitySession = Omit<
+  ActivitySession,
+  "id" | "created_at" | "updated_at"
+>;
+
+export type ActivitySessionResponse = {
+  success: boolean;
+  data?: ActivitySession;
+  error?: string;
+};
+
+export type ActivitySessionsResponse = {
+  success: boolean;
+  data?: ActivitySession[];
+  error?: string;
+};
+
+// Daily Attendance Types
+export type DailyAttendance = InferSelectModel<typeof dailyAttendance> & {
+  participantName?: string;
+  participantEmail?: string;
+  participant?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    contact: string;
+    designation: string;
+    organizationName?: string;
+  };
+  session?: {
+    session_date: string;
+    session_number: number;
+    venue?: string | null;
+  };
+};
+
+export type NewDailyAttendance = Omit<
+  DailyAttendance,
+  | "id"
+  | "created_at"
+  | "updated_at"
+  | "participantName"
+  | "participantEmail"
+  | "participant"
+  | "session"
+>;
+
+export type DailyAttendanceResponse = {
+  success: boolean;
+  data?: DailyAttendance;
+  error?: string;
+};
+
+export type DailyAttendanceListResponse = {
+  success: boolean;
+  data?: DailyAttendance[];
+  error?: string;
+};
+
+// Enhanced Activity Type with Sessions
+export type ActivityWithSessions = Activity & {
+  sessions?: ActivitySession[];
+  totalSessions?: number;
+  completedSessions?: number;
+  upcomingSessions?: number;
+};
+
+// Session Attendance Summary
+export type SessionAttendanceSummary = {
+  sessionId: string;
+  sessionDate: string;
+  sessionNumber: number;
+  totalParticipants: number;
+  attended: number;
+  absent: number;
+  late: number;
+  excused: number;
+  attendanceRate: number;
+};
+
+// Activity Attendance Overview
+export type ActivityAttendanceOverview = {
+  activityId: string;
+  totalParticipants: number;
+  totalSessions: number;
+  overallAttendanceRate: number;
+  sessionSummaries: SessionAttendanceSummary[];
+  participantAttendanceRates: Array<{
+    participantId: string;
+    participantName: string;
+    sessionsAttended: number;
+    totalSessions: number;
+    attendanceRate: number;
+  }>;
+};
+
+// Session Status Types
+export const SESSION_STATUSES = [
+  "scheduled",
+  "completed",
+  "cancelled",
+  "postponed",
+] as const;
+
+export type SessionStatus = (typeof SESSION_STATUSES)[number];
+
+// Daily Attendance Status Types (extending existing ATTENDANCE_STATUSES)
+export const DAILY_ATTENDANCE_STATUSES = [
+  "invited",
+  "attended",
+  "absent",
+  "late",
+  "excused",
+] as const;
+
+export type DailyAttendanceStatus = (typeof DAILY_ATTENDANCE_STATUSES)[number];
