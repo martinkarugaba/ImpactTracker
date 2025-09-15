@@ -21,6 +21,8 @@ interface TableContentProps {
   onViewParticipant?: (participant: Participant) => void;
   actionButtons: React.ReactNode;
   columnVisibility?: Record<string, boolean>;
+  rowSelection?: Record<string, boolean>;
+  onRowSelectionStateChange?: (selection: Record<string, boolean>) => void;
 }
 
 export function TableContent({
@@ -34,6 +36,8 @@ export function TableContent({
   onViewParticipant,
   actionButtons: _actionButtons,
   columnVisibility,
+  rowSelection,
+  onRowSelectionStateChange,
 }: TableContentProps) {
   const allColumns = getParticipantColumns({
     onEdit: (participant: Participant) => {
@@ -68,9 +72,11 @@ export function TableContent({
       data={data}
       showColumnToggle={false}
       showPagination={false}
-      showRowSelection={false}
+      showRowSelection={true}
       pageSize={pagination.limit}
       isLoading={isLoading}
+      rowSelection={rowSelection}
+      onRowSelectionStateChange={onRowSelectionStateChange}
     />
   );
 }

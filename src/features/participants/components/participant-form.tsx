@@ -319,67 +319,45 @@ export function ParticipantForm({
     code?: string;
   }
 
-  interface LocationResponse {
-    data: LocationItem[];
-    pagination?: {
-      page: number;
-      limit: number;
-      total: number;
-      totalPages: number;
-      hasNext: boolean;
-      hasPrev: boolean;
-    };
-  }
-
   interface ExtendedComboboxOption extends ComboboxOption {
     id: string;
   }
 
-  // Convert data to ComboboxOption format
+  // Convert data to ComboboxOption format with proper null checking
   const countryOptions: ExtendedComboboxOption[] =
-    (countriesData as unknown as LocationResponse)?.data?.map(
-      (country: LocationItem) => ({
-        value: country.name,
-        label: country.name,
-        id: country.id,
-      })
-    ) || [];
+    countriesData?.data?.data?.map((country: LocationItem) => ({
+      value: country.name,
+      label: country.name,
+      id: country.id,
+    })) || [];
 
   const districtOptions: ExtendedComboboxOption[] =
-    (districtsData as unknown as LocationResponse)?.data?.map(
-      (district: LocationItem) => ({
-        value: district.name,
-        label: district.name,
-        id: district.id,
-      })
-    ) || [];
+    districtsData?.data?.data?.map((district: LocationItem) => ({
+      value: district.name,
+      label: district.name,
+      id: district.id,
+    })) || [];
 
   const subCountyOptions: ExtendedComboboxOption[] =
-    (subCountiesData as unknown as LocationResponse)?.data?.map(
-      (subCounty: LocationItem) => ({
-        value: subCounty.name,
-        label: subCounty.name,
-        id: subCounty.id,
-      })
-    ) || [];
+    subCountiesData?.data?.data?.map((subCounty: LocationItem) => ({
+      value: subCounty.name,
+      label: subCounty.name,
+      id: subCounty.id,
+    })) || [];
 
   const parishOptions: ExtendedComboboxOption[] =
-    (parishesData as unknown as LocationResponse)?.data?.map(
-      (parish: LocationItem) => ({
-        value: parish.name,
-        label: parish.name,
-        id: parish.id,
-      })
-    ) || [];
+    parishesData?.data?.data?.map((parish: LocationItem) => ({
+      value: parish.name,
+      label: parish.name,
+      id: parish.id,
+    })) || [];
 
   const villageOptions: ExtendedComboboxOption[] =
-    (villagesData as unknown as LocationResponse)?.data?.map(
-      (village: LocationItem) => ({
-        value: village.name,
-        label: village.name,
-        id: village.id,
-      })
-    ) || [];
+    villagesData?.data?.data?.map((village: LocationItem) => ({
+      value: village.name,
+      label: village.name,
+      id: village.id,
+    })) || [];
 
   const isPWDValue = form.watch("isPWD");
 

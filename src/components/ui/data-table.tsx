@@ -446,15 +446,8 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  // Call the onRowSelectionChange callback when row selection changes
-  React.useEffect(() => {
-    if (onRowSelectionChange) {
-      const selectedRows = table
-        .getFilteredSelectedRowModel()
-        .rows.map(row => row.original);
-      onRowSelectionChange(selectedRows);
-    }
-  }, [rowSelection, onRowSelectionChange, table]);
+  // Use ref to track if we're in the middle of a selection update
+  const isUpdatingSelection = React.useRef(false);
 
   // Check if header should be shown
   const showHeader = filterColumn || showColumnToggle || actionButtons;

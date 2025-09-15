@@ -38,19 +38,11 @@ export function ActivitiesContainerNew({
         <Tabs
           value={state.activeTab}
           onValueChange={value =>
-            state.setActiveTab(value as "metrics" | "activities")
+            state.setActiveTab(value as "activities" | "metrics")
           }
           className="mb-4 w-full"
         >
           <TabsList className="grid h-10 w-full grid-cols-2 rounded-md bg-gray-100 p-1 dark:bg-gray-900">
-            <TabsTrigger
-              value="metrics"
-              className="flex cursor-pointer items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-blue-400"
-            >
-              <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline">Analytics</span>
-              <span className="sm:hidden">Stats</span>
-            </TabsTrigger>
             <TabsTrigger
               value="activities"
               className="flex cursor-pointer items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-green-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-green-400"
@@ -58,6 +50,14 @@ export function ActivitiesContainerNew({
               <Calendar className="h-4 w-4" />
               <span className="hidden sm:inline">Activities</span>
               <span className="sm:hidden">List</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="metrics"
+              className="flex cursor-pointer items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-blue-400"
+            >
+              <BarChart3 className="h-4 w-4" />
+              <span className="hidden sm:inline">Analytics</span>
+              <span className="sm:hidden">Stats</span>
             </TabsTrigger>
           </TabsList>
 

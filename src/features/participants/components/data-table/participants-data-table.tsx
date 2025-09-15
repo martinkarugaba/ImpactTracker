@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { type Project } from "@/features/projects/types";
 import { type Organization } from "@/features/organizations/types";
 import { type Participant } from "../../types/types";
@@ -50,13 +51,18 @@ export function ParticipantsDataTable({
   onEditParticipant,
   onDeleteParticipant,
   onViewParticipant,
-  onDeleteMultipleParticipants: _onDeleteMultipleParticipants,
+  onDeleteMultipleParticipants,
   onExportData: _onExportData,
   onImport: _onImport,
   onFixOrganizations: _onFixOrganizations,
   columnVisibility,
 }: ParticipantsDataTableProps) {
-  const { selectedRows } = useTableState();
+  const {
+    selectedRows,
+    rowSelectionState,
+    handleClearSelection,
+    setRowSelectionState,
+  } = useTableState(undefined, data);
 
   return (
     <div className="space-y-4">
@@ -72,7 +78,35 @@ export function ParticipantsDataTable({
         onViewParticipant={onViewParticipant}
         actionButtons={null} // No longer needed since actions moved to parent
         columnVisibility={columnVisibility}
+        rowSelection={rowSelectionState}
+        onRowSelectionStateChange={setRowSelectionState}
       />
+
+      {/* Action Buttons for Selected Rows */}
+      {selectedRows.length > 0 && (
+        <div className="bg-muted flex items-center justify-between rounded-lg border p-3">
+          <span className="text-sm font-medium">
+            {selectedRows.length} participant(s) selected
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => {
+                if (onDeleteMultipleParticipants) {
+                  onDeleteMultipleParticipants(selectedRows.map(row => row.id));
+                  handleClearSelection();
+                }
+              }}
+            >
+              Delete Selected
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleClearSelection}>
+              Clear Selection
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Pagination */}
       <PaginationControls
