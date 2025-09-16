@@ -12,10 +12,30 @@ import {
 import { importParticipants } from "@/features/participants/actions/import-participants";
 import { type ValidationError } from "@/features/participants/components/import/types";
 import { type ParticipantFormValues } from "@/features/participants/components/participant-form";
+import { getAgeFromDateOfBirth } from "../../../lib/age-calculator";
+
+// Helper function to validate enum values
+function validateEnumValue<T extends string>(
+  value: string | undefined,
+  validValues: T[]
+): T | undefined {
+  if (!value) return undefined;
+  const normalizedValue = value.toString().toLowerCase().trim();
+  return (
+    validValues.find(v => v.toLowerCase() === normalizedValue) || undefined
+  );
+}
 
 export function useExcelImport(clusterId: string) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [importProgress, setImportProgress] = useState({
+    current: 0,
+    total: 0,
+    currentBatch: 0,
+    totalBatches: 0,
+    percentage: 0,
+  });
   const [parsedData, setParsedData] = useState<ParticipantFormValues[] | null>(
     null
   );
@@ -111,10 +131,10 @@ export function useExcelImport(clusterId: string) {
       sex = "other"; // Default value instead of error
     }
 
-    // Validate age - use default if missing or invalid
+    // Validate age - try to get from date of birth first, then fall back to age column
     const ageValue = parseInt(String(data.Age || data.age || "0"), 10);
-    const finalAge =
-      ageValue && ageValue >= 1 && ageValue <= 120 ? ageValue : 18; // Default to 18 if invalid
+    const fallbackAge =
+      ageValue && ageValue >= 1 && ageValue <= 120 ? ageValue : 18;
 
     // Extract date of birth - look for various column names
     const dateOfBirthRaw =
@@ -138,6 +158,8 @@ export function useExcelImport(clusterId: string) {
       "";
 
     let dateOfBirth = "";
+    let calculatedAge = fallbackAge; // Default to fallback age
+
     if (dateOfBirthRaw) {
       console.log(
         "Raw date of birth value:",
@@ -165,6 +187,13 @@ export function useExcelImport(clusterId: string) {
         ) {
           dateOfBirth = dateValue.toISOString().split("T")[0]; // Format as YYYY-MM-DD
           console.log("Final dateOfBirth:", dateOfBirth);
+
+          // Calculate age from date of birth
+          const ageFromDOB = getAgeFromDateOfBirth(dateOfBirth, fallbackAge);
+          if (ageFromDOB !== null) {
+            calculatedAge = ageFromDOB;
+            console.log("Calculated age from DOB:", calculatedAge);
+          }
         } else {
           console.log("Date validation failed:", {
             isNaN: isNaN(dateValue.getTime()),
@@ -176,7 +205,9 @@ export function useExcelImport(clusterId: string) {
         console.warn("Failed to parse date of birth:", dateOfBirthRaw, error);
       }
     } else {
-      console.log("No date of birth raw value found in row");
+      console.log(
+        "No date of birth raw value found, using age from Age column or default"
+      );
     }
 
     // Validate contact - use empty string if missing
@@ -267,7 +298,7 @@ export function useExcelImport(clusterId: string) {
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       sex: sex as "male" | "female" | "other",
-      age: finalAge.toString(),
+      age: calculatedAge.toString(), // Use calculated age from DOB or fallback
       dateOfBirth: dateOfBirth || undefined, // Include date of birth
       contact: contact.trim(),
       isPWD: isPWDValue,
@@ -361,6 +392,151 @@ export function useExcelImport(clusterId: string) {
 
       // Location classification
       locationSetting: "rural",
+
+      // NEW FIELDS FOR IMPORT
+      // Personal Information
+      maritalStatus: validateEnumValue(data["Marital Status"] as string, [
+        "single",
+        "married",
+        "divorced",
+        "widowed",
+      ]),
+      educationLevel: validateEnumValue(data["Education Level"] as string, [
+        "none",
+        "primary",
+        "secondary",
+        "tertiary",
+        "university",
+      ]),
+      sourceOfIncome: validateEnumValue(data["Source of Income"] as string, [
+        "employment",
+        "business",
+        "agriculture",
+        "remittances",
+        "other",
+      ]),
+      nationality: (data["Nationality"] || "Ugandan").toString(),
+      populationSegment: validateEnumValue(
+        data["Population Segment"] as string,
+        ["youth", "women", "pwd", "elderly", "refugee", "host"]
+      ),
+      refugeeLocation: (data["Refugee location"] || "").toString(),
+      isActiveStudent: (data["Active Student"] || "")
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
+
+      // VSLA Information
+      isSubscribedToVSLA: (data["Subscribed To VSLA"] || "")
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
+      vslaName: (data["VSLA Name"] || "").toString(),
+
+      // Teen Mother
+      isTeenMother: (data["Teen Mother"] || "")
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
+
+      // Enterprise Information
+      ownsEnterprise: (data["Owns Enterprise"] || "")
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
+      enterpriseName: (data["Enterprise Name"] || "").toString(),
+      enterpriseSector: validateEnumValue(data["Enterprise Sector"] as string, [
+        "agriculture",
+        "retail",
+        "services",
+        "manufacturing",
+        "construction",
+        "transport",
+        "other",
+      ]),
+      enterpriseSize: validateEnumValue(data["Enterprise Size"] as string, [
+        "micro",
+        "small",
+        "medium",
+        "large",
+      ]),
+      enterpriseYouthMale: String(
+        parseInt(String(data["Ent. Youth Male"] || "0"), 10) || "0"
+      ),
+      enterpriseYouthFemale: String(
+        parseInt(String(data["Ent. Youth Female"] || "0"), 10) || "0"
+      ),
+      enterpriseAdults: String(
+        parseInt(String(data["Ent. Adults"] || "0"), 10) || "0"
+      ),
+
+      // Skills Information
+      hasVocationalSkills: (data["Has Vocational Skills"] || "")
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
+      vocationalSkillsParticipations: String(
+        parseInt(String(data["Vocational Skills Participations"] || "0"), 10) ||
+          "0"
+      ),
+      vocationalSkillsCompletions: String(
+        parseInt(String(data["Vocational Skills Completions"] || "0"), 10) ||
+          "0"
+      ),
+      vocationalSkillsCertifications: String(
+        parseInt(String(data["Vocational Skills Certifications"] || "0"), 10) ||
+          "0"
+      ),
+
+      hasSoftSkills: (data["Has Soft Skills"] || "")
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
+      softSkillsParticipations: String(
+        parseInt(String(data["Soft Skills Participations"] || "0"), 10) || "0"
+      ),
+      softSkillsCompletions: String(
+        parseInt(String(data["Soft Skills Completions"] || "0"), 10) || "0"
+      ),
+      softSkillsCertifications: String(
+        parseInt(String(data["Soft Skills Certifications"] || "0"), 10) || "0"
+      ),
+
+      hasBusinessSkills: (data["Has Business Skills"] || "")
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
+
+      // Employment Details (more specific than existing employmentStatus)
+      employmentType: validateEnumValue(data["Employment type"] as string, [
+        "formal",
+        "informal",
+        "self-employed",
+        "unemployed",
+      ]),
+      employmentSector: validateEnumValue(data["Employment sector"] as string, [
+        "agriculture",
+        "manufacturing",
+        "services",
+        "trade",
+        "education",
+        "health",
+        "other",
+      ]),
 
       mainChallenge: (
         data["Main Challenge"] ||
@@ -497,13 +673,85 @@ export function useExcelImport(clusterId: string) {
     data: ParticipantFormValues[]
   ): Promise<{ success: boolean; imported?: number; error?: string }> => {
     setIsImporting(true);
+
+    // Reset progress
+    setImportProgress({
+      current: 0,
+      total: data.length,
+      currentBatch: 0,
+      totalBatches: 0,
+      percentage: 0,
+    });
+
     try {
-      const result = await importParticipants(data);
-      if (result.success) {
-        return { success: true, imported: data.length };
-      } else {
-        return { success: false, error: result.error };
+      const BATCH_SIZE = 100; // Process 100 participants at a time
+      const totalBatches = Math.ceil(data.length / BATCH_SIZE);
+      let totalImported = 0;
+      const errors: string[] = [];
+
+      setImportProgress(prev => ({
+        ...prev,
+        totalBatches,
+      }));
+
+      // Process data in batches
+      for (let i = 0; i < data.length; i += BATCH_SIZE) {
+        const batch = data.slice(i, i + BATCH_SIZE);
+        const currentBatch = Math.floor(i / BATCH_SIZE) + 1;
+
+        setImportProgress(prev => ({
+          ...prev,
+          currentBatch,
+          current: i,
+          percentage: Math.round((i / data.length) * 100),
+        }));
+
+        console.log(
+          `Processing batch ${currentBatch}/${totalBatches} (${batch.length} participants)`
+        );
+
+        try {
+          const result = await importParticipants(batch);
+          if (result.success) {
+            totalImported += batch.length;
+            console.log(
+              `Batch ${currentBatch} completed: ${batch.length} participants imported`
+            );
+          } else {
+            const error = `Batch ${currentBatch} failed: ${result.error}`;
+            console.error(error);
+            errors.push(error);
+
+            // Continue with other batches even if one fails
+            // You could also choose to stop here by breaking the loop
+          }
+        } catch (batchError) {
+          const error = `Batch ${currentBatch} error: ${batchError instanceof Error ? batchError.message : "Unknown error"}`;
+          console.error(error);
+          errors.push(error);
+        }
+
+        // Small delay between batches to prevent overwhelming the server
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
+
+      // Final progress update
+      setImportProgress({
+        current: data.length,
+        total: data.length,
+        currentBatch: totalBatches,
+        totalBatches,
+        percentage: 100,
+      });
+
+      if (errors.length > 0) {
+        return {
+          success: false,
+          error: `Partial import completed. ${totalImported}/${data.length} participants imported. Errors: ${errors.join("; ")}`,
+        };
+      }
+
+      return { success: true, imported: totalImported };
     } catch (error) {
       console.error("Import error:", error);
       return {
@@ -522,6 +770,13 @@ export function useExcelImport(clusterId: string) {
     setWorkbook(null);
     setIsProcessing(false);
     setIsImporting(false);
+    setImportProgress({
+      current: 0,
+      total: 0,
+      currentBatch: 0,
+      totalBatches: 0,
+      percentage: 0,
+    });
   };
 
   return {
@@ -530,6 +785,7 @@ export function useExcelImport(clusterId: string) {
     validationErrors,
     isProcessing,
     isImporting,
+    importProgress,
     parseFile,
     validateData,
     importData,
