@@ -1,7 +1,7 @@
 "use client";
 
 import { columns } from "@/features/locations/components/data-table/subcounties-columns";
-import { ReusableDataTable } from "@/components/ui/reusable-data-table";
+import { DataTable } from "@/components/ui/data-table";
 import { subCounties, districts, counties, countries } from "@/lib/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
 import { AddSubCountyDialog } from "@/features/locations/components/dialogs/add-subcounty-dialog";
@@ -21,7 +21,7 @@ interface SubCountiesTableProps {
 export function SubCountiesTable({ data }: SubCountiesTableProps) {
   return (
     <div className="w-full">
-      <ReusableDataTable
+      <DataTable
         columns={columns}
         data={data}
         filterColumn="name"
@@ -30,7 +30,7 @@ export function SubCountiesTable({ data }: SubCountiesTableProps) {
         showPagination={true}
         showRowSelection={true}
         pageSize={10}
-        customActions={
+        actionButtons={
           <AddSubCountyDialog>
             <Button size="sm">
               <Plus className="mr-2 h-4 w-4" />

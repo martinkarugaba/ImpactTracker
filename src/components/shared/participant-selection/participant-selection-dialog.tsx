@@ -233,6 +233,12 @@ export function ParticipantSelectionDialog({
         // Employment details
         employmentType: data.employmentType || null,
         employmentSector: data.employmentSector || null,
+        // Location IDs (when available from mapping)
+        country_id: data.country_id || null,
+        district_id: data.district_id || null,
+        subcounty_id: data.subcounty_id || null,
+        parish_id: data.parish_id || null,
+        village_id: data.village_id || null,
       };
 
       const result = await createParticipant.mutateAsync(newParticipantData);
@@ -347,13 +353,13 @@ export function ParticipantSelectionDialog({
                   enterpriseAdults: "0",
                   // Skills fields
                   hasVocationalSkills: "no",
-                  vocationalSkillsParticipations: "0",
-                  vocationalSkillsCompletions: "0",
-                  vocationalSkillsCertifications: "0",
+                  vocationalSkillsParticipations: [],
+                  vocationalSkillsCompletions: [],
+                  vocationalSkillsCertifications: [],
                   hasSoftSkills: "no",
-                  softSkillsParticipations: "0",
-                  softSkillsCompletions: "0",
-                  softSkillsCertifications: "0",
+                  softSkillsParticipations: [],
+                  softSkillsCompletions: [],
+                  softSkillsCertifications: [],
                   hasBusinessSkills: "no",
                   // Employment details
                   employmentType: "unemployed",

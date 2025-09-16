@@ -111,6 +111,12 @@ export const participants = pgTable("participants", {
   subCounty: text("sub_county").notNull(),
   parish: text("parish").notNull(),
   village: text("village").notNull(),
+  // Location IDs for better data integrity (when location tables are available)
+  country_id: uuid("country_id"),
+  district_id: uuid("district_id"),
+  subcounty_id: uuid("subcounty_id"),
+  parish_id: uuid("parish_id"),
+  village_id: uuid("village_id"),
   sex: text("sex").notNull(),
   age: integer("age"),
   dateOfBirth: timestamp("date_of_birth"),

@@ -112,6 +112,12 @@ export function EditParticipantDialog({
         individualSaving: "no",
         groupSaving: "no",
         locationSetting: null,
+        // Location IDs (convert undefined to null)
+        country_id: data.country_id || null,
+        district_id: data.district_id || null,
+        subcounty_id: data.subcounty_id || null,
+        parish_id: data.parish_id || null,
+        village_id: data.village_id || null,
       };
 
       const result = await updateParticipant.mutateAsync({
@@ -226,6 +232,12 @@ export function EditParticipantDialog({
     // Employment Details
     employmentType: undefined,
     employmentSector: undefined,
+    // Location IDs (when available from participant data)
+    country_id: participant.country_id || undefined,
+    district_id: participant.district_id || undefined,
+    subcounty_id: participant.subcounty_id || undefined,
+    parish_id: participant.parish_id || undefined,
+    village_id: participant.village_id || undefined,
   };
 
   return (

@@ -31,6 +31,12 @@ export async function getParticipant(id: string): Promise<ParticipantResponse> {
         parish: participants.parish,
         village: participants.village,
         country: participants.country,
+        // Location IDs
+        country_id: participants.country_id,
+        district_id: participants.district_id,
+        subcounty_id: participants.subcounty_id,
+        parish_id: participants.parish_id,
+        village_id: participants.village_id,
         isPWD: participants.isPWD,
         disabilityType: participants.disabilityType,
         isMother: participants.isMother,

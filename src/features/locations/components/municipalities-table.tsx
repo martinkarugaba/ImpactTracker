@@ -4,7 +4,7 @@ import { municipalities } from "@/lib/db/schema";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { ReusableDataTable } from "@/components/ui/reusable-data-table";
+import { DataTable } from "@/components/ui/data-table";
 import { deleteMunicipality } from "@/features/locations/actions/municipalities";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -59,14 +59,14 @@ export function MunicipalitiesTable({
         </div>
       )}
 
-      <ReusableDataTable
+      <DataTable
         columns={columns}
         data={municipalities}
         showRowSelection={true}
         onRowSelectionChange={setSelectedRows}
         filterColumn="name"
         filterPlaceholder="Filter municipalities..."
-        customActions={
+        actionButtons={
           <Button className="h-8 px-2 lg:px-3">
             <Plus className="h-4 w-4" />
             <span className="ml-2 lg:hidden">Add</span>

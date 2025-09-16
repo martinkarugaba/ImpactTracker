@@ -1,7 +1,7 @@
 "use client";
 
 import { columns } from "@/features/locations/components/data-table/parishes-columns";
-import { ReusableDataTable } from "@/components/ui/reusable-data-table";
+import { DataTable } from "@/components/ui/data-table";
 import {
   parishes,
   countries,
@@ -28,7 +28,7 @@ interface ParishesTableProps {
 export function ParishesTable({ data }: ParishesTableProps) {
   return (
     <div className="w-full">
-      <ReusableDataTable
+      <DataTable
         columns={columns}
         data={data}
         filterColumn="name"
@@ -37,7 +37,7 @@ export function ParishesTable({ data }: ParishesTableProps) {
         showPagination={true}
         showRowSelection={true}
         pageSize={10}
-        customActions={
+        actionButtons={
           <AddParishDialog>
             <Button size="sm">
               <Plus className="mr-2 h-4 w-4" />

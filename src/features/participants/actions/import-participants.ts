@@ -275,6 +275,12 @@ export async function importParticipants(data: ParticipantFormValues[]) {
         subCounty: participant.subCounty,
         parish: participant.parish,
         village: participant.village,
+        // Location IDs (when mapping was successful)
+        country_id: participant.country_id || null,
+        district_id: participant.district_id || null,
+        subcounty_id: participant.subcounty_id || null,
+        parish_id: participant.parish_id || null,
+        village_id: participant.village_id || null,
         designation: participant.designation,
         enterprise: participant.enterprise,
         // Basic required fields

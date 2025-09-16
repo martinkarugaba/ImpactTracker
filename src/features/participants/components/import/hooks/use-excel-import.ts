@@ -13,6 +13,7 @@ import { importParticipants } from "@/features/participants/actions/import-parti
 import { type ValidationError } from "@/features/participants/components/import/types";
 import { type ParticipantFormValues } from "@/features/participants/components/participant-form";
 import { getAgeFromDateOfBirth } from "../../../lib/age-calculator";
+// import { mapLocationNames } from "@/features/locations/actions/location-search";
 
 // Helper function to validate enum values
 function validateEnumValue<T extends string>(
@@ -116,13 +117,13 @@ export function useExcelImport(clusterId: string) {
     return found ? found.id : fallbackValue;
   };
 
-  const validateParticipantData = (
+  const validateParticipantData = async (
     data: Record<string, unknown>,
     _rowIndex: number
-  ): {
+  ): Promise<{
     participant: ParticipantFormValues | null;
     errors: ValidationError[];
-  } => {
+  }> => {
     const errors: ValidationError[] = [];
 
     // Extract and validate name - only require first name, last name is optional
@@ -317,6 +318,31 @@ export function useExcelImport(clusterId: string) {
     const parishName = (data.Parish || data.parish || "").toString();
     const villageName = (data.Village || data.village || "").toString();
 
+    // Location mapping temporarily disabled until location tables are set up
+    // const locationMapping = await mapLocationNames({
+    //   country: countryName,
+    //   district: districtName,
+    //   subCounty: subCountyName,
+    //   parish: parishName,
+    //   village: villageName,
+    // });
+
+    // Use original names for now
+    const finalCountry = countryName;
+    const finalDistrict = districtName;
+    const finalSubCounty = subCountyName;
+    const finalParish = parishName;
+    const finalVillage = villageName;
+
+    // Store location IDs as null for now (no mapping)
+    const locationIds = {
+      country_id: null,
+      district_id: null,
+      subcounty_id: null,
+      parish_id: null,
+      village_id: null,
+    };
+
     const orgKeyword = mapSubCountyToOrgKeyword(subCountyName);
     const mappedOrgId = resolveOrganizationId(orgKeyword);
 
@@ -376,11 +402,17 @@ export function useExcelImport(clusterId: string) {
       project_id: (data.Project || data.project_id || "").toString(),
       cluster_id: clusterId,
       organization_id: organizationIdToUse || "",
-      country: countryName,
-      district: districtName,
-      subCounty: subCountyName,
-      parish: parishName,
-      village: villageName,
+      country: finalCountry,
+      district: finalDistrict,
+      subCounty: finalSubCounty,
+      parish: finalParish,
+      village: finalVillage,
+      // Store location IDs when available
+      country_id: locationIds.country_id || undefined,
+      district_id: locationIds.district_id || undefined,
+      subcounty_id: locationIds.subcounty_id || undefined,
+      parish_id: locationIds.parish_id || undefined,
+      village_id: locationIds.village_id || undefined,
       designation: (
         data["Employment status"] ||
         data.Designation ||
@@ -776,7 +808,7 @@ export function useExcelImport(clusterId: string) {
 
       const validParticipants: ParticipantFormValues[] = [];
 
-      jsonData.forEach((row, index) => {
+      for (const [index, row] of jsonData.entries()) {
         // Debug: Log the first row to see column headers
         if (index === 0) {
           console.log("Excel columns found:", Object.keys(row));
@@ -796,10 +828,10 @@ export function useExcelImport(clusterId: string) {
         );
 
         if (!hasAnyData) {
-          return; // Skip empty rows
+          continue; // Skip empty rows
         }
 
-        const { participant } = validateParticipantData(row, index);
+        const { participant } = await validateParticipantData(row, index);
 
         // Debug: Log participant data for first few rows
         if (index < 3) {
@@ -809,13 +841,17 @@ export function useExcelImport(clusterId: string) {
             dateOfBirth: participant?.dateOfBirth,
             isPWD: participant?.isPWD,
             age: participant?.age,
+            country: participant?.country,
+            district: participant?.district,
+            country_id: participant?.country_id,
+            district_id: participant?.district_id,
           });
         }
 
         if (participant) {
           validParticipants.push(participant);
         }
-      });
+      }
 
       setValidationErrors([]); // No errors since we use defaults
       setParsedData(validParticipants);

@@ -227,8 +227,16 @@ export function ImportParticipants({
         )}
       </DialogTrigger>
       <DialogContent
-        className="max-h-[90vh] !w-[98vw] !max-w-none overflow-auto"
-        style={{ width: "98vw", maxWidth: "1600px" }}
+        className={`max-h-[90vh] overflow-auto ${
+          currentStep === "preview"
+            ? "!w-[98vw] !max-w-none"
+            : "w-full max-w-2xl"
+        }`}
+        style={
+          currentStep === "preview"
+            ? { width: "98vw", maxWidth: "1600px" }
+            : undefined
+        }
       >
         <DialogHeader>
           <DialogTitle>{getStepTitle()}</DialogTitle>

@@ -52,6 +52,12 @@ const formSchema = z
     subCounty: z.string().min(2, "Sub-county is required"),
     parish: z.string().min(2, "Parish is required"),
     village: z.string().min(2, "Village is required"),
+    // Location IDs (optional, used when mapping is successful)
+    country_id: z.string().optional(),
+    district_id: z.string().optional(),
+    subcounty_id: z.string().optional(),
+    parish_id: z.string().optional(),
+    village_id: z.string().optional(),
     sex: z.enum(["male", "female", "other"]),
     age: z.string().optional(),
     dateOfBirth: z.string().optional(),

@@ -137,6 +137,12 @@ export function ParticipantDialogs({
         individualSaving: "no",
         groupSaving: "no",
         locationSetting: null,
+        // Location IDs (convert undefined to null)
+        country_id: data.country_id || null,
+        district_id: data.district_id || null,
+        subcounty_id: data.subcounty_id || null,
+        parish_id: data.parish_id || null,
+        village_id: data.village_id || null,
       };
 
       const result = await createParticipant.mutateAsync(createData);
@@ -223,6 +229,12 @@ export function ParticipantDialogs({
         individualSaving: "no",
         groupSaving: "no",
         locationSetting: null,
+        // Location IDs (convert undefined to null)
+        country_id: data.country_id || null,
+        district_id: data.district_id || null,
+        subcounty_id: data.subcounty_id || null,
+        parish_id: data.parish_id || null,
+        village_id: data.village_id || null,
       };
 
       const result = await updateParticipant.mutateAsync({
