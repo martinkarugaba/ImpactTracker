@@ -119,7 +119,7 @@ export function useExcelImport(clusterId: string) {
       firstName = "Unknown"; // Default value instead of error
     }
 
-    // Validate and normalize sex - use default if missing
+    // Validate and normalize sex/gender - use default if missing
     let sex = (data.Sex || data.sex || data.Gender || data.gender || "")
       .toString()
       .toLowerCase();
@@ -210,12 +210,18 @@ export function useExcelImport(clusterId: string) {
       );
     }
 
-    // Validate contact - use empty string if missing
+    // Validate contact/phone - use empty string if missing
     const contact = (
       data["Phone No."] ||
+      data["Phone No"] ||
       data.Phone ||
+      data.phone ||
       data.Contact ||
       data.contact ||
+      data.Mobile ||
+      data.mobile ||
+      data.Telephone ||
+      data.telephone ||
       ""
     )
       .toString()
@@ -303,7 +309,21 @@ export function useExcelImport(clusterId: string) {
       contact: contact.trim(),
       isPWD: isPWDValue,
       isMother: "no",
-      isRefugee: "no",
+      isRefugee: (
+        data["Refugee"] ||
+        data["refugee"] ||
+        data["REFUGEE"] ||
+        data.isRefugee ||
+        data.refugee ||
+        data["Refugee Status"] ||
+        data["refugee status"] ||
+        ""
+      )
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
       project_id: (data.Project || data.project_id || "").toString(),
       cluster_id: clusterId,
       organization_id: organizationIdToUse || "",
@@ -395,19 +415,28 @@ export function useExcelImport(clusterId: string) {
 
       // NEW FIELDS FOR IMPORT
       // Personal Information
-      maritalStatus: validateEnumValue(data["Marital Status"] as string, [
-        "single",
-        "married",
-        "divorced",
-        "widowed",
-      ]),
-      educationLevel: validateEnumValue(data["Education Level"] as string, [
-        "none",
-        "primary",
-        "secondary",
-        "tertiary",
-        "university",
-      ]),
+      maritalStatus: validateEnumValue(
+        (data["Marital Status"] ||
+          data["Marital status"] ||
+          data["MARITAL STATUS"] ||
+          data.maritalStatus ||
+          data.MaritalStatus ||
+          data["marital status"] ||
+          "") as string,
+        ["single", "married", "divorced", "widowed"]
+      ),
+      educationLevel: validateEnumValue(
+        (data["Education Level"] ||
+          data["Education level"] ||
+          data["EDUCATION LEVEL"] ||
+          data.educationLevel ||
+          data.EducationLevel ||
+          data["education level"] ||
+          data.Education ||
+          data.education ||
+          "") as string,
+        ["none", "primary", "secondary", "tertiary", "university"]
+      ),
       sourceOfIncome: validateEnumValue(data["Source of Income"] as string, [
         "employment",
         "business",
@@ -421,7 +450,19 @@ export function useExcelImport(clusterId: string) {
         ["youth", "women", "pwd", "elderly", "refugee", "host"]
       ),
       refugeeLocation: (data["Refugee location"] || "").toString(),
-      isActiveStudent: (data["Active Student"] || "")
+      isActiveStudent: (
+        data["Active Student"] ||
+        data["Active student"] ||
+        data["ACTIVE STUDENT"] ||
+        data["active student"] ||
+        data.isActiveStudent ||
+        data.activeStudent ||
+        data["Student"] ||
+        data["student"] ||
+        data["Currently Student"] ||
+        data["currently student"] ||
+        ""
+      )
         .toString()
         .toLowerCase()
         .includes("yes")
@@ -429,16 +470,45 @@ export function useExcelImport(clusterId: string) {
         : "no",
 
       // VSLA Information
-      isSubscribedToVSLA: (data["Subscribed To VSLA"] || "")
+      isSubscribedToVSLA: (
+        data["Subscribed To VSLA"] ||
+        data["Subscribed to VSLA"] ||
+        data["SUBSCRIBED TO VSLA"] ||
+        data["VSLA Subscription"] ||
+        data["VSLA Member"] ||
+        data["VSLA member"] ||
+        data.isSubscribedToVSLA ||
+        data.vslaSubscription ||
+        ""
+      )
         .toString()
         .toLowerCase()
         .includes("yes")
         ? "yes"
         : "no",
-      vslaName: (data["VSLA Name"] || "").toString(),
+      vslaName: (
+        data["VSLA Name"] ||
+        data["VSLA name"] ||
+        data["vsla name"] ||
+        data.vslaName ||
+        data.VSLAName ||
+        data["Group Name"] ||
+        data["Group name"] ||
+        ""
+      ).toString(),
 
       // Teen Mother
-      isTeenMother: (data["Teen Mother"] || "")
+      isTeenMother: (
+        data["Teen Mother"] ||
+        data["Teen mother"] ||
+        data["TEEN MOTHER"] ||
+        data["teen mother"] ||
+        data.isTeenMother ||
+        data.TeenMother ||
+        data["Teenage Mother"] ||
+        data["teenage mother"] ||
+        ""
+      )
         .toString()
         .toLowerCase()
         .includes("yes")
@@ -446,28 +516,70 @@ export function useExcelImport(clusterId: string) {
         : "no",
 
       // Enterprise Information
-      ownsEnterprise: (data["Owns Enterprise"] || "")
+      ownsEnterprise: (
+        data["Owns Enterprise"] ||
+        data["Owns enterprise"] ||
+        data["OWNS ENTERPRISE"] ||
+        data["owns enterprise"] ||
+        data.ownsEnterprise ||
+        data.OwnsEnterprise ||
+        data["Has Business"] ||
+        data["Has business"] ||
+        data["Business Owner"] ||
+        data["business owner"] ||
+        ""
+      )
         .toString()
         .toLowerCase()
         .includes("yes")
         ? "yes"
         : "no",
-      enterpriseName: (data["Enterprise Name"] || "").toString(),
-      enterpriseSector: validateEnumValue(data["Enterprise Sector"] as string, [
-        "agriculture",
-        "retail",
-        "services",
-        "manufacturing",
-        "construction",
-        "transport",
-        "other",
-      ]),
-      enterpriseSize: validateEnumValue(data["Enterprise Size"] as string, [
-        "micro",
-        "small",
-        "medium",
-        "large",
-      ]),
+      enterpriseName: (
+        data["Enterprise Name"] ||
+        data["Enterprise name"] ||
+        data["ENTERPRISE NAME"] ||
+        data["enterprise name"] ||
+        data.enterpriseName ||
+        data.EnterpriseName ||
+        data["Business Name"] ||
+        data["Business name"] ||
+        data["business name"] ||
+        ""
+      ).toString(),
+      enterpriseSector: validateEnumValue(
+        (data["Enterprise Sector"] ||
+          data["Enterprise sector"] ||
+          data["ENTERPRISE SECTOR"] ||
+          data["enterprise sector"] ||
+          data.enterpriseSector ||
+          data.EnterpriseSector ||
+          data["Business Sector"] ||
+          data["Business sector"] ||
+          data["business sector"] ||
+          "") as string,
+        [
+          "agriculture",
+          "retail",
+          "services",
+          "manufacturing",
+          "construction",
+          "transport",
+          "other",
+        ]
+      ),
+      enterpriseSize: validateEnumValue(
+        (data["Enterprise Size"] ||
+          data["Enterprise size"] ||
+          data["ENTERPRISE SIZE"] ||
+          data["enterprise size"] ||
+          data.enterpriseSize ||
+          data.EnterpriseSize ||
+          data["Business Size"] ||
+          data["Business size"] ||
+          data["business size"] ||
+          "") as string,
+        ["micro", "small", "medium", "large"]
+      ),
       enterpriseYouthMale: String(
         parseInt(String(data["Ent. Youth Male"] || "0"), 10) || "0"
       ),
@@ -522,21 +634,38 @@ export function useExcelImport(clusterId: string) {
         : "no",
 
       // Employment Details (more specific than existing employmentStatus)
-      employmentType: validateEnumValue(data["Employment type"] as string, [
-        "formal",
-        "informal",
-        "self-employed",
-        "unemployed",
-      ]),
-      employmentSector: validateEnumValue(data["Employment sector"] as string, [
-        "agriculture",
-        "manufacturing",
-        "services",
-        "trade",
-        "education",
-        "health",
-        "other",
-      ]),
+      employmentType: validateEnumValue(
+        (data["Employment type"] ||
+          data["Employment Type"] ||
+          data["EMPLOYMENT TYPE"] ||
+          data["employment type"] ||
+          data.employmentType ||
+          data.EmploymentType ||
+          data["Type of Employment"] ||
+          data["type of employment"] ||
+          "") as string,
+        ["formal", "informal", "self-employed", "unemployed"]
+      ),
+      employmentSector: validateEnumValue(
+        (data["Employment sector"] ||
+          data["Employment Sector"] ||
+          data["EMPLOYMENT SECTOR"] ||
+          data["employment sector"] ||
+          data.employmentSector ||
+          data.EmploymentSector ||
+          data["Sector of Employment"] ||
+          data["sector of employment"] ||
+          "") as string,
+        [
+          "agriculture",
+          "manufacturing",
+          "services",
+          "trade",
+          "education",
+          "health",
+          "other",
+        ]
+      ),
 
       mainChallenge: (
         data["Main Challenge"] ||

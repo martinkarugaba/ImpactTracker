@@ -1,29 +1,49 @@
 import * as XLSX from "xlsx";
 
 export function downloadTemplate() {
-  // Sample data with expected format
+  // Sample data with expected format including all requested fields
   const sampleData = [
     {
-      firstName: "John",
-      lastName: "Doe",
-      sex: "male", // Accepted values: male, female, other
-      age: "25",
-      contact: "+256700000000",
-      isPWD: "no", // yes or no
-      isMother: "no", // yes or no
-      isRefugee: "no", // yes or no
-      project_id: "", // Required: Project ID from your system
-      cluster_id: "", // Required: Cluster ID from your system
-      organization_id: "", // Required: Organization ID from your system
-      country: "Uganda",
-      district: "Sample District",
-      subCounty: "Sample Sub County",
-      parish: "Sample Parish",
-      village: "Sample Village",
-      designation: "Farmer",
-      enterprise: "Agriculture",
-      noOfTrainings: "0",
-      isActive: "yes", // yes or no
+      Name: "John Doe", // Or use separate FirstName/LastName columns
+      Gender: "male", // Accepted values: male, female, other
+      "Marital Status": "single", // single, married, divorced, widowed
+      Phone: "+256700000000", // Phone number
+      "Date of Birth": "1999-01-01", // YYYY-MM-DD format
+      Disabled: "no", // yes or no
+      Subcounty: "Sample Sub County",
+      District: "Sample District",
+      Parish: "Sample Parish",
+      Village: "Sample Village",
+      Project: "", // Project name or leave empty for default
+      "Education Level": "secondary", // none, primary, secondary, tertiary, university
+      "Source of Income": "employment", // employment, business, agriculture, remittances, other
+      "Subscribed To VSLA": "yes", // yes or no
+      "VSLA Name": "Sample VSLA Group",
+      "Teen Mother": "no", // yes or no
+      "Owns Enterprise": "yes", // yes or no
+      "Enterprise Name": "Sample Business",
+      "Enterprise Sector": "agriculture", // agriculture, retail, services, manufacturing, construction, transport, other
+      "Enterprise Size": "micro", // micro, small, medium, large
+      "Ent. Youth Male": "1", // Number of youth males in enterprise
+      "Ent. Youth Female": "2", // Number of youth females in enterprise
+      "Ent. Adults": "3", // Number of adults in enterprise
+      "Has Vocational Skills": "yes", // yes or no
+      "Vocational Skills Participations": "2", // Number
+      "Vocational Skills Completions": "1", // Number
+      "Vocational Skills Certifications": "1", // Number
+      "Has Soft Skills": "yes", // yes or no
+      "Soft Skills Participations": "1", // Number
+      "Soft Skills Completions": "1", // Number
+      "Soft Skills Certifications": "0", // Number
+      "Has Business Skills": "no", // yes or no
+      Nationality: "Ugandan",
+      "Population Segment": "youth", // youth, women, pwd, elderly, refugee, host
+      Refugee: "no", // yes or no
+      location: "rural", // urban or rural
+      "Employment status": "employed", // employed, unemployed, self-employed
+      "Employment type": "formal", // formal, informal, self-employed, unemployed
+      "Employment sector": "agriculture", // agriculture, manufacturing, services, trade, education, health, other
+      "Active Student": "no", // yes or no
     },
   ];
 
@@ -32,28 +52,7 @@ export function downloadTemplate() {
   XLSX.utils.book_append_sheet(wb, ws, "Participants");
 
   // Add column widths for better readability
-  ws["!cols"] = [
-    { wch: 15 }, // firstName
-    { wch: 15 }, // lastName
-    { wch: 8 }, // sex
-    { wch: 6 }, // age
-    { wch: 15 }, // contact
-    { wch: 6 }, // isPWD
-    { wch: 8 }, // isMother
-    { wch: 8 }, // isRefugee
-    { wch: 36 }, // project_id
-    { wch: 36 }, // cluster_id
-    { wch: 36 }, // organization_id
-    { wch: 15 }, // country
-    { wch: 15 }, // district
-    { wch: 15 }, // subCounty
-    { wch: 15 }, // parish
-    { wch: 15 }, // village
-    { wch: 15 }, // designation
-    { wch: 15 }, // enterprise
-    { wch: 12 }, // noOfTrainings
-    { wch: 8 }, // isActive
-  ];
+  ws["!cols"] = Array(40).fill({ wch: 20 }); // Set all columns to width 20
 
   XLSX.writeFile(wb, "participants-template.xlsx");
 }

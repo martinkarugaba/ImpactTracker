@@ -196,19 +196,29 @@ export function DataPreview({
       </div>
 
       {/* Data Table */}
-      <div className="rounded-lg border">
+      <div className="overflow-x-auto rounded-lg border">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              <TableHead>Sex</TableHead>
-              <TableHead>Age</TableHead>
+              <TableHead>Gender</TableHead>
+              <TableHead>Marital Status</TableHead>
+              <TableHead>Phone</TableHead>
               <TableHead>Date of Birth</TableHead>
-              <TableHead>PWD</TableHead>
-              <TableHead>Contact</TableHead>
+              <TableHead>Age</TableHead>
+              <TableHead>Disabled</TableHead>
               <TableHead>Location</TableHead>
+              <TableHead>Project</TableHead>
+              <TableHead>Education Level</TableHead>
+              <TableHead>Source of Income</TableHead>
+              <TableHead>VSLA</TableHead>
+              <TableHead>Teen Mother</TableHead>
+              <TableHead>Enterprise</TableHead>
+              <TableHead>Nationality</TableHead>
+              <TableHead>Population Segment</TableHead>
+              <TableHead>Refugee</TableHead>
               <TableHead>Employment</TableHead>
-              <TableHead>Skills</TableHead>
+              <TableHead>Active Student</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -217,8 +227,15 @@ export function DataPreview({
                 <TableCell className="font-medium">
                   {participant.firstName} {participant.lastName}
                 </TableCell>
-                <TableCell>{participant.sex}</TableCell>
-                <TableCell>{participant.age}</TableCell>
+                <TableCell>
+                  <span className="capitalize">{participant.sex}</span>
+                </TableCell>
+                <TableCell>
+                  <span className="capitalize">
+                    {participant.maritalStatus || "—"}
+                  </span>
+                </TableCell>
+                <TableCell>{participant.contact || "—"}</TableCell>
                 <TableCell>
                   {participant.dateOfBirth ? (
                     <span className="text-sm">
@@ -228,6 +245,7 @@ export function DataPreview({
                     <span className="text-sm text-gray-400">—</span>
                   )}
                 </TableCell>
+                <TableCell>{participant.age || "—"}</TableCell>
                 <TableCell>
                   <span
                     className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
@@ -239,15 +257,129 @@ export function DataPreview({
                     {participant.isPWD === "yes" ? "Yes" : "No"}
                   </span>
                 </TableCell>
-                <TableCell>{participant.contact}</TableCell>
                 <TableCell>
                   <div className="text-sm">
-                    <div>{participant.district}</div>
+                    <div className="font-medium">{participant.district}</div>
                     <div className="text-gray-500">{participant.subCounty}</div>
+                    <div className="text-xs text-gray-400">
+                      {participant.parish}, {participant.village}
+                    </div>
                   </div>
                 </TableCell>
-                <TableCell>{participant.employmentStatus}</TableCell>
-                <TableCell>{participant.skillOfInterest}</TableCell>
+                <TableCell>
+                  <span className="text-xs text-gray-500">
+                    {participant.project_id ? "Mapped" : "Default"}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm capitalize">
+                    {participant.educationLevel || "—"}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm capitalize">
+                    {participant.sourceOfIncome || "—"}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm">
+                    <div
+                      className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                        participant.isSubscribedToVSLA === "yes"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {participant.isSubscribedToVSLA === "yes" ? "Yes" : "No"}
+                    </div>
+                    {participant.vslaName && (
+                      <div className="mt-1 text-xs text-gray-500">
+                        {participant.vslaName}
+                      </div>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                      participant.isTeenMother === "yes"
+                        ? "bg-pink-100 text-pink-800"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {participant.isTeenMother === "yes" ? "Yes" : "No"}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm">
+                    <div
+                      className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                        participant.ownsEnterprise === "yes"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {participant.ownsEnterprise === "yes" ? "Yes" : "No"}
+                    </div>
+                    {participant.enterpriseName && (
+                      <div className="mt-1 text-xs text-gray-500">
+                        {participant.enterpriseName}
+                      </div>
+                    )}
+                    {participant.enterpriseSector && (
+                      <div className="text-xs text-gray-400 capitalize">
+                        {participant.enterpriseSector}
+                      </div>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm">{participant.nationality}</span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm capitalize">
+                    {participant.populationSegment || "—"}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                      participant.isRefugee === "yes"
+                        ? "bg-orange-100 text-orange-800"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {participant.isRefugee === "yes" ? "Yes" : "No"}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm">
+                    <div className="capitalize">
+                      {participant.employmentStatus}
+                    </div>
+                    {participant.employmentType && (
+                      <div className="text-xs text-gray-500 capitalize">
+                        {participant.employmentType}
+                      </div>
+                    )}
+                    {participant.employmentSector && (
+                      <div className="text-xs text-gray-400 capitalize">
+                        {participant.employmentSector}
+                      </div>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                      participant.isActiveStudent === "yes"
+                        ? "bg-purple-100 text-purple-800"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {participant.isActiveStudent === "yes" ? "Yes" : "No"}
+                  </span>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

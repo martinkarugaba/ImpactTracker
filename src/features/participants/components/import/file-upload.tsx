@@ -58,18 +58,53 @@ export function FileUpload({
       </div>
 
       <div className="text-xs text-gray-500">
-        <h4 className="font-medium">Expected columns:</h4>
-        <div className="mt-1 grid grid-cols-2 gap-1">
-          <span>• Name (or FirstName/LastName)</span>
-          <span>• Sex/Gender</span>
-          <span>• Age</span>
-          <span>• Phone No./Contact</span>
+        <h4 className="font-medium">Expected columns (Excel headers):</h4>
+        <div className="mt-2 grid grid-cols-3 gap-1 text-xs">
+          <span>• Name</span>
+          <span>• Gender</span>
+          <span>• Marital Status</span>
+          <span>• Phone</span>
+          <span>• Date of Birth</span>
+          <span>• Disabled</span>
+          <span>• Subcounty</span>
           <span>• District</span>
-          <span>• SubCounty</span>
           <span>• Parish</span>
           <span>• Village</span>
+          <span>• Project</span>
+          <span>• Education Level</span>
+          <span>• Source of Income</span>
+          <span>• Subscribed To VSLA</span>
+          <span>• VSLA Name</span>
+          <span>• Teen Mother</span>
+          <span>• Owns Enterprise</span>
+          <span>• Enterprise Name</span>
+          <span>• Enterprise Sector</span>
+          <span>• Enterprise Size</span>
+          <span>• Ent. Youth Male</span>
+          <span>• Ent. Youth Female</span>
+          <span>• Ent. Adults</span>
+          <span>• Has Vocational Skills</span>
+          <span>• Vocational Skills Participations</span>
+          <span>• Vocational Skills Completions</span>
+          <span>• Vocational Skills Certifications</span>
+          <span>• Has Soft Skills</span>
+          <span>• Soft Skills Participations</span>
+          <span>• Soft Skills Completions</span>
+          <span>• Soft Skills Certifications</span>
+          <span>• Has Business Skills</span>
+          <span>• Nationality</span>
+          <span>• Population Segment</span>
+          <span>• Refugee</span>
+          <span>• location</span>
           <span>• Employment status</span>
-          <span>• Skill of Interest</span>
+          <span>• Employment type</span>
+          <span>• Employment sector</span>
+          <span>• Active Student</span>
+        </div>
+        <div className="mt-2 text-xs text-amber-600">
+          <strong>Note:</strong> Column names are flexible - the system will
+          automatically map variations like "Name" or "Full Name", "Phone" or
+          "Contact", etc.
         </div>
       </div>
     </div>
