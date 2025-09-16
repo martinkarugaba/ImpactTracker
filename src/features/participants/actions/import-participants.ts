@@ -277,7 +277,7 @@ export async function importParticipants(data: ParticipantFormValues[]) {
         village: participant.village,
         designation: participant.designation,
         enterprise: participant.enterprise,
-        // Add new fields
+        // Basic required fields
         isPermanentResident: participant.isPermanentResident,
         areParentsAlive: participant.areParentsAlive,
         numberOfChildren: parseInt(participant.numberOfChildren),
@@ -287,6 +287,69 @@ export async function importParticipants(data: ParticipantFormValues[]) {
         skillOfInterest: participant.skillOfInterest || null,
         expectedImpact: participant.expectedImpact || null,
         isWillingToParticipate: participant.isWillingToParticipate,
+
+        // NEW FIELDS - Personal Information
+        maritalStatus: participant.maritalStatus || null,
+        educationLevel: participant.educationLevel || null,
+        sourceOfIncome: participant.sourceOfIncome || null,
+        nationality: participant.nationality || "Ugandan",
+        populationSegment: participant.populationSegment || null,
+        refugeeLocation: participant.refugeeLocation || null,
+        isActiveStudent: participant.isActiveStudent || "no",
+
+        // VSLA Information
+        isSubscribedToVSLA: participant.isSubscribedToVSLA || "no",
+        vslaName: participant.vslaName || null,
+
+        // Teen Mother
+        isTeenMother: participant.isTeenMother || "no",
+
+        // Enterprise Information
+        ownsEnterprise: participant.ownsEnterprise || "no",
+        enterpriseName: participant.enterpriseName || null,
+        enterpriseSector: participant.enterpriseSector || null,
+        enterpriseSize: participant.enterpriseSize || null,
+        enterpriseYouthMale: parseInt(participant.enterpriseYouthMale) || 0,
+        enterpriseYouthFemale: parseInt(participant.enterpriseYouthFemale) || 0,
+        enterpriseAdults: parseInt(participant.enterpriseAdults) || 0,
+
+        // Skills Information
+        hasVocationalSkills: participant.hasVocationalSkills || "no",
+        vocationalSkillsParticipations:
+          parseInt(participant.vocationalSkillsParticipations) || 0,
+        vocationalSkillsCompletions:
+          parseInt(participant.vocationalSkillsCompletions) || 0,
+        vocationalSkillsCertifications:
+          parseInt(participant.vocationalSkillsCertifications) || 0,
+
+        hasSoftSkills: participant.hasSoftSkills || "no",
+        softSkillsParticipations:
+          parseInt(participant.softSkillsParticipations) || 0,
+        softSkillsCompletions: parseInt(participant.softSkillsCompletions) || 0,
+        softSkillsCertifications:
+          parseInt(participant.softSkillsCertifications) || 0,
+
+        hasBusinessSkills: participant.hasBusinessSkills || "no",
+
+        // Employment Details
+        employmentType: participant.employmentType || null,
+        employmentSector: participant.employmentSector || null,
+
+        // Employment tracking fields (existing)
+        disabilityType: participant.disabilityType || null,
+        wageEmploymentStatus: null,
+        wageEmploymentSector: null,
+        wageEmploymentScale: null,
+        selfEmploymentStatus: null,
+        selfEmploymentSector: null,
+        businessScale: null,
+        secondaryEmploymentStatus: null,
+        secondaryEmploymentSector: null,
+        secondaryBusinessScale: null,
+        accessedLoans: participant.accessedLoans || "no",
+        individualSaving: participant.individualSaving || "no",
+        groupSaving: participant.groupSaving || "no",
+        locationSetting: participant.locationSetting || null,
       };
     });
     console.log("Data to insert (first participant):", insertData[0]);

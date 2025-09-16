@@ -231,22 +231,25 @@ export function getParticipantColumns({
       cell: ({ row }) => {
         const name =
           row.original.organizationName || row.original.organization_id;
+
+        if (!name) return <span className="text-muted-foreground">-</span>;
+
+        // Generate acronym from organization name
         const acronym = name
           .split(/\s+/)
           .map(word => word[0])
           .join("")
           .toUpperCase()
-          .slice(0, 3);
+          .slice(0, 4); // Allow up to 4 characters for better readability
 
         return (
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 text-xs font-bold text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-              {acronym}
-            </div>
-            <div className="max-w-[150px] truncate text-sm" title={name}>
-              {name}
-            </div>
-          </div>
+          <Badge
+            variant="secondary"
+            className="bg-purple-100 font-mono text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-200"
+            title={name}
+          >
+            {acronym}
+          </Badge>
         );
       },
     },

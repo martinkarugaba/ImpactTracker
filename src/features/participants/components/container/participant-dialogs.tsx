@@ -19,9 +19,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ImportParticipants } from "../import/import-participants";
 import {
-  ParticipantForm,
+  MultiStepParticipantForm,
   type ParticipantFormValues,
-} from "../participant-form";
+} from "../multi-step-participant-form";
 import { type Participant } from "../../types/types";
 import {
   useCreateParticipant,
@@ -323,7 +323,7 @@ export function ParticipantDialogs({
           }
         }}
       >
-        <DialogContent className="max-h-[90vh] w-[95vw] max-w-4xl overflow-y-auto">
+        <DialogContent className="max-h-[90vh] w-[95vw] max-w-6xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingParticipant ? "Edit Participant" : "Add New Participant"}
@@ -335,7 +335,7 @@ export function ParticipantDialogs({
             </DialogDescription>
           </DialogHeader>
 
-          <ParticipantForm
+          <MultiStepParticipantForm
             initialData={
               editingParticipant
                 ? getEditFormData(editingParticipant)

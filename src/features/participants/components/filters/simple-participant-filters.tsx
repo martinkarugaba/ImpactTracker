@@ -375,7 +375,7 @@ export function SimpleParticipantFilters({
         {/* More Filters Popover */}
         <Popover open={showAdvanced} onOpenChange={setShowAdvanced}>
           <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button variant="outline" size="default" className="gap-2">
               <Filter className="h-4 w-4" />
               More
               {activeFiltersCount > 4 && (

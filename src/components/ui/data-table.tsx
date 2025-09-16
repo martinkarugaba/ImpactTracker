@@ -344,37 +344,51 @@ function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  filterColumn?: string;
-  filterPlaceholder?: string;
-  showColumnToggle?: boolean;
+  showToolbar?: boolean;
   showPagination?: boolean;
   showRowSelection?: boolean;
   pageSize?: number;
   onRowSelectionChange?: (selectedRows: TData[]) => void;
-  actionButtons?: React.ReactNode;
-  searchValue?: string;
-  onSearchChange?: (search: string) => void;
-  isLoading?: boolean;
+  // Server-side pagination support
+  serverSideTotal?: number; // Total count from server for filtered results
+  serverSideFiltered?: number; // Total filtered count from server
+  // Column visibility
+  columnVisibility?: VisibilityState;
   rowSelection?: Record<string, boolean>;
   onRowSelectionStateChange?: (selection: Record<string, boolean>) => void;
+  // Additional props
+  filterColumn?: string;
+  filterPlaceholder?: string;
+  showColumnToggle?: boolean;
+  actionButtons?: React.ReactNode;
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
+  isLoading?: boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-  filterColumn,
-  filterPlaceholder = "Filter...",
-  showColumnToggle = true,
+  showToolbar = true,
   showPagination = true,
   showRowSelection = false,
   pageSize = 20,
   onRowSelectionChange,
+  // Server-side pagination
+  serverSideTotal,
+  serverSideFiltered,
+  // Column visibility
+  columnVisibility: externalColumnVisibility,
+  rowSelection: externalRowSelection,
+  onRowSelectionStateChange,
+  // Additional props
+  filterColumn,
+  filterPlaceholder = "Filter...",
+  showColumnToggle = true,
   actionButtons,
   searchValue,
   onSearchChange,
   isLoading = false,
-  rowSelection: externalRowSelection,
-  onRowSelectionStateChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -632,8 +646,21 @@ export function DataTable<TData, TValue>({
       {showPagination && (
         <div className="flex items-center justify-between space-x-2 py-4">
           <div className="text-muted-foreground flex-1 text-sm">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
+            {showRowSelection ? (
+              <>
+                {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                {serverSideFiltered ?? table.getFilteredRowModel().rows.length}{" "}
+                row(s) selected.
+              </>
+            ) : (
+              <>
+                Showing {Math.min(data.length, pageSize)} of{" "}
+                {serverSideTotal ?? data.length} result(s)
+                {serverSideTotal && serverSideTotal !== serverSideFiltered && (
+                  <> (filtered from {serverSideTotal} total)</>
+                )}
+              </>
+            )}
           </div>
           <div className="flex items-center space-x-2">
             <Button

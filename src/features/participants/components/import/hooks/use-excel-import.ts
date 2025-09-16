@@ -83,6 +83,25 @@ export function useExcelImport(clusterId: string) {
     enabled: !!(organization?.cluster?.id || organization?.cluster_id),
   });
 
+  // Location mapping helper function (unused for now)
+  const _mapLocationNameToId = (
+    locationName: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    locationData: any,
+    fallbackValue: string = locationName
+  ): string => {
+    if (!locationName || !locationData?.success || !locationData?.data?.data) {
+      return fallbackValue;
+    }
+
+    const found = locationData.data.data.find(
+      (item: { name: string; id: string }) =>
+        item.name.toLowerCase().trim() === locationName.toLowerCase().trim()
+    );
+
+    return found ? found.id : fallbackValue;
+  };
+
   const validateParticipantData = (
     data: Record<string, unknown>,
     _rowIndex: number
@@ -268,6 +287,18 @@ export function useExcelImport(clusterId: string) {
       data["sub_county"] ||
       ""
     ).toString();
+
+    // Extract location names from Excel data
+    const countryName = (data.Country || data.country || "Uganda").toString();
+    const districtName = (
+      data.District ||
+      data.district ||
+      organization?.district ||
+      ""
+    ).toString();
+    const parishName = (data.Parish || data.parish || "").toString();
+    const villageName = (data.Village || data.village || "").toString();
+
     const orgKeyword = mapSubCountyToOrgKeyword(subCountyName);
     const mappedOrgId = resolveOrganizationId(orgKeyword);
 
@@ -327,16 +358,11 @@ export function useExcelImport(clusterId: string) {
       project_id: (data.Project || data.project_id || "").toString(),
       cluster_id: clusterId,
       organization_id: organizationIdToUse || "",
-      country: (data.Country || data.country || "Uganda").toString(),
-      district: (
-        data.District ||
-        data.district ||
-        organization?.district ||
-        ""
-      ).toString(),
+      country: countryName,
+      district: districtName,
       subCounty: subCountyName,
-      parish: (data.Parish || data.parish || "").toString(),
-      village: (data.Village || data.village || "").toString(),
+      parish: parishName,
+      village: villageName,
       designation: (
         data["Employment status"] ||
         data.Designation ||

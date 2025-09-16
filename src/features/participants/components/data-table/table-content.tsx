@@ -28,7 +28,7 @@ interface TableContentProps {
 export function TableContent({
   data,
   pagination,
-  isLoading,
+  isLoading: _isLoading,
   searchValue: _searchValue,
   onSearchChange: _onSearchChange,
   onEditParticipant,
@@ -70,13 +70,13 @@ export function TableContent({
     <DataTable
       columns={visibleColumns}
       data={data}
-      showColumnToggle={false}
       showPagination={false}
       showRowSelection={true}
       pageSize={pagination.limit}
-      isLoading={isLoading}
       rowSelection={rowSelection}
       onRowSelectionStateChange={onRowSelectionStateChange}
+      serverSideTotal={pagination.total}
+      serverSideFiltered={pagination.total}
     />
   );
 }
