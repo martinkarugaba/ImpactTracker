@@ -490,46 +490,7 @@ export function DataTable<TData, TValue>({
               </div>
             )}
           </div>
-          <div className="flex items-center gap-2">
-            {actionButtons}
-            {showColumnToggle && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <LayoutGrid className="mr-2 h-4 w-4" />
-                    <span className="hidden lg:inline">Customize Columns</span>
-                    <span className="lg:hidden">Columns</span>
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  {table && table.getAllColumns
-                    ? table
-                        .getAllColumns()
-                        .filter(
-                          column =>
-                            typeof column.accessorFn !== "undefined" &&
-                            column.getCanHide()
-                        )
-                        .map(column => {
-                          return (
-                            <DropdownMenuCheckboxItem
-                              key={column.id}
-                              className="capitalize"
-                              checked={column.getIsVisible()}
-                              onCheckedChange={value =>
-                                column.toggleVisibility(!!value)
-                              }
-                            >
-                              {column.id}
-                            </DropdownMenuCheckboxItem>
-                          );
-                        })
-                    : null}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
+          <div className="flex items-center gap-2">{actionButtons}</div>
         </div>
       )}
       <div className="overflow-hidden rounded-md border">

@@ -332,37 +332,47 @@ export function getParticipantColumns({
     },
     {
       id: "isSubscribedToVSLA",
-      header: "VSLA",
+      header: "VSLA Member",
       enableHiding: true,
       enableSorting: true,
       accessorFn: row => row.isSubscribedToVSLA,
       cell: ({ row }) => {
         const isSubscribed = row.original.isSubscribedToVSLA === "yes";
-        const vslaName = row.original.vslaName;
 
         if (isSubscribed) {
           return (
-            <div className="space-y-1">
-              <Badge
-                variant="secondary"
-                className="bg-green-100 text-green-800"
-              >
-                ✓ Subscribed
-              </Badge>
-              {vslaName && (
-                <div className="text-muted-foreground max-w-[100px] truncate text-xs">
-                  {vslaName}
-                </div>
-              )}
-            </div>
+            <Badge variant="secondary" className="bg-green-100 text-green-800">
+              ✓ Member
+            </Badge>
           );
         }
 
         return (
           <Badge variant="outline" className="text-gray-600">
-            Not Subscribed
+            Not Member
           </Badge>
         );
+      },
+    },
+    {
+      id: "vslaName",
+      header: "VSLA Name",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.vslaName || "",
+      cell: ({ row }) => {
+        const vslaName = row.original.vslaName;
+        const isSubscribed = row.original.isSubscribedToVSLA === "yes";
+
+        if (isSubscribed && vslaName) {
+          return (
+            <div className="max-w-[150px] truncate text-sm" title={vslaName}>
+              {vslaName}
+            </div>
+          );
+        }
+
+        return <span className="text-muted-foreground text-sm">—</span>;
       },
     },
     {
@@ -493,32 +503,15 @@ export function getParticipantColumns({
       accessorFn: row => row.ownsEnterprise,
       cell: ({ row }) => {
         const ownsEnterprise = row.original.ownsEnterprise === "yes";
-        const enterpriseName = row.original.enterpriseName;
-        const enterpriseSector = row.original.enterpriseSector;
 
         if (ownsEnterprise) {
           return (
-            <div className="space-y-1">
-              <Badge
-                variant="secondary"
-                className="bg-emerald-100 text-emerald-800"
-              >
-                ✓ Owner
-              </Badge>
-              {enterpriseName && (
-                <div
-                  className="text-muted-foreground max-w-[100px] truncate text-xs"
-                  title={enterpriseName}
-                >
-                  {enterpriseName}
-                </div>
-              )}
-              {enterpriseSector && (
-                <div className="text-muted-foreground text-xs">
-                  {capitalizeWords(enterpriseSector)}
-                </div>
-              )}
-            </div>
+            <Badge
+              variant="secondary"
+              className="bg-emerald-100 text-emerald-800"
+            >
+              ✓ Owner
+            </Badge>
           );
         }
 
@@ -527,6 +520,30 @@ export function getParticipantColumns({
             No Enterprise
           </Badge>
         );
+      },
+    },
+    {
+      id: "enterpriseName",
+      header: "Enterprise Name",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.enterpriseName || "",
+      cell: ({ row }) => {
+        const enterpriseName = row.original.enterpriseName;
+        const ownsEnterprise = row.original.ownsEnterprise === "yes";
+
+        if (ownsEnterprise && enterpriseName) {
+          return (
+            <div
+              className="max-w-[150px] truncate text-sm"
+              title={enterpriseName}
+            >
+              {enterpriseName}
+            </div>
+          );
+        }
+
+        return <span className="text-muted-foreground text-sm">—</span>;
       },
     },
     {
