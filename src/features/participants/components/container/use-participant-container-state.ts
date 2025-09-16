@@ -31,6 +31,20 @@ export function useParticipantContainerState({
     sex: "all",
     isPWD: "all",
     ageGroup: "all",
+    // New filter fields
+    maritalStatus: "all",
+    educationLevel: "all",
+    isSubscribedToVSLA: "all",
+    ownsEnterprise: "all",
+    employmentType: "all",
+    employmentSector: "all",
+    hasVocationalSkills: "all",
+    hasSoftSkills: "all",
+    hasBusinessSkills: "all",
+    populationSegment: "all",
+    isActiveStudent: "all",
+    isTeenMother: "all",
+    sourceOfIncome: "all",
   });
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -65,6 +79,42 @@ export function useParticipantContainerState({
       sex: filters.sex !== "all" ? filters.sex : undefined,
       isPWD: filters.isPWD !== "all" ? filters.isPWD : undefined,
       ageGroup: filters.ageGroup !== "all" ? filters.ageGroup : undefined,
+      maritalStatus:
+        filters.maritalStatus !== "all" ? filters.maritalStatus : undefined,
+      educationLevel:
+        filters.educationLevel !== "all" ? filters.educationLevel : undefined,
+      isSubscribedToVSLA:
+        filters.isSubscribedToVSLA !== "all"
+          ? filters.isSubscribedToVSLA
+          : undefined,
+      ownsEnterprise:
+        filters.ownsEnterprise !== "all" ? filters.ownsEnterprise : undefined,
+      employmentType:
+        filters.employmentType !== "all" ? filters.employmentType : undefined,
+      employmentSector:
+        filters.employmentSector !== "all"
+          ? filters.employmentSector
+          : undefined,
+      hasVocationalSkills:
+        filters.hasVocationalSkills !== "all"
+          ? filters.hasVocationalSkills
+          : undefined,
+      hasSoftSkills:
+        filters.hasSoftSkills !== "all" ? filters.hasSoftSkills : undefined,
+      hasBusinessSkills:
+        filters.hasBusinessSkills !== "all"
+          ? filters.hasBusinessSkills
+          : undefined,
+      populationSegment:
+        filters.populationSegment !== "all"
+          ? filters.populationSegment
+          : undefined,
+      isActiveStudent:
+        filters.isActiveStudent !== "all" ? filters.isActiveStudent : undefined,
+      isTeenMother:
+        filters.isTeenMother !== "all" ? filters.isTeenMother : undefined,
+      sourceOfIncome:
+        filters.sourceOfIncome !== "all" ? filters.sourceOfIncome : undefined,
     },
   });
 
@@ -129,6 +179,19 @@ export function useParticipantContainerState({
     filters.sex,
     filters.isPWD,
     filters.ageGroup,
+    filters.maritalStatus,
+    filters.educationLevel,
+    filters.isSubscribedToVSLA,
+    filters.ownsEnterprise,
+    filters.employmentType,
+    filters.employmentSector,
+    filters.hasVocationalSkills,
+    filters.hasSoftSkills,
+    filters.hasBusinessSkills,
+    filters.populationSegment,
+    filters.isActiveStudent,
+    filters.isTeenMother,
+    filters.sourceOfIncome,
     searchValue,
   ]);
 

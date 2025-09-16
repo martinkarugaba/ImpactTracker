@@ -23,7 +23,7 @@ export function FilterSelect({
   placeholder,
   options,
   allLabel = `All ${placeholder}s`,
-  className = "h-9",
+  className = "h-9 w-36",
 }: FilterSelectProps) {
   return (
     <Select value={value} onValueChange={onValueChange}>

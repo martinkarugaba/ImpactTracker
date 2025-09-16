@@ -89,6 +89,79 @@ const formSchema = z
     skillOfInterest: z.string().optional(),
     expectedImpact: z.string().optional(),
     isWillingToParticipate: z.enum(["yes", "no"]),
+
+    // NEW FIELDS
+    // Personal Information
+    maritalStatus: z
+      .enum(["single", "married", "divorced", "widowed"])
+      .optional(),
+    educationLevel: z
+      .enum(["none", "primary", "secondary", "tertiary", "university"])
+      .optional(),
+    sourceOfIncome: z
+      .enum(["employment", "business", "agriculture", "remittances", "other"])
+      .optional(),
+    nationality: z.string().default("Ugandan"),
+    populationSegment: z
+      .enum(["youth", "women", "pwd", "elderly", "refugee", "host"])
+      .optional(),
+    refugeeLocation: z.string().optional(),
+    isActiveStudent: z.enum(["yes", "no"]),
+
+    // VSLA Information
+    isSubscribedToVSLA: z.enum(["yes", "no"]),
+    vslaName: z.string().optional(),
+
+    // Teen Mother
+    isTeenMother: z.enum(["yes", "no"]),
+
+    // Enterprise Information
+    ownsEnterprise: z.enum(["yes", "no"]),
+    enterpriseName: z.string().optional(),
+    enterpriseSector: z
+      .enum([
+        "agriculture",
+        "retail",
+        "services",
+        "manufacturing",
+        "construction",
+        "transport",
+        "other",
+      ])
+      .optional(),
+    enterpriseSize: z.enum(["micro", "small", "medium", "large"]).optional(),
+    enterpriseYouthMale: z.string().default("0"),
+    enterpriseYouthFemale: z.string().default("0"),
+    enterpriseAdults: z.string().default("0"),
+
+    // Skills Information
+    hasVocationalSkills: z.enum(["yes", "no"]),
+    vocationalSkillsParticipations: z.string().default("0"),
+    vocationalSkillsCompletions: z.string().default("0"),
+    vocationalSkillsCertifications: z.string().default("0"),
+
+    hasSoftSkills: z.enum(["yes", "no"]),
+    softSkillsParticipations: z.string().default("0"),
+    softSkillsCompletions: z.string().default("0"),
+    softSkillsCertifications: z.string().default("0"),
+
+    hasBusinessSkills: z.enum(["yes", "no"]),
+
+    // Employment Details (more specific than existing employmentStatus)
+    employmentType: z
+      .enum(["formal", "informal", "self-employed", "unemployed"])
+      .optional(),
+    employmentSector: z
+      .enum([
+        "agriculture",
+        "manufacturing",
+        "services",
+        "trade",
+        "education",
+        "health",
+        "other",
+      ])
+      .optional(),
   })
   .refine(
     data => {
@@ -156,7 +229,7 @@ export function ParticipantForm({
     },
   });
 
-  const form = useForm<ParticipantFormValues>({
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: "",
@@ -203,6 +276,37 @@ export function ParticipantForm({
       skillOfInterest: "",
       expectedImpact: "",
       isWillingToParticipate: "yes",
+
+      // NEW FIELDS - Default values
+      maritalStatus: undefined,
+      educationLevel: undefined,
+      sourceOfIncome: undefined,
+      nationality: "Ugandan",
+      populationSegment: undefined,
+      refugeeLocation: "",
+      isActiveStudent: "no",
+      isSubscribedToVSLA: "no",
+      vslaName: "",
+      isTeenMother: "no",
+      ownsEnterprise: "no",
+      enterpriseName: "",
+      enterpriseSector: undefined,
+      enterpriseSize: undefined,
+      enterpriseYouthMale: "0",
+      enterpriseYouthFemale: "0",
+      enterpriseAdults: "0",
+      hasVocationalSkills: "no",
+      vocationalSkillsParticipations: "0",
+      vocationalSkillsCompletions: "0",
+      vocationalSkillsCertifications: "0",
+      hasSoftSkills: "no",
+      softSkillsParticipations: "0",
+      softSkillsCompletions: "0",
+      softSkillsCertifications: "0",
+      hasBusinessSkills: "no",
+      employmentType: undefined,
+      employmentSector: undefined,
+
       ...initialData,
     },
   });
@@ -231,6 +335,19 @@ export function ParticipantForm({
       "isRefugee",
       "employmentStatus",
       "monthlyIncome",
+      // New optional fields
+      "maritalStatus",
+      "educationLevel",
+      "sourceOfIncome",
+      "isSubscribedToVSLA",
+      "vslaName",
+      "ownsEnterprise",
+      "enterpriseName",
+      "hasVocationalSkills",
+      "hasSoftSkills",
+      "hasBusinessSkills",
+      "employmentType",
+      "employmentSector",
     ];
 
     const requiredCompleted = requiredFields.filter(field => {
@@ -1368,6 +1485,769 @@ export function ParticipantForm({
                         {...field}
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Personal Information Section */}
+          <div
+            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
+            style={{
+              borderLeftColor: "oklch(var(--chart-3))",
+              borderLeftWidth: "4px",
+            }}
+          >
+            <div className="mb-6 flex items-center gap-3 border-b border-gray-100 pb-4">
+              <div
+                className="rounded-lg p-2"
+                style={{ backgroundColor: "oklch(var(--chart-3) / 0.1)" }}
+              >
+                <User
+                  className="h-5 w-5"
+                  style={{ color: "oklch(var(--chart-3))" }}
+                />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Personal Information
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Additional personal details and background information
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <FormField
+                control={form.control}
+                name="maritalStatus"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Marital Status</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="single">Single</SelectItem>
+                        <SelectItem value="married">Married</SelectItem>
+                        <SelectItem value="divorced">Divorced</SelectItem>
+                        <SelectItem value="widowed">Widowed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="educationLevel"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Education Level</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select level" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">
+                          No Formal Education
+                        </SelectItem>
+                        <SelectItem value="primary">
+                          Primary Education
+                        </SelectItem>
+                        <SelectItem value="secondary">
+                          Secondary Education
+                        </SelectItem>
+                        <SelectItem value="tertiary">
+                          Tertiary Education
+                        </SelectItem>
+                        <SelectItem value="university">University</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="sourceOfIncome"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Source of Income</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select source" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="employment">Employment</SelectItem>
+                        <SelectItem value="business">Business</SelectItem>
+                        <SelectItem value="agriculture">Agriculture</SelectItem>
+                        <SelectItem value="remittances">Remittances</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="nationality"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nationality</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter nationality" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="populationSegment"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Population Segment</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select segment" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="youth">Youth</SelectItem>
+                        <SelectItem value="women">Women</SelectItem>
+                        <SelectItem value="pwd">
+                          Person with Disability
+                        </SelectItem>
+                        <SelectItem value="elderly">Elderly</SelectItem>
+                        <SelectItem value="refugee">Refugee</SelectItem>
+                        <SelectItem value="host">Host Community</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {form.watch("isRefugee") === "yes" && (
+                <FormField
+                  control={form.control}
+                  name="refugeeLocation"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Refugee Location</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter refugee location"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+              <FormField
+                control={form.control}
+                name="isActiveStudent"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Currently a Student</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select option" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="yes">Yes</SelectItem>
+                        <SelectItem value="no">No</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="isTeenMother"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Teen Mother</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select option" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="yes">Yes</SelectItem>
+                        <SelectItem value="no">No</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+
+          {/* VSLA Information Section */}
+          <div
+            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
+            style={{
+              borderLeftColor: "oklch(var(--chart-4))",
+              borderLeftWidth: "4px",
+            }}
+          >
+            <div className="mb-6 flex items-center gap-3 border-b border-gray-100 pb-4">
+              <div
+                className="rounded-lg p-2"
+                style={{ backgroundColor: "oklch(var(--chart-4) / 0.1)" }}
+              >
+                <CreditCard
+                  className="h-5 w-5"
+                  style={{ color: "oklch(var(--chart-4))" }}
+                />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  VSLA Information
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Village Savings and Loan Association details
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="isSubscribedToVSLA"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Subscribed to VSLA</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select option" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="yes">Yes</SelectItem>
+                        <SelectItem value="no">No</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {form.watch("isSubscribedToVSLA") === "yes" && (
+                <FormField
+                  control={form.control}
+                  name="vslaName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>VSLA Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter VSLA name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Enterprise Information Section */}
+          <div
+            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
+            style={{
+              borderLeftColor: "oklch(var(--chart-1))",
+              borderLeftWidth: "4px",
+            }}
+          >
+            <div className="mb-6 flex items-center gap-3 border-b border-gray-100 pb-4">
+              <div
+                className="rounded-lg p-2"
+                style={{ backgroundColor: "oklch(var(--chart-1) / 0.1)" }}
+              >
+                <Briefcase
+                  className="h-5 w-5"
+                  style={{ color: "oklch(var(--chart-1))" }}
+                />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Enterprise Information
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Business ownership and enterprise details
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <FormField
+                control={form.control}
+                name="ownsEnterprise"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Owns Enterprise</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select option" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="yes">Yes</SelectItem>
+                        <SelectItem value="no">No</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {form.watch("ownsEnterprise") === "yes" && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="enterpriseName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Enterprise Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter enterprise name"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="enterpriseSector"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Enterprise Sector</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select sector" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="agriculture">
+                              Agriculture
+                            </SelectItem>
+                            <SelectItem value="retail">Retail</SelectItem>
+                            <SelectItem value="services">Services</SelectItem>
+                            <SelectItem value="manufacturing">
+                              Manufacturing
+                            </SelectItem>
+                            <SelectItem value="construction">
+                              Construction
+                            </SelectItem>
+                            <SelectItem value="transport">Transport</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="enterpriseSize"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Enterprise Size</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select size" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="micro">Micro</SelectItem>
+                            <SelectItem value="small">Small</SelectItem>
+                            <SelectItem value="medium">Medium</SelectItem>
+                            <SelectItem value="large">Large</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="enterpriseYouthMale"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Youth Male Employees</FormLabel>
+                        <FormControl>
+                          <Input type="number" placeholder="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="enterpriseYouthFemale"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Youth Female Employees</FormLabel>
+                        <FormControl>
+                          <Input type="number" placeholder="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="enterpriseAdults"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Adult Employees</FormLabel>
+                        <FormControl>
+                          <Input type="number" placeholder="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Skills Information Section */}
+          <div
+            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
+            style={{
+              borderLeftColor: "oklch(var(--chart-2))",
+              borderLeftWidth: "4px",
+            }}
+          >
+            <div className="mb-6 flex items-center gap-3 border-b border-gray-100 pb-4">
+              <div
+                className="rounded-lg p-2"
+                style={{ backgroundColor: "oklch(var(--chart-2) / 0.1)" }}
+              >
+                <FileText
+                  className="h-5 w-5"
+                  style={{ color: "oklch(var(--chart-2))" }}
+                />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Skills Information
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Vocational, soft skills, and business skills training
+                </p>
+              </div>
+            </div>
+            <div className="space-y-6">
+              {/* Vocational Skills */}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <FormField
+                  control={form.control}
+                  name="hasVocationalSkills"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Has Vocational Skills</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select option" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="yes">Yes</SelectItem>
+                          <SelectItem value="no">No</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {form.watch("hasVocationalSkills") === "yes" && (
+                  <>
+                    <FormField
+                      control={form.control}
+                      name="vocationalSkillsParticipations"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Vocational Participations</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="0" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="vocationalSkillsCompletions"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Vocational Completions</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="0" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="vocationalSkillsCertifications"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Vocational Certifications</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="0" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </>
+                )}
+              </div>
+
+              {/* Soft Skills */}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <FormField
+                  control={form.control}
+                  name="hasSoftSkills"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Has Soft Skills</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select option" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="yes">Yes</SelectItem>
+                          <SelectItem value="no">No</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {form.watch("hasSoftSkills") === "yes" && (
+                  <>
+                    <FormField
+                      control={form.control}
+                      name="softSkillsParticipations"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Soft Skills Participations</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="0" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="softSkillsCompletions"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Soft Skills Completions</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="0" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="softSkillsCertifications"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Soft Skills Certifications</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="0" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </>
+                )}
+              </div>
+
+              {/* Business Skills */}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="hasBusinessSkills"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Has Business Skills</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select option" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="yes">Yes</SelectItem>
+                          <SelectItem value="no">No</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Employment Details Section */}
+          <div
+            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
+            style={{
+              borderLeftColor: "oklch(var(--chart-5))",
+              borderLeftWidth: "4px",
+            }}
+          >
+            <div className="mb-6 flex items-center gap-3 border-b border-gray-100 pb-4">
+              <div
+                className="rounded-lg p-2"
+                style={{ backgroundColor: "oklch(var(--chart-5) / 0.1)" }}
+              >
+                <Briefcase
+                  className="h-5 w-5"
+                  style={{ color: "oklch(var(--chart-5))" }}
+                />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Employment Details
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Detailed employment type and sector information
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="employmentType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Employment Type</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="formal">Formal</SelectItem>
+                        <SelectItem value="informal">Informal</SelectItem>
+                        <SelectItem value="self-employed">
+                          Self-Employed
+                        </SelectItem>
+                        <SelectItem value="unemployed">Unemployed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="employmentSector"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Employment Sector</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select sector" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="agriculture">Agriculture</SelectItem>
+                        <SelectItem value="manufacturing">
+                          Manufacturing
+                        </SelectItem>
+                        <SelectItem value="services">Services</SelectItem>
+                        <SelectItem value="trade">Trade</SelectItem>
+                        <SelectItem value="education">Education</SelectItem>
+                        <SelectItem value="health">Health</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

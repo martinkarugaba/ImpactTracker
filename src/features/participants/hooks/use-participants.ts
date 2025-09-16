@@ -29,6 +29,19 @@ export function useParticipants(
       sex?: string;
       isPWD?: string;
       ageGroup?: string;
+      maritalStatus?: string;
+      educationLevel?: string;
+      isSubscribedToVSLA?: string;
+      ownsEnterprise?: string;
+      employmentType?: string;
+      employmentSector?: string;
+      hasVocationalSkills?: string;
+      hasSoftSkills?: string;
+      hasBusinessSkills?: string;
+      populationSegment?: string;
+      isActiveStudent?: string;
+      isTeenMother?: string;
+      sourceOfIncome?: string;
     };
   }
 ) {
@@ -60,6 +73,19 @@ export function useParticipantsMetrics(
       sex?: string;
       isPWD?: string;
       ageGroup?: string;
+      maritalStatus?: string;
+      educationLevel?: string;
+      isSubscribedToVSLA?: string;
+      ownsEnterprise?: string;
+      employmentType?: string;
+      employmentSector?: string;
+      hasVocationalSkills?: string;
+      hasSoftSkills?: string;
+      hasBusinessSkills?: string;
+      populationSegment?: string;
+      isActiveStudent?: string;
+      isTeenMother?: string;
+      sourceOfIncome?: string;
     };
     applyFilters: boolean;
   }
@@ -153,6 +179,19 @@ export function useExportParticipants() {
         sex?: string;
         isPWD?: string;
         ageGroup?: string;
+        maritalStatus?: string;
+        educationLevel?: string;
+        isSubscribedToVSLA?: string;
+        ownsEnterprise?: string;
+        employmentType?: string;
+        employmentSector?: string;
+        hasVocationalSkills?: string;
+        hasSoftSkills?: string;
+        hasBusinessSkills?: string;
+        populationSegment?: string;
+        isActiveStudent?: string;
+        isTeenMother?: string;
+        sourceOfIncome?: string;
       };
       search?: string;
     }) => {

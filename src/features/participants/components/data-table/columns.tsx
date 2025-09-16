@@ -307,10 +307,11 @@ export function getParticipantColumns({
       },
     },
     {
-      accessorKey: "designation",
+      id: "designation",
       header: "Designation",
       enableHiding: true,
       enableSorting: true,
+      accessorFn: row => row.designation,
       cell: ({ row }) => {
         const designation = row.original.designation;
         if (!designation) return "—";
@@ -323,10 +324,11 @@ export function getParticipantColumns({
       },
     },
     {
-      accessorKey: "enterprise",
+      id: "enterprise",
       header: "Enterprise",
       enableHiding: true,
       enableSorting: true,
+      accessorFn: row => row.enterprise,
       cell: ({ row }) => {
         const enterprise = row.original.enterprise;
         if (!enterprise) return "—";
@@ -356,6 +358,185 @@ export function getParticipantColumns({
           <div className="flex items-center gap-2 font-mono text-sm">
             <Phone className="text-muted-foreground h-3 w-3" />
             {formattedContact}
+          </div>
+        );
+      },
+    },
+    {
+      id: "maritalStatus",
+      header: "Marital Status",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.maritalStatus,
+      cell: ({ row }) => {
+        const status = row.original.maritalStatus;
+        if (!status) return "—";
+
+        const statusMap = {
+          single: { label: "Single", color: "bg-blue-100 text-blue-800" },
+          married: { label: "Married", color: "bg-green-100 text-green-800" },
+          divorced: {
+            label: "Divorced",
+            color: "bg-orange-100 text-orange-800",
+          },
+          widowed: { label: "Widowed", color: "bg-gray-100 text-gray-800" },
+        };
+
+        const statusInfo = statusMap[status as keyof typeof statusMap];
+        if (!statusInfo) return capitalizeWords(status);
+
+        return (
+          <Badge variant="secondary" className={statusInfo.color}>
+            {statusInfo.label}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "educationLevel",
+      header: "Education",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.educationLevel,
+      cell: ({ row }) => {
+        const education = row.original.educationLevel;
+        if (!education) return "—";
+
+        const educationMap = {
+          none: { label: "None", color: "bg-red-100 text-red-800" },
+          primary: { label: "Primary", color: "bg-yellow-100 text-yellow-800" },
+          secondary: { label: "Secondary", color: "bg-blue-100 text-blue-800" },
+          tertiary: { label: "Tertiary", color: "bg-green-100 text-green-800" },
+          university: {
+            label: "University",
+            color: "bg-purple-100 text-purple-800",
+          },
+        };
+
+        const educationInfo =
+          educationMap[education as keyof typeof educationMap];
+        if (!educationInfo) return capitalizeWords(education);
+
+        return (
+          <Badge variant="secondary" className={educationInfo.color}>
+            {educationInfo.label}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "isSubscribedToVSLA",
+      header: "VSLA",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.isSubscribedToVSLA,
+      cell: ({ row }) => {
+        const isSubscribed = row.original.isSubscribedToVSLA === "yes";
+        const vslaName = row.original.vslaName;
+
+        if (isSubscribed) {
+          return (
+            <div className="space-y-1">
+              <Badge
+                variant="secondary"
+                className="bg-green-100 text-green-800"
+              >
+                ✓ Subscribed
+              </Badge>
+              {vslaName && (
+                <div className="text-muted-foreground max-w-[100px] truncate text-xs">
+                  {vslaName}
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        return (
+          <Badge variant="outline" className="text-gray-600">
+            Not Subscribed
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "ownsEnterprise",
+      header: "Enterprise",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.ownsEnterprise,
+      cell: ({ row }) => {
+        const ownsEnterprise = row.original.ownsEnterprise === "yes";
+        const enterpriseName = row.original.enterpriseName;
+        const enterpriseSector = row.original.enterpriseSector;
+
+        if (ownsEnterprise) {
+          return (
+            <div className="space-y-1">
+              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                ✓ Owns Enterprise
+              </Badge>
+              {enterpriseName && (
+                <div className="max-w-[120px] truncate text-xs font-medium">
+                  {enterpriseName}
+                </div>
+              )}
+              {enterpriseSector && (
+                <div className="text-muted-foreground text-xs">
+                  {capitalizeWords(enterpriseSector)}
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        return (
+          <Badge variant="outline" className="text-gray-600">
+            No Enterprise
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "employmentType",
+      header: "Employment",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.employmentType,
+      cell: ({ row }) => {
+        const employmentType = row.original.employmentType;
+        const employmentSector = row.original.employmentSector;
+
+        if (!employmentType) return "—";
+
+        const typeMap = {
+          formal: { label: "Formal", color: "bg-green-100 text-green-800" },
+          informal: {
+            label: "Informal",
+            color: "bg-yellow-100 text-yellow-800",
+          },
+          "self-employed": {
+            label: "Self-Employed",
+            color: "bg-blue-100 text-blue-800",
+          },
+          unemployed: { label: "Unemployed", color: "bg-red-100 text-red-800" },
+        };
+
+        const typeInfo = typeMap[employmentType as keyof typeof typeMap];
+
+        return (
+          <div className="space-y-1">
+            <Badge
+              variant="secondary"
+              className={typeInfo?.color || "bg-gray-100 text-gray-800"}
+            >
+              {typeInfo?.label || capitalizeWords(employmentType)}
+            </Badge>
+            {employmentSector && (
+              <div className="text-muted-foreground text-xs">
+                {capitalizeWords(employmentSector)}
+              </div>
+            )}
           </div>
         );
       },

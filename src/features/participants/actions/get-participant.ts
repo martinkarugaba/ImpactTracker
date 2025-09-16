@@ -40,7 +40,7 @@ export async function getParticipant(id: string): Promise<ParticipantResponse> {
         numberOfChildren: participants.numberOfChildren,
         employmentStatus: participants.employmentStatus,
         monthlyIncome: participants.monthlyIncome,
-        // New employment tracking fields
+        // Employment tracking fields
         wageEmploymentStatus: participants.wageEmploymentStatus,
         wageEmploymentSector: participants.wageEmploymentSector,
         wageEmploymentScale: participants.wageEmploymentScale,
@@ -56,6 +56,43 @@ export async function getParticipant(id: string): Promise<ParticipantResponse> {
         groupSaving: participants.groupSaving,
         // Location classification
         locationSetting: participants.locationSetting,
+        // NEW FIELDS
+        // Personal Information
+        maritalStatus: participants.maritalStatus,
+        educationLevel: participants.educationLevel,
+        sourceOfIncome: participants.sourceOfIncome,
+        nationality: participants.nationality,
+        populationSegment: participants.populationSegment,
+        refugeeLocation: participants.refugeeLocation,
+        isActiveStudent: participants.isActiveStudent,
+        // VSLA Information
+        isSubscribedToVSLA: participants.isSubscribedToVSLA,
+        vslaName: participants.vslaName,
+        // Teen Mother
+        isTeenMother: participants.isTeenMother,
+        // Enterprise Information
+        ownsEnterprise: participants.ownsEnterprise,
+        enterpriseName: participants.enterpriseName,
+        enterpriseSector: participants.enterpriseSector,
+        enterpriseSize: participants.enterpriseSize,
+        enterpriseYouthMale: participants.enterpriseYouthMale,
+        enterpriseYouthFemale: participants.enterpriseYouthFemale,
+        enterpriseAdults: participants.enterpriseAdults,
+        // Skills Information
+        hasVocationalSkills: participants.hasVocationalSkills,
+        vocationalSkillsParticipations:
+          participants.vocationalSkillsParticipations,
+        vocationalSkillsCompletions: participants.vocationalSkillsCompletions,
+        vocationalSkillsCertifications:
+          participants.vocationalSkillsCertifications,
+        hasSoftSkills: participants.hasSoftSkills,
+        softSkillsParticipations: participants.softSkillsParticipations,
+        softSkillsCompletions: participants.softSkillsCompletions,
+        softSkillsCertifications: participants.softSkillsCertifications,
+        hasBusinessSkills: participants.hasBusinessSkills,
+        // Employment Details
+        employmentType: participants.employmentType,
+        employmentSector: participants.employmentSector,
         mainChallenge: participants.mainChallenge,
         skillOfInterest: participants.skillOfInterest,
         expectedImpact: participants.expectedImpact,

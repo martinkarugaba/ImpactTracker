@@ -22,7 +22,7 @@ export async function importParticipants(data: ParticipantFormValues[]) {
   // Check for large datasets that might cause issues
   if (data.length > 1000) {
     console.warn("Large dataset detected:", data.length, "participants");
-    console.warn("This might cause timeout or memory issues");
+    console.warn("Processing in batches for optimal performance");
   }
 
   try {
@@ -382,7 +382,7 @@ export async function importParticipants(data: ParticipantFormValues[]) {
     console.log("Proceeding with full batch insert...");
 
     // For large datasets, process in smaller batches to avoid timeouts
-    const BATCH_SIZE = 500;
+    const BATCH_SIZE = 200; // Reduced from 500 for better performance
     const result: Array<Record<string, unknown>> = [];
 
     if (insertData.length > BATCH_SIZE) {

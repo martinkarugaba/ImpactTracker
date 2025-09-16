@@ -112,10 +112,10 @@ export const participants = pgTable("participants", {
   parish: text("parish").notNull(),
   village: text("village").notNull(),
   sex: text("sex").notNull(),
-  age: integer("age") /* Lines 115-116 omitted */,
+  age: integer("age"),
   dateOfBirth: timestamp("date_of_birth"),
   isPWD: text("is_pwd").notNull().default("no"),
-  disabilityType: text("disability_type"), // New field for type of disability
+  disabilityType: text("disability_type"),
   isMother: text("is_mother").notNull().default("no"),
   isRefugee: text("is_refugee").notNull().default("no"),
   designation: text("designation").notNull(),
@@ -127,26 +127,73 @@ export const participants = pgTable("participants", {
   employmentStatus: text("employment_status").notNull().default("unemployed"),
   monthlyIncome: integer("monthly_income").notNull().default(0),
 
-  // New employment tracking fields
-  wageEmploymentStatus: text("wage_employment_status"), // "employed", "new_job", "sustained_job", "improved_job"
-  wageEmploymentSector: text("wage_employment_sector"), // "petty_trade", "food_drinks", "manufacturing", "agribusiness", etc.
-  wageEmploymentScale: text("wage_employment_scale"), // "micro", "small", "medium", "large"
-
-  selfEmploymentStatus: text("self_employment_status"), // "self_employed", "new_business", "sustained_business", "improved_business"
-  selfEmploymentSector: text("self_employment_sector"), // "petty_trade", "food_drinks", "agriculture", "crafts", etc.
-  businessScale: text("business_scale"), // "micro", "small", "medium", "large"
-
-  secondaryEmploymentStatus: text("secondary_employment_status"), // "secondary_employed", "new_secondary_job", "sustained_secondary_job", "improved_secondary_job"
-  secondaryEmploymentSector: text("secondary_employment_sector"), // "retail", "services", "transport", etc.
-  secondaryBusinessScale: text("secondary_business_scale"), // "micro", "small", "medium", "large"
+  // Employment tracking fields
+  wageEmploymentStatus: text("wage_employment_status"),
+  wageEmploymentSector: text("wage_employment_sector"),
+  wageEmploymentScale: text("wage_employment_scale"),
+  selfEmploymentStatus: text("self_employment_status"),
+  selfEmploymentSector: text("self_employment_sector"),
+  businessScale: text("business_scale"),
+  secondaryEmploymentStatus: text("secondary_employment_status"),
+  secondaryEmploymentSector: text("secondary_employment_sector"),
+  secondaryBusinessScale: text("secondary_business_scale"),
 
   // Financial inclusion fields
-  accessedLoans: text("accessed_loans").notNull().default("no"), // "yes", "no"
-  individualSaving: text("individual_saving").notNull().default("no"), // "yes", "no"
-  groupSaving: text("group_saving").notNull().default("no"), // "yes", "no" (VSLA/group saving)
+  accessedLoans: text("accessed_loans").notNull().default("no"),
+  individualSaving: text("individual_saving").notNull().default("no"),
+  groupSaving: text("group_saving").notNull().default("no"),
 
   // Location classification
-  locationSetting: text("location_setting"), // "urban", "rural"
+  locationSetting: text("location_setting"),
+
+  // NEW FIELDS REQUESTED
+  // Personal Information
+  maritalStatus: text("marital_status"), // "single", "married", "divorced", "widowed"
+  educationLevel: text("education_level"), // "none", "primary", "secondary", "tertiary", "university"
+  sourceOfIncome: text("source_of_income"), // "employment", "business", "agriculture", "remittances", "other"
+  nationality: text("nationality").notNull().default("Ugandan"),
+  populationSegment: text("population_segment"), // "youth", "women", "pwd", "elderly", "refugee", "host"
+  refugeeLocation: text("refugee_location"), // For refugees only
+  isActiveStudent: text("is_active_student").notNull().default("no"),
+
+  // VSLA Information
+  isSubscribedToVSLA: text("is_subscribed_to_vsla").notNull().default("no"),
+  vslaName: text("vsla_name"),
+
+  // Teen Mother
+  isTeenMother: text("is_teen_mother").notNull().default("no"),
+
+  // Enterprise Information
+  ownsEnterprise: text("owns_enterprise").notNull().default("no"),
+  enterpriseName: text("enterprise_name"),
+  enterpriseSector: text("enterprise_sector"), // "agriculture", "retail", "services", "manufacturing", etc.
+  enterpriseSize: text("enterprise_size"), // "micro", "small", "medium", "large"
+  enterpriseYouthMale: integer("enterprise_youth_male").default(0),
+  enterpriseYouthFemale: integer("enterprise_youth_female").default(0),
+  enterpriseAdults: integer("enterprise_adults").default(0),
+
+  // Skills Information
+  hasVocationalSkills: text("has_vocational_skills").notNull().default("no"),
+  vocationalSkillsParticipations: integer(
+    "vocational_skills_participations"
+  ).default(0),
+  vocationalSkillsCompletions: integer("vocational_skills_completions").default(
+    0
+  ),
+  vocationalSkillsCertifications: integer(
+    "vocational_skills_certifications"
+  ).default(0),
+
+  hasSoftSkills: text("has_soft_skills").notNull().default("no"),
+  softSkillsParticipations: integer("soft_skills_participations").default(0),
+  softSkillsCompletions: integer("soft_skills_completions").default(0),
+  softSkillsCertifications: integer("soft_skills_certifications").default(0),
+
+  hasBusinessSkills: text("has_business_skills").notNull().default("no"),
+
+  // Employment Details (more specific than existing employmentStatus)
+  employmentType: text("employment_type"), // "formal", "informal", "self-employed", "unemployed"
+  employmentSector: text("employment_sector"), // "agriculture", "manufacturing", "services", "trade", etc.
 
   mainChallenge: text("main_challenge"),
   skillOfInterest: text("skill_of_interest"),

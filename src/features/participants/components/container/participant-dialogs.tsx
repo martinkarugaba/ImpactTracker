@@ -82,7 +82,33 @@ export function ParticipantDialogs({
         mainChallenge: data.mainChallenge || null,
         skillOfInterest: data.skillOfInterest || null,
         expectedImpact: data.expectedImpact || null,
-        // New demographic fields with defaults
+        // Handle new optional enum fields properly
+        maritalStatus: data.maritalStatus || null,
+        educationLevel: data.educationLevel || null,
+        sourceOfIncome: data.sourceOfIncome || null,
+        populationSegment: data.populationSegment || null,
+        refugeeLocation: data.refugeeLocation || null,
+        vslaName: data.vslaName || null,
+        enterpriseName: data.enterpriseName || null,
+        enterpriseSector: data.enterpriseSector || null,
+        enterpriseSize: data.enterpriseSize || null,
+        employmentType: data.employmentType || null,
+        employmentSector: data.employmentSector || null,
+        // Convert string numeric fields to numbers
+        enterpriseYouthMale: parseInt(data.enterpriseYouthMale),
+        enterpriseYouthFemale: parseInt(data.enterpriseYouthFemale),
+        enterpriseAdults: parseInt(data.enterpriseAdults),
+        vocationalSkillsParticipations: parseInt(
+          data.vocationalSkillsParticipations
+        ),
+        vocationalSkillsCompletions: parseInt(data.vocationalSkillsCompletions),
+        vocationalSkillsCertifications: parseInt(
+          data.vocationalSkillsCertifications
+        ),
+        softSkillsParticipations: parseInt(data.softSkillsParticipations),
+        softSkillsCompletions: parseInt(data.softSkillsCompletions),
+        softSkillsCertifications: parseInt(data.softSkillsCertifications),
+        // Legacy fields with defaults
         disabilityType: null,
         wageEmploymentStatus: null,
         wageEmploymentSector: null,
@@ -128,7 +154,33 @@ export function ParticipantDialogs({
         mainChallenge: data.mainChallenge || null,
         skillOfInterest: data.skillOfInterest || null,
         expectedImpact: data.expectedImpact || null,
-        // New demographic fields with defaults
+        // Handle new optional enum fields properly
+        maritalStatus: data.maritalStatus || null,
+        educationLevel: data.educationLevel || null,
+        sourceOfIncome: data.sourceOfIncome || null,
+        populationSegment: data.populationSegment || null,
+        refugeeLocation: data.refugeeLocation || null,
+        vslaName: data.vslaName || null,
+        enterpriseName: data.enterpriseName || null,
+        enterpriseSector: data.enterpriseSector || null,
+        enterpriseSize: data.enterpriseSize || null,
+        employmentType: data.employmentType || null,
+        employmentSector: data.employmentSector || null,
+        // Convert string numeric fields to numbers
+        enterpriseYouthMale: parseInt(data.enterpriseYouthMale),
+        enterpriseYouthFemale: parseInt(data.enterpriseYouthFemale),
+        enterpriseAdults: parseInt(data.enterpriseAdults),
+        vocationalSkillsParticipations: parseInt(
+          data.vocationalSkillsParticipations
+        ),
+        vocationalSkillsCompletions: parseInt(data.vocationalSkillsCompletions),
+        vocationalSkillsCertifications: parseInt(
+          data.vocationalSkillsCertifications
+        ),
+        softSkillsParticipations: parseInt(data.softSkillsParticipations),
+        softSkillsCompletions: parseInt(data.softSkillsCompletions),
+        softSkillsCertifications: parseInt(data.softSkillsCertifications),
+        // Legacy fields with defaults
         disabilityType: null,
         wageEmploymentStatus: null,
         wageEmploymentSector: null,
@@ -202,6 +254,49 @@ export function ParticipantDialogs({
     accessedLoans: "no" as const,
     individualSaving: "no" as const,
     groupSaving: "no" as const,
+
+    // NEW FIELDS with defaults
+    // Personal Information
+    maritalStatus: undefined,
+    educationLevel: undefined,
+    sourceOfIncome: undefined,
+    nationality: "Ugandan",
+    populationSegment: undefined,
+    refugeeLocation: undefined,
+    isActiveStudent: "no" as "yes" | "no",
+
+    // VSLA Information
+    isSubscribedToVSLA: "no" as "yes" | "no",
+    vslaName: undefined,
+
+    // Teen Mother
+    isTeenMother: "no" as "yes" | "no",
+
+    // Enterprise Information
+    ownsEnterprise: "no" as "yes" | "no",
+    enterpriseName: undefined,
+    enterpriseSector: undefined,
+    enterpriseSize: undefined,
+    enterpriseYouthMale: "0",
+    enterpriseYouthFemale: "0",
+    enterpriseAdults: "0",
+
+    // Skills Information
+    hasVocationalSkills: "no" as "yes" | "no",
+    vocationalSkillsParticipations: "0",
+    vocationalSkillsCompletions: "0",
+    vocationalSkillsCertifications: "0",
+
+    hasSoftSkills: "no" as "yes" | "no",
+    softSkillsParticipations: "0",
+    softSkillsCompletions: "0",
+    softSkillsCertifications: "0",
+
+    hasBusinessSkills: "no" as "yes" | "no",
+
+    // Employment Details
+    employmentType: undefined,
+    employmentSector: undefined,
   });
   const confirmDelete = async () => {
     if (!deletingParticipant) return;

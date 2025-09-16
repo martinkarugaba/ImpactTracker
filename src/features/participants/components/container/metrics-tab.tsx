@@ -2,6 +2,7 @@
 
 import { TabsContent } from "@/components/ui/tabs";
 import { CompactParticipantMetrics } from "../metrics/compact-participant-metrics";
+import { NewParticipantAnalytics } from "../metrics/new-participant-analytics";
 import { ParticipantMetricsCharts } from "../metrics/participant-metrics-charts";
 import {
   type Participant,
@@ -81,6 +82,22 @@ export function MetricsTab({
             participants={metricsParticipants}
             isLoading={isMetricsLoading}
           />
+        </div>
+
+        {/* New Analytics Section */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              Enhanced Analytics
+            </h3>
+            <div className="h-px flex-1 bg-gradient-to-r from-green-200 to-transparent dark:from-green-800"></div>
+          </div>
+          <div className="bg-transparent">
+            <NewParticipantAnalytics
+              participants={metricsParticipants}
+              isLoading={isMetricsLoading}
+            />
+          </div>
         </div>
       </div>
 

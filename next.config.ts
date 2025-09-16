@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   // Disable using experimental features like Turbopack
   experimental: {
     // Use empty object for now - no experimental features enabled
+    serverComponentsExternalPackages: ["@node-rs/argon2"],
   },
   // Explicitly declare environment variables
   env: {

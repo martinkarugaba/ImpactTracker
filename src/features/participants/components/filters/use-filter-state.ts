@@ -32,6 +32,20 @@ export function useFilterState({
       sex: "all",
       isPWD: "all",
       ageGroup: "all",
+      // New filter fields
+      maritalStatus: "all",
+      educationLevel: "all",
+      isSubscribedToVSLA: "all",
+      ownsEnterprise: "all",
+      employmentType: "all",
+      employmentSector: "all",
+      hasVocationalSkills: "all",
+      hasSoftSkills: "all",
+      hasBusinessSkills: "all",
+      populationSegment: "all",
+      isActiveStudent: "all",
+      isTeenMother: "all",
+      sourceOfIncome: "all",
     });
   };
 

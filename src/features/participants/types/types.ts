@@ -78,4 +78,18 @@ export type ParticipantFilters = {
   sex: string;
   isPWD: string;
   ageGroup: string;
+  // New filter fields
+  maritalStatus: string;
+  educationLevel: string;
+  isSubscribedToVSLA: string;
+  ownsEnterprise: string;
+  employmentType: string;
+  employmentSector: string;
+  hasVocationalSkills: string;
+  hasSoftSkills: string;
+  hasBusinessSkills: string;
+  populationSegment: string;
+  isActiveStudent: string;
+  isTeenMother: string;
+  sourceOfIncome: string;
 };

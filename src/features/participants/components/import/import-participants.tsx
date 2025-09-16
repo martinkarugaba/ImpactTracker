@@ -31,6 +31,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useExcelImport } from "./hooks/use-excel-import";
+import { BatchProgress } from "./batch-progress";
 import {
   useCountries,
   useDistricts,
@@ -79,6 +80,7 @@ export function ImportParticipants({
     validationErrors,
     isProcessing,
     isImporting,
+    importProgress,
     parseFile,
     validateData,
     importData,
@@ -432,12 +434,13 @@ export function ImportParticipants({
           )}
 
           {/* Import Step */}
-          {currentStep === "import" && (
-            <div className="py-8 text-center">
-              <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
-              <p className="text-muted-foreground text-sm">
-                Importing participants...
-              </p>
+          {(currentStep === "import" || isImporting) && (
+            <div className="space-y-4">
+              <BatchProgress
+                progress={importProgress}
+                isImporting={isImporting}
+                isComplete={currentStep === "import" && !isImporting}
+              />
             </div>
           )}
 

@@ -5,6 +5,9 @@ import { FilterHeader } from "./filter-header";
 import { OrganizationFilters } from "./organization-filters";
 import { LocationFilters } from "./location-filters";
 import { DemographicFilters } from "./demographic-filters";
+import { VSLAFilters } from "./vsla-filters";
+import { EnterpriseFilters } from "./enterprise-filters";
+import { SkillsFilters } from "./skills-filters";
 import { type ParticipantFilters as ParticipantFiltersType } from "../../types/types";
 
 interface ParticipantFiltersProps {
@@ -74,23 +77,95 @@ export function ParticipantFilters({
       </div>
 
       {/* Filter Controls - Always visible */}
-      <div className="flex flex-wrap items-center justify-between">
-        <OrganizationFilters
-          filters={filters}
-          updateFilter={updateFilter}
-          projects={projects}
-          organizations={organizations}
-          enterprises={enterprises}
-        />
+      <div className="space-y-6">
+        {/* Filter Section 1: Organization & Project Context */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="h-1 w-4 rounded-full bg-blue-500"></div>
+            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Organization & Project
+            </h4>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <OrganizationFilters
+              filters={filters}
+              updateFilter={updateFilter}
+              projects={projects}
+              organizations={organizations}
+              enterprises={enterprises}
+            />
+          </div>
+        </div>
 
-        <LocationFilters
-          filters={filters}
-          updateFilter={updateFilter}
-          districts={districts}
-          subCounties={subCounties}
-        />
+        {/* Filter Section 2: Location */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="h-1 w-4 rounded-full bg-green-500"></div>
+            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Location
+            </h4>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <LocationFilters
+              filters={filters}
+              updateFilter={updateFilter}
+              districts={districts}
+              subCounties={subCounties}
+            />
+          </div>
+        </div>
 
-        <DemographicFilters filters={filters} updateFilter={updateFilter} />
+        {/* Filter Section 3: Demographics */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="h-1 w-4 rounded-full bg-purple-500"></div>
+            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Demographics & Personal
+            </h4>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <DemographicFilters filters={filters} updateFilter={updateFilter} />
+          </div>
+        </div>
+
+        {/* Filter Section 4: Financial & VSLA */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="h-1 w-4 rounded-full bg-orange-500"></div>
+            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Financial & VSLA
+            </h4>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <VSLAFilters filters={filters} updateFilter={updateFilter} />
+          </div>
+        </div>
+
+        {/* Filter Section 5: Enterprise & Employment */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="h-1 w-4 rounded-full bg-red-500"></div>
+            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Business & Employment
+            </h4>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <EnterpriseFilters filters={filters} updateFilter={updateFilter} />
+          </div>
+        </div>
+
+        {/* Filter Section 6: Skills & Development */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="h-1 w-4 rounded-full bg-teal-500"></div>
+            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Skills & Development
+            </h4>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <SkillsFilters filters={filters} updateFilter={updateFilter} />
+          </div>
+        </div>
       </div>
     </div>
   );

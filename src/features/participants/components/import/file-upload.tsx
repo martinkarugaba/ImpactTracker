@@ -19,6 +19,11 @@ export function FileUpload({
     fileInputRef.current?.click();
   };
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Proceed with file upload - batch processing will handle large files
+    onFileUpload(event);
+  };
+
   return (
     <div className="space-y-4">
       <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
@@ -28,6 +33,11 @@ export function FileUpload({
         </h3>
         <p className="mt-2 text-sm text-gray-600">
           Select an Excel file (.xlsx, .xls) with participant data
+          <br />
+          <span className="text-xs text-gray-500">
+            Large files are automatically processed in batches for optimal
+            performance
+          </span>
         </p>
         <Button
           onClick={handleClick}
@@ -42,7 +52,7 @@ export function FileUpload({
           ref={fileInputRef}
           type="file"
           accept=".xlsx,.xls"
-          onChange={onFileUpload}
+          onChange={handleFileChange}
           className="hidden"
         />
       </div>

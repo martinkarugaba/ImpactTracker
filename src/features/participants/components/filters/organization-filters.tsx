@@ -35,31 +35,46 @@ export function OrganizationFilters({
   return (
     <>
       {/* Project Filter */}
-      <FilterSelect
-        value={filters.project}
-        onValueChange={value => updateFilter("project", value)}
-        placeholder="Project"
-        options={projectOptions}
-        allLabel="All Projects"
-      />
+      <div className="space-y-1">
+        <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+          Project
+        </label>
+        <FilterSelect
+          value={filters.project}
+          onValueChange={value => updateFilter("project", value)}
+          placeholder="Select project..."
+          options={projectOptions}
+          allLabel="All Projects"
+        />
+      </div>
 
       {/* Organization Filter */}
-      <FilterSelect
-        value={filters.organization}
-        onValueChange={value => updateFilter("organization", value)}
-        placeholder="Organization"
-        options={organizationOptions}
-        allLabel="All Organizations"
-      />
+      <div className="space-y-1">
+        <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+          Organization
+        </label>
+        <FilterSelect
+          value={filters.organization}
+          onValueChange={value => updateFilter("organization", value)}
+          placeholder="Select organization..."
+          options={organizationOptions}
+          allLabel="All Organizations"
+        />
+      </div>
 
       {/* Enterprise Filter */}
-      <FilterSelect
-        value={filters.enterprise}
-        onValueChange={value => updateFilter("enterprise", value)}
-        placeholder="Enterprise"
-        options={enterprises}
-        allLabel="All Enterprises"
-      />
+      <div className="space-y-1">
+        <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+          Enterprise Type
+        </label>
+        <FilterSelect
+          value={filters.enterprise}
+          onValueChange={value => updateFilter("enterprise", value)}
+          placeholder="Select enterprise..."
+          options={enterprises}
+          allLabel="All Enterprises"
+        />
+      </div>
     </>
   );
 }

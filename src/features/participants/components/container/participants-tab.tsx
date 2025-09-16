@@ -17,6 +17,7 @@ import {
   Search,
   LayoutGrid,
   ChevronDown,
+  Users,
 } from "lucide-react";
 import { ParticipantsDataTable } from "../participants-data-table";
 import {
@@ -27,6 +28,7 @@ import {
 import toast from "react-hot-toast";
 import { ParticipantFilters } from "../filters";
 import { OrganizationAssignmentButton } from "../actions/organization-assignment-button";
+import { FixDuplicatesDialog } from "../data-table/fix-duplicates-dialog";
 
 interface ParticipantsTabProps {
   participants: Participant[];
@@ -76,16 +78,18 @@ export function ParticipantsTab({
   onSearchChange,
   isParticipantsLoading,
   locationNamesLoading,
-  onPaginationChange,
-  onPageChange,
   onAddParticipant,
   onEditParticipant,
   onDeleteParticipant,
   onViewParticipant,
-  onExportData: _onExportData,
-  onImport: _onImport,
+  onExportData,
+  onImport,
   setIsImportDialogOpen,
+  onPageChange,
+  onPaginationChange,
 }: ParticipantsTabProps) {
+  const [isFixDuplicatesDialogOpen, setIsFixDuplicatesDialogOpen] =
+    useState(false);
   // Column visibility state
   const [columnVisibility, setColumnVisibility] = useState({
     fullName: true,
@@ -99,6 +103,12 @@ export function ParticipantsTab({
     designation: false,
     enterprise: false,
     contact: false,
+    // New columns
+    maritalStatus: false,
+    educationLevel: true,
+    isSubscribedToVSLA: true,
+    ownsEnterprise: true,
+    employmentType: true,
   });
 
   // Available columns for toggle - matching actual column IDs
@@ -114,11 +124,16 @@ export function ParticipantsTab({
     { id: "designation", label: "Designation" },
     { id: "enterprise", label: "Enterprise" },
     { id: "contact", label: "Contact" },
+    // New columns
+    { id: "maritalStatus", label: "Marital Status" },
+    { id: "educationLevel", label: "Education Level" },
+    { id: "isSubscribedToVSLA", label: "VSLA Subscription" },
+    { id: "ownsEnterprise", label: "Enterprise Ownership" },
+    { id: "employmentType", label: "Employment Type" },
   ];
 
   const handleExport = () => {
-    // Export functionality deactivated - coming soon modal will be shown
-    console.log("Export functionality coming soon!");
+    onExportData();
   };
 
   return (
@@ -165,6 +180,14 @@ export function ParticipantsTab({
               >
                 <Upload className="mr-2 h-4 w-4" />
                 Import
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setIsFixDuplicatesDialogOpen(true)}
+                className="h-9 border-orange-200 text-orange-700 hover:border-orange-300 hover:bg-orange-50 dark:border-orange-800 dark:text-orange-300 dark:hover:bg-orange-950/50"
+              >
+                <Users className="mr-2 h-4 w-4" />
+                Fix Duplicates
               </Button>
               <Button
                 variant="outline"
@@ -279,12 +302,20 @@ export function ParticipantsTab({
             toast.success(`Selected ${ids.length} participants for deletion`);
           }}
           onExportData={handleExport}
-          onImport={async data => {
-            // TODO: Implement import
-            toast.success(`Imported ${data.length} participants`);
-            setIsImportDialogOpen(false);
-          }}
+          onImport={onImport}
           columnVisibility={columnVisibility}
+        />
+
+        {/* Fix Duplicates Dialog */}
+        <FixDuplicatesDialog
+          open={isFixDuplicatesDialogOpen}
+          onOpenChange={setIsFixDuplicatesDialogOpen}
+          participants={participants}
+          onDeleteParticipants={async (ids: string[]) => {
+            // Use the existing bulk delete functionality
+            ids.forEach(id => onDeleteParticipant(id));
+            toast.success(`Deleted ${ids.length} duplicate participants`);
+          }}
         />
       </div>
     </TabsContent>
