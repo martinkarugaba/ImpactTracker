@@ -73,16 +73,30 @@ export function EditParticipantDialog({
         enterpriseYouthMale: parseInt(data.enterpriseYouthMale),
         enterpriseYouthFemale: parseInt(data.enterpriseYouthFemale),
         enterpriseAdults: parseInt(data.enterpriseAdults),
-        vocationalSkillsParticipations: parseInt(
+        vocationalSkillsParticipations: Array.isArray(
           data.vocationalSkillsParticipations
-        ),
-        vocationalSkillsCompletions: parseInt(data.vocationalSkillsCompletions),
-        vocationalSkillsCertifications: parseInt(
+        )
+          ? data.vocationalSkillsParticipations
+          : [],
+        vocationalSkillsCompletions: Array.isArray(
+          data.vocationalSkillsCompletions
+        )
+          ? data.vocationalSkillsCompletions
+          : [],
+        vocationalSkillsCertifications: Array.isArray(
           data.vocationalSkillsCertifications
-        ),
-        softSkillsParticipations: parseInt(data.softSkillsParticipations),
-        softSkillsCompletions: parseInt(data.softSkillsCompletions),
-        softSkillsCertifications: parseInt(data.softSkillsCertifications),
+        )
+          ? data.vocationalSkillsCertifications
+          : [],
+        softSkillsParticipations: Array.isArray(data.softSkillsParticipations)
+          ? data.softSkillsParticipations
+          : [],
+        softSkillsCompletions: Array.isArray(data.softSkillsCompletions)
+          ? data.softSkillsCompletions
+          : [],
+        softSkillsCertifications: Array.isArray(data.softSkillsCertifications)
+          ? data.softSkillsCertifications
+          : [],
         // Legacy fields with defaults
         disabilityType: null,
         wageEmploymentStatus: null,
@@ -198,14 +212,14 @@ export function EditParticipantDialog({
 
     // Skills Information
     hasVocationalSkills: "no" as "yes" | "no",
-    vocationalSkillsParticipations: "0",
-    vocationalSkillsCompletions: "0",
-    vocationalSkillsCertifications: "0",
+    vocationalSkillsParticipations: [],
+    vocationalSkillsCompletions: [],
+    vocationalSkillsCertifications: [],
 
     hasSoftSkills: "no" as "yes" | "no",
-    softSkillsParticipations: "0",
-    softSkillsCompletions: "0",
-    softSkillsCertifications: "0",
+    softSkillsParticipations: [],
+    softSkillsCompletions: [],
+    softSkillsCertifications: [],
 
     hasBusinessSkills: "no" as "yes" | "no",
 

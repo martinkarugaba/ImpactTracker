@@ -554,8 +554,11 @@ export function getParticipantColumns({
       accessorFn: row => row.hasVocationalSkills,
       cell: ({ row }) => {
         const hasSkills = row.original.hasVocationalSkills === "yes";
-        const participations = row.original.vocationalSkillsParticipations || 0;
-        const completions = row.original.vocationalSkillsCompletions || 0;
+        const participations =
+          row.original.vocationalSkillsParticipations || [];
+        const completions = row.original.vocationalSkillsCompletions || [];
+        const certifications =
+          row.original.vocationalSkillsCertifications || [];
 
         if (hasSkills) {
           return (
@@ -566,9 +569,16 @@ export function getParticipantColumns({
               >
                 ✓ Has Skills
               </Badge>
-              {(participations > 0 || completions > 0) && (
-                <div className="text-muted-foreground text-xs">
-                  {participations}P / {completions}C
+              <div className="text-muted-foreground text-xs">
+                {participations.length}P / {completions.length}C /{" "}
+                {certifications.length}Cert
+              </div>
+              {participations.length > 0 && (
+                <div className="text-xs">
+                  <span className="font-medium">P:</span>{" "}
+                  {participations.slice(0, 2).join(", ")}
+                  {participations.length > 2 &&
+                    ` +${participations.length - 2}`}
                 </div>
               )}
             </div>

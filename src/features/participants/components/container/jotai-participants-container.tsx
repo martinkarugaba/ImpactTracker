@@ -1,10 +1,11 @@
 "use client";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Users } from "lucide-react";
+import { BarChart3, Users, PieChart } from "lucide-react";
 import { useParticipantContainerJotai, useParticipantState } from "../../state";
 import { useFilterOptions } from "./use-filter-options";
-import { MetricsTab } from "./metrics-tab";
+import { AnalyticsTab } from "./metrics-tab";
+import { ChartsTab } from "./charts-tab";
 import { ParticipantsTab } from "./participants-tab";
 import { ParticipantDialogs } from "./participant-dialogs";
 
@@ -67,22 +68,30 @@ export function JotaiParticipantsContainer({
       {/* Modern Tabs Design */}
       <div className="bg-transparent">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="bg-muted/30 grid h-11 w-auto grid-cols-2 rounded-lg p-1">
+          <TabsList className="bg-muted/30 grid h-11 w-auto grid-cols-3 rounded-lg p-1">
             <TabsTrigger
               value="participants"
-              className="data-[state=active]:bg-background flex items-center gap-2 rounded-md px-4 py-2 transition-all data-[state=active]:shadow-sm"
+              className="data-[state=active]:bg-background flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:shadow-sm"
             >
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">Participants</span>
               <span className="sm:hidden">Data</span>
             </TabsTrigger>
             <TabsTrigger
-              value="metrics"
-              className="data-[state=active]:bg-background flex items-center gap-2 rounded-md px-4 py-2 transition-all data-[state=active]:shadow-sm"
+              value="analytics"
+              className="data-[state=active]:bg-background flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:shadow-sm"
             >
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">Analytics</span>
               <span className="sm:hidden">Metrics</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="charts"
+              className="data-[state=active]:bg-background flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:shadow-sm"
+            >
+              <PieChart className="h-4 w-4" />
+              <span className="hidden sm:inline">Charts</span>
+              <span className="sm:hidden">Visual</span>
             </TabsTrigger>
           </TabsList>
 
@@ -118,18 +127,16 @@ export function JotaiParticipantsContainer({
             setIsImportDialogOpen={state.setIsImportDialogOpen}
           />
 
-          {/* Metrics Tab */}
-          <MetricsTab
+          {/* Analytics Tab */}
+          <AnalyticsTab
             metricsParticipants={state.metricsParticipants}
             isMetricsLoading={state.isMetricsLoading}
-            filters={state.filters}
-            onFiltersChange={() => {}} // No longer needed - Jotai handles this
-            projects={projects}
-            clusters={clusters}
-            organizations={organizations}
-            filterOptions={filterOptions}
-            searchValue={state.searchValue}
-            onSearchChange={() => {}} // No longer needed - Jotai handles this
+          />
+
+          {/* Charts Tab */}
+          <ChartsTab
+            metricsParticipants={state.metricsParticipants}
+            isMetricsLoading={state.isMetricsLoading}
           />
         </Tabs>
       </div>

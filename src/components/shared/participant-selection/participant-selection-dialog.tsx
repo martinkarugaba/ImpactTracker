@@ -204,16 +204,31 @@ export function ParticipantSelectionDialog({
         enterpriseAdults: parseInt(data.enterpriseAdults) || 0,
         // Skills fields
         hasVocationalSkills: data.hasVocationalSkills,
-        vocationalSkillsParticipations:
-          parseInt(data.vocationalSkillsParticipations) || 0,
-        vocationalSkillsCompletions:
-          parseInt(data.vocationalSkillsCompletions) || 0,
-        vocationalSkillsCertifications:
-          parseInt(data.vocationalSkillsCertifications) || 0,
+        vocationalSkillsParticipations: Array.isArray(
+          data.vocationalSkillsParticipations
+        )
+          ? data.vocationalSkillsParticipations
+          : [],
+        vocationalSkillsCompletions: Array.isArray(
+          data.vocationalSkillsCompletions
+        )
+          ? data.vocationalSkillsCompletions
+          : [],
+        vocationalSkillsCertifications: Array.isArray(
+          data.vocationalSkillsCertifications
+        )
+          ? data.vocationalSkillsCertifications
+          : [],
         hasSoftSkills: data.hasSoftSkills,
-        softSkillsParticipations: parseInt(data.softSkillsParticipations) || 0,
-        softSkillsCompletions: parseInt(data.softSkillsCompletions) || 0,
-        softSkillsCertifications: parseInt(data.softSkillsCertifications) || 0,
+        softSkillsParticipations: Array.isArray(data.softSkillsParticipations)
+          ? data.softSkillsParticipations
+          : [],
+        softSkillsCompletions: Array.isArray(data.softSkillsCompletions)
+          ? data.softSkillsCompletions
+          : [],
+        softSkillsCertifications: Array.isArray(data.softSkillsCertifications)
+          ? data.softSkillsCertifications
+          : [],
         hasBusinessSkills: data.hasBusinessSkills,
         // Employment details
         employmentType: data.employmentType || null,

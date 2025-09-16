@@ -19,7 +19,7 @@ export function SkillsFilters({ filters, updateFilter }: SkillsFiltersProps) {
     <>
       {/* Vocational Skills */}
       <div className="space-y-1">
-        <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+        <label className="text-muted-foreground text-xs font-medium">
           Vocational Skills
         </label>
         <Select
@@ -31,15 +31,15 @@ export function SkillsFilters({ filters, updateFilter }: SkillsFiltersProps) {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Participants</SelectItem>
-            <SelectItem value="true">Has Vocational Skills</SelectItem>
-            <SelectItem value="false">No Vocational Skills</SelectItem>
+            <SelectItem value="yes">Has Vocational Skills</SelectItem>
+            <SelectItem value="no">No Vocational Skills</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       {/* Soft Skills */}
       <div className="space-y-1">
-        <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+        <label className="text-muted-foreground text-xs font-medium">
           Soft Skills
         </label>
         <Select
@@ -51,15 +51,15 @@ export function SkillsFilters({ filters, updateFilter }: SkillsFiltersProps) {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Participants</SelectItem>
-            <SelectItem value="true">Has Soft Skills</SelectItem>
-            <SelectItem value="false">No Soft Skills</SelectItem>
+            <SelectItem value="yes">Has Soft Skills</SelectItem>
+            <SelectItem value="no">No Soft Skills</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       {/* Business Skills */}
       <div className="space-y-1">
-        <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+        <label className="text-muted-foreground text-xs font-medium">
           Business Skills
         </label>
         <Select
@@ -71,8 +71,8 @@ export function SkillsFilters({ filters, updateFilter }: SkillsFiltersProps) {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Participants</SelectItem>
-            <SelectItem value="true">Has Business Skills</SelectItem>
-            <SelectItem value="false">No Business Skills</SelectItem>
+            <SelectItem value="yes">Has Business Skills</SelectItem>
+            <SelectItem value="no">No Business Skills</SelectItem>
           </SelectContent>
         </Select>
       </div>

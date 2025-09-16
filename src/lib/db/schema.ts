@@ -174,20 +174,24 @@ export const participants = pgTable("participants", {
 
   // Skills Information
   hasVocationalSkills: text("has_vocational_skills").notNull().default("no"),
-  vocationalSkillsParticipations: integer(
-    "vocational_skills_participations"
-  ).default(0),
-  vocationalSkillsCompletions: integer("vocational_skills_completions").default(
-    0
-  ),
-  vocationalSkillsCertifications: integer(
-    "vocational_skills_certifications"
-  ).default(0),
+  vocationalSkillsParticipations: text("vocational_skills_participations")
+    .array()
+    .default([]),
+  vocationalSkillsCompletions: text("vocational_skills_completions")
+    .array()
+    .default([]),
+  vocationalSkillsCertifications: text("vocational_skills_certifications")
+    .array()
+    .default([]),
 
   hasSoftSkills: text("has_soft_skills").notNull().default("no"),
-  softSkillsParticipations: integer("soft_skills_participations").default(0),
-  softSkillsCompletions: integer("soft_skills_completions").default(0),
-  softSkillsCertifications: integer("soft_skills_certifications").default(0),
+  softSkillsParticipations: text("soft_skills_participations")
+    .array()
+    .default([]),
+  softSkillsCompletions: text("soft_skills_completions").array().default([]),
+  softSkillsCertifications: text("soft_skills_certifications")
+    .array()
+    .default([]),
 
   hasBusinessSkills: text("has_business_skills").notNull().default("no"),
 

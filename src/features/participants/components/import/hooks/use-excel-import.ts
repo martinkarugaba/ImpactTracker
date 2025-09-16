@@ -26,6 +26,20 @@ function validateEnumValue<T extends string>(
   );
 }
 
+// Helper function to parse skills arrays from comma-separated values
+function parseSkillsArray(value: unknown): string[] {
+  if (!value) return [];
+
+  const str = value.toString().trim();
+  if (!str) return [];
+
+  // Split by comma and clean up each skill name
+  return str
+    .split(",")
+    .map(skill => skill.trim())
+    .filter(skill => skill.length > 0);
+}
+
 export function useExcelImport(clusterId: string) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
@@ -257,7 +271,11 @@ export function useExcelImport(clusterId: string) {
       const kaziWomen = ["bugaaki", "hakibaale", "busoro"];
 
       // Balinda Children's Foundation subcounties
-      const balindaChildren = ["kyarusozi", "kyembogo"];
+      const balindaChildren = [
+        "kyarusozi",
+        "kyembogo",
+        "kyarusozi town council",
+      ];
 
       if (blessedPillars.includes(s)) return "blessed pillars";
       if (kaziWomen.includes(s)) return "kazi women";
@@ -616,24 +634,21 @@ export function useExcelImport(clusterId: string) {
         parseInt(String(data["Ent. Adults"] || "0"), 10) || "0"
       ),
 
-      // Skills Information
+      // Skills Information - parse arrays from comma-separated values
       hasVocationalSkills: (data["Has Vocational Skills"] || "")
         .toString()
         .toLowerCase()
         .includes("yes")
         ? "yes"
         : "no",
-      vocationalSkillsParticipations: String(
-        parseInt(String(data["Vocational Skills Participations"] || "0"), 10) ||
-          "0"
+      vocationalSkillsParticipations: parseSkillsArray(
+        data["Vocational Skills Participations"]
       ),
-      vocationalSkillsCompletions: String(
-        parseInt(String(data["Vocational Skills Completions"] || "0"), 10) ||
-          "0"
+      vocationalSkillsCompletions: parseSkillsArray(
+        data["Vocational Skills Completions"]
       ),
-      vocationalSkillsCertifications: String(
-        parseInt(String(data["Vocational Skills Certifications"] || "0"), 10) ||
-          "0"
+      vocationalSkillsCertifications: parseSkillsArray(
+        data["Vocational Skills Certifications"]
       ),
 
       hasSoftSkills: (data["Has Soft Skills"] || "")
@@ -642,14 +657,12 @@ export function useExcelImport(clusterId: string) {
         .includes("yes")
         ? "yes"
         : "no",
-      softSkillsParticipations: String(
-        parseInt(String(data["Soft Skills Participations"] || "0"), 10) || "0"
+      softSkillsParticipations: parseSkillsArray(
+        data["Soft Skills Participations"]
       ),
-      softSkillsCompletions: String(
-        parseInt(String(data["Soft Skills Completions"] || "0"), 10) || "0"
-      ),
-      softSkillsCertifications: String(
-        parseInt(String(data["Soft Skills Certifications"] || "0"), 10) || "0"
+      softSkillsCompletions: parseSkillsArray(data["Soft Skills Completions"]),
+      softSkillsCertifications: parseSkillsArray(
+        data["Soft Skills Certifications"]
       ),
 
       hasBusinessSkills: (data["Has Business Skills"] || "")

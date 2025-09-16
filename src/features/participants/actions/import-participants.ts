@@ -315,19 +315,36 @@ export async function importParticipants(data: ParticipantFormValues[]) {
 
         // Skills Information
         hasVocationalSkills: participant.hasVocationalSkills || "no",
-        vocationalSkillsParticipations:
-          parseInt(participant.vocationalSkillsParticipations) || 0,
-        vocationalSkillsCompletions:
-          parseInt(participant.vocationalSkillsCompletions) || 0,
-        vocationalSkillsCertifications:
-          parseInt(participant.vocationalSkillsCertifications) || 0,
+        vocationalSkillsParticipations: Array.isArray(
+          participant.vocationalSkillsParticipations
+        )
+          ? participant.vocationalSkillsParticipations
+          : [],
+        vocationalSkillsCompletions: Array.isArray(
+          participant.vocationalSkillsCompletions
+        )
+          ? participant.vocationalSkillsCompletions
+          : [],
+        vocationalSkillsCertifications: Array.isArray(
+          participant.vocationalSkillsCertifications
+        )
+          ? participant.vocationalSkillsCertifications
+          : [],
 
         hasSoftSkills: participant.hasSoftSkills || "no",
-        softSkillsParticipations:
-          parseInt(participant.softSkillsParticipations) || 0,
-        softSkillsCompletions: parseInt(participant.softSkillsCompletions) || 0,
-        softSkillsCertifications:
-          parseInt(participant.softSkillsCertifications) || 0,
+        softSkillsParticipations: Array.isArray(
+          participant.softSkillsParticipations
+        )
+          ? participant.softSkillsParticipations
+          : [],
+        softSkillsCompletions: Array.isArray(participant.softSkillsCompletions)
+          ? participant.softSkillsCompletions
+          : [],
+        softSkillsCertifications: Array.isArray(
+          participant.softSkillsCertifications
+        )
+          ? participant.softSkillsCertifications
+          : [],
 
         hasBusinessSkills: participant.hasBusinessSkills || "no",
 

@@ -28,13 +28,13 @@ export function downloadTemplate() {
       "Ent. Youth Female": "2", // Number of youth females in enterprise
       "Ent. Adults": "3", // Number of adults in enterprise
       "Has Vocational Skills": "yes", // yes or no
-      "Vocational Skills Participations": "2", // Number
-      "Vocational Skills Completions": "1", // Number
-      "Vocational Skills Certifications": "1", // Number
+      "Vocational Skills Participations": "Carpentry,Tailoring", // Comma-separated list of skills
+      "Vocational Skills Completions": "Carpentry", // Comma-separated list of skills
+      "Vocational Skills Certifications": "Carpentry", // Comma-separated list of skills
       "Has Soft Skills": "yes", // yes or no
-      "Soft Skills Participations": "1", // Number
-      "Soft Skills Completions": "1", // Number
-      "Soft Skills Certifications": "0", // Number
+      "Soft Skills Participations": "Leadership", // Comma-separated list of skills
+      "Soft Skills Completions": "Leadership", // Comma-separated list of skills
+      "Soft Skills Certifications": "", // Comma-separated list of skills
       "Has Business Skills": "no", // yes or no
       Nationality: "Ugandan",
       "Population Segment": "youth", // youth, women, pwd, elderly, refugee, host
