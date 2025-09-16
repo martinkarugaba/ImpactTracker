@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Search, X, Filter, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -18,13 +19,18 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  participantFiltersAtom,
+  participantSearchAtom,
+  hasActiveFiltersAtom,
+  updateFilterAtom,
+  clearFiltersAtom,
+} from "../../atoms/participants-atoms";
+import {
   type ParticipantFilters as ParticipantFiltersType,
   type Participant,
 } from "../../types/types";
 
 interface SimpleParticipantFiltersProps {
-  filters: ParticipantFiltersType;
-  onFiltersChange: (filters: ParticipantFiltersType) => void;
   projects: Array<{ id: string; name: string; acronym: string }>;
   organizations: Array<{ id: string; name: string; acronym: string }>;
   districts?: Array<{ id: string; name: string }>;
@@ -247,8 +253,6 @@ function generateDynamicFilterOptions(participants: Participant[] = []) {
 }
 
 export function SimpleParticipantFilters({
-  filters,
-  onFiltersChange,
   projects,
   organizations,
   districts = [],
@@ -257,17 +261,24 @@ export function SimpleParticipantFilters({
 }: SimpleParticipantFiltersProps) {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
+  // Jotai state
+  const filters = useAtomValue(participantFiltersAtom);
+  const [searchValue, setSearchValue] = useAtom(participantSearchAtom);
+  const hasActiveFilters = useAtomValue(hasActiveFiltersAtom);
+  const updateFilter = useSetAtom(updateFilterAtom);
+  const clearFilters = useSetAtom(clearFiltersAtom);
+
   // Generate organized filter options based on actual data
   const filterGroups = useMemo(
     () => generateDynamicFilterOptions(participants),
     [participants]
   );
 
-  const updateFilter = (key: keyof ParticipantFiltersType, value: string) => {
-    onFiltersChange({
-      ...filters,
-      [key]: value,
-    });
+  const handleFilterUpdate = (
+    key: keyof ParticipantFiltersType,
+    value: string
+  ) => {
+    updateFilter({ key, value });
   };
 
   // Helper function to safely access filter values
@@ -275,37 +286,8 @@ export function SimpleParticipantFilters({
     return (filters as Record<string, string>)[key] || "all";
   };
 
-  const clearFilters = () => {
-    onFiltersChange({
-      search: "",
-      project: "all",
-      organization: "all",
-      district: "all",
-      subCounty: "all",
-      enterprise: "all",
-      sex: "all",
-      isPWD: "all",
-      ageGroup: "all",
-      maritalStatus: "all",
-      educationLevel: "all",
-      isSubscribedToVSLA: "all",
-      ownsEnterprise: "all",
-      employmentType: "all",
-      employmentSector: "all",
-      hasVocationalSkills: "all",
-      hasSoftSkills: "all",
-      hasBusinessSkills: "all",
-      populationSegment: "all",
-      isActiveStudent: "all",
-      isTeenMother: "all",
-      sourceOfIncome: "all",
-      enterpriseSector: "all",
-      businessScale: "all",
-      nationality: "all",
-      locationSetting: "all",
-      isRefugee: "all",
-      isMother: "all",
-    });
+  const handleClearFilters = () => {
+    clearFilters();
   };
 
   const getActiveFiltersCount = () => {
@@ -340,7 +322,7 @@ export function SimpleParticipantFilters({
             <X
               className="hover:text-destructive h-3 w-3 cursor-pointer"
               onClick={() =>
-                updateFilter(key as keyof ParticipantFiltersType, "all")
+                handleFilterUpdate(key as keyof ParticipantFiltersType, "all")
               }
             />
           </Badge>
@@ -359,8 +341,8 @@ export function SimpleParticipantFilters({
           <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <Input
             placeholder="Search participants..."
-            value={filters.search}
-            onChange={e => updateFilter("search", e.target.value)}
+            value={searchValue}
+            onChange={e => setSearchValue(e.target.value)}
             className="pl-9"
           />
         </div>
@@ -371,7 +353,10 @@ export function SimpleParticipantFilters({
             key={filter.key}
             value={getFilterValue(filter.key)}
             onValueChange={value =>
-              updateFilter(filter.key as keyof ParticipantFiltersType, value)
+              handleFilterUpdate(
+                filter.key as keyof ParticipantFiltersType,
+                value
+              )
             }
           >
             <SelectTrigger className="w-[140px]">
@@ -422,7 +407,9 @@ export function SimpleParticipantFilters({
                     <label className="text-xs font-medium">Project</label>
                     <Select
                       value={filters.project}
-                      onValueChange={value => updateFilter("project", value)}
+                      onValueChange={value =>
+                        handleFilterUpdate("project", value)
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select project..." />
@@ -443,7 +430,7 @@ export function SimpleParticipantFilters({
                     <Select
                       value={filters.organization}
                       onValueChange={value =>
-                        updateFilter("organization", value)
+                        handleFilterUpdate("organization", value)
                       }
                     >
                       <SelectTrigger>
@@ -464,7 +451,9 @@ export function SimpleParticipantFilters({
                     <label className="text-xs font-medium">District</label>
                     <Select
                       value={filters.district}
-                      onValueChange={value => updateFilter("district", value)}
+                      onValueChange={value =>
+                        handleFilterUpdate("district", value)
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select district..." />
@@ -484,7 +473,9 @@ export function SimpleParticipantFilters({
                     <label className="text-xs font-medium">Sub County</label>
                     <Select
                       value={filters.subCounty}
-                      onValueChange={value => updateFilter("subCounty", value)}
+                      onValueChange={value =>
+                        handleFilterUpdate("subCounty", value)
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select sub county..." />
@@ -517,7 +508,7 @@ export function SimpleParticipantFilters({
                         <Select
                           value={getFilterValue(filter.key)}
                           onValueChange={value =>
-                            updateFilter(
+                            handleFilterUpdate(
                               filter.key as keyof ParticipantFiltersType,
                               value
                             )
@@ -559,7 +550,7 @@ export function SimpleParticipantFilters({
                       <Select
                         value={getFilterValue(filter.key)}
                         onValueChange={value =>
-                          updateFilter(
+                          handleFilterUpdate(
                             filter.key as keyof ParticipantFiltersType,
                             value
                           )
@@ -598,7 +589,7 @@ export function SimpleParticipantFilters({
                         <Select
                           value={getFilterValue(filter.key)}
                           onValueChange={value =>
-                            updateFilter(
+                            handleFilterUpdate(
                               filter.key as keyof ParticipantFiltersType,
                               value
                             )
@@ -641,7 +632,7 @@ export function SimpleParticipantFilters({
                         <Select
                           value={getFilterValue(filter.key)}
                           onValueChange={value =>
-                            updateFilter(
+                            handleFilterUpdate(
                               filter.key as keyof ParticipantFiltersType,
                               value
                             )
@@ -674,14 +665,14 @@ export function SimpleParticipantFilters({
       </div>
 
       {/* Active Filter Badges */}
-      {activeFiltersCount > 0 && (
+      {hasActiveFilters && (
         <div className="animate-in fade-in-0 slide-in-from-top-1 flex flex-wrap items-center gap-2 duration-300">
           <span className="text-muted-foreground text-sm">Active filters:</span>
           {getActiveFilterBadges()}
           <Button
             variant="ghost"
             size="sm"
-            onClick={clearFilters}
+            onClick={handleClearFilters}
             className="ml-auto h-6 px-2 text-xs"
           >
             Clear All

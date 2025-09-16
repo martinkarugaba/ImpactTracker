@@ -27,6 +27,25 @@ export async function getParticipants(
       sex?: string;
       isPWD?: string;
       ageGroup?: string;
+      maritalStatus?: string;
+      educationLevel?: string;
+      isSubscribedToVSLA?: string;
+      ownsEnterprise?: string;
+      employmentType?: string;
+      employmentSector?: string;
+      hasVocationalSkills?: string;
+      hasSoftSkills?: string;
+      hasBusinessSkills?: string;
+      populationSegment?: string;
+      isActiveStudent?: string;
+      isTeenMother?: string;
+      sourceOfIncome?: string;
+      enterpriseSector?: string;
+      businessScale?: string;
+      nationality?: string;
+      locationSetting?: string;
+      isRefugee?: string;
+      isMother?: string;
     };
   }
 ): Promise<ParticipantsResponse> {
@@ -85,31 +104,236 @@ export async function getParticipants(
       }
       if (params.filters.isPWD && params.filters.isPWD !== "all") {
         console.log("Adding isPWD filter:", params.filters.isPWD);
-        if (params.filters.isPWD === "true") {
-          whereConditions.push(eq(participants.isPWD, "yes"));
-        } else if (params.filters.isPWD === "false") {
-          whereConditions.push(eq(participants.isPWD, "no"));
-        }
+        whereConditions.push(eq(participants.isPWD, params.filters.isPWD));
       }
       if (params.filters.ageGroup && params.filters.ageGroup !== "all") {
         console.log("Adding ageGroup filter:", params.filters.ageGroup);
         if (params.filters.ageGroup === "young") {
           console.log("Applying young filter: age >= 15 AND age <= 35");
-          // 15-35 Years
           whereConditions.push(
             sql`${participants.age} >= 15 AND ${participants.age} <= 35`
           );
         } else if (params.filters.ageGroup === "adult") {
           console.log("Applying adult filter: age >= 36 AND age <= 59");
-          // 36-59 Years
           whereConditions.push(
             sql`${participants.age} >= 36 AND ${participants.age} <= 59`
           );
         } else if (params.filters.ageGroup === "older") {
           console.log("Applying older filter: age >= 60");
-          // 60+ Years
           whereConditions.push(sql`${participants.age} >= 60`);
         }
+      }
+
+      // Additional filters for comprehensive participant filtering
+      if (
+        params.filters.maritalStatus &&
+        params.filters.maritalStatus !== "all"
+      ) {
+        console.log(
+          "Adding maritalStatus filter:",
+          params.filters.maritalStatus
+        );
+        whereConditions.push(
+          eq(participants.maritalStatus, params.filters.maritalStatus)
+        );
+      }
+      if (
+        params.filters.educationLevel &&
+        params.filters.educationLevel !== "all"
+      ) {
+        console.log(
+          "Adding educationLevel filter:",
+          params.filters.educationLevel
+        );
+        whereConditions.push(
+          eq(participants.educationLevel, params.filters.educationLevel)
+        );
+      }
+      if (
+        params.filters.isSubscribedToVSLA &&
+        params.filters.isSubscribedToVSLA !== "all"
+      ) {
+        console.log(
+          "Adding isSubscribedToVSLA filter:",
+          params.filters.isSubscribedToVSLA
+        );
+        whereConditions.push(
+          eq(participants.isSubscribedToVSLA, params.filters.isSubscribedToVSLA)
+        );
+      }
+      if (
+        params.filters.ownsEnterprise &&
+        params.filters.ownsEnterprise !== "all"
+      ) {
+        console.log(
+          "Adding ownsEnterprise filter:",
+          params.filters.ownsEnterprise
+        );
+        whereConditions.push(
+          eq(participants.ownsEnterprise, params.filters.ownsEnterprise)
+        );
+      }
+      if (
+        params.filters.employmentType &&
+        params.filters.employmentType !== "all"
+      ) {
+        console.log(
+          "Adding employmentType filter:",
+          params.filters.employmentType
+        );
+        whereConditions.push(
+          eq(participants.employmentType, params.filters.employmentType)
+        );
+      }
+      if (
+        params.filters.employmentSector &&
+        params.filters.employmentSector !== "all"
+      ) {
+        console.log(
+          "Adding employmentSector filter:",
+          params.filters.employmentSector
+        );
+        whereConditions.push(
+          eq(participants.employmentSector, params.filters.employmentSector)
+        );
+      }
+      if (
+        params.filters.hasVocationalSkills &&
+        params.filters.hasVocationalSkills !== "all"
+      ) {
+        console.log(
+          "Adding hasVocationalSkills filter:",
+          params.filters.hasVocationalSkills
+        );
+        whereConditions.push(
+          eq(
+            participants.hasVocationalSkills,
+            params.filters.hasVocationalSkills
+          )
+        );
+      }
+      if (
+        params.filters.hasSoftSkills &&
+        params.filters.hasSoftSkills !== "all"
+      ) {
+        console.log(
+          "Adding hasSoftSkills filter:",
+          params.filters.hasSoftSkills
+        );
+        whereConditions.push(
+          eq(participants.hasSoftSkills, params.filters.hasSoftSkills)
+        );
+      }
+      if (
+        params.filters.hasBusinessSkills &&
+        params.filters.hasBusinessSkills !== "all"
+      ) {
+        console.log(
+          "Adding hasBusinessSkills filter:",
+          params.filters.hasBusinessSkills
+        );
+        whereConditions.push(
+          eq(participants.hasBusinessSkills, params.filters.hasBusinessSkills)
+        );
+      }
+      if (
+        params.filters.populationSegment &&
+        params.filters.populationSegment !== "all"
+      ) {
+        console.log(
+          "Adding populationSegment filter:",
+          params.filters.populationSegment
+        );
+        whereConditions.push(
+          eq(participants.populationSegment, params.filters.populationSegment)
+        );
+      }
+      if (
+        params.filters.isActiveStudent &&
+        params.filters.isActiveStudent !== "all"
+      ) {
+        console.log(
+          "Adding isActiveStudent filter:",
+          params.filters.isActiveStudent
+        );
+        whereConditions.push(
+          eq(participants.isActiveStudent, params.filters.isActiveStudent)
+        );
+      }
+      if (
+        params.filters.isTeenMother &&
+        params.filters.isTeenMother !== "all"
+      ) {
+        console.log("Adding isTeenMother filter:", params.filters.isTeenMother);
+        whereConditions.push(
+          eq(participants.isTeenMother, params.filters.isTeenMother)
+        );
+      }
+      if (
+        params.filters.sourceOfIncome &&
+        params.filters.sourceOfIncome !== "all"
+      ) {
+        console.log(
+          "Adding sourceOfIncome filter:",
+          params.filters.sourceOfIncome
+        );
+        whereConditions.push(
+          eq(participants.sourceOfIncome, params.filters.sourceOfIncome)
+        );
+      }
+      if (
+        params.filters.enterpriseSector &&
+        params.filters.enterpriseSector !== "all"
+      ) {
+        console.log(
+          "Adding enterpriseSector filter:",
+          params.filters.enterpriseSector
+        );
+        whereConditions.push(
+          eq(participants.enterpriseSector, params.filters.enterpriseSector)
+        );
+      }
+      if (
+        params.filters.businessScale &&
+        params.filters.businessScale !== "all"
+      ) {
+        console.log(
+          "Adding businessScale filter:",
+          params.filters.businessScale
+        );
+        whereConditions.push(
+          eq(participants.businessScale, params.filters.businessScale)
+        );
+      }
+      if (params.filters.nationality && params.filters.nationality !== "all") {
+        console.log("Adding nationality filter:", params.filters.nationality);
+        whereConditions.push(
+          eq(participants.nationality, params.filters.nationality)
+        );
+      }
+      if (
+        params.filters.locationSetting &&
+        params.filters.locationSetting !== "all"
+      ) {
+        console.log(
+          "Adding locationSetting filter:",
+          params.filters.locationSetting
+        );
+        whereConditions.push(
+          eq(participants.locationSetting, params.filters.locationSetting)
+        );
+      }
+      if (params.filters.isRefugee && params.filters.isRefugee !== "all") {
+        console.log("Adding isRefugee filter:", params.filters.isRefugee);
+        whereConditions.push(
+          eq(participants.isRefugee, params.filters.isRefugee)
+        );
+      }
+      if (params.filters.isMother && params.filters.isMother !== "all") {
+        console.log("Adding isMother filter:", params.filters.isMother);
+        whereConditions.push(
+          eq(participants.isMother, params.filters.isMother)
+        );
       }
     }
 
@@ -410,6 +634,25 @@ export async function getAllFilteredParticipantsForExport(
     sex?: string;
     isPWD?: string;
     ageGroup?: string;
+    maritalStatus?: string;
+    educationLevel?: string;
+    isSubscribedToVSLA?: string;
+    ownsEnterprise?: string;
+    employmentType?: string;
+    employmentSector?: string;
+    hasVocationalSkills?: string;
+    hasSoftSkills?: string;
+    hasBusinessSkills?: string;
+    populationSegment?: string;
+    isActiveStudent?: string;
+    isTeenMother?: string;
+    sourceOfIncome?: string;
+    enterpriseSector?: string;
+    businessScale?: string;
+    nationality?: string;
+    locationSetting?: string;
+    isRefugee?: string;
+    isMother?: string;
   },
   search?: string
 ): Promise<ParticipantsResponse> {
@@ -454,11 +697,7 @@ export async function getAllFilteredParticipantsForExport(
       }
       if (filters.isPWD && filters.isPWD !== "all") {
         console.log("Adding isPWD filter:", filters.isPWD);
-        if (filters.isPWD === "true") {
-          whereConditions.push(eq(participants.isPWD, "yes"));
-        } else if (filters.isPWD === "false") {
-          whereConditions.push(eq(participants.isPWD, "no"));
-        }
+        whereConditions.push(eq(participants.isPWD, filters.isPWD));
       }
       if (filters.ageGroup && filters.ageGroup !== "all") {
         console.log("Adding ageGroup filter:", filters.ageGroup);
@@ -473,6 +712,137 @@ export async function getAllFilteredParticipantsForExport(
         } else if (filters.ageGroup === "older") {
           whereConditions.push(sql`${participants.age} >= 60`);
         }
+      }
+
+      // Additional filters for comprehensive export filtering
+      if (filters.maritalStatus && filters.maritalStatus !== "all") {
+        console.log("Adding maritalStatus filter:", filters.maritalStatus);
+        whereConditions.push(
+          eq(participants.maritalStatus, filters.maritalStatus)
+        );
+      }
+      if (filters.educationLevel && filters.educationLevel !== "all") {
+        console.log("Adding educationLevel filter:", filters.educationLevel);
+        whereConditions.push(
+          eq(participants.educationLevel, filters.educationLevel)
+        );
+      }
+      if (filters.isSubscribedToVSLA && filters.isSubscribedToVSLA !== "all") {
+        console.log(
+          "Adding isSubscribedToVSLA filter:",
+          filters.isSubscribedToVSLA
+        );
+        whereConditions.push(
+          eq(participants.isSubscribedToVSLA, filters.isSubscribedToVSLA)
+        );
+      }
+      if (filters.ownsEnterprise && filters.ownsEnterprise !== "all") {
+        console.log("Adding ownsEnterprise filter:", filters.ownsEnterprise);
+        whereConditions.push(
+          eq(participants.ownsEnterprise, filters.ownsEnterprise)
+        );
+      }
+      if (filters.employmentType && filters.employmentType !== "all") {
+        console.log("Adding employmentType filter:", filters.employmentType);
+        whereConditions.push(
+          eq(participants.employmentType, filters.employmentType)
+        );
+      }
+      if (filters.employmentSector && filters.employmentSector !== "all") {
+        console.log(
+          "Adding employmentSector filter:",
+          filters.employmentSector
+        );
+        whereConditions.push(
+          eq(participants.employmentSector, filters.employmentSector)
+        );
+      }
+      if (
+        filters.hasVocationalSkills &&
+        filters.hasVocationalSkills !== "all"
+      ) {
+        console.log(
+          "Adding hasVocationalSkills filter:",
+          filters.hasVocationalSkills
+        );
+        whereConditions.push(
+          eq(participants.hasVocationalSkills, filters.hasVocationalSkills)
+        );
+      }
+      if (filters.hasSoftSkills && filters.hasSoftSkills !== "all") {
+        console.log("Adding hasSoftSkills filter:", filters.hasSoftSkills);
+        whereConditions.push(
+          eq(participants.hasSoftSkills, filters.hasSoftSkills)
+        );
+      }
+      if (filters.hasBusinessSkills && filters.hasBusinessSkills !== "all") {
+        console.log(
+          "Adding hasBusinessSkills filter:",
+          filters.hasBusinessSkills
+        );
+        whereConditions.push(
+          eq(participants.hasBusinessSkills, filters.hasBusinessSkills)
+        );
+      }
+      if (filters.populationSegment && filters.populationSegment !== "all") {
+        console.log(
+          "Adding populationSegment filter:",
+          filters.populationSegment
+        );
+        whereConditions.push(
+          eq(participants.populationSegment, filters.populationSegment)
+        );
+      }
+      if (filters.isActiveStudent && filters.isActiveStudent !== "all") {
+        console.log("Adding isActiveStudent filter:", filters.isActiveStudent);
+        whereConditions.push(
+          eq(participants.isActiveStudent, filters.isActiveStudent)
+        );
+      }
+      if (filters.isTeenMother && filters.isTeenMother !== "all") {
+        console.log("Adding isTeenMother filter:", filters.isTeenMother);
+        whereConditions.push(
+          eq(participants.isTeenMother, filters.isTeenMother)
+        );
+      }
+      if (filters.sourceOfIncome && filters.sourceOfIncome !== "all") {
+        console.log("Adding sourceOfIncome filter:", filters.sourceOfIncome);
+        whereConditions.push(
+          eq(participants.sourceOfIncome, filters.sourceOfIncome)
+        );
+      }
+      if (filters.enterpriseSector && filters.enterpriseSector !== "all") {
+        console.log(
+          "Adding enterpriseSector filter:",
+          filters.enterpriseSector
+        );
+        whereConditions.push(
+          eq(participants.enterpriseSector, filters.enterpriseSector)
+        );
+      }
+      if (filters.businessScale && filters.businessScale !== "all") {
+        console.log("Adding businessScale filter:", filters.businessScale);
+        whereConditions.push(
+          eq(participants.businessScale, filters.businessScale)
+        );
+      }
+      if (filters.nationality && filters.nationality !== "all") {
+        console.log("Adding nationality filter:", filters.nationality);
+        whereConditions.push(eq(participants.nationality, filters.nationality));
+      }
+      if (filters.locationSetting && filters.locationSetting !== "all") {
+        console.log("Adding locationSetting filter:", filters.locationSetting);
+        whereConditions.push(
+          eq(participants.locationSetting, filters.locationSetting)
+        );
+      }
+      if (filters.isRefugee && filters.isRefugee !== "all") {
+        console.log("Adding isRefugee filter:", filters.isRefugee);
+        whereConditions.push(eq(participants.isRefugee, filters.isRefugee));
+      }
+      if (filters.isMother && filters.isMother !== "all") {
+        console.log("Adding isMother filter:", filters.isMother);
+        whereConditions.push(eq(participants.isMother, filters.isMother));
       }
     }
 

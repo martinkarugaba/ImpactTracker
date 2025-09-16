@@ -68,7 +68,7 @@ export function ParticipantsTab({
   pagination,
   participantsData,
   filters,
-  onFiltersChange,
+  onFiltersChange: _onFiltersChange,
   projects,
   clusters: _clusters,
   organizations,
@@ -93,20 +93,20 @@ export function ParticipantsTab({
   // Use Jotai for column visibility state
   const { columnVisibility, setColumnVisibility } = useParticipantTable();
 
-  // Available columns for toggle - matching actual column IDs
+  // Available columns for toggle - matching actual column IDs from columns.tsx
   const availableColumns = [
     { id: "fullName", label: "Name" },
     { id: "sex", label: "Gender" },
     { id: "age", label: "Age" },
     { id: "contact", label: "Contact" },
     { id: "district", label: "District" },
-    { id: "subCounty", label: "Sub County" },
-    { id: "parish", label: "Parish" },
-    { id: "village", label: "Village" },
     { id: "organization", label: "Organization" },
     { id: "project", label: "Project" },
     { id: "employmentStatus", label: "Employment Status" },
     { id: "isSubscribedToVSLA", label: "VSLA Subscription" },
+    { id: "subCounty", label: "Sub County" },
+    { id: "parish", label: "Parish" },
+    { id: "village", label: "Village" },
     { id: "maritalStatus", label: "Marital Status" },
     { id: "educationLevel", label: "Education Level" },
     { id: "ownsEnterprise", label: "Enterprise Owner" },
@@ -215,8 +215,6 @@ export function ParticipantsTab({
 
         {/* Filters Section - Below action buttons */}
         <SimpleParticipantFilters
-          filters={filters}
-          onFiltersChange={onFiltersChange}
           projects={projects}
           organizations={organizations}
           districts={filterOptions.districts}
