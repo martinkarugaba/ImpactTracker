@@ -131,19 +131,7 @@ export function ParticipantsTab({
       <div className="space-y-6">
         {/* Enhanced Header Section with Better Visual Hierarchy */}
         <div className="space-y-4">
-          {/* Top Row: Search and Primary Action */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            {/* Primary Action - Add Participant */}
-            <Button
-              onClick={onAddParticipant}
-              className="h-8 bg-green-600 px-6 text-white hover:bg-green-700 focus:ring-green-500 dark:bg-green-700 dark:hover:bg-green-800"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add Participant
-            </Button>
-          </div>
-
-          {/* Second Row: Secondary Actions and View Controls */}
+          {/* Action buttons and View Controls */}
           <div className="flex flex-wrap items-center justify-between gap-3">
             {/* Left side - Secondary Actions */}
             <div className="flex items-center gap-2">
@@ -178,41 +166,50 @@ export function ParticipantsTab({
               </Button>
             </div>
 
-            {/* Right side - View Customization */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="h-9 border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
-                >
-                  <LayoutGrid className="mr-2 h-4 w-4" />
-                  <span className="hidden lg:inline">Customize Columns</span>
-                  <span className="lg:hidden">Columns</span>
-                  <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                {availableColumns.map(column => (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={
-                      columnVisibility[
-                        column.id as keyof typeof columnVisibility
-                      ]
-                    }
-                    onCheckedChange={checked =>
-                      setColumnVisibility(prev => ({
-                        ...prev,
-                        [column.id]: !!checked,
-                      }))
-                    }
+            {/* Right side - View Customization and Add Action */}
+            <div className="flex items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="h-9 border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
                   >
-                    {column.label}
-                  </DropdownMenuCheckboxItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                    <LayoutGrid className="mr-2 h-4 w-4" />
+                    <span className="hidden lg:inline">Columns</span>
+                    <span className="lg:hidden">Columns</span>
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  {availableColumns.map(column => (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={
+                        columnVisibility[
+                          column.id as keyof typeof columnVisibility
+                        ]
+                      }
+                      onCheckedChange={checked =>
+                        setColumnVisibility(prev => ({
+                          ...prev,
+                          [column.id]: !!checked,
+                        }))
+                      }
+                    >
+                      {column.label}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button
+                onClick={onAddParticipant}
+                className="h-9 bg-green-600 px-4 text-white focus:ring-green-500 dark:bg-green-700 dark:hover:bg-green-800"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add Participant
+              </Button>
+            </div>
           </div>
         </div>
 

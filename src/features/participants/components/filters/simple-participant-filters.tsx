@@ -405,21 +405,21 @@ export function SimpleParticipantFilters({
           </PopoverTrigger>
           <PopoverContent
             align="end"
-            className="animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 max-h-[80vh] w-[700px] overflow-y-auto"
+            className="animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 h-[400px] w-[90vw] max-w-7xl overflow-y-auto"
           >
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h4 className="font-semibold">Additional Filters</h4>
               </div>
 
               {/* Organization & Location Section */}
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
                   Organization & Location
                 </h5>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-4 gap-3">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Project</label>
+                    <label className="text-xs font-medium">Project</label>
                     <Select
                       value={filters.project}
                       onValueChange={value => updateFilter("project", value)}
@@ -438,8 +438,8 @@ export function SimpleParticipantFilters({
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Organization</label>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium">Organization</label>
                     <Select
                       value={filters.organization}
                       onValueChange={value =>
@@ -460,8 +460,8 @@ export function SimpleParticipantFilters({
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">District</label>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium">District</label>
                     <Select
                       value={filters.district}
                       onValueChange={value => updateFilter("district", value)}
@@ -480,8 +480,8 @@ export function SimpleParticipantFilters({
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Sub County</label>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium">Sub County</label>
                     <Select
                       value={filters.subCounty}
                       onValueChange={value => updateFilter("subCounty", value)}
@@ -504,14 +504,14 @@ export function SimpleParticipantFilters({
 
               {/* Enterprise & Business Section */}
               {filterGroups.enterprise.length > 0 && (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
                     Enterprise & Business
                   </h5>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-4 gap-3">
                     {filterGroups.enterprise.map(filter => (
-                      <div key={filter.key} className="space-y-2">
-                        <label className="text-sm font-medium">
+                      <div key={filter.key} className="space-y-1">
+                        <label className="text-xs font-medium">
                           {filter.label}
                         </label>
                         <Select
@@ -546,14 +546,14 @@ export function SimpleParticipantFilters({
               )}
 
               {/* Skills & Education Section */}
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
                   Skills & Education
                 </h5>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-4 gap-3">
                   {filterGroups.skills.map(filter => (
-                    <div key={filter.key} className="space-y-2">
-                      <label className="text-sm font-medium">
+                    <div key={filter.key} className="space-y-1">
+                      <label className="text-xs font-medium">
                         {filter.label}
                       </label>
                       <Select
@@ -585,14 +585,14 @@ export function SimpleParticipantFilters({
 
               {/* Demographics & Personal Section */}
               {filterGroups.demographics.length > 0 && (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
                     Demographics & Personal
                   </h5>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-4 gap-3">
                     {filterGroups.demographics.map(filter => (
-                      <div key={filter.key} className="space-y-2">
-                        <label className="text-sm font-medium">
+                      <div key={filter.key} className="space-y-1">
+                        <label className="text-xs font-medium">
                           {filter.label}
                         </label>
                         <Select
@@ -628,14 +628,14 @@ export function SimpleParticipantFilters({
 
               {/* Employment Section */}
               {filterGroups.employment.length > 0 && (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
                     Employment
                   </h5>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-4 gap-3">
                     {filterGroups.employment.map(filter => (
-                      <div key={filter.key} className="space-y-2">
-                        <label className="text-sm font-medium">
+                      <div key={filter.key} className="space-y-1">
+                        <label className="text-xs font-medium">
                           {filter.label}
                         </label>
                         <Select

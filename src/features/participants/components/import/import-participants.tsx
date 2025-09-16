@@ -20,18 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
+
 import { useExcelImport } from "./hooks/use-excel-import";
 import { BatchProgress } from "./batch-progress";
+import { DataPreview } from "./data-preview";
 import {
   useCountries,
   useDistricts,
@@ -69,8 +63,8 @@ export function ImportParticipants({
   });
 
   // Location queries
-  const { data: countriesData } = useCountries();
-  const { data: districtsData } = useDistricts({
+  const { data: countriesData, isLoading: isLoadingCountries } = useCountries();
+  const { data: districtsData, isLoading: isLoadingDistricts } = useDistricts({
     countryId: globalDefaults.countryId || undefined,
   });
 
@@ -232,7 +226,10 @@ export function ImportParticipants({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
+      <DialogContent
+        className="max-h-[90vh] !w-[98vw] !max-w-none overflow-auto"
+        style={{ width: "98vw", maxWidth: "1600px" }}
+      >
         <DialogHeader>
           <DialogTitle>{getStepTitle()}</DialogTitle>
           <DialogDescription>{getStepDescription()}</DialogDescription>
@@ -337,99 +334,42 @@ export function ImportParticipants({
           {/* Preview Step */}
           {currentStep === "preview" && parsedData && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">Data Preview</h3>
-                <div className="text-muted-foreground text-sm">
-                  {parsedData.length} participants ready to import
-                </div>
-              </div>
-
-              {/* Global defaults */}
-              <div className="grid grid-cols-2 gap-4 rounded-lg border p-4">
-                <div className="space-y-2">
-                  <Label>Default Country</Label>
-                  <Select
-                    value={globalDefaults.countryId}
-                    onValueChange={value =>
-                      setGlobalDefaults({
-                        ...globalDefaults,
-                        countryId: value,
-                      })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select country" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {countriesData?.data?.data?.map(country => (
-                        <SelectItem key={country.id} value={country.id}>
-                          {country.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Default District</Label>
-                  <Select
-                    value={globalDefaults.districtId}
-                    onValueChange={value =>
-                      setGlobalDefaults({
-                        ...globalDefaults,
-                        districtId: value,
-                      })
-                    }
-                    disabled={!globalDefaults.countryId}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select district" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {districtsData?.data?.data?.map(district => (
-                        <SelectItem key={district.id} value={district.id}>
-                          {district.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Data table */}
-              <div className="rounded-lg border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Sex</TableHead>
-                      <TableHead>Age</TableHead>
-                      <TableHead>Contact</TableHead>
-                      <TableHead>Sub County</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {parsedData.slice(0, 5).map((participant, index) => (
-                      <TableRow key={index}>
-                        <TableCell>
-                          {participant.firstName} {participant.lastName}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{participant.sex}</Badge>
-                        </TableCell>
-                        <TableCell>{participant.age}</TableCell>
-                        <TableCell>{participant.contact}</TableCell>
-                        <TableCell>{participant.subCounty || "N/A"}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                {parsedData.length > 5 && (
-                  <div className="text-muted-foreground border-t p-2 text-center text-sm">
-                    ... and {parsedData.length - 5} more participants
-                  </div>
-                )}
-              </div>
+              {/* Comprehensive Data Preview with Tabs */}
+              <DataPreview
+                data={parsedData}
+                projects={[]}
+                countryOptions={
+                  countriesData?.data?.data?.map(country => ({
+                    value: country.id,
+                    label: country.name,
+                  })) || []
+                }
+                districtOptions={
+                  districtsData?.data?.data?.map(district => ({
+                    value: district.id,
+                    label: district.name,
+                  })) || []
+                }
+                subCountyOptions={[]}
+                selectedProject=""
+                selectedCountry={globalDefaults.countryId}
+                selectedDistrict={globalDefaults.districtId}
+                selectedSubCounty=""
+                onProjectSelect={() => {}}
+                onCountrySelect={value =>
+                  setGlobalDefaults({ ...globalDefaults, countryId: value })
+                }
+                onDistrictSelect={value =>
+                  setGlobalDefaults({ ...globalDefaults, districtId: value })
+                }
+                onSubCountySelect={() => {}}
+                onSearchCountry={() => {}}
+                onSearchDistrict={() => {}}
+                onSearchSubCounty={() => {}}
+                isLoadingCountries={isLoadingCountries}
+                isLoadingDistricts={isLoadingDistricts}
+                isLoadingSubCounties={false}
+              />
             </div>
           )}
 

@@ -19,6 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { type ParticipantFormValues } from "../participant-form";
 
 interface DataPreviewProps {
@@ -195,196 +196,466 @@ export function DataPreview({
         </div>
       </div>
 
-      {/* Data Table */}
-      <div className="overflow-x-auto rounded-lg border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Gender</TableHead>
-              <TableHead>Marital Status</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Date of Birth</TableHead>
-              <TableHead>Age</TableHead>
-              <TableHead>Disabled</TableHead>
-              <TableHead>Location</TableHead>
-              <TableHead>Project</TableHead>
-              <TableHead>Education Level</TableHead>
-              <TableHead>Source of Income</TableHead>
-              <TableHead>VSLA</TableHead>
-              <TableHead>Teen Mother</TableHead>
-              <TableHead>Enterprise</TableHead>
-              <TableHead>Nationality</TableHead>
-              <TableHead>Population Segment</TableHead>
-              <TableHead>Refugee</TableHead>
-              <TableHead>Employment</TableHead>
-              <TableHead>Active Student</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {currentData.map((participant, index) => (
-              <TableRow key={startIndex + index}>
-                <TableCell className="font-medium">
-                  {participant.firstName} {participant.lastName}
-                </TableCell>
-                <TableCell>
-                  <span className="capitalize">{participant.sex}</span>
-                </TableCell>
-                <TableCell>
-                  <span className="capitalize">
-                    {participant.maritalStatus || "—"}
-                  </span>
-                </TableCell>
-                <TableCell>{participant.contact || "—"}</TableCell>
-                <TableCell>
-                  {participant.dateOfBirth ? (
-                    <span className="text-sm">
-                      {new Date(participant.dateOfBirth).toLocaleDateString()}
-                    </span>
-                  ) : (
-                    <span className="text-sm text-gray-400">—</span>
-                  )}
-                </TableCell>
-                <TableCell>{participant.age || "—"}</TableCell>
-                <TableCell>
-                  <span
-                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                      participant.isPWD === "yes"
-                        ? "bg-blue-100 text-blue-800"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {participant.isPWD === "yes" ? "Yes" : "No"}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <div className="text-sm">
-                    <div className="font-medium">{participant.district}</div>
-                    <div className="text-gray-500">{participant.subCounty}</div>
-                    <div className="text-xs text-gray-400">
-                      {participant.parish}, {participant.village}
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <span className="text-xs text-gray-500">
-                    {participant.project_id ? "Mapped" : "Default"}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm capitalize">
-                    {participant.educationLevel || "—"}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm capitalize">
-                    {participant.sourceOfIncome || "—"}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <div className="text-sm">
-                    <div
-                      className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                        participant.isSubscribedToVSLA === "yes"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-gray-100 text-gray-600"
-                      }`}
-                    >
-                      {participant.isSubscribedToVSLA === "yes" ? "Yes" : "No"}
-                    </div>
-                    {participant.vslaName && (
-                      <div className="mt-1 text-xs text-gray-500">
-                        {participant.vslaName}
-                      </div>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <span
-                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                      participant.isTeenMother === "yes"
-                        ? "bg-pink-100 text-pink-800"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {participant.isTeenMother === "yes" ? "Yes" : "No"}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <div className="text-sm">
-                    <div
-                      className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                        participant.ownsEnterprise === "yes"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-gray-100 text-gray-600"
-                      }`}
-                    >
-                      {participant.ownsEnterprise === "yes" ? "Yes" : "No"}
-                    </div>
-                    {participant.enterpriseName && (
-                      <div className="mt-1 text-xs text-gray-500">
-                        {participant.enterpriseName}
-                      </div>
-                    )}
-                    {participant.enterpriseSector && (
-                      <div className="text-xs text-gray-400 capitalize">
-                        {participant.enterpriseSector}
-                      </div>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">{participant.nationality}</span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm capitalize">
-                    {participant.populationSegment || "—"}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <span
-                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                      participant.isRefugee === "yes"
-                        ? "bg-orange-100 text-orange-800"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {participant.isRefugee === "yes" ? "Yes" : "No"}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <div className="text-sm">
-                    <div className="capitalize">
-                      {participant.employmentStatus}
-                    </div>
-                    {participant.employmentType && (
-                      <div className="text-xs text-gray-500 capitalize">
-                        {participant.employmentType}
-                      </div>
-                    )}
-                    {participant.employmentSector && (
-                      <div className="text-xs text-gray-400 capitalize">
-                        {participant.employmentSector}
-                      </div>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <span
-                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                      participant.isActiveStudent === "yes"
-                        ? "bg-purple-100 text-purple-800"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {participant.isActiveStudent === "yes" ? "Yes" : "No"}
-                  </span>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      {/* Comprehensive Data Preview with Tabs */}
+      <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-3">
+        <h4 className="text-sm font-medium text-blue-900">
+          📊 Enhanced Preview: Use tabs below to view all imported fields
+        </h4>
+        <p className="mt-1 text-xs text-blue-700">
+          All {data.length} participants with complete field coverage across 5
+          organized sections
+        </p>
       </div>
+
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="overview">📋 Overview</TabsTrigger>
+          <TabsTrigger value="personal">👤 Personal Info</TabsTrigger>
+          <TabsTrigger value="location">📍 Location</TabsTrigger>
+          <TabsTrigger value="enterprise">🏢 Enterprise</TabsTrigger>
+          <TabsTrigger value="skills">🎓 Skills & VSLA</TabsTrigger>
+        </TabsList>
+
+        {/* Overview Tab - Key Information */}
+        <TabsContent value="overview" className="mt-4">
+          <div className="overflow-x-auto rounded-lg border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="min-w-[150px]">Name</TableHead>
+                  <TableHead className="min-w-[80px]">Gender</TableHead>
+                  <TableHead className="min-w-[100px]">Phone</TableHead>
+                  <TableHead className="min-w-[120px]">Date of Birth</TableHead>
+                  <TableHead className="min-w-[60px]">Age</TableHead>
+                  <TableHead className="min-w-[80px]">Disabled</TableHead>
+                  <TableHead className="min-w-[150px]">Location</TableHead>
+                  <TableHead className="min-w-[120px]">Employment</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentData.map((participant, index) => (
+                  <TableRow key={startIndex + index}>
+                    <TableCell className="font-medium">
+                      {participant.firstName} {participant.lastName}
+                    </TableCell>
+                    <TableCell>
+                      <span className="capitalize">{participant.sex}</span>
+                    </TableCell>
+                    <TableCell>{participant.contact || "—"}</TableCell>
+                    <TableCell>
+                      {participant.dateOfBirth ? (
+                        <span className="text-sm">
+                          {new Date(
+                            participant.dateOfBirth
+                          ).toLocaleDateString()}
+                        </span>
+                      ) : (
+                        <span className="text-sm text-gray-400">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell>{participant.age || "—"}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          participant.isPWD === "yes" ? "secondary" : "outline"
+                        }
+                      >
+                        {participant.isPWD === "yes" ? "Yes" : "No"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm">
+                        <div className="font-medium">
+                          {participant.district}
+                        </div>
+                        <div className="text-gray-500">
+                          {participant.subCounty}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm">
+                        <div className="capitalize">
+                          {participant.employmentStatus}
+                        </div>
+                        <div className="text-xs text-gray-500 capitalize">
+                          {participant.employmentType || "—"}
+                        </div>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </TabsContent>
+
+        {/* Personal Information Tab */}
+        <TabsContent value="personal" className="mt-4">
+          <div className="overflow-x-auto rounded-lg border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="min-w-[150px]">Name</TableHead>
+                  <TableHead className="min-w-[120px]">
+                    Marital Status
+                  </TableHead>
+                  <TableHead className="min-w-[130px]">
+                    Education Level
+                  </TableHead>
+                  <TableHead className="min-w-[130px]">
+                    Source of Income
+                  </TableHead>
+                  <TableHead className="min-w-[100px]">Nationality</TableHead>
+                  <TableHead className="min-w-[140px]">
+                    Population Segment
+                  </TableHead>
+                  <TableHead className="min-w-[80px]">Refugee</TableHead>
+                  <TableHead className="min-w-[120px]">Teen Mother</TableHead>
+                  <TableHead className="min-w-[120px]">
+                    Active Student
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentData.map((participant, index) => (
+                  <TableRow key={startIndex + index}>
+                    <TableCell className="font-medium">
+                      {participant.firstName} {participant.lastName}
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm capitalize">
+                        {participant.maritalStatus || "—"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm capitalize">
+                        {participant.educationLevel || "—"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm capitalize">
+                        {participant.sourceOfIncome || "—"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">{participant.nationality}</span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm capitalize">
+                        {participant.populationSegment || "—"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          participant.isRefugee === "yes"
+                            ? "secondary"
+                            : "outline"
+                        }
+                      >
+                        {participant.isRefugee === "yes" ? "Yes" : "No"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          participant.isTeenMother === "yes"
+                            ? "secondary"
+                            : "outline"
+                        }
+                      >
+                        {participant.isTeenMother === "yes" ? "Yes" : "No"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          participant.isActiveStudent === "yes"
+                            ? "secondary"
+                            : "outline"
+                        }
+                      >
+                        {participant.isActiveStudent === "yes" ? "Yes" : "No"}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </TabsContent>
+
+        {/* Location Tab */}
+        <TabsContent value="location" className="mt-4">
+          <div className="overflow-x-auto rounded-lg border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="min-w-[150px]">Name</TableHead>
+                  <TableHead className="min-w-[100px]">District</TableHead>
+                  <TableHead className="min-w-[120px]">Subcounty</TableHead>
+                  <TableHead className="min-w-[100px]">Parish</TableHead>
+                  <TableHead className="min-w-[100px]">Village</TableHead>
+                  <TableHead className="min-w-[100px]">
+                    Location Setting
+                  </TableHead>
+                  <TableHead className="min-w-[100px]">Project</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentData.map((participant, index) => (
+                  <TableRow key={startIndex + index}>
+                    <TableCell className="font-medium">
+                      {participant.firstName} {participant.lastName}
+                    </TableCell>
+                    <TableCell>{participant.district}</TableCell>
+                    <TableCell>{participant.subCounty}</TableCell>
+                    <TableCell>{participant.parish || "—"}</TableCell>
+                    <TableCell>{participant.village || "—"}</TableCell>
+                    <TableCell>
+                      <span className="text-sm capitalize">
+                        {participant.locationSetting || "—"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-xs text-gray-500">
+                        {participant.project_id ? "Mapped" : "Default"}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </TabsContent>
+
+        {/* Enterprise Tab */}
+        <TabsContent value="enterprise" className="mt-4">
+          <div className="overflow-x-auto rounded-lg border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="min-w-[150px]">Name</TableHead>
+                  <TableHead className="min-w-[120px]">
+                    Owns Enterprise
+                  </TableHead>
+                  <TableHead className="min-w-[150px]">
+                    Enterprise Name
+                  </TableHead>
+                  <TableHead className="min-w-[130px]">
+                    Enterprise Sector
+                  </TableHead>
+                  <TableHead className="min-w-[120px]">
+                    Enterprise Size
+                  </TableHead>
+                  <TableHead className="min-w-[100px]">Youth Male</TableHead>
+                  <TableHead className="min-w-[110px]">Youth Female</TableHead>
+                  <TableHead className="min-w-[80px]">Adults</TableHead>
+                  <TableHead className="min-w-[120px]">
+                    Employment Type
+                  </TableHead>
+                  <TableHead className="min-w-[140px]">
+                    Employment Sector
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentData.map((participant, index) => (
+                  <TableRow key={startIndex + index}>
+                    <TableCell className="font-medium">
+                      {participant.firstName} {participant.lastName}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          participant.ownsEnterprise === "yes"
+                            ? "secondary"
+                            : "outline"
+                        }
+                      >
+                        {participant.ownsEnterprise === "yes" ? "Yes" : "No"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">
+                        {participant.enterpriseName || "—"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm capitalize">
+                        {participant.enterpriseSector || "—"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm capitalize">
+                        {participant.enterpriseSize || "—"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">
+                        {participant.enterpriseYouthMale || "0"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">
+                        {participant.enterpriseYouthFemale || "0"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">
+                        {participant.enterpriseAdults || "0"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm capitalize">
+                        {participant.employmentType || "—"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm capitalize">
+                        {participant.employmentSector || "—"}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </TabsContent>
+
+        {/* Skills & VSLA Tab */}
+        <TabsContent value="skills" className="mt-4">
+          <div className="overflow-x-auto rounded-lg border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="min-w-[150px]">Name</TableHead>
+                  <TableHead className="min-w-[100px]">VSLA Member</TableHead>
+                  <TableHead className="min-w-[120px]">VSLA Name</TableHead>
+                  <TableHead className="min-w-[140px]">
+                    Vocational Skills
+                  </TableHead>
+                  <TableHead className="min-w-[100px]">
+                    Voc. Participations
+                  </TableHead>
+                  <TableHead className="min-w-[100px]">
+                    Voc. Completions
+                  </TableHead>
+                  <TableHead className="min-w-[100px]">
+                    Voc. Certifications
+                  </TableHead>
+                  <TableHead className="min-w-[100px]">Soft Skills</TableHead>
+                  <TableHead className="min-w-[100px]">
+                    Soft Participations
+                  </TableHead>
+                  <TableHead className="min-w-[100px]">
+                    Soft Completions
+                  </TableHead>
+                  <TableHead className="min-w-[100px]">
+                    Soft Certifications
+                  </TableHead>
+                  <TableHead className="min-w-[120px]">
+                    Business Skills
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentData.map((participant, index) => (
+                  <TableRow key={startIndex + index}>
+                    <TableCell className="font-medium">
+                      {participant.firstName} {participant.lastName}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          participant.isSubscribedToVSLA === "yes"
+                            ? "secondary"
+                            : "outline"
+                        }
+                      >
+                        {participant.isSubscribedToVSLA === "yes"
+                          ? "Yes"
+                          : "No"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">
+                        {participant.vslaName || "—"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          participant.hasVocationalSkills === "yes"
+                            ? "secondary"
+                            : "outline"
+                        }
+                      >
+                        {participant.hasVocationalSkills === "yes"
+                          ? "Yes"
+                          : "No"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">
+                        {participant.vocationalSkillsParticipations || "0"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">
+                        {participant.vocationalSkillsCompletions || "0"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">
+                        {participant.vocationalSkillsCertifications || "0"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          participant.hasSoftSkills === "yes"
+                            ? "secondary"
+                            : "outline"
+                        }
+                      >
+                        {participant.hasSoftSkills === "yes" ? "Yes" : "No"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">
+                        {participant.softSkillsParticipations || "0"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">
+                        {participant.softSkillsCompletions || "0"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">
+                        {participant.softSkillsCertifications || "0"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          participant.hasBusinessSkills === "yes"
+                            ? "secondary"
+                            : "outline"
+                        }
+                      >
+                        {participant.hasBusinessSkills === "yes" ? "Yes" : "No"}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </TabsContent>
+      </Tabs>
 
       {/* Pagination */}
       {totalPages > 1 && (
