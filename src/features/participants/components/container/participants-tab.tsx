@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useParticipantTable } from "../../state/use-participant-table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { TabsContent } from "@/components/ui/tabs";
 import {
   DropdownMenu,
@@ -14,7 +14,6 @@ import {
   Plus,
   Download,
   Upload,
-  Search,
   LayoutGrid,
   ChevronDown,
   Users,
@@ -26,7 +25,7 @@ import {
   type ParticipantsResponse,
 } from "../../types/types";
 import toast from "react-hot-toast";
-import { ParticipantFilters } from "../filters";
+import { SimpleParticipantFilters } from "../filters/simple-participant-filters";
 import { OrganizationAssignmentButton } from "../actions/organization-assignment-button";
 import { FixDuplicatesDialog } from "../data-table/fix-duplicates-dialog";
 
@@ -71,11 +70,11 @@ export function ParticipantsTab({
   filters,
   onFiltersChange,
   projects,
-  clusters,
+  clusters: _clusters,
   organizations,
   filterOptions,
-  searchValue,
-  onSearchChange,
+  searchValue: _searchValue,
+  onSearchChange: _onSearchChange,
   isParticipantsLoading,
   locationNamesLoading,
   onAddParticipant,
@@ -90,46 +89,37 @@ export function ParticipantsTab({
 }: ParticipantsTabProps) {
   const [isFixDuplicatesDialogOpen, setIsFixDuplicatesDialogOpen] =
     useState(false);
-  // Column visibility state
-  const [columnVisibility, setColumnVisibility] = useState({
-    fullName: true,
-    sex: true,
-    age: true,
-    district: true,
-    subCounty: false,
-    country: false,
-    organization: true,
-    project: true,
-    designation: false,
-    enterprise: false,
-    contact: false,
-    // New columns
-    maritalStatus: false,
-    educationLevel: true,
-    isSubscribedToVSLA: true,
-    ownsEnterprise: true,
-    employmentType: true,
-  });
+
+  // Use Jotai for column visibility state
+  const { columnVisibility, setColumnVisibility } = useParticipantTable();
 
   // Available columns for toggle - matching actual column IDs
   const availableColumns = [
     { id: "fullName", label: "Name" },
     { id: "sex", label: "Gender" },
     { id: "age", label: "Age" },
+    { id: "contact", label: "Contact" },
     { id: "district", label: "District" },
     { id: "subCounty", label: "Sub County" },
-    { id: "country", label: "Country" },
+    { id: "parish", label: "Parish" },
+    { id: "village", label: "Village" },
     { id: "organization", label: "Organization" },
     { id: "project", label: "Project" },
-    { id: "designation", label: "Designation" },
-    { id: "enterprise", label: "Enterprise" },
-    { id: "contact", label: "Contact" },
-    // New columns
+    { id: "employmentStatus", label: "Employment Status" },
+    { id: "isSubscribedToVSLA", label: "VSLA Subscription" },
     { id: "maritalStatus", label: "Marital Status" },
     { id: "educationLevel", label: "Education Level" },
-    { id: "isSubscribedToVSLA", label: "VSLA Subscription" },
-    { id: "ownsEnterprise", label: "Enterprise Ownership" },
-    { id: "employmentType", label: "Employment Type" },
+    { id: "ownsEnterprise", label: "Enterprise Owner" },
+    { id: "hasVocationalSkills", label: "Vocational Skills" },
+    { id: "hasBusinessSkills", label: "Business Skills" },
+    { id: "isPWD", label: "PWD Status" },
+    { id: "populationSegment", label: "Population Segment" },
+    { id: "monthlyIncome", label: "Monthly Income" },
+    { id: "designation", label: "Designation" },
+    { id: "enterprise", label: "Enterprise" },
+    { id: "numberOfChildren", label: "Number of Children" },
+    { id: "isActiveStudent", label: "Student Status" },
+    { id: "isTeenMother", label: "Teen Mother" },
   ];
 
   const handleExport = () => {
@@ -143,17 +133,6 @@ export function ParticipantsTab({
         <div className="space-y-4">
           {/* Top Row: Search and Primary Action */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            {/* Search - Most Important Action */}
-            <div className="relative flex-1">
-              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-              <Input
-                placeholder="Search participants..."
-                value={searchValue}
-                onChange={e => onSearchChange(e.target.value)}
-                className="h-8 w-full border-gray-300 bg-white pl-10 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
-              />
-            </div>
-
             {/* Primary Action - Add Participant */}
             <Button
               onClick={onAddParticipant}
@@ -238,17 +217,14 @@ export function ParticipantsTab({
         </div>
 
         {/* Filters Section - Below action buttons */}
-        <ParticipantFilters
+        <SimpleParticipantFilters
           filters={filters}
           onFiltersChange={onFiltersChange}
           projects={projects}
-          _clusters={clusters}
           organizations={organizations}
           districts={filterOptions.districts}
           subCounties={filterOptions.subCounties}
-          enterprises={filterOptions.enterprises}
-          searchTerm={searchValue}
-          onSearchChange={onSearchChange}
+          participants={participants}
         />
 
         {/* Participants Table - Primary interface now includes search and add actions */}
@@ -291,8 +267,6 @@ export function ParticipantsTab({
           isLoading={isParticipantsLoading || locationNamesLoading}
           onPaginationChange={onPaginationChange}
           onPageChange={onPageChange}
-          searchTerm={searchValue}
-          onSearchChange={onSearchChange}
           onAddParticipant={onAddParticipant}
           onEditParticipant={onEditParticipant}
           onDeleteParticipant={onDeleteParticipant}

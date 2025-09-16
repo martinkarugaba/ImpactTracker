@@ -8,19 +8,19 @@ import { MetricsTab } from "./metrics-tab";
 import { ParticipantsTab } from "./participants-tab";
 import { ParticipantDialogs } from "./participant-dialogs";
 
-interface ParticipantsContainerProps {
+interface JotaiParticipantsContainerProps {
   clusterId: string;
   projects: Array<{ id: string; name: string; acronym: string }>;
   clusters: Array<{ id: string; name: string }>;
   organizations?: Array<{ id: string; name: string; acronym: string }>;
 }
 
-export function ParticipantsContainer({
+export function JotaiParticipantsContainer({
   clusterId,
   projects,
   clusters,
   organizations = [],
-}: ParticipantsContainerProps) {
+}: JotaiParticipantsContainerProps) {
   // Use Jotai-based container state
   const state = useParticipantContainerJotai({ clusterId });
 
@@ -31,6 +31,21 @@ export function ParticipantsContainer({
     participants: state.participants,
     locationNames: state.locationNames,
   });
+
+  // Wrapper functions to match ParticipantsTab interface
+  const handleEditWrapper = (data: unknown, id: string) => {
+    const participant = state.participants?.find(p => p.id === id);
+    if (participant) {
+      state.handleEdit(participant);
+    }
+  };
+
+  const handleDeleteWrapper = (id: string) => {
+    const participant = state.participants?.find(p => p.id === id);
+    if (participant) {
+      state.handleDelete(participant);
+    }
+  };
 
   if (state.participantsError || state.metricsError) {
     return (
@@ -52,38 +67,26 @@ export function ParticipantsContainer({
       {/* Modern Tabs Design */}
       <div className="bg-transparent">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="bg-muted/30 grid h-11 w-auto grid-cols-2 rounded-lg p-1">
             <TabsTrigger
               value="participants"
-              className="flex items-center gap-2 data-[state=active]:text-green-600"
+              className="data-[state=active]:bg-background flex items-center gap-2 rounded-md px-4 py-2 transition-all data-[state=active]:shadow-sm"
             >
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">Participants</span>
-              <span className="sm:hidden">People</span>
+              <span className="sm:hidden">Data</span>
             </TabsTrigger>
             <TabsTrigger
               value="metrics"
-              className="flex items-center gap-2 data-[state=active]:text-blue-600"
+              className="data-[state=active]:bg-background flex items-center gap-2 rounded-md px-4 py-2 transition-all data-[state=active]:shadow-sm"
             >
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">Analytics</span>
-              <span className="sm:hidden">Stats</span>
+              <span className="sm:hidden">Metrics</span>
             </TabsTrigger>
           </TabsList>
 
-          <MetricsTab
-            metricsParticipants={state.metricsParticipants}
-            isMetricsLoading={state.isMetricsLoading}
-            filters={state.filters}
-            onFiltersChange={() => {}} // No longer needed - Jotai handles this
-            projects={projects}
-            clusters={clusters}
-            organizations={organizations}
-            filterOptions={filterOptions}
-            searchValue={state.searchValue}
-            onSearchChange={() => {}} // No longer needed - Jotai handles this
-          />
-
+          {/* Participants Tab */}
           <ParticipantsTab
             participants={state.participants}
             clusterId={clusterId}
@@ -107,26 +110,31 @@ export function ParticipantsContainer({
               state.handlePaginationChange(page, state.pagination.pageSize)
             }
             onAddParticipant={() => state.setIsCreateDialogOpen(true)}
-            onEditParticipant={(data, id) => {
-              const participant = state.participants?.find(p => p.id === id);
-              if (participant) {
-                state.handleEdit(participant);
-              }
-            }}
-            onDeleteParticipant={id => {
-              const participant = state.participants?.find(p => p.id === id);
-              if (participant) {
-                state.handleDelete(participant);
-              }
-            }}
+            onEditParticipant={handleEditWrapper}
+            onDeleteParticipant={handleDeleteWrapper}
             onViewParticipant={state.handleView}
-            onExportData={() => {}}
-            onImport={() => {}}
+            onExportData={() => {}} // TODO: Implement export
+            onImport={() => {}} // TODO: Implement import
             setIsImportDialogOpen={state.setIsImportDialogOpen}
+          />
+
+          {/* Metrics Tab */}
+          <MetricsTab
+            metricsParticipants={state.metricsParticipants}
+            isMetricsLoading={state.isMetricsLoading}
+            filters={state.filters}
+            onFiltersChange={() => {}} // No longer needed - Jotai handles this
+            projects={projects}
+            clusters={clusters}
+            organizations={organizations}
+            filterOptions={filterOptions}
+            searchValue={state.searchValue}
+            onSearchChange={() => {}} // No longer needed - Jotai handles this
           />
         </Tabs>
       </div>
 
+      {/* Dialogs */}
       <ParticipantDialogs
         clusterId={clusterId}
         isCreateDialogOpen={state.isCreateDialogOpen}
@@ -137,10 +145,6 @@ export function ParticipantsContainer({
         setEditingParticipant={state.setEditingParticipant}
         deletingParticipant={state.deletingParticipant}
         setDeletingParticipant={state.setDeletingParticipant}
-        onSuccess={() => {
-          // This will trigger a refetch of participants data
-          window.location.reload();
-        }}
       />
     </div>
   );

@@ -46,6 +46,14 @@ export function useFilterState({
       isActiveStudent: "all",
       isTeenMother: "all",
       sourceOfIncome: "all",
+      // Enterprise specific filters
+      enterpriseSector: "all",
+      businessScale: "all",
+      // Additional demographic filters
+      nationality: "all",
+      locationSetting: "all",
+      isRefugee: "all",
+      isMother: "all",
     });
   };
 

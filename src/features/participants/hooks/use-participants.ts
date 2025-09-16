@@ -42,6 +42,14 @@ export function useParticipants(
       isActiveStudent?: string;
       isTeenMother?: string;
       sourceOfIncome?: string;
+      // Enterprise specific filters
+      enterpriseSector?: string;
+      businessScale?: string;
+      // Additional demographic filters
+      nationality?: string;
+      locationSetting?: string;
+      isRefugee?: string;
+      isMother?: string;
     };
   }
 ) {
@@ -86,6 +94,14 @@ export function useParticipantsMetrics(
       isActiveStudent?: string;
       isTeenMother?: string;
       sourceOfIncome?: string;
+      // Enterprise specific filters
+      enterpriseSector?: string;
+      businessScale?: string;
+      // Additional demographic filters
+      nationality?: string;
+      locationSetting?: string;
+      isRefugee?: string;
+      isMother?: string;
     };
     applyFilters: boolean;
   }
@@ -192,6 +208,14 @@ export function useExportParticipants() {
         isActiveStudent?: string;
         isTeenMother?: string;
         sourceOfIncome?: string;
+        // Enterprise specific filters
+        enterpriseSector?: string;
+        businessScale?: string;
+        // Additional demographic filters
+        nationality?: string;
+        locationSetting?: string;
+        isRefugee?: string;
+        isMother?: string;
       };
       search?: string;
     }) => {

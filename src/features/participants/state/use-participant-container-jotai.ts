@@ -1,66 +1,47 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useParticipants } from "../../hooks/use-participants";
-import { useParticipantMetrics } from "../../hooks/use-participant-metrics";
-import { useLocationNames } from "../../hooks/use-location-names";
-import {
-  type Participant,
-  type ParticipantFilters,
-  type ParticipantsResponse,
-} from "../../types/types";
+import { useParticipants } from "../hooks/use-participants";
+import { useParticipantMetrics } from "../hooks/use-participant-metrics";
+import { useLocationNames } from "../hooks/use-location-names";
+import { useParticipantState } from "./use-participant-state";
+import { type Participant, type ParticipantsResponse } from "../types/types";
 
-interface UseParticipantContainerStateProps {
+interface UseParticipantContainerJotaiProps {
   clusterId: string;
 }
 
-export function useParticipantContainerState({
+/**
+ * Jotai-based container hook that replaces the old useState-based approach
+ * Integrates Jotai state management with data fetching
+ */
+export function useParticipantContainerJotai({
   clusterId,
-}: UseParticipantContainerStateProps) {
+}: UseParticipantContainerJotaiProps) {
   const router = useRouter();
 
-  // State
-  const [filters, setFilters] = useState<ParticipantFilters>({
-    search: "",
-    project: "all",
-    organization: "all",
-    district: "all",
-    subCounty: "all",
-    enterprise: "all",
-    sex: "all",
-    isPWD: "all",
-    ageGroup: "all",
-    // New filter fields
-    maritalStatus: "all",
-    educationLevel: "all",
-    isSubscribedToVSLA: "all",
-    ownsEnterprise: "all",
-    employmentType: "all",
-    employmentSector: "all",
-    hasVocationalSkills: "all",
-    hasSoftSkills: "all",
-    hasBusinessSkills: "all",
-    populationSegment: "all",
-    isActiveStudent: "all",
-    isTeenMother: "all",
-    sourceOfIncome: "all",
-  });
+  // Get all state from Jotai atoms
+  const {
+    filters,
+    pagination,
+    searchValue,
+    activeTab,
+    isCreateDialogOpen,
+    setIsCreateDialogOpen,
+    isImportDialogOpen,
+    setIsImportDialogOpen,
+    editingParticipant,
+    setEditingParticipant,
+    deletingParticipant,
+    setDeletingParticipant,
+    handlePaginationChange,
+    handleSearchChange,
+    handleEdit,
+    handleDelete,
+  } = useParticipantState();
 
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
-  const [editingParticipant, setEditingParticipant] =
-    useState<Participant | null>(null);
-  const [deletingParticipant, setDeletingParticipant] =
-    useState<Participant | null>(null);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    pageSize: 20,
-  });
-  const [searchValue, setSearchValue] = useState("");
-  const [activeTab, setActiveTab] = useState("participants");
-
-  // Data fetching
+  // Data fetching with Jotai state
   const {
     data: participantsData,
     isLoading: isParticipantsLoading,
@@ -115,6 +96,18 @@ export function useParticipantContainerState({
         filters.isTeenMother !== "all" ? filters.isTeenMother : undefined,
       sourceOfIncome:
         filters.sourceOfIncome !== "all" ? filters.sourceOfIncome : undefined,
+      enterpriseSector:
+        filters.enterpriseSector !== "all"
+          ? filters.enterpriseSector
+          : undefined,
+      businessScale:
+        filters.businessScale !== "all" ? filters.businessScale : undefined,
+      nationality:
+        filters.nationality !== "all" ? filters.nationality : undefined,
+      locationSetting:
+        filters.locationSetting !== "all" ? filters.locationSetting : undefined,
+      isRefugee: filters.isRefugee !== "all" ? filters.isRefugee : undefined,
+      isMother: filters.isMother !== "all" ? filters.isMother : undefined,
     },
   });
 
@@ -126,7 +119,7 @@ export function useParticipantContainerState({
     clusterId,
     {
       ...filters,
-      search: searchValue || filters.search, // Ensure search value is included
+      search: searchValue || filters.search,
     },
     searchValue
   );
@@ -167,63 +160,16 @@ export function useParticipantContainerState({
     locationIds.countryIds
   );
 
-  // Reset pagination when filters change
-  useEffect(() => {
-    setPagination(prev => ({ ...prev, page: 1 }));
-  }, [
-    filters.project,
-    filters.organization,
-    filters.district,
-    filters.subCounty,
-    filters.enterprise,
-    filters.sex,
-    filters.isPWD,
-    filters.ageGroup,
-    filters.maritalStatus,
-    filters.educationLevel,
-    filters.isSubscribedToVSLA,
-    filters.ownsEnterprise,
-    filters.employmentType,
-    filters.employmentSector,
-    filters.hasVocationalSkills,
-    filters.hasSoftSkills,
-    filters.hasBusinessSkills,
-    filters.populationSegment,
-    filters.isActiveStudent,
-    filters.isTeenMother,
-    filters.sourceOfIncome,
-    searchValue,
-  ]);
-
-  // Event handlers
-  const handlePaginationChange = (page: number, pageSize: number) => {
-    console.log(
-      `ParticipantsContainer: Setting pagination to page=${page}, pageSize=${pageSize}`
-    );
-    setPagination({ page, pageSize });
-  };
-
-  const handleSearchChange = (search: string) => {
-    setSearchValue(search);
-    setPagination(prev => ({ ...prev, page: 1 }));
-  };
-
-  const handleEdit = (participant: Participant) => {
-    setEditingParticipant(participant);
-  };
-
-  const handleDelete = (participant: Participant) => {
-    setDeletingParticipant(participant);
-  };
-
   const handleView = (participant: Participant) => {
     router.push(`/dashboard/participants/${participant.id}`);
   };
 
   return {
-    // State
+    // State (from Jotai atoms)
     filters,
-    setFilters,
+    pagination,
+    searchValue,
+    activeTab,
     isCreateDialogOpen,
     setIsCreateDialogOpen,
     isImportDialogOpen,
@@ -232,12 +178,6 @@ export function useParticipantContainerState({
     setEditingParticipant,
     deletingParticipant,
     setDeletingParticipant,
-    pagination,
-    setPagination,
-    searchValue,
-    setSearchValue,
-    activeTab,
-    setActiveTab,
 
     // Data
     participants,

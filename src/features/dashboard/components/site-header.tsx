@@ -55,7 +55,7 @@ export function SiteHeader({
             <BreadcrumbLink asChild>
               <Link
                 href={item.href || "#"}
-                className="flex inline-block items-center justify-start"
+                className="flex items-center justify-start"
               >
                 {item.icon && <span className="mr-2">{item.icon}</span>}
                 {item.label}

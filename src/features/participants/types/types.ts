@@ -92,4 +92,12 @@ export type ParticipantFilters = {
   isActiveStudent: string;
   isTeenMother: string;
   sourceOfIncome: string;
+  // Enterprise specific filters
+  enterpriseSector: string;
+  businessScale: string;
+  // Additional demographic filters
+  nationality: string;
+  locationSetting: string;
+  isRefugee: string;
+  isMother: string;
 };

@@ -29,7 +29,7 @@ export function DemographicFilters({
           value={filters.sex}
           onValueChange={value => updateFilter("sex", value)}
         >
-          <SelectTrigger className="h-9 w-32">
+          <SelectTrigger className="h-9 w-full">
             <SelectValue placeholder="Select gender..." />
           </SelectTrigger>
           <SelectContent>
@@ -50,7 +50,7 @@ export function DemographicFilters({
           value={filters.ageGroup}
           onValueChange={value => updateFilter("ageGroup", value)}
         >
-          <SelectTrigger className="h-9 w-36">
+          <SelectTrigger className="h-9 w-full">
             <SelectValue placeholder="Select age..." />
           </SelectTrigger>
           <SelectContent>
@@ -71,7 +71,7 @@ export function DemographicFilters({
           value={filters.isPWD}
           onValueChange={value => updateFilter("isPWD", value)}
         >
-          <SelectTrigger className="h-9 w-36">
+          <SelectTrigger className="h-9 w-full">
             <SelectValue placeholder="Select status..." />
           </SelectTrigger>
           <SelectContent>
@@ -91,7 +91,7 @@ export function DemographicFilters({
           value={filters.maritalStatus}
           onValueChange={value => updateFilter("maritalStatus", value)}
         >
-          <SelectTrigger className="h-9 w-36">
+          <SelectTrigger className="h-9 w-full">
             <SelectValue placeholder="Select status..." />
           </SelectTrigger>
           <SelectContent>
@@ -113,7 +113,7 @@ export function DemographicFilters({
           value={filters.educationLevel}
           onValueChange={value => updateFilter("educationLevel", value)}
         >
-          <SelectTrigger className="h-9 w-40">
+          <SelectTrigger className="h-9 w-full">
             <SelectValue placeholder="Select education..." />
           </SelectTrigger>
           <SelectContent>
