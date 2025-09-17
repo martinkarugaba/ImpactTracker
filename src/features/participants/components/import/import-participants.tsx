@@ -26,6 +26,8 @@ import { Label } from "@/components/ui/label";
 import { useExcelImport } from "./hooks/use-excel-import";
 import { BatchProgress } from "./batch-progress";
 import { DataPreview } from "./data-preview";
+import { DuplicateDetection } from "./duplicate-detection";
+import { DuplicateDetectionProgress } from "./duplicate-detection-progress";
 import {
   useCountries,
   useDistricts,
@@ -50,7 +52,7 @@ export function ImportParticipants({
   const [file, setFile] = useState<File | null>(null);
   const [selectedSheet, setSelectedSheet] = useState<string>("");
   const [currentStep, setCurrentStep] = useState<
-    "upload" | "selectSheet" | "validate" | "preview" | "import"
+    "upload" | "selectSheet" | "validate" | "preview" | "duplicates" | "import"
   >("upload");
 
   // Global defaults for preview
@@ -72,11 +74,15 @@ export function ImportParticipants({
     sheets,
     parsedData,
     validationErrors,
+    duplicateAnalysis,
     isProcessing,
     isImporting,
+    isDuplicateDetection,
+    duplicateProgress,
     importProgress,
     parseFile,
     validateData,
+    checkForDuplicates,
     importData,
     resetImport,
   } = useExcelImport(clusterId);
@@ -109,6 +115,65 @@ export function ImportParticipants({
       toast.error(
         `Found ${validationResult.errors.length} validation errors. Please review.`
       );
+    }
+  };
+
+  const handleCheckDuplicates = async () => {
+    if (!parsedData || parsedData.length === 0) {
+      toast.error("No data to check for duplicates");
+      return;
+    }
+
+    try {
+      const analysis = await checkForDuplicates(
+        parsedData as ParticipantFormValues[]
+      );
+
+      if (
+        analysis.exactDuplicates.length === 0 &&
+        analysis.potentialDuplicates.length === 0
+      ) {
+        // No duplicates found, proceed directly to import
+        toast.success("No duplicates found. Ready to import!");
+        setCurrentStep("import");
+        await handleImport();
+      } else {
+        // Show duplicate detection interface
+        setCurrentStep("duplicates");
+      }
+    } catch (error) {
+      console.error("Duplicate check error:", error);
+      toast.error(
+        "Failed to check for duplicates. You can still proceed with import."
+      );
+      setCurrentStep("import");
+    }
+  };
+
+  const handleProceedWithSelection = async (
+    selectedRecords: ParticipantFormValues[]
+  ) => {
+    if (selectedRecords.length === 0) {
+      toast.error("No records selected for import");
+      return;
+    }
+
+    try {
+      setCurrentStep("import");
+      const result = await importData(selectedRecords);
+
+      if (result.success) {
+        toast.success(`Successfully imported ${result.imported} participants`);
+        handleClose();
+        onImportComplete?.();
+      } else {
+        toast.error(result.error || "Import failed");
+        setCurrentStep("duplicates");
+      }
+    } catch (error) {
+      console.error("Import error:", error);
+      toast.error("Failed to import participants");
+      setCurrentStep("duplicates");
     }
   };
 
@@ -159,6 +224,16 @@ export function ImportParticipants({
         break;
       case "preview":
         setCurrentStep("validate");
+        break;
+      case "duplicates":
+        setCurrentStep("preview");
+        break;
+      case "import":
+        if (duplicateAnalysis) {
+          setCurrentStep("duplicates");
+        } else {
+          setCurrentStep("preview");
+        }
         break;
       default:
         setCurrentStep("upload");
@@ -381,6 +456,27 @@ export function ImportParticipants({
             </div>
           )}
 
+          {/* Duplicate Detection Progress */}
+          {isDuplicateDetection && (
+            <div className="space-y-4">
+              <DuplicateDetectionProgress
+                progress={duplicateProgress}
+                isDetecting={isDuplicateDetection}
+                isComplete={false}
+              />
+            </div>
+          )}
+
+          {/* Duplicate Detection Step */}
+          {currentStep === "duplicates" && duplicateAnalysis && (
+            <DuplicateDetection
+              analysis={duplicateAnalysis}
+              onProceedWithSelection={handleProceedWithSelection}
+              onCancel={() => setCurrentStep("preview")}
+              isLoading={isImporting}
+            />
+          )}
+
           {/* Import Step */}
           {(currentStep === "import" || isImporting) && (
             <div className="space-y-4">
@@ -415,12 +511,12 @@ export function ImportParticipants({
 
               {currentStep === "preview" && (
                 <Button
-                  onClick={handleImport}
-                  disabled={!canProceed() || isImporting}
+                  onClick={handleCheckDuplicates}
+                  disabled={!canProceed() || isDuplicateDetection}
                 >
-                  {isImporting
-                    ? "Importing..."
-                    : `Import ${parsedData?.length || 0} Participants`}
+                  {isDuplicateDetection
+                    ? "Checking Duplicates..."
+                    : `Check Duplicates & Import ${parsedData?.length || 0} Participants`}
                 </Button>
               )}
             </div>

@@ -547,48 +547,170 @@ export function getParticipantColumns({
       },
     },
     {
-      id: "hasVocationalSkills",
-      header: "Vocational Skills",
+      id: "vocationalSkillsParticipations",
+      header: "Vocational Skills - Participations",
       enableHiding: true,
       enableSorting: true,
-      accessorFn: row => row.hasVocationalSkills,
+      accessorFn: row => row.vocationalSkillsParticipations?.length || 0,
       cell: ({ row }) => {
-        const hasSkills = row.original.hasVocationalSkills === "yes";
         const participations =
           row.original.vocationalSkillsParticipations || [];
-        const completions = row.original.vocationalSkillsCompletions || [];
-        const certifications =
-          row.original.vocationalSkillsCertifications || [];
 
-        if (hasSkills) {
-          return (
-            <div className="space-y-1">
-              <Badge
-                variant="secondary"
-                className="bg-green-100 text-green-800"
-              >
-                ✓ Has Skills
-              </Badge>
-              <div className="text-muted-foreground text-xs">
-                {participations.length}P / {completions.length}C /{" "}
-                {certifications.length}Cert
-              </div>
-              {participations.length > 0 && (
-                <div className="text-xs">
-                  <span className="font-medium">P:</span>{" "}
-                  {participations.slice(0, 2).join(", ")}
-                  {participations.length > 2 &&
-                    ` +${participations.length - 2}`}
-                </div>
-              )}
-            </div>
-          );
+        if (participations.length === 0) {
+          return <span className="text-muted-foreground text-sm">—</span>;
         }
 
         return (
-          <Badge variant="outline" className="text-gray-600">
-            No Skills
-          </Badge>
+          <div className="space-y-1">
+            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+              {participations.length} Skills
+            </Badge>
+            <div className="max-w-[150px] text-xs">
+              {participations.slice(0, 2).join(", ")}
+              {participations.length > 2 &&
+                ` +${participations.length - 2} more`}
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: "vocationalSkillsCompletions",
+      header: "Vocational Skills - Completions",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.vocationalSkillsCompletions?.length || 0,
+      cell: ({ row }) => {
+        const completions = row.original.vocationalSkillsCompletions || [];
+
+        if (completions.length === 0) {
+          return <span className="text-muted-foreground text-sm">—</span>;
+        }
+
+        return (
+          <div className="space-y-1">
+            <Badge variant="secondary" className="bg-green-100 text-green-800">
+              {completions.length} Completed
+            </Badge>
+            <div className="max-w-[150px] text-xs">
+              {completions.slice(0, 2).join(", ")}
+              {completions.length > 2 && ` +${completions.length - 2} more`}
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: "vocationalSkillsCertifications",
+      header: "Vocational Skills - Certifications",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.vocationalSkillsCertifications?.length || 0,
+      cell: ({ row }) => {
+        const certifications =
+          row.original.vocationalSkillsCertifications || [];
+
+        if (certifications.length === 0) {
+          return <span className="text-muted-foreground text-sm">—</span>;
+        }
+
+        return (
+          <div className="space-y-1">
+            <Badge variant="secondary" className="bg-amber-100 text-amber-800">
+              {certifications.length} Certified
+            </Badge>
+            <div className="max-w-[150px] text-xs">
+              {certifications.slice(0, 2).join(", ")}
+              {certifications.length > 2 &&
+                ` +${certifications.length - 2} more`}
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: "softSkillsParticipations",
+      header: "Soft Skills - Participations",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.softSkillsParticipations?.length || 0,
+      cell: ({ row }) => {
+        const participations = row.original.softSkillsParticipations || [];
+
+        if (participations.length === 0) {
+          return <span className="text-muted-foreground text-sm">—</span>;
+        }
+
+        return (
+          <div className="space-y-1">
+            <Badge
+              variant="secondary"
+              className="bg-purple-100 text-purple-800"
+            >
+              {participations.length} Skills
+            </Badge>
+            <div className="max-w-[150px] text-xs">
+              {participations.slice(0, 2).join(", ")}
+              {participations.length > 2 &&
+                ` +${participations.length - 2} more`}
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: "softSkillsCompletions",
+      header: "Soft Skills - Completions",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.softSkillsCompletions?.length || 0,
+      cell: ({ row }) => {
+        const completions = row.original.softSkillsCompletions || [];
+
+        if (completions.length === 0) {
+          return <span className="text-muted-foreground text-sm">—</span>;
+        }
+
+        return (
+          <div className="space-y-1">
+            <Badge
+              variant="secondary"
+              className="bg-indigo-100 text-indigo-800"
+            >
+              {completions.length} Completed
+            </Badge>
+            <div className="max-w-[150px] text-xs">
+              {completions.slice(0, 2).join(", ")}
+              {completions.length > 2 && ` +${completions.length - 2} more`}
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: "softSkillsCertifications",
+      header: "Soft Skills - Certifications",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.softSkillsCertifications?.length || 0,
+      cell: ({ row }) => {
+        const certifications = row.original.softSkillsCertifications || [];
+
+        if (certifications.length === 0) {
+          return <span className="text-muted-foreground text-sm">—</span>;
+        }
+
+        return (
+          <div className="space-y-1">
+            <Badge variant="secondary" className="bg-cyan-100 text-cyan-800">
+              {certifications.length} Certified
+            </Badge>
+            <div className="max-w-[150px] text-xs">
+              {certifications.slice(0, 2).join(", ")}
+              {certifications.length > 2 &&
+                ` +${certifications.length - 2} more`}
+            </div>
+          </div>
         );
       },
     },
@@ -604,7 +726,7 @@ export function getParticipantColumns({
           <Badge
             variant={hasSkills ? "secondary" : "outline"}
             className={
-              hasSkills ? "bg-blue-100 text-blue-800" : "text-gray-600"
+              hasSkills ? "bg-emerald-100 text-emerald-800" : "text-gray-600"
             }
           >
             {hasSkills ? "✓ Has Skills" : "No Skills"}

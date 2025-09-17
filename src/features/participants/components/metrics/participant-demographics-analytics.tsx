@@ -541,11 +541,11 @@ export function ParticipantDemographicsAnalytics({
       {/* Basic Demographics Overview */}
       <div className="space-y-4">
         <div className="flex items-center gap-3 pb-2">
-          <div className="rounded-lg bg-blue-100 p-2 dark:bg-blue-900/20">
-            <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <div className="rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 p-3 shadow-lg">
+            <Users className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+            <h3 className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-xl font-bold text-transparent dark:from-blue-400 dark:to-cyan-400">
               Demographics Overview
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -553,7 +553,7 @@ export function ParticipantDemographicsAnalytics({
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-br *:data-[slot=card]:from-blue-50 *:data-[slot=card]:to-cyan-50 *:data-[slot=card]:shadow-lg *:data-[slot=card]:transition-transform *:data-[slot=card]:duration-300 hover:*:data-[slot=card]:scale-105 md:grid-cols-2 lg:grid-cols-4 dark:*:data-[slot=card]:from-blue-950/50 dark:*:data-[slot=card]:to-cyan-950/50">
           <MetricCard
             title="Total Participants"
             value={demographics.total}
@@ -599,11 +599,11 @@ export function ParticipantDemographicsAnalytics({
       {/* Gender Demographics */}
       <div className="space-y-4">
         <div className="flex items-center gap-3 pb-2">
-          <div className="rounded-lg bg-pink-100 p-2 dark:bg-pink-900/20">
-            <Heart className="h-5 w-5 text-pink-600 dark:text-pink-400" />
+          <div className="rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 p-3 shadow-lg">
+            <Heart className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-pink-600 dark:text-pink-400">
+            <h3 className="bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-xl font-bold text-transparent dark:from-pink-400 dark:to-rose-400">
               Gender Demographics
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -611,7 +611,7 @@ export function ParticipantDemographicsAnalytics({
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-br *:data-[slot=card]:from-pink-50 *:data-[slot=card]:to-rose-50 *:data-[slot=card]:shadow-lg *:data-[slot=card]:transition-transform *:data-[slot=card]:duration-300 hover:*:data-[slot=card]:scale-105 md:grid-cols-2 lg:grid-cols-4 dark:*:data-[slot=card]:from-pink-950/50 dark:*:data-[slot=card]:to-rose-950/50">
           <MetricCard
             title="Male Participants"
             value={demographics.male}
@@ -637,11 +637,11 @@ export function ParticipantDemographicsAnalytics({
       {/* Youth Employment */}
       <div className="space-y-4">
         <div className="flex items-center gap-3 pb-2">
-          <div className="rounded-lg bg-green-100 p-2 dark:bg-green-900/20">
-            <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
+          <div className="rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 p-3 shadow-lg">
+            <TrendingUp className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-green-600 dark:text-green-400">
+            <h3 className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-xl font-bold text-transparent dark:from-green-400 dark:to-emerald-400">
               Youth Employment
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -649,7 +649,7 @@ export function ParticipantDemographicsAnalytics({
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-br *:data-[slot=card]:from-green-50 *:data-[slot=card]:to-emerald-50 *:data-[slot=card]:shadow-lg *:data-[slot=card]:transition-transform *:data-[slot=card]:duration-300 hover:*:data-[slot=card]:scale-105 md:grid-cols-2 lg:grid-cols-3 dark:*:data-[slot=card]:from-green-950/50 dark:*:data-[slot=card]:to-emerald-950/50">
           <MetricCard
             title="Total Youth in Work"
             value={demographics.employment.youthInWork}
@@ -675,11 +675,11 @@ export function ParticipantDemographicsAnalytics({
       {/* Wage Employment */}
       <div className="space-y-4">
         <div className="flex items-center gap-3 pb-2">
-          <div className="rounded-lg bg-purple-100 p-2 dark:bg-purple-900/20">
-            <Briefcase className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+          <div className="rounded-xl bg-gradient-to-r from-purple-500 to-violet-500 p-3 shadow-lg">
+            <Briefcase className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-purple-600 dark:text-purple-400">
+            <h3 className="bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-xl font-bold text-transparent dark:from-purple-400 dark:to-violet-400">
               Wage Employment
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -687,7 +687,7 @@ export function ParticipantDemographicsAnalytics({
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-br *:data-[slot=card]:from-purple-50 *:data-[slot=card]:to-violet-50 *:data-[slot=card]:shadow-lg *:data-[slot=card]:transition-transform *:data-[slot=card]:duration-300 hover:*:data-[slot=card]:scale-105 md:grid-cols-2 lg:grid-cols-4 dark:*:data-[slot=card]:from-purple-950/50 dark:*:data-[slot=card]:to-violet-950/50">
           <MetricCard
             title="Total Wage Employed"
             value={demographics.employment.wage.total}
@@ -729,7 +729,7 @@ export function ParticipantDemographicsAnalytics({
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-br *:data-[slot=card]:from-purple-100 *:data-[slot=card]:to-violet-100 *:data-[slot=card]:shadow-lg *:data-[slot=card]:transition-transform *:data-[slot=card]:duration-300 hover:*:data-[slot=card]:scale-105 md:grid-cols-2 dark:*:data-[slot=card]:from-purple-950/50 dark:*:data-[slot=card]:to-violet-950/50">
           <MetricCard
             title="PWD Wage Workers"
             value={demographics.employment.wage.pwd}
@@ -745,11 +745,11 @@ export function ParticipantDemographicsAnalytics({
       {/* Self Employment */}
       <div className="space-y-4">
         <div className="flex items-center gap-3 pb-2">
-          <div className="rounded-lg bg-orange-100 p-2 dark:bg-orange-900/20">
-            <Building2 className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+          <div className="rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 p-3 shadow-lg">
+            <Building2 className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-orange-600 dark:text-orange-400">
+            <h3 className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-xl font-bold text-transparent dark:from-orange-400 dark:to-amber-400">
               Self Employment
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -757,7 +757,7 @@ export function ParticipantDemographicsAnalytics({
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-br *:data-[slot=card]:from-orange-50 *:data-[slot=card]:to-amber-50 *:data-[slot=card]:shadow-lg *:data-[slot=card]:transition-transform *:data-[slot=card]:duration-300 hover:*:data-[slot=card]:scale-105 md:grid-cols-2 lg:grid-cols-4 dark:*:data-[slot=card]:from-orange-950/50 dark:*:data-[slot=card]:to-amber-950/50">
           <MetricCard
             title="Total Self Employed"
             value={demographics.employment.self.total}
@@ -815,11 +815,11 @@ export function ParticipantDemographicsAnalytics({
       {/* Secondary Employment */}
       <div className="space-y-4">
         <div className="flex items-center gap-3 pb-2">
-          <div className="rounded-lg bg-teal-100 p-2 dark:bg-teal-900/20">
-            <Award className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+          <div className="rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 p-3 shadow-lg">
+            <Award className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-teal-600 dark:text-teal-400">
+            <h3 className="bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-xl font-bold text-transparent dark:from-teal-400 dark:to-cyan-400">
               Secondary Employment
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -827,7 +827,7 @@ export function ParticipantDemographicsAnalytics({
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-br *:data-[slot=card]:from-teal-50 *:data-[slot=card]:to-cyan-50 *:data-[slot=card]:shadow-lg *:data-[slot=card]:transition-transform *:data-[slot=card]:duration-300 hover:*:data-[slot=card]:scale-105 md:grid-cols-2 lg:grid-cols-4 dark:*:data-[slot=card]:from-teal-950/50 dark:*:data-[slot=card]:to-cyan-950/50">
           <MetricCard
             title="Total Secondary Jobs"
             value={demographics.employment.secondary.total}
@@ -885,14 +885,14 @@ export function ParticipantDemographicsAnalytics({
       {/* Skills & Development */}
       <div className="space-y-4">
         <div className="flex items-center gap-3 pb-2">
-          <div className="bg-primary/10 dark:bg-primary/20 rounded-lg p-2">
-            <GraduationCap className="text-primary h-5 w-5" />
+          <div className="rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 p-3 shadow-lg">
+            <GraduationCap className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h3 className="text-primary text-lg font-semibold">
+            <h3 className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-xl font-bold text-transparent dark:from-indigo-400 dark:to-purple-400">
               Skills & Development
             </h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Skills acquisition and capacity building
             </p>
           </div>
@@ -1286,11 +1286,11 @@ export function ParticipantDemographicsAnalytics({
       {/* Financial Inclusion & Enterprise */}
       <div className="space-y-4">
         <div className="flex items-center gap-3 pb-2">
-          <div className="rounded-lg bg-emerald-100 p-2 dark:bg-emerald-900/20">
-            <Banknote className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+          <div className="rounded-xl bg-gradient-to-r from-emerald-500 to-green-500 p-3 shadow-lg">
+            <Banknote className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
+            <h3 className="bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-xl font-bold text-transparent dark:from-emerald-400 dark:to-green-400">
               Financial Inclusion
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -1298,7 +1298,7 @@ export function ParticipantDemographicsAnalytics({
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-br *:data-[slot=card]:from-emerald-50 *:data-[slot=card]:to-green-50 *:data-[slot=card]:shadow-lg *:data-[slot=card]:transition-transform *:data-[slot=card]:duration-300 hover:*:data-[slot=card]:scale-105 md:grid-cols-2 lg:grid-cols-3 dark:*:data-[slot=card]:from-emerald-950/50 dark:*:data-[slot=card]:to-green-950/50">
           <MetricCard
             title="Enterprise Owners"
             value={demographics.enterprise.owners}
@@ -1324,11 +1324,11 @@ export function ParticipantDemographicsAnalytics({
       {/* Special Populations */}
       <div className="space-y-4">
         <div className="flex items-center gap-3 pb-2">
-          <div className="rounded-lg bg-red-100 p-2 dark:bg-red-900/20">
-            <Heart className="h-5 w-5 text-red-600 dark:text-red-400" />
+          <div className="rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 p-3 shadow-lg">
+            <Heart className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-red-600 dark:text-red-400">
+            <h3 className="bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-xl font-bold text-transparent dark:from-rose-400 dark:to-pink-400">
               Special Population Groups
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -1336,7 +1336,7 @@ export function ParticipantDemographicsAnalytics({
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-br *:data-[slot=card]:from-rose-50 *:data-[slot=card]:to-pink-50 *:data-[slot=card]:shadow-lg *:data-[slot=card]:transition-transform *:data-[slot=card]:duration-300 hover:*:data-[slot=card]:scale-105 md:grid-cols-2 lg:grid-cols-3 dark:*:data-[slot=card]:from-rose-950/50 dark:*:data-[slot=card]:to-pink-950/50">
           <MetricCard
             title="Active Students"
             value={demographics.segments.activeStudents}

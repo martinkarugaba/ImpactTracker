@@ -15,11 +15,14 @@ export function AnalyticsTab({
 }: AnalyticsTabProps) {
   return (
     <TabsContent value="analytics" className="mt-6">
-      {/* Demographics Analytics - Clean and Focused */}
-      <ParticipantDemographicsAnalytics
-        participants={metricsParticipants}
-        isLoading={isMetricsLoading}
-      />
+      {/* Colorful Analytics Container */}
+      <div className="space-y-8 rounded-xl bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        {/* Demographics Analytics - Enhanced with Colors */}
+        <ParticipantDemographicsAnalytics
+          participants={metricsParticipants}
+          isLoading={isMetricsLoading}
+        />
+      </div>
     </TabsContent>
   );
 }

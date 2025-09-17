@@ -13,6 +13,8 @@ import { importParticipants } from "@/features/participants/actions/import-parti
 import { type ValidationError } from "@/features/participants/components/import/types";
 import { type ParticipantFormValues } from "@/features/participants/components/participant-form";
 import { getAgeFromDateOfBirth } from "../../../lib/age-calculator";
+import { detectDuplicatesBatched } from "@/features/participants/actions/detect-duplicates";
+import type { DuplicateAnalysisResult } from "../duplicate-detection";
 // import { mapLocationNames } from "@/features/locations/actions/location-search";
 
 // Helper function to validate enum values
@@ -44,6 +46,14 @@ function parseSkillsArray(value: unknown): string[] {
 export function useExcelImport(clusterId: string) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [isDuplicateDetection, setIsDuplicateDetection] = useState(false);
+  const [duplicateProgress, setDuplicateProgress] = useState({
+    current: 0,
+    total: 0,
+    percentage: 0,
+  });
+  const [duplicateAnalysis, setDuplicateAnalysis] =
+    useState<DuplicateAnalysisResult | null>(null);
   const [importProgress, setImportProgress] = useState({
     current: 0,
     total: 0,
@@ -873,6 +883,51 @@ export function useExcelImport(clusterId: string) {
     }
   };
 
+  const checkForDuplicates = async (
+    data: ParticipantFormValues[]
+  ): Promise<DuplicateAnalysisResult> => {
+    setIsDuplicateDetection(true);
+
+    // Reset progress
+    setDuplicateProgress({
+      current: 0,
+      total: data.length,
+      percentage: 0,
+    });
+
+    try {
+      // Use batched version for large datasets to avoid 1MB limit
+      const analysis = await detectDuplicatesBatched(
+        data,
+        clusterId,
+        progress => {
+          setDuplicateProgress(progress);
+        }
+      );
+
+      setDuplicateAnalysis(analysis);
+      return analysis;
+    } catch (error) {
+      console.error("Duplicate detection error:", error);
+      toast.error("Failed to check for duplicates");
+      // Return all as unique if detection fails
+      return {
+        exactDuplicates: [],
+        potentialDuplicates: [],
+        uniqueRecords: data,
+        skippedCount: 0,
+      };
+    } finally {
+      setIsDuplicateDetection(false);
+      // Reset progress when done
+      setDuplicateProgress({
+        current: 0,
+        total: 0,
+        percentage: 0,
+      });
+    }
+  };
+
   const importData = async (
     data: ParticipantFormValues[]
   ): Promise<{ success: boolean; imported?: number; error?: string }> => {
@@ -972,8 +1027,15 @@ export function useExcelImport(clusterId: string) {
     setValidationErrors([]);
     setSheets([]);
     setWorkbook(null);
+    setDuplicateAnalysis(null);
     setIsProcessing(false);
     setIsImporting(false);
+    setIsDuplicateDetection(false);
+    setDuplicateProgress({
+      current: 0,
+      total: 0,
+      percentage: 0,
+    });
     setImportProgress({
       current: 0,
       total: 0,
@@ -987,11 +1049,15 @@ export function useExcelImport(clusterId: string) {
     sheets,
     parsedData,
     validationErrors,
+    duplicateAnalysis,
     isProcessing,
     isImporting,
+    isDuplicateDetection,
+    duplicateProgress,
     importProgress,
     parseFile,
     validateData,
+    checkForDuplicates,
     importData,
     resetImport,
   };
