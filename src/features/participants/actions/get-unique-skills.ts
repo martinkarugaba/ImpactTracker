@@ -60,16 +60,10 @@ export async function getUniqueSkills(): Promise<SkillsOptions> {
     const vocationalSkills = Array.from(vocationalSkillsSet).sort();
     const softSkills = Array.from(softSkillsSet).sort();
 
-    // For now, business skills might be a combination or separate -
-    // we can extend this as needed
-    const businessSkills: string[] = [
-      "entrepreneurship",
-      "business management",
-      "financial literacy",
-      "marketing",
-      "accounting",
-      "business planning",
-    ].sort();
+    // Business skills: Since there are no business skills participation/completion columns
+    // in the database, we return an empty array. Business skills filtering should
+    // rely on the hasBusinessSkills boolean field instead.
+    const businessSkills: string[] = [];
 
     console.log(
       `Found ${vocationalSkills.length} unique vocational skills and ${softSkills.length} unique soft skills`

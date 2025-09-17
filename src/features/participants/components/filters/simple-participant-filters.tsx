@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Search, X, Filter, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import {
   Select,
   SelectContent,
@@ -29,6 +30,10 @@ import {
   type ParticipantFilters as ParticipantFiltersType,
   type Participant,
 } from "../../types/types";
+import {
+  getUniqueSkills,
+  type SkillsOptions,
+} from "../../actions/get-unique-skills";
 
 interface SimpleParticipantFiltersProps {
   projects: Array<{ id: string; name: string; acronym: string }>;
@@ -260,6 +265,12 @@ export function SimpleParticipantFilters({
   participants = [],
 }: SimpleParticipantFiltersProps) {
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [skillsOptions, setSkillsOptions] = useState<SkillsOptions>({
+    vocationalSkills: [],
+    softSkills: [],
+    businessSkills: [],
+  });
+  const [isLoadingSkills, setIsLoadingSkills] = useState(true);
 
   // Jotai state
   const filters = useAtomValue(participantFiltersAtom);
@@ -268,11 +279,39 @@ export function SimpleParticipantFilters({
   const updateFilter = useSetAtom(updateFilterAtom);
   const clearFilters = useSetAtom(clearFiltersAtom);
 
+  // Load unique skills on component mount
+  useEffect(() => {
+    const loadSkills = async () => {
+      setIsLoadingSkills(true);
+      try {
+        const skills = await getUniqueSkills();
+        setSkillsOptions(skills);
+      } catch (error) {
+        console.error("Failed to load skills:", error);
+      } finally {
+        setIsLoadingSkills(false);
+      }
+    };
+
+    loadSkills();
+  }, []);
+
   // Generate organized filter options based on actual data
   const filterGroups = useMemo(
     () => generateDynamicFilterOptions(participants),
     [participants]
   );
+
+  // Helper function to convert skills array to ComboboxOption format
+  const convertSkillsToOptions = (skills: string[]): ComboboxOption[] => {
+    return [
+      { value: "all", label: "All Skills" },
+      ...skills.map(skill => ({
+        value: skill,
+        label: skill,
+      })),
+    ];
+  };
 
   const handleFilterUpdate = (
     key: keyof ParticipantFiltersType,
@@ -390,7 +429,7 @@ export function SimpleParticipantFilters({
           </PopoverTrigger>
           <PopoverContent
             align="end"
-            className="animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 h-[400px] w-[90vw] max-w-7xl overflow-y-auto"
+            className="animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 h-[500px] w-[85vw] max-w-5xl overflow-y-auto"
           >
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -402,7 +441,7 @@ export function SimpleParticipantFilters({
                 <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
                   Organization & Location
                 </h5>
-                <div className="grid grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
                   <div className="space-y-2">
                     <label className="text-xs font-medium">Project</label>
                     <Select
@@ -499,7 +538,7 @@ export function SimpleParticipantFilters({
                   <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
                     Enterprise & Business
                   </h5>
-                  <div className="grid grid-cols-4 gap-3">
+                  <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
                     {filterGroups.enterprise.map(filter => (
                       <div key={filter.key} className="space-y-1">
                         <label className="text-xs font-medium">
@@ -537,40 +576,132 @@ export function SimpleParticipantFilters({
               )}
 
               {/* Skills & Education Section */}
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
                   Skills & Education
                 </h5>
-                <div className="grid grid-cols-4 gap-3">
-                  {filterGroups.skills.map(filter => (
-                    <div key={filter.key} className="space-y-1">
-                      <label className="text-xs font-medium">
-                        {filter.label}
+
+                {/* General Skills Status */}
+                <div>
+                  <h6 className="mb-2 text-xs font-medium tracking-wide text-gray-600 uppercase">
+                    General Skills Status
+                  </h6>
+                  <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
+                    {filterGroups.skills.map(filter => (
+                      <div key={filter.key} className="space-y-1">
+                        <label className="text-xs font-medium">
+                          {filter.label}
+                        </label>
+                        <Select
+                          value={getFilterValue(filter.key)}
+                          onValueChange={value =>
+                            handleFilterUpdate(
+                              filter.key as keyof ParticipantFiltersType,
+                              value
+                            )
+                          }
+                        >
+                          <SelectTrigger className="h-9">
+                            <SelectValue
+                              placeholder={`Select ${filter.label.toLowerCase()}...`}
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {filter.values.map(option => (
+                              <SelectItem
+                                key={option.value}
+                                value={option.value}
+                              >
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Specific Skills Filters */}
+                <div>
+                  <h6 className="mb-3 text-xs font-medium tracking-wide text-gray-600 uppercase">
+                    Specific Skills
+                  </h6>
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    {/* Specific Vocational Skills */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-gray-700">
+                        Vocational Skill
                       </label>
-                      <Select
-                        value={getFilterValue(filter.key)}
+                      <Combobox
+                        options={convertSkillsToOptions(
+                          skillsOptions.vocationalSkills
+                        )}
+                        value={filters.specificVocationalSkill || "all"}
                         onValueChange={value =>
-                          handleFilterUpdate(
-                            filter.key as keyof ParticipantFiltersType,
-                            value
-                          )
+                          handleFilterUpdate("specificVocationalSkill", value)
                         }
-                      >
-                        <SelectTrigger>
-                          <SelectValue
-                            placeholder={`Select ${filter.label.toLowerCase()}...`}
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {filter.values.map(option => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                        placeholder={
+                          isLoadingSkills
+                            ? "Loading skills..."
+                            : "Select vocational skill..."
+                        }
+                        emptyMessage="No vocational skills found"
+                        disabled={isLoadingSkills}
+                        className="h-9"
+                      />
                     </div>
-                  ))}
+
+                    {/* Specific Soft Skills */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-gray-700">
+                        Soft Skill
+                      </label>
+                      <Combobox
+                        options={convertSkillsToOptions(
+                          skillsOptions.softSkills
+                        )}
+                        value={filters.specificSoftSkill || "all"}
+                        onValueChange={value =>
+                          handleFilterUpdate("specificSoftSkill", value)
+                        }
+                        placeholder={
+                          isLoadingSkills
+                            ? "Loading skills..."
+                            : "Select soft skill..."
+                        }
+                        emptyMessage="No soft skills found"
+                        disabled={isLoadingSkills}
+                        className="h-9"
+                      />
+                    </div>
+
+                    {/* Business Skills - Only show if there are business skills available */}
+                    {skillsOptions.businessSkills.length > 0 && (
+                      <div className="space-y-2">
+                        <label className="text-xs font-medium text-gray-700">
+                          Business Skill
+                        </label>
+                        <Combobox
+                          options={convertSkillsToOptions(
+                            skillsOptions.businessSkills
+                          )}
+                          value={filters.specificBusinessSkill || "all"}
+                          onValueChange={value =>
+                            handleFilterUpdate("specificBusinessSkill", value)
+                          }
+                          placeholder={
+                            isLoadingSkills
+                              ? "Loading skills..."
+                              : "Select business skill..."
+                          }
+                          emptyMessage="No business skills found"
+                          disabled={isLoadingSkills}
+                          className="h-9"
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 

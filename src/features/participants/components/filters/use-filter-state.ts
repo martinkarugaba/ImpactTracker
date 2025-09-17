@@ -42,6 +42,10 @@ export function useFilterState({
       hasVocationalSkills: "all",
       hasSoftSkills: "all",
       hasBusinessSkills: "all",
+      // Specific skill filters
+      specificVocationalSkill: "all",
+      specificSoftSkill: "all",
+      specificBusinessSkill: "all",
       populationSegment: "all",
       isActiveStudent: "all",
       isTeenMother: "all",
