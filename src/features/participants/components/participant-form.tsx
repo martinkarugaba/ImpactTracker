@@ -488,19 +488,19 @@ export function ParticipantForm({
     <Form {...form}>
       <div className="space-y-6">
         {/* Progress Header */}
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6 dark:border-gray-700 dark:bg-gray-800">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900 sm:text-xl">
+            <h2 className="text-lg font-semibold text-gray-900 sm:text-xl dark:text-gray-100">
               {initialData ? "Update Participant" : "Add New Participant"}
             </h2>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
               <CheckCircle2 className="h-4 w-4" />
               <span className="hidden sm:inline">{formProgress}% Complete</span>
               <span className="sm:hidden">{formProgress}%</span>
             </div>
           </div>
           <Progress value={formProgress} className="h-2" />
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
             Fill in the participant information below. Required fields are
             marked with an asterisk (*).
           </p>
@@ -512,7 +512,7 @@ export function ParticipantForm({
         >
           {/* Basic Information Section */}
           <div
-            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
+            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6 dark:border-gray-700 dark:bg-gray-800"
             style={{
               borderLeftColor: "oklch(var(--chart-1))",
               borderLeftWidth: "4px",
@@ -538,7 +538,7 @@ export function ParticipantForm({
                 >
                   Basic Information
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Personal details and contact information
                 </p>
               </div>
@@ -1005,7 +1005,7 @@ export function ParticipantForm({
 
           {/* Employment Tracking Section */}
           <div
-            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
+            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6 dark:border-gray-700 dark:bg-gray-800"
             style={{
               borderLeftColor: "oklch(var(--chart-2))",
               borderLeftWidth: "4px",

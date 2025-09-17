@@ -45,7 +45,7 @@ export function NavDocuments({
         <SidebarGroupLabel asChild>
           <CollapsibleTrigger className="font-semibold text-emerald-600 transition-colors hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">
             My KPIs
-            <ChevronDown className="ml-auto text-emerald-500 transition-all duration-200 group-data-[state=open]/collapsible:rotate-180" />
+            <ChevronDown className="text-emerald-500 transition-all duration-200 group-data-[state=open]/collapsible:rotate-180" />
           </CollapsibleTrigger>
         </SidebarGroupLabel>
         <CollapsibleContent>

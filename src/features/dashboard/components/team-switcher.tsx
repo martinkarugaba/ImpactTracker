@@ -201,7 +201,7 @@ export function TeamSwitcher() {
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
                 size="lg"
-                className="data-[state=open]:from-primary/20 data-[state=open]:to-primary/10 hover:from-primary/10 hover:to-primary/5 hover:border-primary/20 border border-transparent transition-all duration-200 hover:bg-gradient-to-r data-[state=open]:bg-gradient-to-r"
+                className="from-primary/15 via-primary/8 to-primary/3 data-[state=open]:from-primary/25 data-[state=open]:via-primary/15 data-[state=open]:to-primary/8 hover:from-primary/20 hover:via-primary/12 hover:to-primary/5 hover:border-primary/20 border border-transparent bg-gradient-to-br transition-all duration-200 data-[state=open]:bg-gradient-to-br"
               >
                 <div className="from-primary to-primary/80 text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br shadow-sm">
                   <Building2 className="size-4" />

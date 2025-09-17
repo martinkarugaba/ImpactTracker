@@ -109,6 +109,18 @@ function generateDynamicFilterOptions(participants: Participant[] = []) {
     "employmentType",
     "Employment Type"
   );
+
+  // Add fallback options for employment type if no data exists
+  if (employmentTypeOptions.values.length <= 1) {
+    employmentTypeOptions.values = [
+      { value: "all", label: "All" },
+      { value: "formal", label: "Formal Employment" },
+      { value: "informal", label: "Informal Employment" },
+      { value: "self-employed", label: "Self-Employed" },
+      { value: "unemployed", label: "Unemployed" },
+    ];
+  }
+
   const employmentSectorOptions = createDynamicOptions(
     "employmentSector",
     "Employment Sector"
@@ -436,387 +448,401 @@ export function SimpleParticipantFilters({
         ))}
 
         {/* More Filters Popover */}
-        <Popover open={showAdvanced} onOpenChange={setShowAdvanced}>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="default" className="gap-2">
-              <Filter className="h-4 w-4" />
-              More
-              {activeFiltersCount > 4 && (
-                <Badge variant="secondary" className="ml-1 h-5 w-5 p-0 text-xs">
-                  +{activeFiltersCount - 4}
-                </Badge>
-              )}
-              <ChevronDown
-                className={`h-4 w-4 transition-transform duration-200 ${showAdvanced ? "rotate-180" : ""}`}
-              />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent
-            align="end"
-            className="animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 h-[500px] w-[85vw] max-w-5xl overflow-y-auto"
-          >
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h4 className="font-semibold">Additional Filters</h4>
-              </div>
-
-              {/* Organization & Location Section */}
-              <div className="space-y-3">
-                <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
-                  Organization & Location
-                </h5>
-                <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium">Project</label>
-                    <Select
-                      value={filters.project}
-                      onValueChange={value =>
-                        handleFilterUpdate("project", value)
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select project..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Projects</SelectItem>
-                        {projects.map(project => (
-                          <SelectItem key={project.id} value={project.id}>
-                            {project.acronym}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs font-medium">Organization</label>
-                    <Select
-                      value={filters.organization}
-                      onValueChange={value =>
-                        handleFilterUpdate("organization", value)
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select organization..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Organizations</SelectItem>
-                        {organizations.map(org => (
-                          <SelectItem key={org.id} value={org.id}>
-                            {org.acronym}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs font-medium">District</label>
-                    <Select
-                      value={filters.district}
-                      onValueChange={value =>
-                        handleFilterUpdate("district", value)
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select district..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Districts</SelectItem>
-                        {districts.map(district => (
-                          <SelectItem key={district.id} value={district.id}>
-                            {district.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs font-medium">Sub County</label>
-                    <Select
-                      value={filters.subCounty}
-                      onValueChange={value =>
-                        handleFilterUpdate("subCounty", value)
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select sub county..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Sub Counties</SelectItem>
-                        {subCounties.map(subCounty => (
-                          <SelectItem key={subCounty.id} value={subCounty.id}>
-                            {subCounty.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+        <div className="min-w-[140px]">
+          <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Additional Filters
+          </label>
+          <Popover open={showAdvanced} onOpenChange={setShowAdvanced}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="default"
+                className="w-[140px] gap-2"
+              >
+                <Filter className="h-4 w-4" />
+                More
+                {activeFiltersCount > 4 && (
+                  <Badge
+                    variant="secondary"
+                    className="ml-1 h-5 w-5 p-0 text-xs"
+                  >
+                    +{activeFiltersCount - 4}
+                  </Badge>
+                )}
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform duration-200 ${showAdvanced ? "rotate-180" : ""}`}
+                />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="end"
+              className="animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 h-[500px] w-[85vw] max-w-5xl overflow-y-auto"
+            >
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-semibold">Additional Filters</h4>
                 </div>
-              </div>
 
-              {/* Enterprise & Business Section */}
-              {filterGroups.enterprise.length > 0 && (
+                {/* Organization & Location Section */}
                 <div className="space-y-3">
                   <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
-                    Enterprise & Business
+                    Organization & Location
                   </h5>
                   <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
-                    {filterGroups.enterprise.map(filter => (
-                      <div key={filter.key} className="space-y-1">
-                        <label className="text-xs font-medium">
-                          {filter.label}
-                        </label>
-                        <Select
-                          value={getFilterValue(filter.key)}
-                          onValueChange={value =>
-                            handleFilterUpdate(
-                              filter.key as keyof ParticipantFiltersType,
-                              value
-                            )
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue
-                              placeholder={`Select ${filter.label.toLowerCase()}...`}
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {filter.values.map(option => (
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Skills & Education Section */}
-              <div className="space-y-4">
-                <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
-                  Skills & Education
-                </h5>
-
-                {/* General Skills Status */}
-                <div>
-                  <h6 className="mb-2 text-xs font-medium tracking-wide text-gray-600 uppercase">
-                    General Skills Status
-                  </h6>
-                  <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
-                    {filterGroups.skills.map(filter => (
-                      <div key={filter.key} className="space-y-1">
-                        <label className="text-xs font-medium">
-                          {filter.label}
-                        </label>
-                        <Select
-                          value={getFilterValue(filter.key)}
-                          onValueChange={value =>
-                            handleFilterUpdate(
-                              filter.key as keyof ParticipantFiltersType,
-                              value
-                            )
-                          }
-                        >
-                          <SelectTrigger className="h-9">
-                            <SelectValue
-                              placeholder={`Select ${filter.label.toLowerCase()}...`}
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {filter.values.map(option => (
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Specific Skills Filters */}
-                <div>
-                  <h6 className="mb-3 text-xs font-medium tracking-wide text-gray-600 uppercase">
-                    Specific Skills
-                  </h6>
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    {/* Specific Vocational Skills */}
                     <div className="space-y-2">
-                      <label className="text-xs font-medium text-gray-700">
-                        Vocational Skill
-                      </label>
-                      <Combobox
-                        options={convertSkillsToOptions(
-                          skillsOptions.vocationalSkills
-                        )}
-                        value={filters.specificVocationalSkill || "all"}
+                      <label className="text-xs font-medium">Project</label>
+                      <Select
+                        value={filters.project}
                         onValueChange={value =>
-                          handleFilterUpdate("specificVocationalSkill", value)
+                          handleFilterUpdate("project", value)
                         }
-                        placeholder={
-                          isLoadingSkills
-                            ? "Loading skills..."
-                            : "Select vocational skill..."
-                        }
-                        emptyMessage="No vocational skills found"
-                        disabled={isLoadingSkills}
-                        className="h-9"
-                      />
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select project..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Projects</SelectItem>
+                          {projects.map(project => (
+                            <SelectItem key={project.id} value={project.id}>
+                              {project.acronym}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
 
-                    {/* Specific Soft Skills */}
-                    <div className="space-y-2">
-                      <label className="text-xs font-medium text-gray-700">
-                        Soft Skill
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium">
+                        Organization
                       </label>
-                      <Combobox
-                        options={convertSkillsToOptions(
-                          skillsOptions.softSkills
-                        )}
-                        value={filters.specificSoftSkill || "all"}
+                      <Select
+                        value={filters.organization}
                         onValueChange={value =>
-                          handleFilterUpdate("specificSoftSkill", value)
+                          handleFilterUpdate("organization", value)
                         }
-                        placeholder={
-                          isLoadingSkills
-                            ? "Loading skills..."
-                            : "Select soft skill..."
-                        }
-                        emptyMessage="No soft skills found"
-                        disabled={isLoadingSkills}
-                        className="h-9"
-                      />
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select organization..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Organizations</SelectItem>
+                          {organizations.map(org => (
+                            <SelectItem key={org.id} value={org.id}>
+                              {org.acronym}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
 
-                    {/* Business Skills - Only show if there are business skills available */}
-                    {skillsOptions.businessSkills.length > 0 && (
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium">District</label>
+                      <Select
+                        value={filters.district}
+                        onValueChange={value =>
+                          handleFilterUpdate("district", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select district..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Districts</SelectItem>
+                          {districts.map(district => (
+                            <SelectItem key={district.id} value={district.id}>
+                              {district.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium">Sub County</label>
+                      <Select
+                        value={filters.subCounty}
+                        onValueChange={value =>
+                          handleFilterUpdate("subCounty", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select sub county..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Sub Counties</SelectItem>
+                          {subCounties.map(subCounty => (
+                            <SelectItem key={subCounty.id} value={subCounty.id}>
+                              {subCounty.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Enterprise & Business Section */}
+                {filterGroups.enterprise.length > 0 && (
+                  <div className="space-y-3">
+                    <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
+                      Enterprise & Business
+                    </h5>
+                    <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
+                      {filterGroups.enterprise.map(filter => (
+                        <div key={filter.key} className="space-y-1">
+                          <label className="text-xs font-medium">
+                            {filter.label}
+                          </label>
+                          <Select
+                            value={getFilterValue(filter.key)}
+                            onValueChange={value =>
+                              handleFilterUpdate(
+                                filter.key as keyof ParticipantFiltersType,
+                                value
+                              )
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue
+                                placeholder={`Select ${filter.label.toLowerCase()}...`}
+                              />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {filter.values.map(option => (
+                                <SelectItem
+                                  key={option.value}
+                                  value={option.value}
+                                >
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Skills & Education Section */}
+                <div className="space-y-4">
+                  <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
+                    Skills & Education
+                  </h5>
+
+                  {/* General Skills Status */}
+                  <div>
+                    <h6 className="mb-2 text-xs font-medium tracking-wide text-gray-600 uppercase">
+                      General Skills Status
+                    </h6>
+                    <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
+                      {filterGroups.skills.map(filter => (
+                        <div key={filter.key} className="space-y-1">
+                          <label className="text-xs font-medium">
+                            {filter.label}
+                          </label>
+                          <Select
+                            value={getFilterValue(filter.key)}
+                            onValueChange={value =>
+                              handleFilterUpdate(
+                                filter.key as keyof ParticipantFiltersType,
+                                value
+                              )
+                            }
+                          >
+                            <SelectTrigger className="h-9">
+                              <SelectValue
+                                placeholder={`Select ${filter.label.toLowerCase()}...`}
+                              />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {filter.values.map(option => (
+                                <SelectItem
+                                  key={option.value}
+                                  value={option.value}
+                                >
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Specific Skills Filters */}
+                  <div>
+                    <h6 className="mb-3 text-xs font-medium tracking-wide text-gray-600 uppercase">
+                      Specific Skills
+                    </h6>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      {/* Specific Vocational Skills */}
                       <div className="space-y-2">
                         <label className="text-xs font-medium text-gray-700">
-                          Business Skill
+                          Vocational Skill
                         </label>
                         <Combobox
                           options={convertSkillsToOptions(
-                            skillsOptions.businessSkills
+                            skillsOptions.vocationalSkills
                           )}
-                          value={filters.specificBusinessSkill || "all"}
+                          value={filters.specificVocationalSkill || "all"}
                           onValueChange={value =>
-                            handleFilterUpdate("specificBusinessSkill", value)
+                            handleFilterUpdate("specificVocationalSkill", value)
                           }
                           placeholder={
                             isLoadingSkills
                               ? "Loading skills..."
-                              : "Select business skill..."
+                              : "Select vocational skill..."
                           }
-                          emptyMessage="No business skills found"
+                          emptyMessage="No vocational skills found"
                           disabled={isLoadingSkills}
                           className="h-9"
                         />
                       </div>
-                    )}
+
+                      {/* Specific Soft Skills */}
+                      <div className="space-y-2">
+                        <label className="text-xs font-medium text-gray-700">
+                          Soft Skill
+                        </label>
+                        <Combobox
+                          options={convertSkillsToOptions(
+                            skillsOptions.softSkills
+                          )}
+                          value={filters.specificSoftSkill || "all"}
+                          onValueChange={value =>
+                            handleFilterUpdate("specificSoftSkill", value)
+                          }
+                          placeholder={
+                            isLoadingSkills
+                              ? "Loading skills..."
+                              : "Select soft skill..."
+                          }
+                          emptyMessage="No soft skills found"
+                          disabled={isLoadingSkills}
+                          className="h-9"
+                        />
+                      </div>
+
+                      {/* Business Skills - Only show if there are business skills available */}
+                      {skillsOptions.businessSkills.length > 0 && (
+                        <div className="space-y-2">
+                          <label className="text-xs font-medium text-gray-700">
+                            Business Skill
+                          </label>
+                          <Combobox
+                            options={convertSkillsToOptions(
+                              skillsOptions.businessSkills
+                            )}
+                            value={filters.specificBusinessSkill || "all"}
+                            onValueChange={value =>
+                              handleFilterUpdate("specificBusinessSkill", value)
+                            }
+                            placeholder={
+                              isLoadingSkills
+                                ? "Loading skills..."
+                                : "Select business skill..."
+                            }
+                            emptyMessage="No business skills found"
+                            disabled={isLoadingSkills}
+                            className="h-9"
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
+
+                {/* Demographics & Personal Section */}
+                {filterGroups.demographics.length > 0 && (
+                  <div className="space-y-3">
+                    <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
+                      Demographics & Personal
+                    </h5>
+                    <div className="grid grid-cols-4 gap-3">
+                      {filterGroups.demographics.map(filter => (
+                        <div key={filter.key} className="space-y-1">
+                          <label className="text-xs font-medium">
+                            {filter.label}
+                          </label>
+                          <Select
+                            value={getFilterValue(filter.key)}
+                            onValueChange={value =>
+                              handleFilterUpdate(
+                                filter.key as keyof ParticipantFiltersType,
+                                value
+                              )
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue
+                                placeholder={`Select ${filter.label.toLowerCase()}...`}
+                              />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {filter.values.map(option => (
+                                <SelectItem
+                                  key={option.value}
+                                  value={option.value}
+                                >
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Employment Section */}
+                {filterGroups.employment.length > 0 && (
+                  <div className="space-y-3">
+                    <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
+                      Employment
+                    </h5>
+                    <div className="grid grid-cols-4 gap-3">
+                      {filterGroups.employment.map(filter => (
+                        <div key={filter.key} className="space-y-1">
+                          <label className="text-xs font-medium">
+                            {filter.label}
+                          </label>
+                          <Select
+                            value={getFilterValue(filter.key)}
+                            onValueChange={value =>
+                              handleFilterUpdate(
+                                filter.key as keyof ParticipantFiltersType,
+                                value
+                              )
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue
+                                placeholder={`Select ${filter.label.toLowerCase()}...`}
+                              />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {filter.values.map(option => (
+                                <SelectItem
+                                  key={option.value}
+                                  value={option.value}
+                                >
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-
-              {/* Demographics & Personal Section */}
-              {filterGroups.demographics.length > 0 && (
-                <div className="space-y-3">
-                  <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
-                    Demographics & Personal
-                  </h5>
-                  <div className="grid grid-cols-4 gap-3">
-                    {filterGroups.demographics.map(filter => (
-                      <div key={filter.key} className="space-y-1">
-                        <label className="text-xs font-medium">
-                          {filter.label}
-                        </label>
-                        <Select
-                          value={getFilterValue(filter.key)}
-                          onValueChange={value =>
-                            handleFilterUpdate(
-                              filter.key as keyof ParticipantFiltersType,
-                              value
-                            )
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue
-                              placeholder={`Select ${filter.label.toLowerCase()}...`}
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {filter.values.map(option => (
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Employment Section */}
-              {filterGroups.employment.length > 0 && (
-                <div className="space-y-3">
-                  <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
-                    Employment
-                  </h5>
-                  <div className="grid grid-cols-4 gap-3">
-                    {filterGroups.employment.map(filter => (
-                      <div key={filter.key} className="space-y-1">
-                        <label className="text-xs font-medium">
-                          {filter.label}
-                        </label>
-                        <Select
-                          value={getFilterValue(filter.key)}
-                          onValueChange={value =>
-                            handleFilterUpdate(
-                              filter.key as keyof ParticipantFiltersType,
-                              value
-                            )
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue
-                              placeholder={`Select ${filter.label.toLowerCase()}...`}
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {filter.values.map(option => (
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </PopoverContent>
-        </Popover>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       {/* Active Filter Badges */}

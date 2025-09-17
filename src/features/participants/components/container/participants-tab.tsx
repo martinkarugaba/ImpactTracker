@@ -178,7 +178,6 @@ export function ParticipantsTab({
               <OrganizationAssignmentButton
                 subCounties={filterOptions.subCounties}
                 organizations={organizations}
-                className="h-9 border-gray-200 bg-gray-100 text-gray-800 hover:bg-gray-200 dark:border-gray-800 dark:bg-gray-900/20 dark:text-gray-400 dark:hover:bg-gray-900/30"
               />
               <Button
                 onClick={() => setIsImportDialogOpen(true)}

@@ -14,7 +14,7 @@ import { SidebarMainNav } from "./sidebar-main-nav";
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar
-      className="from-background via-background/95 to-background/90 sticky top-0 h-screen overflow-hidden border-none bg-gradient-to-b backdrop-blur-sm"
+      className="bg-background fixed top-0 left-0 h-screen border-none"
       collapsible="icon"
       {...props}
     >
@@ -22,13 +22,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <div className="bg-grid-small-primary/[0.02] pointer-events-none absolute inset-0" />
       <div className="from-primary/[0.03] to-primary/[0.01] pointer-events-none absolute inset-0 bg-gradient-to-br via-transparent" />
 
-      <SidebarHeader className="from-primary/10 via-primary/5 border-primary/20 border-b bg-gradient-to-r to-transparent">
+      <SidebarHeader className="border-border/20 flex-shrink-0 border-b">
         <TeamSwitcher />
       </SidebarHeader>
-      <SidebarContent className="via-muted/30 bg-gradient-to-b from-transparent to-transparent">
+      <SidebarContent className="flex-1 overflow-y-auto">
         <SidebarMainNav />
       </SidebarContent>
-      <SidebarFooter className="from-muted/20 via-muted/10 border-border/50 border-t bg-gradient-to-r to-transparent">
+      <SidebarFooter className="border-border/50 flex-shrink-0 border-t">
         <NavUser />
       </SidebarFooter>
     </Sidebar>

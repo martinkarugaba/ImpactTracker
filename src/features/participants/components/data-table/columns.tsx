@@ -212,7 +212,7 @@ export function getParticipantColumns({
 
         return (
           <div className="flex items-center gap-2">
-            <div className="bg-muted text-muted-foreground flex h-6 w-6 items-center justify-center rounded text-xs">
+            <div className="flex h-6 w-6 items-center justify-center rounded bg-emerald-100 text-xs text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400">
               <Flag className="h-3 w-3" />
             </div>
             <div className="max-w-[200px] truncate" title={capitalizedName}>
