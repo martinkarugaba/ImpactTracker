@@ -10,7 +10,7 @@ import { IconActivity } from "@tabler/icons-react";
 // Loading component for the page
 function ActivitiesPageSkeleton() {
   return (
-    <div className="space-y-6 px-6">
+    <div className="space-y-6">
       {/* Metrics Cards Skeleton */}
       <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
@@ -86,10 +86,14 @@ export default function ActivitiesPage() {
   return (
     <>
       <PageTitle title="Activities" />
-      <div className="container mx-auto px-6 py-6">
-        <Suspense fallback={<ActivitiesPageSkeleton />}>
-          <ActivitiesPageContent />
-        </Suspense>
+      <div className="flex flex-1 flex-col px-2 sm:px-4 md:px-6">
+        <div className="@container/main flex flex-1 flex-col gap-2">
+          <div className="flex flex-col gap-3 py-3 sm:gap-4 sm:py-4 md:gap-6 md:py-6">
+            <Suspense fallback={<ActivitiesPageSkeleton />}>
+              <ActivitiesPageContent />
+            </Suspense>
+          </div>
+        </div>
       </div>
     </>
   );

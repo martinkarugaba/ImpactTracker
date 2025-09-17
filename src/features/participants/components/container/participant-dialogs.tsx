@@ -19,9 +19,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ImportParticipants } from "../import/import-participants";
 import {
-  ParticipantForm,
+  MultiStepParticipantForm,
   type ParticipantFormValues,
-} from "../participant-form";
+} from "../multi-step-participant-form";
 import { type Participant } from "../../types/types";
 import {
   useCreateParticipant,
@@ -63,7 +63,7 @@ export function ParticipantDialogs({
   // Fetch projects for the form
   const { data: projectsResponse } = useQuery({
     queryKey: ["projects", clusterId],
-    queryFn: () => getProjects(clusterId),
+    queryFn: () => getProjects(),
   });
 
   const projects: Project[] = projectsResponse?.success
@@ -82,6 +82,67 @@ export function ParticipantDialogs({
         mainChallenge: data.mainChallenge || null,
         skillOfInterest: data.skillOfInterest || null,
         expectedImpact: data.expectedImpact || null,
+        // Handle new optional enum fields properly
+        maritalStatus: data.maritalStatus || null,
+        educationLevel: data.educationLevel || null,
+        sourceOfIncome: data.sourceOfIncome || null,
+        populationSegment: data.populationSegment || null,
+        refugeeLocation: data.refugeeLocation || null,
+        vslaName: data.vslaName || null,
+        enterpriseName: data.enterpriseName || null,
+        enterpriseSector: data.enterpriseSector || null,
+        enterpriseSize: data.enterpriseSize || null,
+        employmentType: data.employmentType || null,
+        employmentSector: data.employmentSector || null,
+        // Convert string numeric fields to numbers
+        enterpriseYouthMale: parseInt(data.enterpriseYouthMale),
+        enterpriseYouthFemale: parseInt(data.enterpriseYouthFemale),
+        enterpriseAdults: parseInt(data.enterpriseAdults),
+        vocationalSkillsParticipations: Array.isArray(
+          data.vocationalSkillsParticipations
+        )
+          ? data.vocationalSkillsParticipations
+          : [],
+        vocationalSkillsCompletions: Array.isArray(
+          data.vocationalSkillsCompletions
+        )
+          ? data.vocationalSkillsCompletions
+          : [],
+        vocationalSkillsCertifications: Array.isArray(
+          data.vocationalSkillsCertifications
+        )
+          ? data.vocationalSkillsCertifications
+          : [],
+        softSkillsParticipations: Array.isArray(data.softSkillsParticipations)
+          ? data.softSkillsParticipations
+          : [],
+        softSkillsCompletions: Array.isArray(data.softSkillsCompletions)
+          ? data.softSkillsCompletions
+          : [],
+        softSkillsCertifications: Array.isArray(data.softSkillsCertifications)
+          ? data.softSkillsCertifications
+          : [],
+        // Legacy fields with defaults
+        disabilityType: null,
+        wageEmploymentStatus: null,
+        wageEmploymentSector: null,
+        wageEmploymentScale: null,
+        selfEmploymentStatus: null,
+        selfEmploymentSector: null,
+        businessScale: null,
+        secondaryEmploymentStatus: null,
+        secondaryEmploymentSector: null,
+        secondaryBusinessScale: null,
+        accessedLoans: "no",
+        individualSaving: "no",
+        groupSaving: "no",
+        locationSetting: null,
+        // Location IDs (convert undefined to null)
+        country_id: data.country_id || null,
+        district_id: data.district_id || null,
+        subcounty_id: data.subcounty_id || null,
+        parish_id: data.parish_id || null,
+        village_id: data.village_id || null,
       };
 
       const result = await createParticipant.mutateAsync(createData);
@@ -113,6 +174,67 @@ export function ParticipantDialogs({
         mainChallenge: data.mainChallenge || null,
         skillOfInterest: data.skillOfInterest || null,
         expectedImpact: data.expectedImpact || null,
+        // Handle new optional enum fields properly
+        maritalStatus: data.maritalStatus || null,
+        educationLevel: data.educationLevel || null,
+        sourceOfIncome: data.sourceOfIncome || null,
+        populationSegment: data.populationSegment || null,
+        refugeeLocation: data.refugeeLocation || null,
+        vslaName: data.vslaName || null,
+        enterpriseName: data.enterpriseName || null,
+        enterpriseSector: data.enterpriseSector || null,
+        enterpriseSize: data.enterpriseSize || null,
+        employmentType: data.employmentType || null,
+        employmentSector: data.employmentSector || null,
+        // Convert string numeric fields to numbers
+        enterpriseYouthMale: parseInt(data.enterpriseYouthMale),
+        enterpriseYouthFemale: parseInt(data.enterpriseYouthFemale),
+        enterpriseAdults: parseInt(data.enterpriseAdults),
+        vocationalSkillsParticipations: Array.isArray(
+          data.vocationalSkillsParticipations
+        )
+          ? data.vocationalSkillsParticipations
+          : [],
+        vocationalSkillsCompletions: Array.isArray(
+          data.vocationalSkillsCompletions
+        )
+          ? data.vocationalSkillsCompletions
+          : [],
+        vocationalSkillsCertifications: Array.isArray(
+          data.vocationalSkillsCertifications
+        )
+          ? data.vocationalSkillsCertifications
+          : [],
+        softSkillsParticipations: Array.isArray(data.softSkillsParticipations)
+          ? data.softSkillsParticipations
+          : [],
+        softSkillsCompletions: Array.isArray(data.softSkillsCompletions)
+          ? data.softSkillsCompletions
+          : [],
+        softSkillsCertifications: Array.isArray(data.softSkillsCertifications)
+          ? data.softSkillsCertifications
+          : [],
+        // Legacy fields with defaults
+        disabilityType: null,
+        wageEmploymentStatus: null,
+        wageEmploymentSector: null,
+        wageEmploymentScale: null,
+        selfEmploymentStatus: null,
+        selfEmploymentSector: null,
+        businessScale: null,
+        secondaryEmploymentStatus: null,
+        secondaryEmploymentSector: null,
+        secondaryBusinessScale: null,
+        accessedLoans: "no",
+        individualSaving: "no",
+        groupSaving: "no",
+        locationSetting: null,
+        // Location IDs (convert undefined to null)
+        country_id: data.country_id || null,
+        district_id: data.district_id || null,
+        subcounty_id: data.subcounty_id || null,
+        parish_id: data.parish_id || null,
+        village_id: data.village_id || null,
       };
 
       const result = await updateParticipant.mutateAsync({
@@ -169,6 +291,52 @@ export function ParticipantDialogs({
     skillOfInterest: participant.skillOfInterest || "",
     expectedImpact: participant.expectedImpact || "",
     isWillingToParticipate: participant.isWillingToParticipate as "yes" | "no",
+    accessedLoans: "no" as const,
+    individualSaving: "no" as const,
+    groupSaving: "no" as const,
+
+    // NEW FIELDS with defaults
+    // Personal Information
+    maritalStatus: undefined,
+    educationLevel: undefined,
+    sourceOfIncome: undefined,
+    nationality: "Ugandan",
+    populationSegment: undefined,
+    refugeeLocation: undefined,
+    isActiveStudent: "no" as "yes" | "no",
+
+    // VSLA Information
+    isSubscribedToVSLA: "no" as "yes" | "no",
+    vslaName: undefined,
+
+    // Teen Mother
+    isTeenMother: "no" as "yes" | "no",
+
+    // Enterprise Information
+    ownsEnterprise: "no" as "yes" | "no",
+    enterpriseName: undefined,
+    enterpriseSector: undefined,
+    enterpriseSize: undefined,
+    enterpriseYouthMale: "0",
+    enterpriseYouthFemale: "0",
+    enterpriseAdults: "0",
+
+    // Skills Information
+    hasVocationalSkills: "no" as "yes" | "no",
+    vocationalSkillsParticipations: [],
+    vocationalSkillsCompletions: [],
+    vocationalSkillsCertifications: [],
+
+    hasSoftSkills: "no" as "yes" | "no",
+    softSkillsParticipations: [],
+    softSkillsCompletions: [],
+    softSkillsCertifications: [],
+
+    hasBusinessSkills: "no" as "yes" | "no",
+
+    // Employment Details
+    employmentType: undefined,
+    employmentSector: undefined,
   });
   const confirmDelete = async () => {
     if (!deletingParticipant) return;
@@ -195,7 +363,7 @@ export function ParticipantDialogs({
           }
         }}
       >
-        <DialogContent className="max-h-[90vh] w-[95vw] max-w-4xl overflow-y-auto">
+        <DialogContent className="max-h-[90vh] w-[95vw] max-w-6xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingParticipant ? "Edit Participant" : "Add New Participant"}
@@ -207,7 +375,7 @@ export function ParticipantDialogs({
             </DialogDescription>
           </DialogHeader>
 
-          <ParticipantForm
+          <MultiStepParticipantForm
             initialData={
               editingParticipant
                 ? getEditFormData(editingParticipant)

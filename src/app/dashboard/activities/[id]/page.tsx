@@ -1,7 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { getActivity } from "@/features/activities/actions";
 import { auth } from "@/features/auth/auth";
-import { PageTitle } from "@/features/dashboard/components/page-title";
 import { ActivityDetailsContainer } from "@/features/activities/components/activity-details-container";
 import { getOrganizations } from "@/features/organizations/actions/organizations";
 import { getClusters } from "@/features/clusters/actions/clusters";
@@ -60,11 +59,8 @@ export default async function ActivityDetailsPage({
       : [];
 
   return (
-    <>
-      <PageTitle title={activity.title} />
-      <div className="container mx-auto px-6 py-6">
-        <ActivityDetailsContainer activity={activity} />
-      </div>
-    </>
+    <div className="container mx-auto px-6 py-6">
+      <ActivityDetailsContainer activity={activity} />
+    </div>
   );
 }

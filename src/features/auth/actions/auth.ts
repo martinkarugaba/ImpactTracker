@@ -170,7 +170,7 @@ export async function requestPasswordReset(email: string) {
             <p><strong>This link will expire in 1 hour.</strong></p>
             <p>If you didn't request this password reset, you can safely ignore this email.</p>
             <hr style="border: 1px solid #e0e0e0; margin: 20px 0;" />
-            <p style="color: #666; font-size: 12px;">This is an automated message, please do not reply to this email.</p>
+            <p style="color: #667; font-size: 12px;">This is an automated message, please do not reply to this email.</p>
           </div>
         `,
       });

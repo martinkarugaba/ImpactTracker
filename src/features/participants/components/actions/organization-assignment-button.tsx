@@ -48,14 +48,18 @@ export function OrganizationAssignmentButton({
     <>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" className={className}>
+          <Button
+            variant="outline"
+            size="sm"
+            className={`border-emerald-200 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400 dark:hover:bg-emerald-900/30 ${className || ""}`}
+          >
             <Settings className="mr-2 h-4 w-4" />
-            Fix Organizations
+            Assign Organization
           </Button>
         </DialogTrigger>
         <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Custom Assignment</DialogTitle>
+            <DialogTitle>Organization Assignment</DialogTitle>
             <DialogDescription>
               Assign all participants from any subcounty to a specific
               organization.

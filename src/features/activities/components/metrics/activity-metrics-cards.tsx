@@ -12,6 +12,10 @@ import {
   IconUsers,
   IconTrendingUp,
   IconAlertCircle,
+  IconCalendarTime,
+  IconCalendarStats,
+  IconClockPlay,
+  IconProgressBolt,
 } from "@tabler/icons-react";
 import { type ActivityMetrics } from "../../types/types";
 
@@ -123,6 +127,47 @@ export function ActivityMetricsCards({
           description: "Delayed activities",
         }}
         icon={<IconAlertCircle className="size-4 text-red-600" />}
+      />
+
+      {/* Session-based Metrics */}
+      <MetricCard
+        title="Multi-Day Activities"
+        value={metrics.multiDayActivities}
+        footer={{
+          title: `${metrics.singleDayActivities} single-day`,
+          description: "Activities with sessions",
+        }}
+        icon={<IconCalendarTime className="size-4 text-blue-600" />}
+      />
+
+      <MetricCard
+        title="Total Sessions"
+        value={metrics.totalSessions}
+        footer={{
+          title: `${metrics.averageSessionsPerActivity} avg per activity`,
+          description: "All scheduled sessions",
+        }}
+        icon={<IconCalendarStats className="size-4 text-purple-600" />}
+      />
+
+      <MetricCard
+        title="Session Completion"
+        value={`${metrics.sessionCompletionRate}%`}
+        footer={{
+          title: `${metrics.completedSessions}/${metrics.totalSessions} complete`,
+          description: "Progress tracking",
+        }}
+        icon={<IconProgressBolt className="size-4 text-green-600" />}
+      />
+
+      <MetricCard
+        title="Avg Duration"
+        value={`${metrics.averageActivityDuration} days`}
+        footer={{
+          title: "Per activity",
+          description: "Planning insights",
+        }}
+        icon={<IconClockPlay className="size-4 text-orange-600" />}
       />
     </div>
   );

@@ -59,6 +59,67 @@ export const metricUtils = {
   ): Participant[] => {
     return participants.filter(p => (p.isPWD === "yes") === hasPWD);
   },
+
+  /**
+   * Filter participants by education level
+   */
+  filterByEducation: (
+    participants: Participant[],
+    level: string
+  ): Participant[] => {
+    return participants.filter(p => p.educationLevel === level);
+  },
+
+  /**
+   * Filter participants by VSLA subscription
+   */
+  filterByVSLA: (
+    participants: Participant[],
+    isSubscribed: boolean
+  ): Participant[] => {
+    return participants.filter(
+      p => (p.isSubscribedToVSLA === "yes") === isSubscribed
+    );
+  },
+
+  /**
+   * Filter participants by enterprise ownership
+   */
+  filterByEnterprise: (
+    participants: Participant[],
+    ownsEnterprise: boolean
+  ): Participant[] => {
+    return participants.filter(
+      p => (p.ownsEnterprise === "yes") === ownsEnterprise
+    );
+  },
+
+  /**
+   * Filter participants by skills
+   */
+  filterBySkills: (
+    participants: Participant[],
+    skillType: "vocational" | "soft" | "business",
+    hasSkills: boolean
+  ): Participant[] => {
+    const skillField =
+      skillType === "vocational"
+        ? "hasVocationalSkills"
+        : skillType === "soft"
+          ? "hasSoftSkills"
+          : "hasBusinessSkills";
+    return participants.filter(p => (p[skillField] === "yes") === hasSkills);
+  },
+
+  /**
+   * Filter participants by marital status
+   */
+  filterByMaritalStatus: (
+    participants: Participant[],
+    status: string
+  ): Participant[] => {
+    return participants.filter(p => p.maritalStatus === status);
+  },
 };
 
 /**
@@ -70,6 +131,11 @@ export function useParticipantMetrics(participants: Participant[]) {
     filterByAge,
     filterBySex,
     filterByDisability,
+    filterByEducation,
+    filterByVSLA,
+    filterByEnterprise,
+    filterBySkills,
+    filterByMaritalStatus,
     formatPercent,
     formatTrendPercent,
   } = metricUtils;
@@ -127,6 +193,74 @@ export function useParticipantMetrics(participants: Participant[]) {
   const totalDisabled15to35 = disabled15to35.length;
   const totalDisabledOver35 = disabledOver35.length;
 
+  // Education metrics
+  const educationLevels = [
+    "none",
+    "primary",
+    "secondary",
+    "tertiary",
+    "university",
+  ];
+  const educationStats = educationLevels.map(level => ({
+    level,
+    count: filterByEducation(participants, level).length,
+    percent: calculatePercent(
+      filterByEducation(participants, level).length,
+      totalParticipants
+    ),
+  }));
+
+  // VSLA metrics
+  const vslaSubscribed = filterByVSLA(participants, true);
+  const vslaNotSubscribed = filterByVSLA(participants, false);
+  const vslaSubscribedPercent = calculatePercent(
+    vslaSubscribed.length,
+    totalParticipants
+  );
+
+  // Enterprise metrics
+  const enterpriseOwners = filterByEnterprise(participants, true);
+  const nonEnterpriseOwners = filterByEnterprise(participants, false);
+  const enterpriseOwnershipPercent = calculatePercent(
+    enterpriseOwners.length,
+    totalParticipants
+  );
+
+  // Skills metrics
+  const withVocationalSkills = filterBySkills(participants, "vocational", true);
+  const withSoftSkills = filterBySkills(participants, "soft", true);
+  const withBusinessSkills = filterBySkills(participants, "business", true);
+  const vocationalSkillsPercent = calculatePercent(
+    withVocationalSkills.length,
+    totalParticipants
+  );
+  const softSkillsPercent = calculatePercent(
+    withSoftSkills.length,
+    totalParticipants
+  );
+  const businessSkillsPercent = calculatePercent(
+    withBusinessSkills.length,
+    totalParticipants
+  );
+
+  // Marital status metrics
+  const maritalStatuses = ["single", "married", "divorced", "widowed"];
+  const maritalStats = maritalStatuses.map(status => ({
+    status,
+    count: filterByMaritalStatus(participants, status).length,
+    percent: calculatePercent(
+      filterByMaritalStatus(participants, status).length,
+      totalParticipants
+    ),
+  }));
+
+  // Teen mothers
+  const teenMothers = participants.filter(p => p.isTeenMother === "yes");
+  const teenMotherPercent = calculatePercent(
+    teenMothers.length,
+    totalParticipants
+  );
+
   return {
     // Total
     totalParticipants,
@@ -168,6 +302,34 @@ export function useParticipantMetrics(participants: Participant[]) {
     disabledOver35,
     totalDisabled15to35,
     totalDisabledOver35,
+
+    // Education metrics
+    educationStats,
+
+    // VSLA metrics
+    vslaSubscribed,
+    vslaNotSubscribed,
+    vslaSubscribedPercent,
+
+    // Enterprise metrics
+    enterpriseOwners,
+    nonEnterpriseOwners,
+    enterpriseOwnershipPercent,
+
+    // Skills metrics
+    withVocationalSkills,
+    withSoftSkills,
+    withBusinessSkills,
+    vocationalSkillsPercent,
+    softSkillsPercent,
+    businessSkillsPercent,
+
+    // Marital status metrics
+    maritalStats,
+
+    // Teen mothers
+    teenMothers,
+    teenMotherPercent,
 
     // Formatters
     formatPercent,

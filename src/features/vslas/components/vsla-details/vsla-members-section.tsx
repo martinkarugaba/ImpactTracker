@@ -1,18 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Plus,
-  UserPlus,
-  Users,
-  Mail,
-  Phone,
-  Calendar,
-  TrendingUp,
-} from "lucide-react";
+import { Plus, Users, Mail, Phone, Calendar, TrendingUp } from "lucide-react";
 import { getVSLAMembers } from "../../actions/vsla-members";
-import { AddVSLAMemberDialog } from "./add-vsla-member-dialog";
-import { AddParticipantToVSLADialog } from "./add-participant-to-vsla-dialog";
+import { AddVSLAMemberDialog } from "../dialogs/add-vsla-member-dialog";
+import { AddParticipantToVSLADialog } from "../dialogs/add-participant-to-vsla-dialog";
 import { formatCurrency } from "@/lib/utils";
 
 interface VSLAMembersSectionProps {
@@ -37,19 +29,8 @@ export async function VSLAMembersSection({ vsla }: VSLAMembersSectionProps) {
           <div className="flex items-center gap-2">
             <AddParticipantToVSLADialog
               vslaId={vsla.id}
-              clusterId={vsla.cluster_id || undefined}
-            >
-              <Button variant="outline" size="sm">
-                <UserPlus className="mr-2 h-4 w-4" />
-                Add Participant
-              </Button>
-            </AddParticipantToVSLADialog>
-            <AddVSLAMemberDialog vslaId={vsla.id}>
-              <Button size="sm">
-                <Plus className="mr-2 h-4 w-4" />
-                New Member
-              </Button>
-            </AddVSLAMemberDialog>
+              clusterId={vsla.cluster_id || ""}
+            />
           </div>
         </div>
       </CardHeader>
@@ -64,13 +45,8 @@ export async function VSLAMembersSection({ vsla }: VSLAMembersSectionProps) {
             <div className="mt-6 flex justify-center gap-3">
               <AddParticipantToVSLADialog
                 vslaId={vsla.id}
-                clusterId={vsla.cluster_id || undefined}
-              >
-                <Button variant="outline">
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  Add Participant
-                </Button>
-              </AddParticipantToVSLADialog>
+                clusterId={vsla.cluster_id || ""}
+              />
               <AddVSLAMemberDialog vslaId={vsla.id}>
                 <Button>
                   <Plus className="mr-2 h-4 w-4" />

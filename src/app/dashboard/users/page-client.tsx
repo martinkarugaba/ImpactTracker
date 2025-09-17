@@ -5,7 +5,7 @@ import { useState } from "react";
 import { UsersTable } from "@/features/users/components/users-table";
 import { User } from "@/features/users/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { updateUserRole } from "@/features/users/actions/users";
+import { updateUserRole, getUsers } from "@/features/users/actions/users";
 import { toast } from "sonner";
 import { AddUserDialog } from "@/features/users/components/add-user-dialog";
 import { DeleteUserDialog } from "@/features/users/components/delete-user-dialog";
@@ -48,16 +48,17 @@ export function UsersClient({ users }: UsersClientProps) {
 
   const handleUserAdded = async () => {
     try {
-      // Refetch the users from the server or update the state directly
-      // This is a simplified approach for now
-      const response = await fetch("/dashboard/users");
-      const data = await response.json();
-      if (data.users) {
-        setActiveUsers(data.users);
+      // Refetch the users using the server action
+      const result = await getUsers();
+      if (result.success) {
+        setActiveUsers(result.data);
+        toast.success("User added successfully");
+      } else {
+        toast.error("Failed to refresh user list");
       }
     } catch (error) {
       console.error("Error refreshing users:", error);
-      toast.info("New user added. Please refresh to see updated user list.");
+      toast.error("Error refreshing user list");
     }
   };
 

@@ -22,7 +22,7 @@ export async function importParticipants(data: ParticipantFormValues[]) {
   // Check for large datasets that might cause issues
   if (data.length > 1000) {
     console.warn("Large dataset detected:", data.length, "participants");
-    console.warn("This might cause timeout or memory issues");
+    console.warn("Processing in batches for optimal performance");
   }
 
   try {
@@ -275,9 +275,15 @@ export async function importParticipants(data: ParticipantFormValues[]) {
         subCounty: participant.subCounty,
         parish: participant.parish,
         village: participant.village,
+        // Location IDs (when mapping was successful)
+        country_id: participant.country_id || null,
+        district_id: participant.district_id || null,
+        subcounty_id: participant.subcounty_id || null,
+        parish_id: participant.parish_id || null,
+        village_id: participant.village_id || null,
         designation: participant.designation,
         enterprise: participant.enterprise,
-        // Add new fields
+        // Basic required fields
         isPermanentResident: participant.isPermanentResident,
         areParentsAlive: participant.areParentsAlive,
         numberOfChildren: parseInt(participant.numberOfChildren),
@@ -287,6 +293,86 @@ export async function importParticipants(data: ParticipantFormValues[]) {
         skillOfInterest: participant.skillOfInterest || null,
         expectedImpact: participant.expectedImpact || null,
         isWillingToParticipate: participant.isWillingToParticipate,
+
+        // NEW FIELDS - Personal Information
+        maritalStatus: participant.maritalStatus || null,
+        educationLevel: participant.educationLevel || null,
+        sourceOfIncome: participant.sourceOfIncome || null,
+        nationality: participant.nationality || "Ugandan",
+        populationSegment: participant.populationSegment || null,
+        refugeeLocation: participant.refugeeLocation || null,
+        isActiveStudent: participant.isActiveStudent || "no",
+
+        // VSLA Information
+        isSubscribedToVSLA: participant.isSubscribedToVSLA || "no",
+        vslaName: participant.vslaName || null,
+
+        // Teen Mother
+        isTeenMother: participant.isTeenMother || "no",
+
+        // Enterprise Information
+        ownsEnterprise: participant.ownsEnterprise || "no",
+        enterpriseName: participant.enterpriseName || null,
+        enterpriseSector: participant.enterpriseSector || null,
+        enterpriseSize: participant.enterpriseSize || null,
+        enterpriseYouthMale: parseInt(participant.enterpriseYouthMale) || 0,
+        enterpriseYouthFemale: parseInt(participant.enterpriseYouthFemale) || 0,
+        enterpriseAdults: parseInt(participant.enterpriseAdults) || 0,
+
+        // Skills Information
+        hasVocationalSkills: participant.hasVocationalSkills || "no",
+        vocationalSkillsParticipations: Array.isArray(
+          participant.vocationalSkillsParticipations
+        )
+          ? participant.vocationalSkillsParticipations
+          : [],
+        vocationalSkillsCompletions: Array.isArray(
+          participant.vocationalSkillsCompletions
+        )
+          ? participant.vocationalSkillsCompletions
+          : [],
+        vocationalSkillsCertifications: Array.isArray(
+          participant.vocationalSkillsCertifications
+        )
+          ? participant.vocationalSkillsCertifications
+          : [],
+
+        hasSoftSkills: participant.hasSoftSkills || "no",
+        softSkillsParticipations: Array.isArray(
+          participant.softSkillsParticipations
+        )
+          ? participant.softSkillsParticipations
+          : [],
+        softSkillsCompletions: Array.isArray(participant.softSkillsCompletions)
+          ? participant.softSkillsCompletions
+          : [],
+        softSkillsCertifications: Array.isArray(
+          participant.softSkillsCertifications
+        )
+          ? participant.softSkillsCertifications
+          : [],
+
+        hasBusinessSkills: participant.hasBusinessSkills || "no",
+
+        // Employment Details
+        employmentType: participant.employmentType || null,
+        employmentSector: participant.employmentSector || null,
+
+        // Employment tracking fields (existing)
+        disabilityType: participant.disabilityType || null,
+        wageEmploymentStatus: null,
+        wageEmploymentSector: null,
+        wageEmploymentScale: null,
+        selfEmploymentStatus: null,
+        selfEmploymentSector: null,
+        businessScale: null,
+        secondaryEmploymentStatus: null,
+        secondaryEmploymentSector: null,
+        secondaryBusinessScale: null,
+        accessedLoans: participant.accessedLoans || "no",
+        individualSaving: participant.individualSaving || "no",
+        groupSaving: participant.groupSaving || "no",
+        locationSetting: participant.locationSetting || null,
       };
     });
     console.log("Data to insert (first participant):", insertData[0]);
@@ -382,7 +468,7 @@ export async function importParticipants(data: ParticipantFormValues[]) {
     console.log("Proceeding with full batch insert...");
 
     // For large datasets, process in smaller batches to avoid timeouts
-    const BATCH_SIZE = 500;
+    const BATCH_SIZE = 200; // Reduced from 500 for better performance
     const result: Array<Record<string, unknown>> = [];
 
     if (insertData.length > BATCH_SIZE) {

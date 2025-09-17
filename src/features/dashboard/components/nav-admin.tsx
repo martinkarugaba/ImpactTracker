@@ -33,9 +33,9 @@ export function NavMain({
     <Collapsible defaultOpen className="group/collapsible">
       <SidebarGroup className="">
         <SidebarGroupLabel asChild>
-          <CollapsibleTrigger>
+          <CollapsibleTrigger className="text-primary hover:text-primary/80 font-semibold transition-colors">
             Admin
-            <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+            <ChevronDown className="text-primary/70 ml-auto transition-all duration-200 group-data-[state=open]/collapsible:rotate-180" />
           </CollapsibleTrigger>
         </SidebarGroupLabel>
         <CollapsibleContent>
@@ -47,12 +47,13 @@ export function NavMain({
                     asChild
                     tooltip={item.title}
                     isActive={pathname === item.url}
+                    className="data-[active=true]:from-primary/20 data-[active=true]:to-primary/10 data-[active=true]:text-primary hover:from-primary/10 hover:to-primary/5 transition-all duration-200 hover:bg-gradient-to-r data-[active=true]:bg-gradient-to-r"
                   >
                     <Link
-                      className="text-lg group-data-[state=closed]/collapsible:mx-4"
+                      className="flex items-center gap-3 text-lg group-data-[state=closed]/collapsible:mx-4"
                       href={item.url}
                     >
-                      {item.icon && <item.icon />}
+                      {item.icon && <item.icon className="text-primary/80" />}
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>

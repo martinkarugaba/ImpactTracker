@@ -5,6 +5,29 @@
 
 @import "./themes.css";
 
+/* Custom animations for collapsible components */
+@keyframes collapsible-down {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+}
+
+@keyframes collapsible-up {
+  from {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+
 /* Font utilities */
 .font-public-sans {
   font-family:
@@ -51,6 +74,8 @@
   --radius-xl: calc(var(--radius) + 4px);
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-collapsible-down: collapsible-down 0.25s ease-out;
+  --animate-collapsible-up: collapsible-up 0.25s ease-out;
 
   @keyframes accordion-down {
     from {
@@ -67,6 +92,28 @@
     }
     to {
       height: 0;
+    }
+  }
+
+  @keyframes collapsible-down {
+    from {
+      height: 0;
+      opacity: 0;
+    }
+    to {
+      height: var(--radix-collapsible-content-height);
+      opacity: 1;
+    }
+  }
+
+  @keyframes collapsible-up {
+    from {
+      height: var(--radix-collapsible-content-height);
+      opacity: 1;
+    }
+    to {
+      height: 0;
+      opacity: 0;
     }
   }
 }
@@ -179,6 +226,56 @@
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
   }
+}
+
+/* Shadcn Tiptap */
+
+.ProseMirror {
+  @apply px-4 pt-2;
+  outline: none !important;
+}
+
+h1.tiptap-heading {
+  @apply mt-8 mb-6 text-4xl font-bold;
+}
+
+h2.tiptap-heading {
+  @apply mt-6 mb-4 text-3xl font-bold;
+}
+
+h3.tiptap-heading {
+  @apply mt-4 mb-3 text-xl font-bold;
+}
+
+h1.tiptap-heading:first-child,
+h2.tiptap-heading:first-child,
+h3.tiptap-heading:first-child {
+  margin-top: 0;
+}
+
+h1.tiptap-heading + h2.tiptap-heading,
+h1.tiptap-heading + h3.tiptap-heading,
+h2.tiptap-heading + h1.tiptap-heading,
+h2.tiptap-heading + h3.tiptap-heading,
+h3.tiptap-heading + h1.tiptap-heading,
+h3.tiptap-heading + h2.tiptap-heading {
+  margin-top: 0;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  @apply text-accent-foreground pointer-events-none float-left h-0;
+  content: attr(data-placeholder);
+}
+
+.tiptap ul,
+.tiptap ol {
+  padding: 0 1rem;
+}
+
+.tiptap blockquote {
+  border-left: 3px solid gray;
+  margin: 1.5rem 0;
+  padding-left: 1rem;
 }
 
 /* Responsive table improvements */

@@ -1,5 +1,7 @@
 "use client";
 
+import React from "react";
+import { Button } from "@/components/ui/button";
 import { type Project } from "@/features/projects/types";
 import { type Organization } from "@/features/organizations/types";
 import { type Participant } from "../../types/types";
@@ -28,11 +30,12 @@ interface ParticipantsDataTableProps {
   onEditParticipant: (data: ParticipantFormValues, id: string) => void;
   onDeleteParticipant: (id: string) => void;
   onViewParticipant?: (participant: Participant) => void;
-  onDeleteMultipleParticipants: (ids: string[]) => void;
+  onDeleteMultipleParticipants?: (ids: string[]) => void;
   onExportData?: () => void;
   onImport?: (data: unknown[]) => void;
   onFixOrganizations?: () => void;
   columnVisibility?: Record<string, boolean>;
+  onSelectedRowsChange?: (selectedRows: Participant[]) => void;
 }
 
 export function ParticipantsDataTable({
@@ -55,8 +58,21 @@ export function ParticipantsDataTable({
   onImport: _onImport,
   onFixOrganizations: _onFixOrganizations,
   columnVisibility,
+  onSelectedRowsChange,
 }: ParticipantsDataTableProps) {
-  const { selectedRows } = useTableState();
+  const {
+    selectedRows,
+    rowSelectionState,
+    handleClearSelection,
+    setRowSelectionState,
+  } = useTableState(undefined, data);
+
+  // Notify parent about selected rows changes
+  React.useEffect(() => {
+    if (onSelectedRowsChange) {
+      onSelectedRowsChange(selectedRows);
+    }
+  }, [selectedRows, onSelectedRowsChange]);
 
   return (
     <div className="space-y-4">
@@ -72,7 +88,23 @@ export function ParticipantsDataTable({
         onViewParticipant={onViewParticipant}
         actionButtons={null} // No longer needed since actions moved to parent
         columnVisibility={columnVisibility}
+        rowSelection={rowSelectionState}
+        onRowSelectionStateChange={setRowSelectionState}
       />
+
+      {/* Selection Summary */}
+      {selectedRows.length > 0 && (
+        <div className="bg-muted flex items-center justify-between rounded-lg border p-3">
+          <span className="text-sm font-medium">
+            {selectedRows.length} participant(s) selected
+          </span>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={handleClearSelection}>
+              Clear Selection
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Pagination */}
       <PaginationControls

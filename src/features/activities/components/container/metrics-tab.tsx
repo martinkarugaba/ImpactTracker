@@ -34,12 +34,21 @@ export function MetricsTab({
     totalBudget: 0,
     overdue: 0,
     actualSpent: 0,
+    multiDayActivities: 0,
+    singleDayActivities: 0,
+    totalSessions: 0,
+    completedSessions: 0,
+    scheduledSessions: 0,
+    sessionCompletionRate: 0,
+    averageSessionsPerActivity: 0,
+    averageActivityDuration: 0,
+    activitiesWithSessions: 0,
     byType: {},
     byStatus: {},
   };
 
   return (
-    <TabsContent value="metrics" className="space-y-6">
+    <TabsContent value="metrics" className="mt-5 space-y-6">
       {/* Metrics Cards */}
       <div className="space-y-3">
         {/* Metrics Header with Filter Status */}

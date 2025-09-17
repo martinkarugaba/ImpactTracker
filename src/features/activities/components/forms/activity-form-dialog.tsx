@@ -50,6 +50,7 @@ import {
 import {
   useCreateActivity,
   useUpdateActivity,
+  useGenerateActivitySessions,
 } from "../../hooks/use-activities";
 
 const activityFormSchema = z.object({
@@ -65,6 +66,10 @@ const activityFormSchema = z.object({
   organizationId: z.string().min(1, "Organization is required"),
   clusterId: z.string().optional(),
   projectId: z.string().optional(),
+  // Multi-day session fields
+  generateSessions: z.boolean().default(false),
+  sessionStartTime: z.string().optional(),
+  sessionEndTime: z.string().optional(),
 });
 
 type ActivityFormValues = z.infer<typeof activityFormSchema>;
@@ -88,22 +93,25 @@ export function ActivityFormDialog({
 }: ActivityFormDialogProps) {
   const createActivity = useCreateActivity();
   const updateActivity = useUpdateActivity();
+  const generateSessions = useGenerateActivitySessions();
 
-  const form = useForm<ActivityFormValues>({
+  const form = useForm({
     resolver: zodResolver(activityFormSchema),
     defaultValues: {
       title: "",
       description: "",
-      type: "training",
-      status: "planned",
+      type: "meeting" as ActivityType,
+      status: "planned" as ActivityStatus,
       venue: "",
       objectives: "",
       organizationId: "",
       clusterId: "",
       projectId: "",
-      budget: undefined,
+      generateSessions: false,
+      sessionStartTime: "",
+      sessionEndTime: "",
     },
-  });
+  }) as ReturnType<typeof useForm<ActivityFormValues>>;
 
   // Reset form when dialog opens/closes or activity changes
   useEffect(() => {
@@ -143,8 +151,10 @@ export function ActivityFormDialog({
 
   const onSubmit = async (data: ActivityFormValues) => {
     try {
+      let createdActivity;
+
       if (activity) {
-        await updateActivity.mutateAsync({
+        const result = await updateActivity.mutateAsync({
           id: activity.id,
           data: {
             ...data,
@@ -159,8 +169,9 @@ export function ActivityFormDialog({
             organization_id: data.organizationId,
           },
         });
+        createdActivity = result.data;
       } else {
-        await createActivity.mutateAsync({
+        const result = await createActivity.mutateAsync({
           ...data,
           description: data.description || null,
           objectives: data.objectives
@@ -180,7 +191,30 @@ export function ActivityFormDialog({
           attachments: [],
           created_by: "current-user", // TODO: Get from auth context
         });
+        createdActivity = result.data;
       }
+
+      // Generate sessions for multi-day activities
+      if (
+        !activity && // Only for new activities
+        createdActivity &&
+        data.generateSessions &&
+        data.startDate &&
+        data.endDate &&
+        data.startDate < data.endDate
+      ) {
+        await generateSessions.mutateAsync({
+          activityId: createdActivity.id,
+          startDate: data.startDate,
+          endDate: data.endDate,
+          sessionData: {
+            start_time: data.sessionStartTime || undefined,
+            end_time: data.sessionEndTime || undefined,
+            venue: data.venue,
+          },
+        });
+      }
+
       onOpenChange(false);
     } catch (error) {
       // Error handling is done by the hooks

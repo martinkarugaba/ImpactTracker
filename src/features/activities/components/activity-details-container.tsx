@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Activity } from "../types/types";
 import type {
   ConceptNote,
@@ -11,11 +11,12 @@ import type {
 import { ActivityHeader } from "./details/activity-header";
 import { ActivityDetailsTabs } from "./details/activity-details-tabs";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Calendar } from "lucide-react";
 import { ActivityFormDialog } from "./forms/activity-form-dialog";
 import { ConceptNoteDialog } from "./dialogs/concept-note-dialog";
 import { ActivityReportDialog } from "./dialogs/activity-report-dialog";
 import { AttendanceListDialog } from "./dialogs/attendance-list-dialog";
+import { SessionFormDialog } from "./dialogs/session-form-dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,6 +42,7 @@ import {
   deleteActivityReport,
 } from "../actions/activity-reports";
 import { useRouter } from "next/navigation";
+import { usePageInfo } from "@/features/dashboard/contexts/navigation-context";
 import toast from "react-hot-toast";
 
 interface ActivityDetailsContainerProps {
@@ -67,13 +69,40 @@ export function ActivityDetailsContainer({
   >(undefined);
   const [isActivityReportDialogOpen, setIsActivityReportDialogOpen] =
     useState(false);
+  // Session dialog state
+  const [isSessionDialogOpen, setIsSessionDialogOpen] = useState(false);
+  const [editingSessionId, setEditingSessionId] = useState<string>();
+
+  // Navigation setup
+  const { setPageInfo } = usePageInfo();
+  const router = useRouter();
+
+  // Set page navigation info
+  useEffect(() => {
+    setPageInfo({
+      title: activity.title,
+      breadcrumbs: [
+        { label: "Activities", href: "/dashboard/activities" },
+        {
+          label: activity.title,
+          isCurrentPage: true,
+          icon: <Calendar className="h-4 w-4" />,
+        },
+      ],
+      showBackButton: true,
+      backHref: "/dashboard/activities",
+    });
+  }, [activity.title, setPageInfo]);
+
+  // Attendance dialog state
   const [isAttendanceListDialogOpen, setIsAttendanceListDialogOpen] =
     useState(false);
+
+  // Dialog states
   const [refreshKey, setRefreshKey] = useState(0);
   const [activityReportsRefreshKey, setActivityReportsRefreshKey] = useState(0);
   const deleteActivity = useDeleteActivity();
   const addActivityParticipants = useAddActivityParticipants();
-  const router = useRouter();
 
   const handleEdit = () => {
     setIsEditDialogOpen(true);
@@ -157,8 +186,20 @@ export function ActivityDetailsContainer({
     }
   };
 
-  const handleManageAttendance = () => {
+  const handleManageAttendance = (sessionId?: string) => {
+    console.log("Managing attendance for session:", sessionId);
     setIsAttendanceListDialogOpen(true);
+  };
+
+  // Session handlers
+  const handleCreateSession = () => {
+    setEditingSessionId(undefined);
+    setIsSessionDialogOpen(true);
+  };
+
+  const handleEditSession = (sessionId: string) => {
+    setEditingSessionId(sessionId);
+    setIsSessionDialogOpen(true);
   };
 
   const handleConceptNoteSubmit = async (data: NewConceptNote) => {
@@ -249,6 +290,8 @@ export function ActivityDetailsContainer({
         onEditActivityReport={handleEditActivityReport}
         onDeleteActivityReport={handleDeleteActivityReport}
         onManageAttendance={handleManageAttendance}
+        onCreateSession={handleCreateSession}
+        onEditSession={handleEditSession}
         refreshKey={refreshKey}
         activityReportsRefreshKey={activityReportsRefreshKey}
       />
@@ -331,6 +374,19 @@ export function ActivityDetailsContainer({
             : undefined
         }
         onSubmit={handleAttendanceListSubmit}
+      />
+
+      {/* Session Form Dialog */}
+      <SessionFormDialog
+        open={isSessionDialogOpen}
+        onOpenChange={open => {
+          setIsSessionDialogOpen(open);
+          if (!open) {
+            setEditingSessionId(undefined);
+          }
+        }}
+        activityId={activity.id}
+        sessionId={editingSessionId}
       />
     </div>
   );

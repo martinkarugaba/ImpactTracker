@@ -33,10 +33,20 @@ body {
 .theme-default-scaled {
   --primary: var(--color-neutral-600);
   --primary-foreground: var(--color-neutral-50);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
 
   @variant dark {
     --primary: var(--color-neutral-500);
     --primary-foreground: var(--color-neutral-50);
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
   }
 }
 
@@ -45,10 +55,20 @@ body {
 .theme-blue-scaled {
   --primary: var(--color-blue-600);
   --primary-foreground: var(--color-blue-50);
+  --chart-1: oklch(0.6 0.25 250);
+  --chart-2: oklch(0.65 0.2 270);
+  --chart-3: oklch(0.7 0.15 290);
+  --chart-4: oklch(0.5 0.3 230);
+  --chart-5: oklch(0.55 0.25 210);
 
   @variant dark {
     --primary: var(--color-blue-500);
     --primary-foreground: var(--color-blue-50);
+    --chart-1: oklch(0.7 0.25 250);
+    --chart-2: oklch(0.65 0.2 270);
+    --chart-3: oklch(0.6 0.15 290);
+    --chart-4: oklch(0.75 0.3 230);
+    --chart-5: oklch(0.8 0.25 210);
   }
 }
 
@@ -57,10 +77,20 @@ body {
 .theme-green-scaled {
   --primary: var(--color-lime-600);
   --primary-foreground: var(--color-lime-50);
+  --chart-1: oklch(0.65 0.25 130);
+  --chart-2: oklch(0.6 0.2 150);
+  --chart-3: oklch(0.7 0.15 110);
+  --chart-4: oklch(0.55 0.3 170);
+  --chart-5: oklch(0.75 0.25 90);
 
   @variant dark {
     --primary: var(--color-lime-600);
     --primary-foreground: var(--color-lime-50);
+    --chart-1: oklch(0.7 0.25 130);
+    --chart-2: oklch(0.65 0.2 150);
+    --chart-3: oklch(0.75 0.15 110);
+    --chart-4: oklch(0.6 0.3 170);
+    --chart-5: oklch(0.8 0.25 90);
   }
 }
 
@@ -69,10 +99,42 @@ body {
 .theme-amber-scaled {
   --primary: var(--color-amber-600);
   --primary-foreground: var(--color-amber-50);
+  --chart-1: oklch(0.7 0.25 50);
+  --chart-2: oklch(0.65 0.2 70);
+  --chart-3: oklch(0.6 0.15 30);
+  --chart-4: oklch(0.75 0.3 90);
+  --chart-5: oklch(0.55 0.25 10);
 
   @variant dark {
     --primary: var(--color-amber-500);
     --primary-foreground: var(--color-amber-50);
+    --chart-1: oklch(0.75 0.25 50);
+    --chart-2: oklch(0.7 0.2 70);
+    --chart-3: oklch(0.65 0.15 30);
+    --chart-4: oklch(0.8 0.3 90);
+    --chart-5: oklch(0.6 0.25 10);
+  }
+}
+
+/* theme purple */
+.theme-purple,
+.theme-purple-scaled {
+  --primary: var(--color-purple-600);
+  --primary-foreground: var(--color-purple-50);
+  --chart-1: oklch(0.6 0.25 320);
+  --chart-2: oklch(0.65 0.2 340);
+  --chart-3: oklch(0.7 0.15 300);
+  --chart-4: oklch(0.55 0.3 280);
+  --chart-5: oklch(0.75 0.25 260);
+
+  @variant dark {
+    --primary: var(--color-purple-500);
+    --primary-foreground: var(--color-purple-50);
+    --chart-1: oklch(0.7 0.25 320);
+    --chart-2: oklch(0.65 0.2 340);
+    --chart-3: oklch(0.75 0.15 300);
+    --chart-4: oklch(0.6 0.3 280);
+    --chart-5: oklch(0.8 0.25 260);
   }
 }
 
@@ -82,10 +144,20 @@ body {
   --font-sans: var(--font-mono);
   --primary: var(--color-neutral-600);
   --primary-foreground: var(--color-neutral-50);
+  --chart-1: oklch(0.4 0.1 0);
+  --chart-2: oklch(0.5 0.08 0);
+  --chart-3: oklch(0.6 0.06 0);
+  --chart-4: oklch(0.7 0.04 0);
+  --chart-5: oklch(0.8 0.02 0);
 
   @variant dark {
     --primary: var(--color-neutral-500);
     --primary-foreground: var(--color-neutral-50);
+    --chart-1: oklch(0.6 0.1 0);
+    --chart-2: oklch(0.7 0.08 0);
+    --chart-3: oklch(0.8 0.06 0);
+    --chart-4: oklch(0.5 0.04 0);
+    --chart-5: oklch(0.4 0.02 0);
   }
 
   .rounded-xs,

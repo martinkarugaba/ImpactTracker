@@ -2,7 +2,12 @@
 
 import { auth } from "@/features/auth/auth";
 import { db } from "@/lib/db";
-import { users, userRole } from "@/lib/db/schema";
+import {
+  users,
+  userRole,
+  clusterUsers,
+  organizationMembers,
+} from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -27,7 +32,20 @@ export async function getUsers() {
     }
 
     console.log("Fetching users from database..."); // Debug log
-    const dbUsers = await db.query.users.findMany();
+    const dbUsers = await db.query.users.findMany({
+      with: {
+        clusters: {
+          with: {
+            cluster: true,
+          },
+        },
+        organizations: {
+          with: {
+            organization: true,
+          },
+        },
+      },
+    });
     console.log("Raw users data:", dbUsers); // Debug log
 
     if (!dbUsers || dbUsers.length === 0) {
@@ -43,6 +61,8 @@ export async function getUsers() {
       role: user.role,
       created_at: user.created_at,
       updated_at: user.updated_at,
+      cluster: user.clusters[0]?.cluster || null,
+      organization: user.organizations[0]?.organization || null,
     }));
 
     console.log("Transformed users:", transformedUsers); // Debug log
@@ -100,6 +120,8 @@ export async function createUser(data: {
   email: string;
   role: (typeof userRole.enumValues)[number];
   password: string;
+  clusterId?: string;
+  organizationId?: string;
 }) {
   try {
     const session = await auth();
@@ -113,16 +135,37 @@ export async function createUser(data: {
     const bcrypt = await import("bcryptjs");
     const hashedPassword = await bcrypt.default.hash(data.password, 10);
 
+    const userId = crypto.randomUUID();
+
+    // Create the user first
     const [user] = await db
       .insert(users)
       .values({
-        id: crypto.randomUUID(),
+        id: userId,
         name: data.name,
         email: data.email,
         role: data.role,
         password: hashedPassword,
       })
       .returning();
+
+    // Create cluster association if clusterId is provided
+    if (data.clusterId) {
+      await db.insert(clusterUsers).values({
+        cluster_id: data.clusterId,
+        user_id: userId,
+        role: data.role,
+      });
+    }
+
+    // Create organization association if organizationId is provided
+    if (data.organizationId) {
+      await db.insert(organizationMembers).values({
+        organization_id: data.organizationId,
+        user_id: userId,
+        role: data.role,
+      });
+    }
 
     revalidatePath("/dashboard/users");
     return user;

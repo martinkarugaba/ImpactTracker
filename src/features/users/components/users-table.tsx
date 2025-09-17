@@ -93,6 +93,34 @@ export function UsersTable({
       header: "Email",
     },
     {
+      accessorKey: "cluster",
+      header: "Cluster",
+      cell: ({ row }) => {
+        const cluster = row.original.cluster;
+        return cluster ? (
+          <Badge variant="secondary" className="capitalize">
+            {cluster.name}
+          </Badge>
+        ) : (
+          <span className="text-muted-foreground">-</span>
+        );
+      },
+    },
+    {
+      accessorKey: "organization",
+      header: "Organization",
+      cell: ({ row }) => {
+        const organization = row.original.organization;
+        return organization ? (
+          <Badge variant="outline" className="capitalize">
+            {organization.acronym}
+          </Badge>
+        ) : (
+          <span className="text-muted-foreground">-</span>
+        );
+      },
+    },
+    {
       accessorKey: "role",
       header: "Role",
       cell: ({ row }) => {

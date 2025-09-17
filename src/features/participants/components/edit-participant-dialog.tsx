@@ -36,7 +36,7 @@ export function EditParticipantDialog({
   // Fetch projects for the form
   const { data: projectsResponse } = useQuery({
     queryKey: ["projects", participant.cluster_id],
-    queryFn: () => getProjects(participant.cluster_id),
+    queryFn: () => getProjects(),
   });
 
   const projects: Project[] = projectsResponse?.success
@@ -57,6 +57,67 @@ export function EditParticipantDialog({
         mainChallenge: data.mainChallenge || null,
         skillOfInterest: data.skillOfInterest || null,
         expectedImpact: data.expectedImpact || null,
+        // Handle new optional fields properly
+        maritalStatus: data.maritalStatus || null,
+        educationLevel: data.educationLevel || null,
+        sourceOfIncome: data.sourceOfIncome || null,
+        populationSegment: data.populationSegment || null,
+        refugeeLocation: data.refugeeLocation || null,
+        vslaName: data.vslaName || null,
+        enterpriseName: data.enterpriseName || null,
+        enterpriseSector: data.enterpriseSector || null,
+        enterpriseSize: data.enterpriseSize || null,
+        employmentType: data.employmentType || null,
+        employmentSector: data.employmentSector || null,
+        // Convert string numeric fields to numbers
+        enterpriseYouthMale: parseInt(data.enterpriseYouthMale),
+        enterpriseYouthFemale: parseInt(data.enterpriseYouthFemale),
+        enterpriseAdults: parseInt(data.enterpriseAdults),
+        vocationalSkillsParticipations: Array.isArray(
+          data.vocationalSkillsParticipations
+        )
+          ? data.vocationalSkillsParticipations
+          : [],
+        vocationalSkillsCompletions: Array.isArray(
+          data.vocationalSkillsCompletions
+        )
+          ? data.vocationalSkillsCompletions
+          : [],
+        vocationalSkillsCertifications: Array.isArray(
+          data.vocationalSkillsCertifications
+        )
+          ? data.vocationalSkillsCertifications
+          : [],
+        softSkillsParticipations: Array.isArray(data.softSkillsParticipations)
+          ? data.softSkillsParticipations
+          : [],
+        softSkillsCompletions: Array.isArray(data.softSkillsCompletions)
+          ? data.softSkillsCompletions
+          : [],
+        softSkillsCertifications: Array.isArray(data.softSkillsCertifications)
+          ? data.softSkillsCertifications
+          : [],
+        // Legacy fields with defaults
+        disabilityType: null,
+        wageEmploymentStatus: null,
+        wageEmploymentSector: null,
+        wageEmploymentScale: null,
+        selfEmploymentStatus: null,
+        selfEmploymentSector: null,
+        businessScale: null,
+        secondaryEmploymentStatus: null,
+        secondaryEmploymentSector: null,
+        secondaryBusinessScale: null,
+        accessedLoans: "no",
+        individualSaving: "no",
+        groupSaving: "no",
+        locationSetting: null,
+        // Location IDs (convert undefined to null)
+        country_id: data.country_id || null,
+        district_id: data.district_id || null,
+        subcounty_id: data.subcounty_id || null,
+        parish_id: data.parish_id || null,
+        village_id: data.village_id || null,
       };
 
       const result = await updateParticipant.mutateAsync({
@@ -111,6 +172,72 @@ export function EditParticipantDialog({
     skillOfInterest: participant.skillOfInterest || "",
     expectedImpact: participant.expectedImpact || "",
     isWillingToParticipate: participant.isWillingToParticipate as "yes" | "no",
+    // Financial inclusion fields - using defaults if not present in participant data
+    accessedLoans: "no" as "yes" | "no",
+    individualSaving: "no" as "yes" | "no",
+    groupSaving: "no" as "yes" | "no",
+    // Employment tracking fields - using empty strings as defaults
+    wageEmploymentStatus: "",
+    wageEmploymentSector: "",
+    wageEmploymentScale: "",
+    selfEmploymentStatus: "",
+    selfEmploymentSector: "",
+    businessScale: "",
+    secondaryEmploymentStatus: "",
+    secondaryEmploymentSector: "",
+    secondaryBusinessScale: "",
+    // Location and disability fields
+    locationSetting: "rural" as "urban" | "rural",
+    disabilityType: "",
+
+    // NEW FIELDS with defaults
+    // Personal Information
+    maritalStatus: undefined,
+    educationLevel: undefined,
+    sourceOfIncome: undefined,
+    nationality: "Ugandan",
+    populationSegment: undefined,
+    refugeeLocation: undefined,
+    isActiveStudent: "no" as "yes" | "no",
+
+    // VSLA Information
+    isSubscribedToVSLA: "no" as "yes" | "no",
+    vslaName: undefined,
+
+    // Teen Mother
+    isTeenMother: "no" as "yes" | "no",
+
+    // Enterprise Information
+    ownsEnterprise: "no" as "yes" | "no",
+    enterpriseName: undefined,
+    enterpriseSector: undefined,
+    enterpriseSize: undefined,
+    enterpriseYouthMale: "0",
+    enterpriseYouthFemale: "0",
+    enterpriseAdults: "0",
+
+    // Skills Information
+    hasVocationalSkills: "no" as "yes" | "no",
+    vocationalSkillsParticipations: [],
+    vocationalSkillsCompletions: [],
+    vocationalSkillsCertifications: [],
+
+    hasSoftSkills: "no" as "yes" | "no",
+    softSkillsParticipations: [],
+    softSkillsCompletions: [],
+    softSkillsCertifications: [],
+
+    hasBusinessSkills: "no" as "yes" | "no",
+
+    // Employment Details
+    employmentType: undefined,
+    employmentSector: undefined,
+    // Location IDs (when available from participant data)
+    country_id: participant.country_id || undefined,
+    district_id: participant.district_id || undefined,
+    subcounty_id: participant.subcounty_id || undefined,
+    parish_id: participant.parish_id || undefined,
+    village_id: participant.village_id || undefined,
   };
 
   return (

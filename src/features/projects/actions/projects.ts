@@ -1,10 +1,16 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { projects, organizations } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import {
+  projects,
+  participants,
+  organizationMembers,
+  clusterUsers,
+} from "@/lib/db/schema";
+import { eq, sql, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { auth } from "@/features/auth/auth";
 import { Project } from "../types";
 
 const createProjectSchema = z.object({
@@ -79,43 +85,80 @@ export async function deleteProject(id: string) {
   }
 }
 
-export async function getProjects(organizationId?: string) {
+export async function getProjects() {
   try {
-    // Check if organizationId is a valid UUID before querying
-    // A simple regex check for UUID format
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const session = await auth();
 
-    if (organizationId && uuidRegex.test(organizationId)) {
-      // First find the organization's project
-      const [org] = await db
-        .select({
-          project_id: organizations.project_id,
-        })
-        .from(organizations)
-        .where(eq(organizations.id, organizationId));
-
-      if (org?.project_id) {
-        // If organization has a project, fetch that specific project
-        const projectsList = await db
-          .select()
-          .from(projects)
-          .where(eq(projects.id, org.project_id));
-
-        const typedProjects = projectsList.map(project => ({
-          ...project,
-          status: project.status as "active" | "completed" | "on-hold",
-        }));
-
-        return { success: true, data: typedProjects };
-      }
-
-      // If organization has no project, return empty array
-      return { success: true, data: [] };
+    if (!session?.user) {
+      return { success: false, error: "Not authenticated" };
     }
 
-    // If no organizationId provided, fetch all projects
-    const projectsList = await db.select().from(projects);
+    // Get user's organization and cluster context
+    let userOrgId: string | undefined;
+    let userClusterIds: string[] = [];
+
+    // For non-super_admin users, find their organization and clusters
+    if (session.user.role !== "super_admin") {
+      // Get user's organization
+      const userMembership = await db.query.organizationMembers.findFirst({
+        where: eq(organizationMembers.user_id, session.user.id),
+      });
+      userOrgId = userMembership?.organization_id;
+
+      // Get user's clusters
+      const userClusters = await db.query.clusterUsers.findMany({
+        where: eq(clusterUsers.user_id, session.user.id),
+      });
+      userClusterIds = userClusters.map(uc => uc.cluster_id);
+    }
+
+    let projectsList: Array<{
+      id: string;
+      name: string;
+      acronym: string;
+      description: string | null;
+      status: string;
+      startDate: Date | null;
+      endDate: Date | null;
+      createdAt: Date | null;
+      updatedAt: Date | null;
+    }>;
+
+    if (session.user.role === "super_admin") {
+      // Super admin can see all projects
+      projectsList = await db.select().from(projects);
+    } else if (userClusterIds.length > 0 || userOrgId) {
+      // Find projects that are linked to participants in user's authorized clusters/organizations
+      const participantProjects = await db
+        .selectDistinct({ project_id: participants.project_id })
+        .from(participants)
+        .where(
+          userOrgId && userClusterIds.length > 0
+            ? sql`(
+                ${participants.organization_id} = ${userOrgId}
+                OR ${participants.cluster_id} = ANY(${userClusterIds})
+              )`
+            : userOrgId
+              ? eq(participants.organization_id, userOrgId)
+              : sql`${participants.cluster_id} = ANY(${userClusterIds})`
+        );
+
+      const projectIds = participantProjects
+        .map(p => p.project_id)
+        .filter(id => id !== null) as string[];
+
+      if (projectIds.length > 0) {
+        projectsList = await db
+          .select()
+          .from(projects)
+          .where(inArray(projects.id, projectIds));
+      } else {
+        projectsList = [];
+      }
+    } else {
+      // User has no organization or cluster access
+      projectsList = [];
+    }
 
     const typedProjects = projectsList.map(project => ({
       ...project,

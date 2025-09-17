@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePageTitle } from "../contexts/page-title-context";
+import { usePageTitle } from "../contexts/navigation-context";
 
 interface PageTitleProps {
   title: string;

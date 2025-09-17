@@ -1,7 +1,7 @@
 "use client";
 
 import { columns } from "@/features/locations/components/data-table/districts-columns";
-import { ReusableDataTable } from "@/components/ui/reusable-data-table";
+import { DataTable } from "@/components/ui/data-table";
 import { countries, districts } from "@/lib/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
 import { AddDistrictDialog } from "@/features/locations/components/dialogs/add-district-dialog";
@@ -25,8 +25,8 @@ export function DistrictsTable({
   initialData,
   countryId,
 }: DistrictsTableProps) {
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [page, _setPage] = useState(1);
+  const [pageSize, _setPageSize] = useState(20);
   const [search, setSearch] = useState("");
   const [accumulatedData, setAccumulatedData] =
     useState<District[]>(initialData);
@@ -37,27 +37,6 @@ export function DistrictsTable({
     search,
     countryId,
   });
-
-  const handlePaginationChange = (newPage: number, newPageSize: number) => {
-    const isPageSizeIncrease = newPageSize > pageSize;
-    const isPageSizeChange = newPageSize !== pageSize;
-
-    // Update page and pageSize
-    setPage(newPage);
-    setPageSize(newPageSize);
-
-    // Only reset accumulated data if:
-    // - User is searching
-    // - Page size is decreased
-    // - User navigates to a different page (unless it's a page size increase)
-    if (
-      search ||
-      (isPageSizeChange && !isPageSizeIncrease) ||
-      (newPage !== page && !isPageSizeChange)
-    ) {
-      setAccumulatedData([]);
-    }
-  };
 
   // Effect to handle accumulation of data when response changes
   React.useEffect(() => {
@@ -86,13 +65,9 @@ export function DistrictsTable({
         ? districtsResponse.data.data
         : initialData;
 
-  const paginationData = districtsResponse?.success
-    ? districtsResponse.data.pagination
-    : undefined;
-
   return (
     <div className="w-full">
-      <ReusableDataTable
+      <DataTable
         columns={columns}
         data={data}
         filterColumn="name"
@@ -101,13 +76,10 @@ export function DistrictsTable({
         showPagination={true}
         showRowSelection={true}
         pageSize={pageSize}
-        serverSidePagination={true}
-        paginationData={paginationData}
-        onPaginationChange={handlePaginationChange}
-        isLoading={isLoading}
         searchValue={search}
         onSearchChange={setSearch}
-        customActions={
+        isLoading={isLoading}
+        actionButtons={
           <AddDistrictDialog>
             <Button size="sm">
               <Plus className="mr-2 h-4 w-4" />

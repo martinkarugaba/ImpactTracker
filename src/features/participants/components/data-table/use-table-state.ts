@@ -1,37 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { type Participant } from "../../types/types";
 
-export function useTableState(searchTerm?: string) {
+export function useTableState(searchTerm?: string, data?: Participant[]) {
   const [search, setSearch] = useState(searchTerm || "");
-  const [selectedRows, setSelectedRows] = useState<Participant[]>([]);
   const [rowSelectionState, setRowSelectionState] = useState<
     Record<string, boolean>
   >({});
 
-  const handleSearchChange = (value: string) => {
+  // Derive selected rows from the row selection state and data
+  const selectedRows = useMemo(() => {
+    if (!data) return [];
+    return data.filter((_, index) => rowSelectionState[index.toString()]);
+  }, [rowSelectionState, data]);
+
+  const handleSearchChange = useCallback((value: string) => {
     setSearch(value);
-  };
+  }, []);
 
-  const handleRowSelectionChange = (rows: Participant[]) => {
-    setSelectedRows(rows);
-  };
+  const handleRowSelectionStateChange = useCallback(
+    (selection: Record<string, boolean>) => {
+      setRowSelectionState(selection);
+    },
+    []
+  );
 
-  const handleClearSelection = () => {
-    setSelectedRows([]);
+  const handleClearSelection = useCallback(() => {
     setRowSelectionState({});
-  };
+  }, []);
 
   return {
     search,
     selectedRows,
     rowSelectionState,
     setSearch,
-    setSelectedRows,
-    setRowSelectionState,
+    setRowSelectionState: handleRowSelectionStateChange,
     handleSearchChange,
-    handleRowSelectionChange,
     handleClearSelection,
   };
 }

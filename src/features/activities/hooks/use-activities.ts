@@ -9,12 +9,30 @@ import {
   deleteActivity,
   getActivityMetrics,
 } from "../actions";
+// Import session actions directly
+import {
+  getActivitySessions,
+  getActivitySession,
+  createActivitySession,
+  updateActivitySession,
+  generateActivitySessions,
+} from "../actions/sessions";
+// Import attendance actions directly
+import {
+  getSessionAttendance,
+  markAttendance,
+  getActivityAttendanceSummary,
+} from "../actions/attendance";
 import {
   getActivityParticipants,
   addActivityParticipants,
   bulkUpdateActivityParticipants,
 } from "../actions/participants";
-import { type NewActivity } from "../types/types";
+import {
+  type NewActivity,
+  type NewActivitySession,
+  type DailyAttendanceStatus,
+} from "../types/types";
 
 export function useActivities(
   clusterId?: string,
@@ -179,5 +197,154 @@ export function useDeleteActivity() {
         });
       }
     },
+  });
+}
+
+// ========================================
+// Session Management Hooks
+// ========================================
+
+export function useActivitySessions(activityId: string) {
+  return useQuery({
+    queryKey: ["activity-sessions", activityId],
+    queryFn: () => getActivitySessions(activityId),
+    enabled: !!activityId,
+  });
+}
+
+export function useActivitySession(sessionId: string) {
+  return useQuery({
+    queryKey: ["activity-session", sessionId],
+    queryFn: () => getActivitySession(sessionId),
+    enabled: !!sessionId,
+  });
+}
+
+export function useCreateActivitySession() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: createActivitySession,
+    onSuccess: result => {
+      if (result.success && result.data) {
+        queryClient.invalidateQueries({
+          queryKey: ["activity-sessions", result.data.activity_id],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["activity", result.data.activity_id],
+        });
+      }
+    },
+  });
+}
+
+export function useUpdateActivitySession() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Partial<NewActivitySession>;
+    }) => updateActivitySession(id, data),
+    onSuccess: (result, variables) => {
+      if (result.success && result.data) {
+        queryClient.invalidateQueries({
+          queryKey: ["activity-session", variables.id],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["activity-sessions", result.data.activity_id],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["activity", result.data.activity_id],
+        });
+      }
+    },
+  });
+}
+
+export function useGenerateActivitySessions() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      activityId,
+      startDate,
+      endDate,
+      sessionData,
+    }: {
+      activityId: string;
+      startDate: Date;
+      endDate: Date;
+      sessionData?: {
+        start_time?: string;
+        end_time?: string;
+        venue?: string;
+      };
+    }) => generateActivitySessions(activityId, startDate, endDate, sessionData),
+    onSuccess: (result, variables) => {
+      if (result.success) {
+        queryClient.invalidateQueries({
+          queryKey: ["activity-sessions", variables.activityId],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["activity", variables.activityId],
+        });
+      }
+    },
+  });
+}
+
+// ========================================
+// Attendance Management Hooks
+// ========================================
+
+export function useSessionAttendance(sessionId: string) {
+  return useQuery({
+    queryKey: ["session-attendance", sessionId],
+    queryFn: () => getSessionAttendance(sessionId),
+    enabled: !!sessionId,
+  });
+}
+
+export function useMarkAttendance() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      sessionId,
+      participantId,
+      attendanceData,
+    }: {
+      sessionId: string;
+      participantId: string;
+      attendanceData: {
+        attendance_status: DailyAttendanceStatus;
+        check_in_time?: Date;
+        check_out_time?: Date;
+        notes?: string;
+        recorded_by?: string;
+      };
+    }) => markAttendance(sessionId, participantId, attendanceData),
+    onSuccess: (result, variables) => {
+      if (result.success) {
+        queryClient.invalidateQueries({
+          queryKey: ["session-attendance", variables.sessionId],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["activity-attendance-summary"],
+        });
+      }
+    },
+  });
+}
+
+export function useActivityAttendanceSummary(activityId: string) {
+  return useQuery({
+    queryKey: ["activity-attendance-summary", activityId],
+    queryFn: () => getActivityAttendanceSummary(activityId),
+    enabled: !!activityId,
   });
 }

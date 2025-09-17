@@ -1,6 +1,6 @@
 "use client";
 
-import { ReusableDataTable } from "@/components/ui/reusable-data-table";
+import { DataTable } from "@/components/ui/data-table";
 import { counties, districts } from "@/lib/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ interface CountiesTableProps {
 export function CountiesTable({ data }: CountiesTableProps) {
   return (
     <div className="w-full">
-      <ReusableDataTable
+      <DataTable
         columns={columns}
         data={data}
         filterColumn="name"
@@ -30,7 +30,7 @@ export function CountiesTable({ data }: CountiesTableProps) {
         showPagination={true}
         showRowSelection={true}
         pageSize={20}
-        customActions={
+        actionButtons={
           <AddCountyDialog>
             <Button size="sm">
               <Plus className="mr-2 h-4 w-4" />

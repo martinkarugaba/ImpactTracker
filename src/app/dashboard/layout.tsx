@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { AppSidebar } from "@/features/dashboard/components/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { SiteHeader } from "@/features/dashboard/components/site-header";
-import { PageTitleProvider } from "@/features/dashboard/contexts/page-title-context";
+import { NavigationProvider } from "@/features/dashboard/contexts/navigation-context";
 
 export default async function DashboardLayout({
   children,
@@ -17,7 +17,7 @@ export default async function DashboardLayout({
   }
 
   return (
-    <PageTitleProvider>
+    <NavigationProvider>
       <SidebarProvider>
         <div className="bg-sidebar flex min-h-screen w-full py-2 pr-0 md:pr-2 md:pb-2">
           <AppSidebar variant="sidebar" collapsible="icon" />
@@ -29,6 +29,6 @@ export default async function DashboardLayout({
           </div>
         </div>
       </SidebarProvider>
-    </PageTitleProvider>
+    </NavigationProvider>
   );
 }
