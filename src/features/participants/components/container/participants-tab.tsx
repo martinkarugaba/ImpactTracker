@@ -27,7 +27,7 @@ import {
 import toast from "react-hot-toast";
 import { SimpleParticipantFilters } from "../filters/simple-participant-filters";
 import { OrganizationAssignmentButton } from "../actions/organization-assignment-button";
-import { FixDuplicatesDialog } from "../data-table/fix-duplicates-dialog";
+import { EnhancedFixDuplicatesDialog } from "../data-table/enhanced-fix-duplicates-dialog";
 
 interface ParticipantsTabProps {
   participants: Participant[];
@@ -279,15 +279,13 @@ export function ParticipantsTab({
           columnVisibility={columnVisibility}
         />
 
-        {/* Fix Duplicates Dialog */}
-        <FixDuplicatesDialog
+        {/* Fix Duplicates Dialog - Enhanced to check all database */}
+        <EnhancedFixDuplicatesDialog
           open={isFixDuplicatesDialogOpen}
           onOpenChange={setIsFixDuplicatesDialogOpen}
-          participants={participants}
-          onDeleteParticipants={async (ids: string[]) => {
-            // Use the existing bulk delete functionality
-            ids.forEach(id => onDeleteParticipant(id));
-            toast.success(`Deleted ${ids.length} duplicate participants`);
+          onDeleteCompleted={deletedCount => {
+            toast.success(`Deleted ${deletedCount} duplicate participants`);
+            // Optionally trigger a refresh of the participants data
           }}
         />
       </div>

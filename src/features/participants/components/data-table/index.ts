@@ -7,3 +7,4 @@ export { BulkDeleteButton } from "./bulk-delete-button";
 export { getParticipantColumns } from "./columns";
 export { ActionCell } from "./action-cell";
 export { FixDuplicatesDialog } from "./fix-duplicates-dialog";
+export { EnhancedFixDuplicatesDialog } from "./enhanced-fix-duplicates-dialog";
