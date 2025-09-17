@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 
 export interface MetricCardProps {
   title: string;
-  value: string | number;
+  value: string | number | ReactNode;
   description?: string;
   trend?: {
     value: number;

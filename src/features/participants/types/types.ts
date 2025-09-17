@@ -88,6 +88,10 @@ export type ParticipantFilters = {
   hasVocationalSkills: string;
   hasSoftSkills: string;
   hasBusinessSkills: string;
+  // Specific skill filters
+  specificVocationalSkill: string;
+  specificSoftSkill: string;
+  specificBusinessSkill: string;
   populationSegment: string;
   isActiveStudent: string;
   isTeenMother: string;

@@ -36,6 +36,9 @@ export async function getParticipants(
       hasVocationalSkills?: string;
       hasSoftSkills?: string;
       hasBusinessSkills?: string;
+      specificVocationalSkill?: string;
+      specificSoftSkill?: string;
+      specificBusinessSkill?: string;
       populationSegment?: string;
       isActiveStudent?: string;
       isTeenMother?: string;
@@ -236,6 +239,59 @@ export async function getParticipants(
           eq(participants.hasBusinessSkills, params.filters.hasBusinessSkills)
         );
       }
+
+      // Specific skills filters
+      if (
+        params.filters.specificVocationalSkill &&
+        params.filters.specificVocationalSkill !== "all"
+      ) {
+        console.log(
+          "Adding specificVocationalSkill filter:",
+          params.filters.specificVocationalSkill
+        );
+        whereConditions.push(
+          sql`(
+            ${participants.vocationalSkillsParticipations} && ARRAY[${params.filters.specificVocationalSkill}] OR
+            ${participants.vocationalSkillsCompletions} && ARRAY[${params.filters.specificVocationalSkill}] OR
+            ${participants.vocationalSkillsCertifications} && ARRAY[${params.filters.specificVocationalSkill}]
+          )`
+        );
+      }
+      if (
+        params.filters.specificSoftSkill &&
+        params.filters.specificSoftSkill !== "all"
+      ) {
+        console.log(
+          "Adding specificSoftSkill filter:",
+          params.filters.specificSoftSkill
+        );
+        whereConditions.push(
+          sql`(
+            ${participants.softSkillsParticipations} && ARRAY[${params.filters.specificSoftSkill}] OR
+            ${participants.softSkillsCompletions} && ARRAY[${params.filters.specificSoftSkill}] OR
+            ${participants.softSkillsCertifications} && ARRAY[${params.filters.specificSoftSkill}]
+          )`
+        );
+      }
+      if (
+        params.filters.specificBusinessSkill &&
+        params.filters.specificBusinessSkill !== "all"
+      ) {
+        console.log(
+          "Adding specificBusinessSkill filter:",
+          params.filters.specificBusinessSkill
+        );
+        // For business skills, we might need to check a different field or implement business skill tracking
+        // For now, let's check if it's mentioned in vocational skills as well
+        whereConditions.push(
+          sql`(
+            ${participants.vocationalSkillsParticipations} && ARRAY[${params.filters.specificBusinessSkill}] OR
+            ${participants.vocationalSkillsCompletions} && ARRAY[${params.filters.specificBusinessSkill}] OR
+            ${participants.vocationalSkillsCertifications} && ARRAY[${params.filters.specificBusinessSkill}]
+          )`
+        );
+      }
+
       if (
         params.filters.populationSegment &&
         params.filters.populationSegment !== "all"
@@ -643,6 +699,9 @@ export async function getAllFilteredParticipantsForExport(
     hasVocationalSkills?: string;
     hasSoftSkills?: string;
     hasBusinessSkills?: string;
+    specificVocationalSkill?: string;
+    specificSoftSkill?: string;
+    specificBusinessSkill?: string;
     populationSegment?: string;
     isActiveStudent?: string;
     isTeenMother?: string;
@@ -784,6 +843,54 @@ export async function getAllFilteredParticipantsForExport(
           eq(participants.hasBusinessSkills, filters.hasBusinessSkills)
         );
       }
+
+      // Specific skills filters for export
+      if (
+        filters.specificVocationalSkill &&
+        filters.specificVocationalSkill !== "all"
+      ) {
+        console.log(
+          "Adding specificVocationalSkill filter:",
+          filters.specificVocationalSkill
+        );
+        whereConditions.push(
+          sql`(
+            ${participants.vocationalSkillsParticipations} && ARRAY[${filters.specificVocationalSkill}] OR
+            ${participants.vocationalSkillsCompletions} && ARRAY[${filters.specificVocationalSkill}] OR
+            ${participants.vocationalSkillsCertifications} && ARRAY[${filters.specificVocationalSkill}]
+          )`
+        );
+      }
+      if (filters.specificSoftSkill && filters.specificSoftSkill !== "all") {
+        console.log(
+          "Adding specificSoftSkill filter:",
+          filters.specificSoftSkill
+        );
+        whereConditions.push(
+          sql`(
+            ${participants.softSkillsParticipations} && ARRAY[${filters.specificSoftSkill}] OR
+            ${participants.softSkillsCompletions} && ARRAY[${filters.specificSoftSkill}] OR
+            ${participants.softSkillsCertifications} && ARRAY[${filters.specificSoftSkill}]
+          )`
+        );
+      }
+      if (
+        filters.specificBusinessSkill &&
+        filters.specificBusinessSkill !== "all"
+      ) {
+        console.log(
+          "Adding specificBusinessSkill filter:",
+          filters.specificBusinessSkill
+        );
+        whereConditions.push(
+          sql`(
+            ${participants.vocationalSkillsParticipations} && ARRAY[${filters.specificBusinessSkill}] OR
+            ${participants.vocationalSkillsCompletions} && ARRAY[${filters.specificBusinessSkill}] OR
+            ${participants.vocationalSkillsCertifications} && ARRAY[${filters.specificBusinessSkill}]
+          )`
+        );
+      }
+
       if (filters.populationSegment && filters.populationSegment !== "all") {
         console.log(
           "Adding populationSegment filter:",

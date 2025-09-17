@@ -168,10 +168,37 @@ export function EnhancedFixDuplicatesDialog({
     );
   };
 
+  // Global select all functions
+  const getAllParticipantIds = () => {
+    return duplicateGroups.flatMap(group => group.participants.map(p => p.id));
+  };
+
+  const isAllSelected = () => {
+    const allIds = getAllParticipantIds();
+    return (
+      allIds.length > 0 && allIds.every(id => selectedForDeletion.includes(id))
+    );
+  };
+
+  const isSomeSelected = () => {
+    const allIds = getAllParticipantIds();
+    return (
+      allIds.some(id => selectedForDeletion.includes(id)) && !isAllSelected()
+    );
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedForDeletion(getAllParticipantIds());
+    } else {
+      setSelectedForDeletion([]);
+    }
+  };
+
   if (isLoading) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Users className="h-5 w-5" />
@@ -193,7 +220,7 @@ export function EnhancedFixDuplicatesDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[85vh] max-w-6xl flex-col">
+      <DialogContent className="flex max-h-[85vh] max-w-7xl flex-col">
         <DialogHeader className="flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -217,11 +244,32 @@ export function EnhancedFixDuplicatesDialog({
           <DialogDescription>
             {duplicateGroups.length > 0 ? (
               <>
-                Found {duplicateGroups.length} groups of potential duplicates
-                across{" "}
-                <strong>{duplicatesData?.totalDuplicates} participants</strong>{" "}
-                in the entire database. Review and select participants to
-                remove.
+                <div className="flex items-center justify-between">
+                  <div>
+                    Found {duplicateGroups.length} groups of potential
+                    duplicates across{" "}
+                    <strong>
+                      {duplicatesData?.totalDuplicates} participants
+                    </strong>{" "}
+                    in the entire database. Review and select participants to
+                    remove.
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={isAllSelected()}
+                      ref={ref => {
+                        if (ref && "indeterminate" in ref) {
+                          (ref as HTMLInputElement).indeterminate =
+                            isSomeSelected();
+                        }
+                      }}
+                      onCheckedChange={handleSelectAll}
+                    />
+                    <span className="text-sm font-medium">
+                      Select All Participants
+                    </span>
+                  </div>
+                </div>
               </>
             ) : (
               "No duplicate participants found based on name and contact information across the entire database."
@@ -346,17 +394,28 @@ export function EnhancedFixDuplicatesDialog({
                     <div className="flex items-center gap-2">
                       <Trash2 className="h-4 w-4 text-red-600" />
                       <span className="font-medium">
-                        {selectedForDeletion.length} participant(s) selected for
-                        deletion
+                        {selectedForDeletion.length} of{" "}
+                        {getAllParticipantIds().length} participant(s) selected
+                        for deletion
                       </span>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSelectedForDeletion([])}
-                    >
-                      Clear Selection
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedForDeletion([])}
+                      >
+                        Clear All
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSelectAll(true)}
+                        disabled={isAllSelected()}
+                      >
+                        Select All
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )}

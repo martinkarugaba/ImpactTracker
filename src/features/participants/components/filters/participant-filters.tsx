@@ -16,7 +16,7 @@ import { LocationFilters } from "./location-filters";
 import { DemographicFilters } from "./demographic-filters";
 import { VSLAFilters } from "./vsla-filters";
 import { EnterpriseFilters } from "./enterprise-filters";
-import { SkillsFilters } from "./skills-filters";
+import { EnhancedSkillsFilters } from "./enhanced-skills-filters";
 import { type ParticipantFilters as ParticipantFiltersType } from "../../types/types";
 
 interface ParticipantFiltersProps {
@@ -150,7 +150,7 @@ export function ParticipantFilters({
       color: "bg-teal-500",
       priority: "advanced",
       component: (
-        <SkillsFilters filters={filters} updateFilter={updateFilter} />
+        <EnhancedSkillsFilters filters={filters} updateFilter={updateFilter} />
       ),
     },
   ];
