@@ -15,11 +15,11 @@ export function MainNavigationMenu() {
     <NavigationMenu className="hidden md:flex">
       <NavigationMenuList>
         <NavigationMenuItem>
-          <Link href="#features" passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+          <NavigationMenuLink asChild>
+            <Link href="#features" className={navigationMenuTriggerStyle()}>
               Features
-            </NavigationMenuLink>
-          </Link>
+            </Link>
+          </NavigationMenuLink>
           <NavigationMenuContent>
             <div className="grid w-[400px] gap-3 p-4">
               <NavigationMenuLink asChild>
@@ -66,25 +66,25 @@ export function MainNavigationMenu() {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href="#pricing" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+          <NavigationMenuLink asChild>
+            <Link href="#pricing" className={navigationMenuTriggerStyle()}>
               Pricing
-            </NavigationMenuLink>
-          </Link>
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href="#about" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+          <NavigationMenuLink asChild>
+            <Link href="#about" className={navigationMenuTriggerStyle()}>
               About
-            </NavigationMenuLink>
-          </Link>
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href="#contact" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+          <NavigationMenuLink asChild>
+            <Link href="#contact" className={navigationMenuTriggerStyle()}>
               Contact
-            </NavigationMenuLink>
-          </Link>
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

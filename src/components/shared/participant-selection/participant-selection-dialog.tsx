@@ -145,6 +145,7 @@ export function ParticipantSelectionDialog({
         age: data.age ? parseInt(data.age) : null,
         dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
         isPWD: data.isPWD,
+        disabilityType: data.disabilityType || null,
         isMother: data.isMother,
         isRefugee: data.isRefugee,
         designation: data.designation,
@@ -160,10 +161,84 @@ export function ParticipantSelectionDialog({
         numberOfChildren: parseInt(data.numberOfChildren),
         employmentStatus: data.employmentStatus,
         monthlyIncome: parseInt(data.monthlyIncome) || 0,
+        // Employment tracking fields
+        wageEmploymentStatus: data.wageEmploymentStatus || null,
+        wageEmploymentSector: data.wageEmploymentSector || null,
+        wageEmploymentScale: data.wageEmploymentScale || null,
+        selfEmploymentStatus: data.selfEmploymentStatus || null,
+        selfEmploymentSector: data.selfEmploymentSector || null,
+        businessScale: data.businessScale || null,
+        secondaryEmploymentStatus: data.secondaryEmploymentStatus || null,
+        secondaryEmploymentSector: data.secondaryEmploymentSector || null,
+        secondaryBusinessScale: data.secondaryBusinessScale || null,
+        // Financial inclusion fields
+        accessedLoans: data.accessedLoans,
+        individualSaving: data.individualSaving,
+        groupSaving: data.groupSaving,
+        // Location classification
+        locationSetting: data.locationSetting || null,
         mainChallenge: data.mainChallenge || null,
         skillOfInterest: data.skillOfInterest || null,
         expectedImpact: data.expectedImpact || null,
         isWillingToParticipate: data.isWillingToParticipate,
+        // New demographic fields
+        maritalStatus: data.maritalStatus || null,
+        educationLevel: data.educationLevel || null,
+        sourceOfIncome: data.sourceOfIncome || null,
+        nationality: data.nationality,
+        populationSegment: data.populationSegment || null,
+        refugeeLocation: data.refugeeLocation || null,
+        isActiveStudent: data.isActiveStudent,
+        // VSLA fields
+        isSubscribedToVSLA: data.isSubscribedToVSLA,
+        vslaName: data.vslaName || null,
+        // Teen mother
+        isTeenMother: data.isTeenMother,
+        // Enterprise fields
+        ownsEnterprise: data.ownsEnterprise,
+        enterpriseName: data.enterpriseName || null,
+        enterpriseSector: data.enterpriseSector || null,
+        enterpriseSize: data.enterpriseSize || null,
+        enterpriseYouthMale: parseInt(data.enterpriseYouthMale) || 0,
+        enterpriseYouthFemale: parseInt(data.enterpriseYouthFemale) || 0,
+        enterpriseAdults: parseInt(data.enterpriseAdults) || 0,
+        // Skills fields
+        hasVocationalSkills: data.hasVocationalSkills,
+        vocationalSkillsParticipations: Array.isArray(
+          data.vocationalSkillsParticipations
+        )
+          ? data.vocationalSkillsParticipations
+          : [],
+        vocationalSkillsCompletions: Array.isArray(
+          data.vocationalSkillsCompletions
+        )
+          ? data.vocationalSkillsCompletions
+          : [],
+        vocationalSkillsCertifications: Array.isArray(
+          data.vocationalSkillsCertifications
+        )
+          ? data.vocationalSkillsCertifications
+          : [],
+        hasSoftSkills: data.hasSoftSkills,
+        softSkillsParticipations: Array.isArray(data.softSkillsParticipations)
+          ? data.softSkillsParticipations
+          : [],
+        softSkillsCompletions: Array.isArray(data.softSkillsCompletions)
+          ? data.softSkillsCompletions
+          : [],
+        softSkillsCertifications: Array.isArray(data.softSkillsCertifications)
+          ? data.softSkillsCertifications
+          : [],
+        hasBusinessSkills: data.hasBusinessSkills,
+        // Employment details
+        employmentType: data.employmentType || null,
+        employmentSector: data.employmentSector || null,
+        // Location IDs (when available from mapping)
+        country_id: data.country_id || null,
+        district_id: data.district_id || null,
+        subcounty_id: data.subcounty_id || null,
+        parish_id: data.parish_id || null,
+        village_id: data.village_id || null,
       };
 
       const result = await createParticipant.mutateAsync(newParticipantData);
@@ -222,6 +297,7 @@ export function ParticipantSelectionDialog({
                   age: "",
                   dateOfBirth: "",
                   isPWD: "no",
+                  disabilityType: "",
                   isMother: "no",
                   isRefugee: "no",
                   designation: "",
@@ -237,10 +313,57 @@ export function ParticipantSelectionDialog({
                   numberOfChildren: "0",
                   employmentStatus: "",
                   monthlyIncome: "",
+                  wageEmploymentStatus: "",
+                  wageEmploymentSector: "",
+                  wageEmploymentScale: "",
+                  selfEmploymentStatus: "",
+                  selfEmploymentSector: "",
+                  businessScale: "",
+                  secondaryEmploymentStatus: "",
+                  secondaryEmploymentSector: "",
+                  secondaryBusinessScale: "",
+                  accessedLoans: "no",
+                  individualSaving: "no",
+                  groupSaving: "no",
+                  locationSetting: "rural",
                   mainChallenge: "",
                   skillOfInterest: "",
                   expectedImpact: "",
                   isWillingToParticipate: "yes",
+                  // New demographic fields
+                  maritalStatus: "single",
+                  educationLevel: "primary",
+                  sourceOfIncome: "agriculture",
+                  nationality: "Ugandan",
+                  populationSegment: "youth",
+                  refugeeLocation: "",
+                  isActiveStudent: "no",
+                  // VSLA fields
+                  isSubscribedToVSLA: "no",
+                  vslaName: "",
+                  // Teen mother
+                  isTeenMother: "no",
+                  // Enterprise fields
+                  ownsEnterprise: "no",
+                  enterpriseName: "",
+                  enterpriseSector: "agriculture",
+                  enterpriseSize: "micro",
+                  enterpriseYouthMale: "0",
+                  enterpriseYouthFemale: "0",
+                  enterpriseAdults: "0",
+                  // Skills fields
+                  hasVocationalSkills: "no",
+                  vocationalSkillsParticipations: [],
+                  vocationalSkillsCompletions: [],
+                  vocationalSkillsCertifications: [],
+                  hasSoftSkills: "no",
+                  softSkillsParticipations: [],
+                  softSkillsCompletions: [],
+                  softSkillsCertifications: [],
+                  hasBusinessSkills: "no",
+                  // Employment details
+                  employmentType: "unemployed",
+                  employmentSector: "agriculture",
                 }}
               />
               <div className="mt-4 flex justify-end gap-2">

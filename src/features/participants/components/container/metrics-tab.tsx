@@ -1,119 +1,86 @@
 "use client";
 
+import { useState } from "react";
 import { TabsContent } from "@/components/ui/tabs";
-import { CompactParticipantMetrics } from "../metrics/compact-participant-metrics";
-import { ParticipantMetricsCharts } from "../metrics/participant-metrics-charts";
-import {
-  type Participant,
-  type ParticipantFilters as ParticipantFiltersType,
-} from "../../types/types";
-import { ParticipantFilters } from "../filters";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { BarChart3, Settings, Eye } from "lucide-react";
+import { ParticipantDemographicsAnalytics } from "../metrics/participant-demographics-analytics";
+import { SimplifiedParticipantAnalytics } from "../metrics/simplified-participant-analytics";
+import { type Participant } from "../../types/types";
 
-interface MetricsTabProps {
+interface AnalyticsTabProps {
   metricsParticipants: Participant[];
   isMetricsLoading: boolean;
-  filters: ParticipantFiltersType;
-  onFiltersChange: (filters: ParticipantFiltersType) => void;
-  projects: Array<{ id: string; name: string; acronym: string }>;
-  clusters: Array<{ id: string; name: string }>;
-  organizations: Array<{ id: string; name: string; acronym: string }>;
-  filterOptions: {
-    districts: Array<{ id: string; name: string }>;
-    subCounties: Array<{ id: string; name: string }>;
-    enterprises: Array<{ id: string; name: string }>;
-  };
-  searchValue: string;
-  onSearchChange: (search: string) => void;
 }
 
-export function MetricsTab({
+export function AnalyticsTab({
   metricsParticipants,
   isMetricsLoading,
-  filters,
-  onFiltersChange,
-  projects,
-  clusters,
-  organizations,
-  filterOptions,
-  searchValue,
-  onSearchChange,
-}: MetricsTabProps) {
+}: AnalyticsTabProps) {
+  const [viewMode, setViewMode] = useState<"simplified" | "detailed">(
+    "simplified"
+  );
+
   return (
-    <TabsContent value="metrics" className="mt-6 space-y-6">
-      {/* Enhanced Metrics Header */}
-      <div className="space-y-4">
-        {/* Metrics Status Indicator */}
-        {(() => {
-          const hasActiveFilters = Object.entries(filters).some(
-            ([key, value]) => {
-              if (key === "search") return value && value.trim() !== "";
-              return value && value !== "all" && value !== "";
-            }
-          );
-
-          if (hasActiveFilters) {
-            return (
-              <div className="flex items-center gap-3 rounded-md bg-blue-50 p-3 dark:bg-blue-950/20">
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 animate-pulse rounded-full bg-blue-600"></div>
-                  <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                    Analytics reflect current filters
-                  </span>
-                </div>
-              </div>
-            );
-          }
-          return (
-            <div className="flex items-center gap-3 rounded-md bg-gray-50 p-3 dark:bg-gray-900/50">
-              <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-gray-600"></div>
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  Showing all participants data
-                </span>
-              </div>
+    <TabsContent value="analytics" className="mt-6">
+      {/* Colorful Analytics Container */}
+      <div className="space-y-8 rounded-xl bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        {/* View Mode Toggle */}
+        <div className="flex items-center justify-between border-b border-gray-200 pb-4 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 p-2 shadow-lg">
+              <BarChart3 className="h-5 w-5 text-white" />
             </div>
-          );
-        })()}
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                Participant Analytics
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Comprehensive insights and demographics
+              </p>
+            </div>
+          </div>
 
-        {/* Metrics Cards with Clean Styling */}
-        <div className="bg-transparent">
-          <CompactParticipantMetrics
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" className="text-xs">
+              {metricsParticipants.length} participants
+            </Badge>
+            <div className="flex items-center gap-1 rounded-lg bg-white p-1 shadow-sm dark:bg-gray-800">
+              <Button
+                variant={viewMode === "simplified" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("simplified")}
+                className="text-xs"
+              >
+                <Eye className="mr-1 h-3 w-3" />
+                Simplified
+              </Button>
+              <Button
+                variant={viewMode === "detailed" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("detailed")}
+                className="text-xs"
+              >
+                <Settings className="mr-1 h-3 w-3" />
+                Detailed
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Analytics Content */}
+        {viewMode === "simplified" ? (
+          <SimplifiedParticipantAnalytics
             participants={metricsParticipants}
             isLoading={isMetricsLoading}
           />
-        </div>
-      </div>
-
-      {/* Clean Filters Section */}
-      <div className="bg-transparent">
-        <ParticipantFilters
-          filters={filters}
-          onFiltersChange={onFiltersChange}
-          projects={projects}
-          _clusters={clusters}
-          organizations={organizations}
-          districts={filterOptions.districts}
-          subCounties={filterOptions.subCounties}
-          enterprises={filterOptions.enterprises}
-          searchTerm={searchValue}
-          onSearchChange={onSearchChange}
-        />
-      </div>
-
-      {/* Clean Charts Section */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Visual Analytics
-          </h3>
-          <div className="h-px flex-1 bg-gradient-to-r from-blue-200 to-transparent dark:from-blue-800"></div>
-        </div>
-        <div className="bg-transparent">
-          <ParticipantMetricsCharts
+        ) : (
+          <ParticipantDemographicsAnalytics
             participants={metricsParticipants}
             isLoading={isMetricsLoading}
           />
-        </div>
+        )}
       </div>
     </TabsContent>
   );

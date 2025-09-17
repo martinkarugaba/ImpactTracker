@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Activity } from "../types/types";
 import type {
   ConceptNote,
@@ -11,7 +11,7 @@ import type {
 import { ActivityHeader } from "./details/activity-header";
 import { ActivityDetailsTabs } from "./details/activity-details-tabs";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Calendar } from "lucide-react";
 import { ActivityFormDialog } from "./forms/activity-form-dialog";
 import { ConceptNoteDialog } from "./dialogs/concept-note-dialog";
 import { ActivityReportDialog } from "./dialogs/activity-report-dialog";
@@ -42,6 +42,7 @@ import {
   deleteActivityReport,
 } from "../actions/activity-reports";
 import { useRouter } from "next/navigation";
+import { usePageInfo } from "@/features/dashboard/contexts/navigation-context";
 import toast from "react-hot-toast";
 
 interface ActivityDetailsContainerProps {
@@ -72,6 +73,27 @@ export function ActivityDetailsContainer({
   const [isSessionDialogOpen, setIsSessionDialogOpen] = useState(false);
   const [editingSessionId, setEditingSessionId] = useState<string>();
 
+  // Navigation setup
+  const { setPageInfo } = usePageInfo();
+  const router = useRouter();
+
+  // Set page navigation info
+  useEffect(() => {
+    setPageInfo({
+      title: activity.title,
+      breadcrumbs: [
+        { label: "Activities", href: "/dashboard/activities" },
+        {
+          label: activity.title,
+          isCurrentPage: true,
+          icon: <Calendar className="h-4 w-4" />,
+        },
+      ],
+      showBackButton: true,
+      backHref: "/dashboard/activities",
+    });
+  }, [activity.title, setPageInfo]);
+
   // Attendance dialog state
   const [isAttendanceListDialogOpen, setIsAttendanceListDialogOpen] =
     useState(false);
@@ -81,7 +103,6 @@ export function ActivityDetailsContainer({
   const [activityReportsRefreshKey, setActivityReportsRefreshKey] = useState(0);
   const deleteActivity = useDeleteActivity();
   const addActivityParticipants = useAddActivityParticipants();
-  const router = useRouter();
 
   const handleEdit = () => {
     setIsEditDialogOpen(true);

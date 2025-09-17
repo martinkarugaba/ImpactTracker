@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { ReusableDataTable } from "@/components/ui/reusable-data-table";
+import { DataTable } from "@/components/ui/data-table";
 import { Plus, MoreHorizontal, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AddLocationDialog } from "@/features/locations/components/add-location-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -65,8 +66,15 @@ function ActionsCell({ location }: ActionsCellProps) {
   );
 }
 
-export function LocationsTable({ locations }: LocationsTableProps) {
-  const [selectedRows, setSelectedRows] = useState<Location[]>([]);
+export function LocationsTable({ locations: _locations }: LocationsTableProps) {
+  const [selectedRows, _setSelectedRows] = useState<Location[]>([]);
+  const [search, setSearch] = useState("");
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+
+  // Mock data for now - in a real app this would come from props or API
+  const data: Location[] = [];
+  const pageSize = 20;
+  const isLoading = false;
 
   const columns: ColumnDef<Location>[] = [
     {
@@ -153,23 +161,28 @@ export function LocationsTable({ locations }: LocationsTableProps) {
         </div>
       )}
       <div className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6">
-        <ReusableDataTable
+        <DataTable
           columns={columns}
-          data={locations}
+          data={data}
           filterColumn="name"
           filterPlaceholder="Filter by name..."
           showColumnToggle={true}
           showPagination={true}
           showRowSelection={true}
-          pageSize={10}
-          onRowSelectionChange={setSelectedRows}
-          customActions={
-            <Button size="sm">
+          pageSize={pageSize}
+          isLoading={isLoading}
+          searchValue={search}
+          onSearchChange={setSearch}
+          actionButtons={
+            <Button size="sm" onClick={() => setIsAddDialogOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
-              <span className="hidden lg:inline">Add Location</span>
-              <span className="lg:hidden">Add</span>
+              Add Location
             </Button>
           }
+        />
+        <AddLocationDialog
+          open={isAddDialogOpen}
+          onOpenChange={setIsAddDialogOpen}
         />
       </div>
     </div>

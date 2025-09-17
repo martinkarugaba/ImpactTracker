@@ -12,10 +12,55 @@ import {
 import { importParticipants } from "@/features/participants/actions/import-participants";
 import { type ValidationError } from "@/features/participants/components/import/types";
 import { type ParticipantFormValues } from "@/features/participants/components/participant-form";
+import { getAgeFromDateOfBirth } from "../../../lib/age-calculator";
+import { detectDuplicatesBatched } from "@/features/participants/actions/detect-duplicates";
+import type { DuplicateAnalysisResult } from "../duplicate-detection";
+// import { mapLocationNames } from "@/features/locations/actions/location-search";
+
+// Helper function to validate enum values
+function validateEnumValue<T extends string>(
+  value: string | undefined,
+  validValues: T[]
+): T | undefined {
+  if (!value) return undefined;
+  const normalizedValue = value.toString().toLowerCase().trim();
+  return (
+    validValues.find(v => v.toLowerCase() === normalizedValue) || undefined
+  );
+}
+
+// Helper function to parse skills arrays from comma-separated values
+function parseSkillsArray(value: unknown): string[] {
+  if (!value) return [];
+
+  const str = value.toString().trim();
+  if (!str) return [];
+
+  // Split by comma and clean up each skill name
+  return str
+    .split(",")
+    .map(skill => skill.trim())
+    .filter(skill => skill.length > 0);
+}
 
 export function useExcelImport(clusterId: string) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [isDuplicateDetection, setIsDuplicateDetection] = useState(false);
+  const [duplicateProgress, setDuplicateProgress] = useState({
+    current: 0,
+    total: 0,
+    percentage: 0,
+  });
+  const [duplicateAnalysis, setDuplicateAnalysis] =
+    useState<DuplicateAnalysisResult | null>(null);
+  const [importProgress, setImportProgress] = useState({
+    current: 0,
+    total: 0,
+    currentBatch: 0,
+    totalBatches: 0,
+    percentage: 0,
+  });
   const [parsedData, setParsedData] = useState<ParticipantFormValues[] | null>(
     null
   );
@@ -63,13 +108,32 @@ export function useExcelImport(clusterId: string) {
     enabled: !!(organization?.cluster?.id || organization?.cluster_id),
   });
 
-  const validateParticipantData = (
+  // Location mapping helper function (unused for now)
+  const _mapLocationNameToId = (
+    locationName: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    locationData: any,
+    fallbackValue: string = locationName
+  ): string => {
+    if (!locationName || !locationData?.success || !locationData?.data?.data) {
+      return fallbackValue;
+    }
+
+    const found = locationData.data.data.find(
+      (item: { name: string; id: string }) =>
+        item.name.toLowerCase().trim() === locationName.toLowerCase().trim()
+    );
+
+    return found ? found.id : fallbackValue;
+  };
+
+  const validateParticipantData = async (
     data: Record<string, unknown>,
     _rowIndex: number
-  ): {
+  ): Promise<{
     participant: ParticipantFormValues | null;
     errors: ValidationError[];
-  } => {
+  }> => {
     const errors: ValidationError[] = [];
 
     // Extract and validate name - only require first name, last name is optional
@@ -99,7 +163,7 @@ export function useExcelImport(clusterId: string) {
       firstName = "Unknown"; // Default value instead of error
     }
 
-    // Validate and normalize sex - use default if missing
+    // Validate and normalize sex/gender - use default if missing
     let sex = (data.Sex || data.sex || data.Gender || data.gender || "")
       .toString()
       .toLowerCase();
@@ -111,10 +175,10 @@ export function useExcelImport(clusterId: string) {
       sex = "other"; // Default value instead of error
     }
 
-    // Validate age - use default if missing or invalid
+    // Validate age - try to get from date of birth first, then fall back to age column
     const ageValue = parseInt(String(data.Age || data.age || "0"), 10);
-    const finalAge =
-      ageValue && ageValue >= 1 && ageValue <= 120 ? ageValue : 18; // Default to 18 if invalid
+    const fallbackAge =
+      ageValue && ageValue >= 1 && ageValue <= 120 ? ageValue : 18;
 
     // Extract date of birth - look for various column names
     const dateOfBirthRaw =
@@ -138,6 +202,8 @@ export function useExcelImport(clusterId: string) {
       "";
 
     let dateOfBirth = "";
+    let calculatedAge = fallbackAge; // Default to fallback age
+
     if (dateOfBirthRaw) {
       console.log(
         "Raw date of birth value:",
@@ -165,6 +231,13 @@ export function useExcelImport(clusterId: string) {
         ) {
           dateOfBirth = dateValue.toISOString().split("T")[0]; // Format as YYYY-MM-DD
           console.log("Final dateOfBirth:", dateOfBirth);
+
+          // Calculate age from date of birth
+          const ageFromDOB = getAgeFromDateOfBirth(dateOfBirth, fallbackAge);
+          if (ageFromDOB !== null) {
+            calculatedAge = ageFromDOB;
+            console.log("Calculated age from DOB:", calculatedAge);
+          }
         } else {
           console.log("Date validation failed:", {
             isNaN: isNaN(dateValue.getTime()),
@@ -176,15 +249,23 @@ export function useExcelImport(clusterId: string) {
         console.warn("Failed to parse date of birth:", dateOfBirthRaw, error);
       }
     } else {
-      console.log("No date of birth raw value found in row");
+      console.log(
+        "No date of birth raw value found, using age from Age column or default"
+      );
     }
 
-    // Validate contact - use empty string if missing
+    // Validate contact/phone - use empty string if missing
     const contact = (
       data["Phone No."] ||
+      data["Phone No"] ||
       data.Phone ||
+      data.phone ||
       data.Contact ||
       data.contact ||
+      data.Mobile ||
+      data.mobile ||
+      data.Telephone ||
+      data.telephone ||
       ""
     )
       .toString()
@@ -201,7 +282,11 @@ export function useExcelImport(clusterId: string) {
       const kaziWomen = ["bugaaki", "hakibaale", "busoro"];
 
       // Balinda Children's Foundation subcounties
-      const balindaChildren = ["kyarusozi", "kyembogo"];
+      const balindaChildren = [
+        "kyarusozi",
+        "kyembogo",
+        "kyarusozi town council",
+      ];
 
       if (blessedPillars.includes(s)) return "blessed pillars";
       if (kaziWomen.includes(s)) return "kazi women";
@@ -231,6 +316,43 @@ export function useExcelImport(clusterId: string) {
       data["sub_county"] ||
       ""
     ).toString();
+
+    // Extract location names from Excel data
+    const countryName = (data.Country || data.country || "Uganda").toString();
+    const districtName = (
+      data.District ||
+      data.district ||
+      organization?.district ||
+      ""
+    ).toString();
+    const parishName = (data.Parish || data.parish || "").toString();
+    const villageName = (data.Village || data.village || "").toString();
+
+    // Location mapping temporarily disabled until location tables are set up
+    // const locationMapping = await mapLocationNames({
+    //   country: countryName,
+    //   district: districtName,
+    //   subCounty: subCountyName,
+    //   parish: parishName,
+    //   village: villageName,
+    // });
+
+    // Use original names for now
+    const finalCountry = countryName;
+    const finalDistrict = districtName;
+    const finalSubCounty = subCountyName;
+    const finalParish = parishName;
+    const finalVillage = villageName;
+
+    // Store location IDs as null for now (no mapping)
+    const locationIds = {
+      country_id: null,
+      district_id: null,
+      subcounty_id: null,
+      parish_id: null,
+      village_id: null,
+    };
+
     const orgKeyword = mapSubCountyToOrgKeyword(subCountyName);
     const mappedOrgId = resolveOrganizationId(orgKeyword);
 
@@ -267,25 +389,40 @@ export function useExcelImport(clusterId: string) {
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       sex: sex as "male" | "female" | "other",
-      age: finalAge.toString(),
+      age: calculatedAge.toString(), // Use calculated age from DOB or fallback
       dateOfBirth: dateOfBirth || undefined, // Include date of birth
       contact: contact.trim(),
       isPWD: isPWDValue,
       isMother: "no",
-      isRefugee: "no",
+      isRefugee: (
+        data["Refugee"] ||
+        data["refugee"] ||
+        data["REFUGEE"] ||
+        data.isRefugee ||
+        data.refugee ||
+        data["Refugee Status"] ||
+        data["refugee status"] ||
+        ""
+      )
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
       project_id: (data.Project || data.project_id || "").toString(),
       cluster_id: clusterId,
       organization_id: organizationIdToUse || "",
-      country: (data.Country || data.country || "Uganda").toString(),
-      district: (
-        data.District ||
-        data.district ||
-        organization?.district ||
-        ""
-      ).toString(),
-      subCounty: subCountyName,
-      parish: (data.Parish || data.parish || "").toString(),
-      village: (data.Village || data.village || "").toString(),
+      country: finalCountry,
+      district: finalDistrict,
+      subCounty: finalSubCounty,
+      parish: finalParish,
+      village: finalVillage,
+      // Store location IDs when available
+      country_id: locationIds.country_id || undefined,
+      district_id: locationIds.district_id || undefined,
+      subcounty_id: locationIds.subcounty_id || undefined,
+      parish_id: locationIds.parish_id || undefined,
+      village_id: locationIds.village_id || undefined,
       designation: (
         data["Employment status"] ||
         data.Designation ||
@@ -339,6 +476,278 @@ export function useExcelImport(clusterId: string) {
           10
         ) || "0"
       ),
+
+      // Add missing required fields
+      disabilityType: "", // Type of disability (empty by default)
+
+      // Employment tracking fields
+      wageEmploymentStatus: "",
+      wageEmploymentSector: "",
+      wageEmploymentScale: "",
+      selfEmploymentStatus: "",
+      selfEmploymentSector: "",
+      businessScale: "",
+      secondaryEmploymentStatus: "",
+      secondaryEmploymentSector: "",
+      secondaryBusinessScale: "",
+
+      // Financial inclusion fields
+      accessedLoans: "no",
+      individualSaving: "no",
+      groupSaving: "no",
+
+      // Location classification
+      locationSetting: "rural",
+
+      // NEW FIELDS FOR IMPORT
+      // Personal Information
+      maritalStatus: validateEnumValue(
+        (data["Marital Status"] ||
+          data["Marital status"] ||
+          data["MARITAL STATUS"] ||
+          data.maritalStatus ||
+          data.MaritalStatus ||
+          data["marital status"] ||
+          "") as string,
+        ["single", "married", "divorced", "widowed"]
+      ),
+      educationLevel: validateEnumValue(
+        (data["Education Level"] ||
+          data["Education level"] ||
+          data["EDUCATION LEVEL"] ||
+          data.educationLevel ||
+          data.EducationLevel ||
+          data["education level"] ||
+          data.Education ||
+          data.education ||
+          "") as string,
+        ["none", "primary", "secondary", "tertiary", "university"]
+      ),
+      sourceOfIncome: validateEnumValue(data["Source of Income"] as string, [
+        "employment",
+        "business",
+        "agriculture",
+        "remittances",
+        "other",
+      ]),
+      nationality: (data["Nationality"] || "Ugandan").toString(),
+      populationSegment: validateEnumValue(
+        data["Population Segment"] as string,
+        ["youth", "women", "pwd", "elderly", "refugee", "host"]
+      ),
+      refugeeLocation: (data["Refugee location"] || "").toString(),
+      isActiveStudent: (
+        data["Active Student"] ||
+        data["Active student"] ||
+        data["ACTIVE STUDENT"] ||
+        data["active student"] ||
+        data.isActiveStudent ||
+        data.activeStudent ||
+        data["Student"] ||
+        data["student"] ||
+        data["Currently Student"] ||
+        data["currently student"] ||
+        ""
+      )
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
+
+      // VSLA Information
+      isSubscribedToVSLA: (
+        data["Subscribed To VSLA"] ||
+        data["Subscribed to VSLA"] ||
+        data["SUBSCRIBED TO VSLA"] ||
+        data["VSLA Subscription"] ||
+        data["VSLA Member"] ||
+        data["VSLA member"] ||
+        data.isSubscribedToVSLA ||
+        data.vslaSubscription ||
+        ""
+      )
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
+      vslaName: (
+        data["VSLA Name"] ||
+        data["VSLA name"] ||
+        data["vsla name"] ||
+        data.vslaName ||
+        data.VSLAName ||
+        data["Group Name"] ||
+        data["Group name"] ||
+        ""
+      ).toString(),
+
+      // Teen Mother
+      isTeenMother: (
+        data["Teen Mother"] ||
+        data["Teen mother"] ||
+        data["TEEN MOTHER"] ||
+        data["teen mother"] ||
+        data.isTeenMother ||
+        data.TeenMother ||
+        data["Teenage Mother"] ||
+        data["teenage mother"] ||
+        ""
+      )
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
+
+      // Enterprise Information
+      ownsEnterprise: (
+        data["Owns Enterprise"] ||
+        data["Owns enterprise"] ||
+        data["OWNS ENTERPRISE"] ||
+        data["owns enterprise"] ||
+        data.ownsEnterprise ||
+        data.OwnsEnterprise ||
+        data["Has Business"] ||
+        data["Has business"] ||
+        data["Business Owner"] ||
+        data["business owner"] ||
+        ""
+      )
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
+      enterpriseName: (
+        data["Enterprise Name"] ||
+        data["Enterprise name"] ||
+        data["ENTERPRISE NAME"] ||
+        data["enterprise name"] ||
+        data.enterpriseName ||
+        data.EnterpriseName ||
+        data["Business Name"] ||
+        data["Business name"] ||
+        data["business name"] ||
+        ""
+      ).toString(),
+      enterpriseSector: validateEnumValue(
+        (data["Enterprise Sector"] ||
+          data["Enterprise sector"] ||
+          data["ENTERPRISE SECTOR"] ||
+          data["enterprise sector"] ||
+          data.enterpriseSector ||
+          data.EnterpriseSector ||
+          data["Business Sector"] ||
+          data["Business sector"] ||
+          data["business sector"] ||
+          "") as string,
+        [
+          "agriculture",
+          "retail",
+          "services",
+          "manufacturing",
+          "construction",
+          "transport",
+          "other",
+        ]
+      ),
+      enterpriseSize: validateEnumValue(
+        (data["Enterprise Size"] ||
+          data["Enterprise size"] ||
+          data["ENTERPRISE SIZE"] ||
+          data["enterprise size"] ||
+          data.enterpriseSize ||
+          data.EnterpriseSize ||
+          data["Business Size"] ||
+          data["Business size"] ||
+          data["business size"] ||
+          "") as string,
+        ["micro", "small", "medium", "large"]
+      ),
+      enterpriseYouthMale: String(
+        parseInt(String(data["Ent. Youth Male"] || "0"), 10) || "0"
+      ),
+      enterpriseYouthFemale: String(
+        parseInt(String(data["Ent. Youth Female"] || "0"), 10) || "0"
+      ),
+      enterpriseAdults: String(
+        parseInt(String(data["Ent. Adults"] || "0"), 10) || "0"
+      ),
+
+      // Skills Information - parse arrays from comma-separated values
+      hasVocationalSkills: (data["Has Vocational Skills"] || "")
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
+      vocationalSkillsParticipations: parseSkillsArray(
+        data["Vocational Skills Participations"]
+      ),
+      vocationalSkillsCompletions: parseSkillsArray(
+        data["Vocational Skills Completions"]
+      ),
+      vocationalSkillsCertifications: parseSkillsArray(
+        data["Vocational Skills Certifications"]
+      ),
+
+      hasSoftSkills: (data["Has Soft Skills"] || "")
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
+      softSkillsParticipations: parseSkillsArray(
+        data["Soft Skills Participations"]
+      ),
+      softSkillsCompletions: parseSkillsArray(data["Soft Skills Completions"]),
+      softSkillsCertifications: parseSkillsArray(
+        data["Soft Skills Certifications"]
+      ),
+
+      hasBusinessSkills: (data["Has Business Skills"] || "")
+        .toString()
+        .toLowerCase()
+        .includes("yes")
+        ? "yes"
+        : "no",
+
+      // Employment Details (more specific than existing employmentStatus)
+      employmentType: validateEnumValue(
+        (data["Employment type"] ||
+          data["Employment Type"] ||
+          data["EMPLOYMENT TYPE"] ||
+          data["employment type"] ||
+          data.employmentType ||
+          data.EmploymentType ||
+          data["Type of Employment"] ||
+          data["type of employment"] ||
+          "") as string,
+        ["formal", "informal", "self-employed", "unemployed"]
+      ),
+      employmentSector: validateEnumValue(
+        (data["Employment sector"] ||
+          data["Employment Sector"] ||
+          data["EMPLOYMENT SECTOR"] ||
+          data["employment sector"] ||
+          data.employmentSector ||
+          data.EmploymentSector ||
+          data["Sector of Employment"] ||
+          data["sector of employment"] ||
+          "") as string,
+        [
+          "agriculture",
+          "manufacturing",
+          "services",
+          "trade",
+          "education",
+          "health",
+          "other",
+        ]
+      ),
+
       mainChallenge: (
         data["Main Challenge"] ||
         data.mainChallenge ||
@@ -409,7 +818,7 @@ export function useExcelImport(clusterId: string) {
 
       const validParticipants: ParticipantFormValues[] = [];
 
-      jsonData.forEach((row, index) => {
+      for (const [index, row] of jsonData.entries()) {
         // Debug: Log the first row to see column headers
         if (index === 0) {
           console.log("Excel columns found:", Object.keys(row));
@@ -429,10 +838,10 @@ export function useExcelImport(clusterId: string) {
         );
 
         if (!hasAnyData) {
-          return; // Skip empty rows
+          continue; // Skip empty rows
         }
 
-        const { participant } = validateParticipantData(row, index);
+        const { participant } = await validateParticipantData(row, index);
 
         // Debug: Log participant data for first few rows
         if (index < 3) {
@@ -442,13 +851,17 @@ export function useExcelImport(clusterId: string) {
             dateOfBirth: participant?.dateOfBirth,
             isPWD: participant?.isPWD,
             age: participant?.age,
+            country: participant?.country,
+            district: participant?.district,
+            country_id: participant?.country_id,
+            district_id: participant?.district_id,
           });
         }
 
         if (participant) {
           validParticipants.push(participant);
         }
-      });
+      }
 
       setValidationErrors([]); // No errors since we use defaults
       setParsedData(validParticipants);
@@ -470,17 +883,134 @@ export function useExcelImport(clusterId: string) {
     }
   };
 
+  const checkForDuplicates = async (
+    data: ParticipantFormValues[]
+  ): Promise<DuplicateAnalysisResult> => {
+    setIsDuplicateDetection(true);
+
+    // Reset progress
+    setDuplicateProgress({
+      current: 0,
+      total: data.length,
+      percentage: 0,
+    });
+
+    try {
+      // Use batched version for large datasets to avoid 1MB limit
+      const analysis = await detectDuplicatesBatched(
+        data,
+        clusterId,
+        progress => {
+          setDuplicateProgress(progress);
+        }
+      );
+
+      setDuplicateAnalysis(analysis);
+      return analysis;
+    } catch (error) {
+      console.error("Duplicate detection error:", error);
+      toast.error("Failed to check for duplicates");
+      // Return all as unique if detection fails
+      return {
+        exactDuplicates: [],
+        potentialDuplicates: [],
+        uniqueRecords: data,
+        skippedCount: 0,
+      };
+    } finally {
+      setIsDuplicateDetection(false);
+      // Reset progress when done
+      setDuplicateProgress({
+        current: 0,
+        total: 0,
+        percentage: 0,
+      });
+    }
+  };
+
   const importData = async (
     data: ParticipantFormValues[]
   ): Promise<{ success: boolean; imported?: number; error?: string }> => {
     setIsImporting(true);
+
+    // Reset progress
+    setImportProgress({
+      current: 0,
+      total: data.length,
+      currentBatch: 0,
+      totalBatches: 0,
+      percentage: 0,
+    });
+
     try {
-      const result = await importParticipants(data);
-      if (result.success) {
-        return { success: true, imported: data.length };
-      } else {
-        return { success: false, error: result.error };
+      const BATCH_SIZE = 100; // Process 100 participants at a time
+      const totalBatches = Math.ceil(data.length / BATCH_SIZE);
+      let totalImported = 0;
+      const errors: string[] = [];
+
+      setImportProgress(prev => ({
+        ...prev,
+        totalBatches,
+      }));
+
+      // Process data in batches
+      for (let i = 0; i < data.length; i += BATCH_SIZE) {
+        const batch = data.slice(i, i + BATCH_SIZE);
+        const currentBatch = Math.floor(i / BATCH_SIZE) + 1;
+
+        setImportProgress(prev => ({
+          ...prev,
+          currentBatch,
+          current: i,
+          percentage: Math.round((i / data.length) * 100),
+        }));
+
+        console.log(
+          `Processing batch ${currentBatch}/${totalBatches} (${batch.length} participants)`
+        );
+
+        try {
+          const result = await importParticipants(batch);
+          if (result.success) {
+            totalImported += batch.length;
+            console.log(
+              `Batch ${currentBatch} completed: ${batch.length} participants imported`
+            );
+          } else {
+            const error = `Batch ${currentBatch} failed: ${result.error}`;
+            console.error(error);
+            errors.push(error);
+
+            // Continue with other batches even if one fails
+            // You could also choose to stop here by breaking the loop
+          }
+        } catch (batchError) {
+          const error = `Batch ${currentBatch} error: ${batchError instanceof Error ? batchError.message : "Unknown error"}`;
+          console.error(error);
+          errors.push(error);
+        }
+
+        // Small delay between batches to prevent overwhelming the server
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
+
+      // Final progress update
+      setImportProgress({
+        current: data.length,
+        total: data.length,
+        currentBatch: totalBatches,
+        totalBatches,
+        percentage: 100,
+      });
+
+      if (errors.length > 0) {
+        return {
+          success: false,
+          error: `Partial import completed. ${totalImported}/${data.length} participants imported. Errors: ${errors.join("; ")}`,
+        };
+      }
+
+      return { success: true, imported: totalImported };
     } catch (error) {
       console.error("Import error:", error);
       return {
@@ -497,18 +1027,37 @@ export function useExcelImport(clusterId: string) {
     setValidationErrors([]);
     setSheets([]);
     setWorkbook(null);
+    setDuplicateAnalysis(null);
     setIsProcessing(false);
     setIsImporting(false);
+    setIsDuplicateDetection(false);
+    setDuplicateProgress({
+      current: 0,
+      total: 0,
+      percentage: 0,
+    });
+    setImportProgress({
+      current: 0,
+      total: 0,
+      currentBatch: 0,
+      totalBatches: 0,
+      percentage: 0,
+    });
   };
 
   return {
     sheets,
     parsedData,
     validationErrors,
+    duplicateAnalysis,
     isProcessing,
     isImporting,
+    isDuplicateDetection,
+    duplicateProgress,
+    importProgress,
     parseFile,
     validateData,
+    checkForDuplicates,
     importData,
     resetImport,
   };

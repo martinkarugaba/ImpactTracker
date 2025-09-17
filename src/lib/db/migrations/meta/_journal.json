@@ -218,6 +218,20 @@
       "when": 1757665162859,
       "tag": "0030_dry_pandemic",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1758044771441,
+      "tag": "0031_melted_rogue",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1758049061177,
+      "tag": "0032_tired_preak",
+      "breakpoints": true
     }
   ]
 }

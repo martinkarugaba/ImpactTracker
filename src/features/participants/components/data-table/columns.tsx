@@ -92,8 +92,8 @@ export function getParticipantColumns({
         if (isMale) {
           return (
             <Badge
-              variant="secondary"
-              className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+              variant="outline"
+              className="border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
             >
               M
             </Badge>
@@ -103,8 +103,8 @@ export function getParticipantColumns({
         if (isFemale) {
           return (
             <Badge
-              variant="secondary"
-              className="bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200"
+              variant="outline"
+              className="border-pink-200 bg-pink-100 text-pink-800 dark:border-pink-800 dark:bg-pink-900/20 dark:text-pink-400"
             >
               F
             </Badge>
@@ -153,23 +153,43 @@ export function getParticipantColumns({
         let className = "";
 
         if (ageNum <= 35) {
-          variant = "secondary";
+          variant = "outline";
           className =
-            "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+            "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800";
         } else if (ageNum <= 50) {
-          variant = "secondary";
+          variant = "outline";
           className =
-            "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+            "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800";
         } else {
-          variant = "secondary";
+          variant = "outline";
           className =
-            "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200";
+            "bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800";
         }
 
         return (
           <Badge variant={variant} className={className}>
             {age}
           </Badge>
+        );
+      },
+    },
+    {
+      id: "contact",
+      header: "Contact",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => formatContact(row.contact || ""),
+      cell: ({ row }) => {
+        const contact = row.original.contact;
+        if (!contact) return "—";
+
+        const formattedContact = formatContact(contact);
+
+        return (
+          <div className="flex items-center gap-2 font-mono text-sm">
+            <Phone className="text-muted-foreground h-3 w-3" />
+            {formattedContact}
+          </div>
         );
       },
     },
@@ -192,7 +212,7 @@ export function getParticipantColumns({
 
         return (
           <div className="flex items-center gap-2">
-            <div className="bg-muted text-muted-foreground flex h-6 w-6 items-center justify-center rounded text-xs">
+            <div className="flex h-6 w-6 items-center justify-center rounded bg-emerald-100 text-xs text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400">
               <Flag className="h-3 w-3" />
             </div>
             <div className="max-w-[200px] truncate" title={capitalizedName}>
@@ -200,6 +220,170 @@ export function getParticipantColumns({
             </div>
           </div>
         );
+      },
+    },
+    {
+      id: "organization",
+      header: "Organization",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.organizationName || row.organization_id,
+      cell: ({ row }) => {
+        const name =
+          row.original.organizationName || row.original.organization_id;
+
+        if (!name) return <span className="text-muted-foreground">-</span>;
+
+        // Generate acronym from organization name
+        const acronym = name
+          .split(/\s+/)
+          .map(word => word[0])
+          .join("")
+          .toUpperCase()
+          .slice(0, 4); // Allow up to 4 characters for better readability
+
+        return (
+          <Badge
+            variant="outline"
+            className="border-purple-200 bg-purple-100 font-mono text-purple-800 hover:bg-purple-200 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
+            title={name}
+          >
+            {acronym}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "project",
+      header: "Project",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.projectAcronym || "UNK",
+      cell: ({ row }) => {
+        const acronym = row.original.projectAcronym || "UNK";
+        const name = row.original.projectName || "Unknown";
+
+        return (
+          <div className="flex items-center gap-2">
+            <Badge
+              variant="outline"
+              className="border-emerald-200 bg-emerald-100 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400"
+              title={name}
+            >
+              {acronym}
+            </Badge>
+          </div>
+        );
+      },
+    },
+    {
+      id: "employmentStatus",
+      header: "Employment Status",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.employmentStatus,
+      cell: ({ row }) => {
+        const employmentStatus = row.original.employmentStatus;
+        if (!employmentStatus) return "—";
+
+        const statusMap = {
+          employed: {
+            label: "Employed",
+            color:
+              "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800",
+          },
+          unemployed: {
+            label: "Unemployed",
+            color:
+              "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800",
+          },
+          "self-employed": {
+            label: "Self-Employed",
+            color:
+              "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800",
+          },
+          student: {
+            label: "Student",
+            color:
+              "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800",
+          },
+          retired: {
+            label: "Retired",
+            color:
+              "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-700",
+          },
+        };
+
+        const statusInfo =
+          statusMap[employmentStatus as keyof typeof statusMap];
+
+        if (!statusInfo) {
+          return (
+            <Badge variant="outline" className="max-w-[150px] truncate">
+              {capitalizeWords(employmentStatus)}
+            </Badge>
+          );
+        }
+
+        return (
+          <Badge
+            variant="outline"
+            className={`${statusInfo.color} max-w-[150px] truncate`}
+          >
+            {statusInfo.label}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "isSubscribedToVSLA",
+      header: "VSLA Member",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.isSubscribedToVSLA,
+      cell: ({ row }) => {
+        const isSubscribed = row.original.isSubscribedToVSLA === "yes";
+
+        if (isSubscribed) {
+          return (
+            <Badge
+              variant="outline"
+              className="border-green-200 bg-green-100 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400"
+            >
+              ✓ Member
+            </Badge>
+          );
+        }
+
+        return (
+          <Badge
+            variant="outline"
+            className="border-gray-200 bg-gray-100 text-gray-600 dark:border-gray-700 dark:bg-gray-900/20 dark:text-gray-400"
+          >
+            Not Member
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "vslaName",
+      header: "VSLA Name",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.vslaName || "",
+      cell: ({ row }) => {
+        const vslaName = row.original.vslaName;
+        const isSubscribed = row.original.isSubscribedToVSLA === "yes";
+
+        if (isSubscribed && vslaName) {
+          return (
+            <div className="max-w-[150px] truncate text-sm" title={vslaName}>
+              {vslaName}
+            </div>
+          );
+        }
+
+        return <span className="text-muted-foreground text-sm">—</span>;
       },
     },
     {
@@ -220,143 +404,664 @@ export function getParticipantColumns({
         const capitalizedName = capitalizeWords(subCountyName);
 
         return (
-          <div
-            className="text-muted-foreground max-w-[200px] truncate"
-            title={capitalizedName}
-          >
+          <div className="max-w-[150px] truncate" title={capitalizedName}>
             {capitalizedName}
           </div>
         );
       },
     },
     {
-      id: "country",
-      header: "Country",
+      id: "parish",
+      header: "Parish",
       enableHiding: true,
       enableSorting: true,
-      accessorFn: row => {
-        const countryId = row.country;
-        return locationNames?.countries[countryId] || countryId || "—";
-      },
+      accessorFn: row => capitalizeWords(row.parish || ""),
       cell: ({ row }) => {
-        const countryId = row.original.country;
-        const countryName =
-          locationNames?.countries[countryId] || countryId || "—";
-
+        const parish = capitalizeWords(row.original.parish || "");
         return (
-          <div className="flex items-center gap-2">
-            <Badge
-              variant="outline"
-              className="bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300"
-            >
-              {countryName}
-            </Badge>
+          <div className="max-w-[120px] truncate" title={parish}>
+            {parish || "—"}
           </div>
         );
       },
     },
     {
-      id: "organization",
-      header: "Organization",
+      id: "village",
+      header: "Village",
       enableHiding: true,
       enableSorting: true,
-      accessorFn: row => row.organizationName || row.organization_id,
+      accessorFn: row => capitalizeWords(row.village || ""),
       cell: ({ row }) => {
-        const name =
-          row.original.organizationName || row.original.organization_id;
-        const acronym = name
-          .split(/\s+/)
-          .map(word => word[0])
-          .join("")
-          .toUpperCase()
-          .slice(0, 3);
-
+        const village = capitalizeWords(row.original.village || "");
         return (
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 text-xs font-bold text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-              {acronym}
-            </div>
-            <div className="max-w-[150px] truncate text-sm" title={name}>
-              {name}
-            </div>
+          <div className="max-w-[120px] truncate" title={village}>
+            {village || "—"}
           </div>
         );
       },
     },
     {
-      id: "project",
-      header: "Project",
+      id: "maritalStatus",
+      header: "Marital Status",
       enableHiding: true,
       enableSorting: true,
-      accessorFn: row => row.projectAcronym || "UNK",
+      accessorFn: row => row.maritalStatus,
       cell: ({ row }) => {
-        const acronym = row.original.projectAcronym || "UNK";
-        const name = row.original.projectName || "Unknown";
+        const maritalStatus = row.original.maritalStatus;
+        if (!maritalStatus) return "—";
+
+        const statusMap = {
+          single: {
+            label: "Single",
+            color:
+              "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800",
+          },
+          married: {
+            label: "Married",
+            color:
+              "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800",
+          },
+          divorced: {
+            label: "Divorced",
+            color:
+              "bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800",
+          },
+          widowed: {
+            label: "Widowed",
+            color:
+              "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-700",
+          },
+        };
+
+        const statusInfo = statusMap[maritalStatus as keyof typeof statusMap];
+        const displayText = statusInfo?.label || capitalizeWords(maritalStatus);
+        const colorClass = statusInfo?.color || "bg-gray-100 text-gray-800";
 
         return (
-          <div className="flex items-center gap-2">
-            <Badge
-              variant="secondary"
-              className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200"
-              title={name}
-            >
-              {acronym}
-            </Badge>
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "designation",
-      header: "Designation",
-      enableHiding: true,
-      enableSorting: true,
-      cell: ({ row }) => {
-        const designation = row.original.designation;
-        if (!designation) return "—";
-
-        return (
-          <Badge variant="outline" className="max-w-[150px] truncate">
-            {designation}
+          <Badge variant="secondary" className={colorClass}>
+            {displayText}
           </Badge>
         );
       },
     },
     {
-      accessorKey: "enterprise",
-      header: "Enterprise",
+      id: "educationLevel",
+      header: "Education",
       enableHiding: true,
       enableSorting: true,
+      accessorFn: row => row.educationLevel,
       cell: ({ row }) => {
-        const enterprise = row.original.enterprise;
-        if (!enterprise) return "—";
+        const educationLevel = row.original.educationLevel;
+        if (!educationLevel) return "—";
+
+        const levelMap = {
+          none: {
+            label: "None",
+            color:
+              "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800",
+          },
+          primary: {
+            label: "Primary",
+            color:
+              "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800",
+          },
+          secondary: {
+            label: "Secondary",
+            color:
+              "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800",
+          },
+          tertiary: {
+            label: "Tertiary",
+            color:
+              "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800",
+          },
+          university: {
+            label: "University",
+            color:
+              "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800",
+          },
+        };
+
+        const levelInfo = levelMap[educationLevel as keyof typeof levelMap];
+        const displayText = levelInfo?.label || capitalizeWords(educationLevel);
+        const colorClass = levelInfo?.color || "bg-gray-100 text-gray-800";
 
         return (
-          <div className="flex items-center gap-2">
-            <div className="rounded bg-amber-100 px-2 py-1 text-xs font-medium text-amber-800 dark:bg-amber-900 dark:text-amber-200">
-              {enterprise}
+          <Badge variant="secondary" className={colorClass}>
+            {displayText}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "ownsEnterprise",
+      header: "Enterprise Owner",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.ownsEnterprise,
+      cell: ({ row }) => {
+        const ownsEnterprise = row.original.ownsEnterprise === "yes";
+
+        if (ownsEnterprise) {
+          return (
+            <Badge
+              variant="outline"
+              className="border-emerald-200 bg-emerald-100 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400"
+            >
+              ✓ Owner
+            </Badge>
+          );
+        }
+
+        return (
+          <Badge
+            variant="outline"
+            className="border-gray-200 bg-gray-100 text-gray-600 dark:border-gray-700 dark:bg-gray-900/20 dark:text-gray-400"
+          >
+            No Enterprise
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "enterpriseName",
+      header: "Enterprise Name",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.enterpriseName || "",
+      cell: ({ row }) => {
+        const enterpriseName = row.original.enterpriseName;
+        const ownsEnterprise = row.original.ownsEnterprise === "yes";
+
+        if (ownsEnterprise && enterpriseName) {
+          return (
+            <div
+              className="max-w-[150px] truncate text-sm"
+              title={enterpriseName}
+            >
+              {enterpriseName}
+            </div>
+          );
+        }
+
+        return <span className="text-muted-foreground text-sm">—</span>;
+      },
+    },
+    {
+      id: "vocationalSkillsParticipations",
+      header: "Vocational Skills - Participations",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.vocationalSkillsParticipations?.length || 0,
+      cell: ({ row }) => {
+        const participations =
+          row.original.vocationalSkillsParticipations || [];
+
+        if (participations.length === 0) {
+          return <span className="text-muted-foreground text-sm">—</span>;
+        }
+
+        return (
+          <div className="space-y-1">
+            <Badge
+              variant="outline"
+              className="border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+            >
+              {participations.length} Skills
+            </Badge>
+            <div className="max-w-[150px] text-xs">
+              {participations.slice(0, 2).join(", ")}
+              {participations.length > 2 &&
+                ` +${participations.length - 2} more`}
             </div>
           </div>
         );
       },
     },
     {
-      id: "contact",
-      header: "Contact",
+      id: "vocationalSkillsCompletions",
+      header: "Vocational Skills - Completions",
       enableHiding: true,
       enableSorting: true,
-      accessorFn: row => formatContact(row.contact || ""),
+      accessorFn: row => row.vocationalSkillsCompletions?.length || 0,
       cell: ({ row }) => {
-        const contact = row.original.contact;
-        if (!contact) return "—";
+        const completions = row.original.vocationalSkillsCompletions || [];
 
-        const formattedContact = formatContact(contact);
+        if (completions.length === 0) {
+          return <span className="text-muted-foreground text-sm">—</span>;
+        }
 
         return (
-          <div className="flex items-center gap-2 font-mono text-sm">
-            <Phone className="text-muted-foreground h-3 w-3" />
-            {formattedContact}
+          <div className="space-y-1">
+            <Badge
+              variant="outline"
+              className="border-green-200 bg-green-100 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400"
+            >
+              {completions.length} Completed
+            </Badge>
+            <div
+              className="max-w-[150px] truncate text-xs"
+              title={
+                completions.slice(0, 2).join(", ") +
+                (completions.length > 2
+                  ? ` +${completions.length - 2} more`
+                  : "")
+              }
+            >
+              {completions.slice(0, 2).join(", ")}
+              {completions.length > 2 && ` +${completions.length - 2} more`}
+            </div>
           </div>
+        );
+      },
+    },
+    {
+      id: "vocationalSkillsCertifications",
+      header: "Vocational Skills - Certifications",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.vocationalSkillsCertifications?.length || 0,
+      cell: ({ row }) => {
+        const certifications =
+          row.original.vocationalSkillsCertifications || [];
+
+        if (certifications.length === 0) {
+          return <span className="text-muted-foreground text-sm">—</span>;
+        }
+
+        return (
+          <div className="space-y-1">
+            <Badge
+              variant="outline"
+              className="border-amber-200 bg-amber-100 text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400"
+            >
+              {certifications.length} Certified
+            </Badge>
+            <div
+              className="max-w-[150px] truncate text-xs"
+              title={
+                certifications.slice(0, 2).join(", ") +
+                (certifications.length > 2
+                  ? ` +${certifications.length - 2} more`
+                  : "")
+              }
+            >
+              {certifications.slice(0, 2).join(", ")}
+              {certifications.length > 2 &&
+                ` +${certifications.length - 2} more`}
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: "softSkillsParticipations",
+      header: "Soft Skills - Participations",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.softSkillsParticipations?.length || 0,
+      cell: ({ row }) => {
+        const participations = row.original.softSkillsParticipations || [];
+
+        if (participations.length === 0) {
+          return <span className="text-muted-foreground text-sm">—</span>;
+        }
+
+        return (
+          <div className="space-y-1">
+            <Badge
+              variant="outline"
+              className="border-purple-200 bg-purple-100 text-purple-800 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
+            >
+              {participations.length} Skills
+            </Badge>
+            <div
+              className="max-w-[150px] truncate text-xs"
+              title={
+                participations.slice(0, 2).join(", ") +
+                (participations.length > 2
+                  ? ` +${participations.length - 2} more`
+                  : "")
+              }
+            >
+              {participations.slice(0, 2).join(", ")}
+              {participations.length > 2 &&
+                ` +${participations.length - 2} more`}
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: "softSkillsCompletions",
+      header: "Soft Skills - Completions",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.softSkillsCompletions?.length || 0,
+      cell: ({ row }) => {
+        const completions = row.original.softSkillsCompletions || [];
+
+        if (completions.length === 0) {
+          return <span className="text-muted-foreground text-sm">—</span>;
+        }
+
+        return (
+          <div className="space-y-1">
+            <Badge
+              variant="outline"
+              className="border-indigo-200 bg-indigo-100 text-indigo-800 dark:border-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400"
+            >
+              {completions.length} Completed
+            </Badge>
+            <div
+              className="max-w-[150px] truncate text-xs"
+              title={
+                completions.slice(0, 2).join(", ") +
+                (completions.length > 2
+                  ? ` +${completions.length - 2} more`
+                  : "")
+              }
+            >
+              {completions.slice(0, 2).join(", ")}
+              {completions.length > 2 && ` +${completions.length - 2} more`}
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: "softSkillsCertifications",
+      header: "Soft Skills - Certifications",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.softSkillsCertifications?.length || 0,
+      cell: ({ row }) => {
+        const certifications = row.original.softSkillsCertifications || [];
+
+        if (certifications.length === 0) {
+          return <span className="text-muted-foreground text-sm">—</span>;
+        }
+
+        return (
+          <div className="space-y-1">
+            <Badge
+              variant="outline"
+              className="border-cyan-200 bg-cyan-100 text-cyan-800 dark:border-cyan-800 dark:bg-cyan-900/20 dark:text-cyan-400"
+            >
+              {certifications.length} Certified
+            </Badge>
+            <div
+              className="max-w-[150px] truncate text-xs"
+              title={
+                certifications.slice(0, 2).join(", ") +
+                (certifications.length > 2
+                  ? ` +${certifications.length - 2} more`
+                  : "")
+              }
+            >
+              {certifications.slice(0, 2).join(", ")}
+              {certifications.length > 2 &&
+                ` +${certifications.length - 2} more`}
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: "hasBusinessSkills",
+      header: "Business Skills",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.hasBusinessSkills,
+      cell: ({ row }) => {
+        const hasSkills = row.original.hasBusinessSkills === "yes";
+        return (
+          <Badge
+            variant={hasSkills ? "outline" : "outline"}
+            className={
+              hasSkills
+                ? "border-emerald-200 bg-emerald-100 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400"
+                : "border-gray-200 bg-gray-100 text-gray-600 dark:border-gray-700 dark:bg-gray-900/20 dark:text-gray-400"
+            }
+          >
+            {hasSkills ? "✓ Has Skills" : "No Skills"}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "isPWD",
+      header: "PWD",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.isPWD,
+      cell: ({ row }) => {
+        const isPWD = row.original.isPWD === "yes";
+        const disabilityType = row.original.disabilityType;
+
+        if (isPWD) {
+          return (
+            <div className="space-y-1">
+              <Badge
+                variant="outline"
+                className="border-purple-200 bg-purple-100 text-purple-800 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
+              >
+                ✓ PWD
+              </Badge>
+              {disabilityType && (
+                <div
+                  className="text-muted-foreground max-w-[100px] truncate text-xs"
+                  title={disabilityType}
+                >
+                  {capitalizeWords(disabilityType)}
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        return (
+          <Badge
+            variant="outline"
+            className="border-gray-200 bg-gray-100 text-gray-600 dark:border-gray-700 dark:bg-gray-900/20 dark:text-gray-400"
+          >
+            No
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "populationSegment",
+      header: "Population Segment",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.populationSegment,
+      cell: ({ row }) => {
+        const segment = row.original.populationSegment;
+        if (!segment) return "—";
+
+        const segmentMap = {
+          youth: {
+            label: "Youth",
+            color:
+              "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800",
+          },
+          women: {
+            label: "Women",
+            color:
+              "bg-pink-100 text-pink-800 border-pink-200 dark:bg-pink-900/20 dark:text-pink-400 dark:border-pink-800",
+          },
+          pwd: {
+            label: "PWD",
+            color:
+              "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800",
+          },
+          elderly: {
+            label: "Elderly",
+            color:
+              "bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800",
+          },
+          refugee: {
+            label: "Refugee",
+            color:
+              "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800",
+          },
+          host: {
+            label: "Host",
+            color:
+              "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800",
+          },
+        };
+
+        const segmentInfo = segmentMap[segment as keyof typeof segmentMap];
+        const displayText = segmentInfo?.label || capitalizeWords(segment);
+        const colorClass = segmentInfo?.color || "bg-gray-100 text-gray-800";
+
+        return (
+          <Badge variant="secondary" className={colorClass}>
+            {displayText}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "monthlyIncome",
+      header: "Monthly Income",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.monthlyIncome,
+      cell: ({ row }) => {
+        const income = row.original.monthlyIncome;
+        if (!income || income === 0) return "—";
+
+        // Format income with thousand separators
+        const formattedIncome = new Intl.NumberFormat("en-UG", {
+          style: "currency",
+          currency: "UGX",
+          minimumFractionDigits: 0,
+        }).format(income);
+
+        let colorClass =
+          "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-700";
+        if (income < 100000) {
+          colorClass =
+            "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800";
+        } else if (income < 500000) {
+          colorClass =
+            "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800";
+        } else {
+          colorClass =
+            "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800";
+        }
+
+        return (
+          <Badge variant="outline" className={colorClass}>
+            {formattedIncome}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "designation",
+      header: "Designation",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => capitalizeWords(row.designation || ""),
+      cell: ({ row }) => {
+        const designation = capitalizeWords(row.original.designation || "");
+        return (
+          <div className="max-w-[150px] truncate" title={designation}>
+            {designation || "—"}
+          </div>
+        );
+      },
+    },
+    {
+      id: "enterprise",
+      header: "Enterprise",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => capitalizeWords(row.enterprise || ""),
+      cell: ({ row }) => {
+        const enterprise = capitalizeWords(row.original.enterprise || "");
+        return (
+          <div className="max-w-[150px] truncate" title={enterprise}>
+            {enterprise || "—"}
+          </div>
+        );
+      },
+    },
+    {
+      id: "numberOfChildren",
+      header: "Children",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.numberOfChildren,
+      cell: ({ row }) => {
+        const children = row.original.numberOfChildren;
+        if (children === null || children === undefined) return "—";
+
+        let colorClass =
+          "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-700";
+        if (children === 0) {
+          colorClass =
+            "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800";
+        } else if (children <= 2) {
+          colorClass =
+            "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800";
+        } else if (children <= 4) {
+          colorClass =
+            "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800";
+        } else {
+          colorClass =
+            "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800";
+        }
+
+        return (
+          <Badge variant="outline" className={colorClass}>
+            {children}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "isActiveStudent",
+      header: "Student",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.isActiveStudent,
+      cell: ({ row }) => {
+        const isStudent = row.original.isActiveStudent === "yes";
+        return (
+          <Badge
+            variant="outline"
+            className={
+              isStudent
+                ? "border-indigo-200 bg-indigo-100 text-indigo-800 dark:border-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400"
+                : "border-gray-200 bg-gray-100 text-gray-600 dark:border-gray-700 dark:bg-gray-900/20 dark:text-gray-400"
+            }
+          >
+            {isStudent ? "✓ Student" : "Not Student"}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "isTeenMother",
+      header: "Teen Mother",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => row.isTeenMother,
+      cell: ({ row }) => {
+        const isTeenMother = row.original.isTeenMother === "yes";
+        if (!isTeenMother) return "—";
+        return (
+          <Badge
+            variant="outline"
+            className="border-pink-200 bg-pink-100 text-pink-800 dark:border-pink-800 dark:bg-pink-900/20 dark:text-pink-400"
+          >
+            ✓ Teen Mother
+          </Badge>
         );
       },
     },

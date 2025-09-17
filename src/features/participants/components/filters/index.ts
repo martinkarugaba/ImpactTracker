@@ -1,4 +1,6 @@
 export { ParticipantFilters } from "./participant-filters";
+export { SimpleParticipantFilters } from "./simple-participant-filters";
+export { UltraSimpleFilters } from "./ultra-simple-filters";
 export { useFilterState } from "./use-filter-state";
 export { FilterHeader } from "./filter-header";
 export { FilterSelect } from "./filter-select";

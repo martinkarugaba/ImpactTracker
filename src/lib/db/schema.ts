@@ -111,10 +111,17 @@ export const participants = pgTable("participants", {
   subCounty: text("sub_county").notNull(),
   parish: text("parish").notNull(),
   village: text("village").notNull(),
+  // Location IDs for better data integrity (when location tables are available)
+  country_id: uuid("country_id"),
+  district_id: uuid("district_id"),
+  subcounty_id: uuid("subcounty_id"),
+  parish_id: uuid("parish_id"),
+  village_id: uuid("village_id"),
   sex: text("sex").notNull(),
-  age: integer("age"), // Made optional - can be null if only dateOfBirth is provided
+  age: integer("age"),
   dateOfBirth: timestamp("date_of_birth"),
   isPWD: text("is_pwd").notNull().default("no"),
+  disabilityType: text("disability_type"),
   isMother: text("is_mother").notNull().default("no"),
   isRefugee: text("is_refugee").notNull().default("no"),
   designation: text("designation").notNull(),
@@ -125,6 +132,79 @@ export const participants = pgTable("participants", {
   numberOfChildren: integer("number_of_children").notNull().default(0),
   employmentStatus: text("employment_status").notNull().default("unemployed"),
   monthlyIncome: integer("monthly_income").notNull().default(0),
+
+  // Employment tracking fields
+  wageEmploymentStatus: text("wage_employment_status"),
+  wageEmploymentSector: text("wage_employment_sector"),
+  wageEmploymentScale: text("wage_employment_scale"),
+  selfEmploymentStatus: text("self_employment_status"),
+  selfEmploymentSector: text("self_employment_sector"),
+  businessScale: text("business_scale"),
+  secondaryEmploymentStatus: text("secondary_employment_status"),
+  secondaryEmploymentSector: text("secondary_employment_sector"),
+  secondaryBusinessScale: text("secondary_business_scale"),
+
+  // Financial inclusion fields
+  accessedLoans: text("accessed_loans").notNull().default("no"),
+  individualSaving: text("individual_saving").notNull().default("no"),
+  groupSaving: text("group_saving").notNull().default("no"),
+
+  // Location classification
+  locationSetting: text("location_setting"),
+
+  // NEW FIELDS REQUESTED
+  // Personal Information
+  maritalStatus: text("marital_status"), // "single", "married", "divorced", "widowed"
+  educationLevel: text("education_level"), // "none", "primary", "secondary", "tertiary", "university"
+  sourceOfIncome: text("source_of_income"), // "employment", "business", "agriculture", "remittances", "other"
+  nationality: text("nationality").notNull().default("Ugandan"),
+  populationSegment: text("population_segment"), // "youth", "women", "pwd", "elderly", "refugee", "host"
+  refugeeLocation: text("refugee_location"), // For refugees only
+  isActiveStudent: text("is_active_student").notNull().default("no"),
+
+  // VSLA Information
+  isSubscribedToVSLA: text("is_subscribed_to_vsla").notNull().default("no"),
+  vslaName: text("vsla_name"),
+
+  // Teen Mother
+  isTeenMother: text("is_teen_mother").notNull().default("no"),
+
+  // Enterprise Information
+  ownsEnterprise: text("owns_enterprise").notNull().default("no"),
+  enterpriseName: text("enterprise_name"),
+  enterpriseSector: text("enterprise_sector"), // "agriculture", "retail", "services", "manufacturing", etc.
+  enterpriseSize: text("enterprise_size"), // "micro", "small", "medium", "large"
+  enterpriseYouthMale: integer("enterprise_youth_male").default(0),
+  enterpriseYouthFemale: integer("enterprise_youth_female").default(0),
+  enterpriseAdults: integer("enterprise_adults").default(0),
+
+  // Skills Information
+  hasVocationalSkills: text("has_vocational_skills").notNull().default("no"),
+  vocationalSkillsParticipations: text("vocational_skills_participations")
+    .array()
+    .default([]),
+  vocationalSkillsCompletions: text("vocational_skills_completions")
+    .array()
+    .default([]),
+  vocationalSkillsCertifications: text("vocational_skills_certifications")
+    .array()
+    .default([]),
+
+  hasSoftSkills: text("has_soft_skills").notNull().default("no"),
+  softSkillsParticipations: text("soft_skills_participations")
+    .array()
+    .default([]),
+  softSkillsCompletions: text("soft_skills_completions").array().default([]),
+  softSkillsCertifications: text("soft_skills_certifications")
+    .array()
+    .default([]),
+
+  hasBusinessSkills: text("has_business_skills").notNull().default("no"),
+
+  // Employment Details (more specific than existing employmentStatus)
+  employmentType: text("employment_type"), // "formal", "informal", "self-employed", "unemployed"
+  employmentSector: text("employment_sector"), // "agriculture", "manufacturing", "services", "trade", etc.
+
   mainChallenge: text("main_challenge"),
   skillOfInterest: text("skill_of_interest"),
   expectedImpact: text("expected_impact"),

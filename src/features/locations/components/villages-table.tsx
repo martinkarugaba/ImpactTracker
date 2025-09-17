@@ -1,7 +1,7 @@
 "use client";
 
 import { columns } from "@/features/locations/components/data-table/villages-columns";
-import { ReusableDataTable } from "@/components/ui/reusable-data-table";
+import { DataTable } from "@/components/ui/data-table";
 import {
   villages,
   parishes,
@@ -30,7 +30,7 @@ interface VillagesTableProps {
 export function VillagesTable({ data }: VillagesTableProps) {
   return (
     <div className="w-full">
-      <ReusableDataTable
+      <DataTable
         columns={columns}
         data={data}
         filterColumn="name"
@@ -39,7 +39,7 @@ export function VillagesTable({ data }: VillagesTableProps) {
         showPagination={true}
         showRowSelection={true}
         pageSize={10}
-        customActions={
+        actionButtons={
           <AddVillageDialog>
             <Button size="sm">
               <Plus className="mr-2 h-4 w-4" />

@@ -13,14 +13,22 @@ import { SidebarMainNav } from "./sidebar-main-nav";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar className="border-none" collapsible="icon" {...props}>
-      <SidebarHeader>
+    <Sidebar
+      className="bg-background fixed top-0 left-0 h-screen border-none"
+      collapsible="icon"
+      {...props}
+    >
+      {/* Subtle background pattern */}
+      <div className="bg-grid-small-primary/[0.02] pointer-events-none absolute inset-0" />
+      <div className="from-primary/[0.03] to-primary/[0.01] pointer-events-none absolute inset-0 bg-gradient-to-br via-transparent" />
+
+      <SidebarHeader className="border-border/20 flex-shrink-0 border-b">
         <TeamSwitcher />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="flex-1 overflow-y-auto">
         <SidebarMainNav />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="border-border/50 flex-shrink-0 border-t">
         <NavUser />
       </SidebarFooter>
     </Sidebar>

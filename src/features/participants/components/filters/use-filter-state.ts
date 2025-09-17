@@ -32,6 +32,32 @@ export function useFilterState({
       sex: "all",
       isPWD: "all",
       ageGroup: "all",
+      // New filter fields
+      maritalStatus: "all",
+      educationLevel: "all",
+      isSubscribedToVSLA: "all",
+      ownsEnterprise: "all",
+      employmentType: "all",
+      employmentSector: "all",
+      hasVocationalSkills: "all",
+      hasSoftSkills: "all",
+      hasBusinessSkills: "all",
+      // Specific skill filters
+      specificVocationalSkill: "all",
+      specificSoftSkill: "all",
+      specificBusinessSkill: "all",
+      populationSegment: "all",
+      isActiveStudent: "all",
+      isTeenMother: "all",
+      sourceOfIncome: "all",
+      // Enterprise specific filters
+      enterpriseSector: "all",
+      businessScale: "all",
+      // Additional demographic filters
+      nationality: "all",
+      locationSetting: "all",
+      isRefugee: "all",
+      isMother: "all",
     });
   };
 

@@ -344,37 +344,51 @@ function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  filterColumn?: string;
-  filterPlaceholder?: string;
-  showColumnToggle?: boolean;
+  showToolbar?: boolean;
   showPagination?: boolean;
   showRowSelection?: boolean;
   pageSize?: number;
   onRowSelectionChange?: (selectedRows: TData[]) => void;
-  actionButtons?: React.ReactNode;
-  searchValue?: string;
-  onSearchChange?: (search: string) => void;
-  isLoading?: boolean;
+  // Server-side pagination support
+  serverSideTotal?: number; // Total count from server for filtered results
+  serverSideFiltered?: number; // Total filtered count from server
+  // Column visibility
+  columnVisibility?: VisibilityState;
   rowSelection?: Record<string, boolean>;
   onRowSelectionStateChange?: (selection: Record<string, boolean>) => void;
+  // Additional props
+  filterColumn?: string;
+  filterPlaceholder?: string;
+  showColumnToggle?: boolean;
+  actionButtons?: React.ReactNode;
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
+  isLoading?: boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-  filterColumn,
-  filterPlaceholder = "Filter...",
-  showColumnToggle = true,
+  showToolbar = true,
   showPagination = true,
   showRowSelection = false,
   pageSize = 20,
   onRowSelectionChange,
+  // Server-side pagination
+  serverSideTotal,
+  serverSideFiltered,
+  // Column visibility
+  columnVisibility: externalColumnVisibility,
+  rowSelection: externalRowSelection,
+  onRowSelectionStateChange,
+  // Additional props
+  filterColumn,
+  filterPlaceholder = "Filter...",
+  showColumnToggle = true,
   actionButtons,
   searchValue,
   onSearchChange,
   isLoading = false,
-  rowSelection: externalRowSelection,
-  onRowSelectionStateChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -446,15 +460,8 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  // Call the onRowSelectionChange callback when row selection changes
-  React.useEffect(() => {
-    if (onRowSelectionChange) {
-      const selectedRows = table
-        .getFilteredSelectedRowModel()
-        .rows.map(row => row.original);
-      onRowSelectionChange(selectedRows);
-    }
-  }, [rowSelection, onRowSelectionChange, table]);
+  // Use ref to track if we're in the middle of a selection update
+  const isUpdatingSelection = React.useRef(false);
 
   // Check if header should be shown
   const showHeader = filterColumn || showColumnToggle || actionButtons;
@@ -483,46 +490,7 @@ export function DataTable<TData, TValue>({
               </div>
             )}
           </div>
-          <div className="flex items-center gap-2">
-            {actionButtons}
-            {showColumnToggle && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <LayoutGrid className="mr-2 h-4 w-4" />
-                    <span className="hidden lg:inline">Customize Columns</span>
-                    <span className="lg:hidden">Columns</span>
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  {table && table.getAllColumns
-                    ? table
-                        .getAllColumns()
-                        .filter(
-                          column =>
-                            typeof column.accessorFn !== "undefined" &&
-                            column.getCanHide()
-                        )
-                        .map(column => {
-                          return (
-                            <DropdownMenuCheckboxItem
-                              key={column.id}
-                              className="capitalize"
-                              checked={column.getIsVisible()}
-                              onCheckedChange={value =>
-                                column.toggleVisibility(!!value)
-                              }
-                            >
-                              {column.id}
-                            </DropdownMenuCheckboxItem>
-                          );
-                        })
-                    : null}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
+          <div className="flex items-center gap-2">{actionButtons}</div>
         </div>
       )}
       <div className="overflow-hidden rounded-md border">
@@ -639,8 +607,21 @@ export function DataTable<TData, TValue>({
       {showPagination && (
         <div className="flex items-center justify-between space-x-2 py-4">
           <div className="text-muted-foreground flex-1 text-sm">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
+            {showRowSelection ? (
+              <>
+                {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                {serverSideFiltered ?? table.getFilteredRowModel().rows.length}{" "}
+                row(s) selected.
+              </>
+            ) : (
+              <>
+                Showing {Math.min(data.length, pageSize)} of{" "}
+                {serverSideTotal ?? data.length} result(s)
+                {serverSideTotal && serverSideTotal !== serverSideFiltered && (
+                  <> (filtered from {serverSideTotal} total)</>
+                )}
+              </>
+            )}
           </div>
           <div className="flex items-center space-x-2">
             <Button

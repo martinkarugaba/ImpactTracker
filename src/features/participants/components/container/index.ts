@@ -1,6 +1,7 @@
-export { ParticipantsContainer } from "./participants-container";
-export { useParticipantContainerState } from "./use-participant-container-state";
+export { JotaiParticipantsContainer } from "./jotai-participants-container";
+export { JotaiParticipantsContainer as ParticipantsContainer } from "./jotai-participants-container";
 export { useFilterOptions } from "./use-filter-options";
-export { MetricsTab } from "./metrics-tab";
+export { AnalyticsTab } from "./metrics-tab";
+export { ChartsTab } from "./charts-tab";
 export { ParticipantsTab } from "./participants-tab";
 export { ParticipantDialogs } from "./participant-dialogs";

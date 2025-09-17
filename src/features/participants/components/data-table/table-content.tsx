@@ -21,12 +21,14 @@ interface TableContentProps {
   onViewParticipant?: (participant: Participant) => void;
   actionButtons: React.ReactNode;
   columnVisibility?: Record<string, boolean>;
+  rowSelection?: Record<string, boolean>;
+  onRowSelectionStateChange?: (selection: Record<string, boolean>) => void;
 }
 
 export function TableContent({
   data,
   pagination,
-  isLoading,
+  isLoading: _isLoading,
   searchValue: _searchValue,
   onSearchChange: _onSearchChange,
   onEditParticipant,
@@ -34,6 +36,8 @@ export function TableContent({
   onViewParticipant,
   actionButtons: _actionButtons,
   columnVisibility,
+  rowSelection,
+  onRowSelectionStateChange,
 }: TableContentProps) {
   const allColumns = getParticipantColumns({
     onEdit: (participant: Participant) => {
@@ -66,11 +70,13 @@ export function TableContent({
     <DataTable
       columns={visibleColumns}
       data={data}
-      showColumnToggle={false}
       showPagination={false}
-      showRowSelection={false}
+      showRowSelection={true}
       pageSize={pagination.limit}
-      isLoading={isLoading}
+      rowSelection={rowSelection}
+      onRowSelectionStateChange={onRowSelectionStateChange}
+      serverSideTotal={pagination.total}
+      serverSideFiltered={pagination.total}
     />
   );
 }

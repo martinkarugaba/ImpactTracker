@@ -29,6 +29,27 @@ export function useParticipants(
       sex?: string;
       isPWD?: string;
       ageGroup?: string;
+      maritalStatus?: string;
+      educationLevel?: string;
+      isSubscribedToVSLA?: string;
+      ownsEnterprise?: string;
+      employmentType?: string;
+      employmentSector?: string;
+      hasVocationalSkills?: string;
+      hasSoftSkills?: string;
+      hasBusinessSkills?: string;
+      populationSegment?: string;
+      isActiveStudent?: string;
+      isTeenMother?: string;
+      sourceOfIncome?: string;
+      // Enterprise specific filters
+      enterpriseSector?: string;
+      businessScale?: string;
+      // Additional demographic filters
+      nationality?: string;
+      locationSetting?: string;
+      isRefugee?: string;
+      isMother?: string;
     };
   }
 ) {
@@ -60,6 +81,27 @@ export function useParticipantsMetrics(
       sex?: string;
       isPWD?: string;
       ageGroup?: string;
+      maritalStatus?: string;
+      educationLevel?: string;
+      isSubscribedToVSLA?: string;
+      ownsEnterprise?: string;
+      employmentType?: string;
+      employmentSector?: string;
+      hasVocationalSkills?: string;
+      hasSoftSkills?: string;
+      hasBusinessSkills?: string;
+      populationSegment?: string;
+      isActiveStudent?: string;
+      isTeenMother?: string;
+      sourceOfIncome?: string;
+      // Enterprise specific filters
+      enterpriseSector?: string;
+      businessScale?: string;
+      // Additional demographic filters
+      nationality?: string;
+      locationSetting?: string;
+      isRefugee?: string;
+      isMother?: string;
     };
     applyFilters: boolean;
   }
@@ -153,6 +195,27 @@ export function useExportParticipants() {
         sex?: string;
         isPWD?: string;
         ageGroup?: string;
+        maritalStatus?: string;
+        educationLevel?: string;
+        isSubscribedToVSLA?: string;
+        ownsEnterprise?: string;
+        employmentType?: string;
+        employmentSector?: string;
+        hasVocationalSkills?: string;
+        hasSoftSkills?: string;
+        hasBusinessSkills?: string;
+        populationSegment?: string;
+        isActiveStudent?: string;
+        isTeenMother?: string;
+        sourceOfIncome?: string;
+        // Enterprise specific filters
+        enterpriseSector?: string;
+        businessScale?: string;
+        // Additional demographic filters
+        nationality?: string;
+        locationSetting?: string;
+        isRefugee?: string;
+        isMother?: string;
       };
       search?: string;
     }) => {

@@ -37,14 +37,14 @@ export function NavUser() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:from-primary/20 data-[state=open]:to-primary/10 hover:from-primary/10 hover:to-primary/5 hover:border-primary/20 border border-transparent transition-all duration-200 hover:bg-gradient-to-r data-[state=open]:bg-gradient-to-r"
             >
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
+              <Avatar className="ring-primary/20 hover:ring-primary/40 h-8 w-8 rounded-lg ring-2 transition-all duration-200">
                 <AvatarImage
                   src={session?.user?.image || ""}
                   alt={session?.user?.name || ""}
                 />
-                <AvatarFallback className="rounded-lg">
+                <AvatarFallback className="from-primary/20 to-primary/10 text-primary border-primary/20 rounded-lg border bg-gradient-to-br">
                   {session?.user?.name ? session.user.name.charAt(0) : "U"}
                 </AvatarFallback>
               </Avatar>

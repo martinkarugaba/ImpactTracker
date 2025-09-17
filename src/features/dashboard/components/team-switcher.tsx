@@ -173,12 +173,16 @@ export function TeamSwitcher() {
 
   if (isLoadingOrgId || isLoadingOrgs) {
     return (
-      <Button variant="ghost" className="w-full justify-between px-2" size="sm">
+      <Button
+        variant="ghost"
+        className="from-muted/50 to-muted/30 hover:from-primary/10 hover:to-primary/5 w-full justify-between bg-gradient-to-r px-2 transition-all duration-200"
+        size="sm"
+      >
         <div className="flex items-center gap-2">
-          <Building2 className="h-4 w-4" />
-          <span className="truncate">Loading...</span>
+          <Building2 className="text-primary/70 h-4 w-4 animate-pulse" />
+          <span className="text-muted-foreground truncate">Loading...</span>
         </div>
-        <ChevronDown className="h-4 w-4" />
+        <ChevronDown className="text-muted-foreground h-4 w-4 animate-pulse" />
       </Button>
     );
   }
@@ -197,9 +201,9 @@ export function TeamSwitcher() {
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
                 size="lg"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                className="from-primary/15 via-primary/8 to-primary/3 data-[state=open]:from-primary/25 data-[state=open]:via-primary/15 data-[state=open]:to-primary/8 hover:from-primary/20 hover:via-primary/12 hover:to-primary/5 hover:border-primary/20 border border-transparent bg-gradient-to-br transition-all duration-200 data-[state=open]:bg-gradient-to-br"
               >
-                <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                <div className="from-primary to-primary/80 text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br shadow-sm">
                   <Building2 className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">

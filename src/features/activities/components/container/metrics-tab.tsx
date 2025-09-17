@@ -48,7 +48,7 @@ export function MetricsTab({
   };
 
   return (
-    <TabsContent value="metrics" className="space-y-6">
+    <TabsContent value="metrics" className="mt-5 space-y-6">
       {/* Metrics Cards */}
       <div className="space-y-3">
         {/* Metrics Header with Filter Status */}

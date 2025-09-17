@@ -1,14 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { ReusableDataTable } from "@/components/ui/reusable-data-table";
+import { DataTable } from "@/components/ui/data-table";
 import { countries } from "@/lib/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
 import { countryColumns } from "@/features/locations/components/data-table";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { AddCountryDialog } from "@/features/locations/components/dialogs/add-country-dialog";
-import { useRouter } from "next/navigation";
 import { useCountries } from "@/features/locations/hooks/use-locations-query";
 import { mergeWithoutDuplicates } from "../utils/pagination";
 
@@ -19,15 +18,14 @@ interface CountriesTableProps {
 }
 
 export function CountriesTable({ initialData }: CountriesTableProps) {
-  const router = useRouter();
-  const [page, setPage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(20);
+  const [page, _setPage] = React.useState(1);
+  const [pageSize, _setPageSize] = React.useState(20);
   const [search, setSearch] = React.useState("");
 
   const [accumulatedData, setAccumulatedData] =
     React.useState<Country[]>(initialData);
 
-  const [previousOptions, setPreviousOptions] = React.useState({
+  const [previousOptions, _setPreviousOptions] = React.useState({
     pageSize: 20,
     page: 1,
   });
@@ -38,47 +36,7 @@ export function CountriesTable({ initialData }: CountriesTableProps) {
     search,
   });
 
-  const handleRowClick = React.useCallback(
-    (countryId: string) => {
-      router.push(`/dashboard/locations/${countryId}`);
-    },
-    [router]
-  );
-
   const tableColumns = React.useMemo(() => countryColumns, []);
-
-  const handlePaginationChange = React.useCallback(
-    (newPage: number, newPageSize: number) => {
-      const isPageSizeChange = newPageSize !== pageSize;
-      const isPageSizeIncrease = newPageSize > pageSize;
-
-      setPreviousOptions({ page, pageSize });
-
-      if (isPageSizeChange) {
-        if (isPageSizeIncrease) {
-          // Keep the current data when increasing page size
-          const currentData = countriesResponse?.success
-            ? countriesResponse.data.data
-            : [];
-          setAccumulatedData(prevData =>
-            mergeWithoutDuplicates(prevData, currentData)
-          );
-          setPage(1);
-          setPageSize(newPageSize);
-        } else {
-          setAccumulatedData([]);
-          setPage(1);
-          setPageSize(newPageSize);
-        }
-      } else {
-        setPage(newPage);
-        if (newPage < page) {
-          setAccumulatedData([]);
-        }
-      }
-    },
-    [page, pageSize, countriesResponse]
-  );
 
   const handleDataAccumulation = React.useCallback(() => {
     if (!countriesResponse?.success) return;
@@ -179,7 +137,7 @@ export function CountriesTable({ initialData }: CountriesTableProps) {
   return (
     <div className="w-full">
       {debugUI}
-      <ReusableDataTable
+      <DataTable
         columns={tableColumns}
         data={data}
         filterColumn="name"
@@ -188,14 +146,10 @@ export function CountriesTable({ initialData }: CountriesTableProps) {
         showPagination={true}
         showRowSelection={true}
         pageSize={pageSize}
-        onRowClick={row => handleRowClick(row.id)}
-        serverSidePagination={true}
-        paginationData={paginationData}
-        onPaginationChange={handlePaginationChange}
         isLoading={isLoading}
         searchValue={search}
         onSearchChange={setSearch}
-        customActions={
+        actionButtons={
           <AddCountryDialog>
             <Button size="sm">
               <Plus className="mr-2 h-4 w-4" />

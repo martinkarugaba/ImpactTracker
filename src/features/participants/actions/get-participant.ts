@@ -31,7 +31,14 @@ export async function getParticipant(id: string): Promise<ParticipantResponse> {
         parish: participants.parish,
         village: participants.village,
         country: participants.country,
+        // Location IDs
+        country_id: participants.country_id,
+        district_id: participants.district_id,
+        subcounty_id: participants.subcounty_id,
+        parish_id: participants.parish_id,
+        village_id: participants.village_id,
         isPWD: participants.isPWD,
+        disabilityType: participants.disabilityType,
         isMother: participants.isMother,
         isRefugee: participants.isRefugee,
         isPermanentResident: participants.isPermanentResident,
@@ -39,6 +46,59 @@ export async function getParticipant(id: string): Promise<ParticipantResponse> {
         numberOfChildren: participants.numberOfChildren,
         employmentStatus: participants.employmentStatus,
         monthlyIncome: participants.monthlyIncome,
+        // Employment tracking fields
+        wageEmploymentStatus: participants.wageEmploymentStatus,
+        wageEmploymentSector: participants.wageEmploymentSector,
+        wageEmploymentScale: participants.wageEmploymentScale,
+        selfEmploymentStatus: participants.selfEmploymentStatus,
+        selfEmploymentSector: participants.selfEmploymentSector,
+        businessScale: participants.businessScale,
+        secondaryEmploymentStatus: participants.secondaryEmploymentStatus,
+        secondaryEmploymentSector: participants.secondaryEmploymentSector,
+        secondaryBusinessScale: participants.secondaryBusinessScale,
+        // Financial inclusion fields
+        accessedLoans: participants.accessedLoans,
+        individualSaving: participants.individualSaving,
+        groupSaving: participants.groupSaving,
+        // Location classification
+        locationSetting: participants.locationSetting,
+        // NEW FIELDS
+        // Personal Information
+        maritalStatus: participants.maritalStatus,
+        educationLevel: participants.educationLevel,
+        sourceOfIncome: participants.sourceOfIncome,
+        nationality: participants.nationality,
+        populationSegment: participants.populationSegment,
+        refugeeLocation: participants.refugeeLocation,
+        isActiveStudent: participants.isActiveStudent,
+        // VSLA Information
+        isSubscribedToVSLA: participants.isSubscribedToVSLA,
+        vslaName: participants.vslaName,
+        // Teen Mother
+        isTeenMother: participants.isTeenMother,
+        // Enterprise Information
+        ownsEnterprise: participants.ownsEnterprise,
+        enterpriseName: participants.enterpriseName,
+        enterpriseSector: participants.enterpriseSector,
+        enterpriseSize: participants.enterpriseSize,
+        enterpriseYouthMale: participants.enterpriseYouthMale,
+        enterpriseYouthFemale: participants.enterpriseYouthFemale,
+        enterpriseAdults: participants.enterpriseAdults,
+        // Skills Information
+        hasVocationalSkills: participants.hasVocationalSkills,
+        vocationalSkillsParticipations:
+          participants.vocationalSkillsParticipations,
+        vocationalSkillsCompletions: participants.vocationalSkillsCompletions,
+        vocationalSkillsCertifications:
+          participants.vocationalSkillsCertifications,
+        hasSoftSkills: participants.hasSoftSkills,
+        softSkillsParticipations: participants.softSkillsParticipations,
+        softSkillsCompletions: participants.softSkillsCompletions,
+        softSkillsCertifications: participants.softSkillsCertifications,
+        hasBusinessSkills: participants.hasBusinessSkills,
+        // Employment Details
+        employmentType: participants.employmentType,
+        employmentSector: participants.employmentSector,
         mainChallenge: participants.mainChallenge,
         skillOfInterest: participants.skillOfInterest,
         expectedImpact: participants.expectedImpact,
