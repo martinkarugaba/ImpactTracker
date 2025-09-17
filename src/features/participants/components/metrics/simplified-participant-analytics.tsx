@@ -30,31 +30,6 @@ import {
 } from "@/components/ui/collapsible";
 import { type Participant } from "../../types/types";
 
-// Utility function to format values with smaller percentage text
-function formatValueWithPercentage(
-  value: number,
-  percentage: number
-): React.ReactNode {
-  return (
-    <span className="flex items-baseline gap-1">
-      <span>{value.toLocaleString()}</span>
-      <span className="text-sm text-gray-500 dark:text-gray-400">
-        ({percentage}%)
-      </span>
-    </span>
-  );
-}
-
-// Utility function to format percentage-only values
-function formatPercentageValue(percentage: number): React.ReactNode {
-  return (
-    <span className="flex items-baseline gap-1">
-      <span className="text-lg">{percentage}</span>
-      <span className="text-sm text-gray-500 dark:text-gray-400">%</span>
-    </span>
-  );
-}
-
 // Helper function to calculate age from date of birth or use existing age
 function calculateAge(participant: Participant): number | null {
   if (participant.dateOfBirth) {
@@ -297,13 +272,10 @@ export function SimplifiedParticipantAnalytics({
 
           <MetricCard
             title="Youth (15-35)"
-            value={formatValueWithPercentage(
-              metrics.demographics.youth,
-              metrics.demographics.youthPercentage
-            )}
+            value={metrics.demographics.youth}
             footer={{
-              title: "Target demographic",
-              description: "Young participants",
+              title: `${metrics.demographics.youthPercentage}% of total`,
+              description: "Target demographic",
             }}
             icon={<UserCheck className="size-4" />}
             className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50"
@@ -311,13 +283,10 @@ export function SimplifiedParticipantAnalytics({
 
           <MetricCard
             title="Female Participation"
-            value={formatValueWithPercentage(
-              metrics.demographics.female,
-              metrics.demographics.femalePercentage
-            )}
+            value={metrics.demographics.female}
             footer={{
-              title: "Gender inclusion",
-              description: "Female participants",
+              title: `${metrics.demographics.femalePercentage}% of total`,
+              description: "Gender inclusion",
             }}
             icon={<Heart className="size-4" />}
             className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-950/50 dark:to-rose-950/50"
@@ -325,10 +294,10 @@ export function SimplifiedParticipantAnalytics({
 
           <MetricCard
             title="Employment Rate"
-            value={formatPercentageValue(metrics.employment.employmentRate)}
+            value={`${metrics.employment.employmentRate}%`}
             footer={{
               title: "Economic impact",
-              description: `${metrics.employment.employed} employed`,
+              description: `${metrics.employment.employed} employed participants`,
             }}
             icon={<Briefcase className="size-4" />}
             className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-950/50 dark:to-orange-950/50"
@@ -391,6 +360,7 @@ export function SimplifiedParticipantAnalytics({
                 description: `${100 - metrics.demographics.femalePercentage}% of total`,
               }}
               icon={<UserCheck className="size-4" />}
+              className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/50"
             />
             <MetricCard
               title="Female Participants"
@@ -400,18 +370,17 @@ export function SimplifiedParticipantAnalytics({
                 description: `${metrics.demographics.femalePercentage}% of total`,
               }}
               icon={<Heart className="size-4" />}
+              className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-950/50 dark:to-rose-950/50"
             />
             <MetricCard
               title="Persons with Disabilities"
-              value={formatValueWithPercentage(
-                metrics.demographics.pwds,
-                metrics.demographics.pwdPercentage
-              )}
+              value={metrics.demographics.pwds}
               footer={{
-                title: "Inclusion metrics",
-                description: "Special needs support",
+                title: `${metrics.demographics.pwdPercentage}% of total`,
+                description: "Inclusion metrics",
               }}
               icon={<UserX className="size-4" />}
+              className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/50 dark:to-indigo-950/50"
             />
           </div>
         </MetricSection>
@@ -440,6 +409,7 @@ export function SimplifiedParticipantAnalytics({
                 description: `${metrics.employment.employmentRate}% employment rate`,
               }}
               icon={<Briefcase className="size-4" />}
+              className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50"
             />
             <MetricCard
               title="Unemployed"
@@ -449,18 +419,17 @@ export function SimplifiedParticipantAnalytics({
                 description: `${100 - metrics.employment.employmentRate}% of total`,
               }}
               icon={<UserX className="size-4" />}
+              className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950/50 dark:to-orange-950/50"
             />
             <MetricCard
               title="Enterprise Owners"
-              value={formatValueWithPercentage(
-                metrics.financial.enterpriseOwners,
-                metrics.financial.enterpriseRate
-              )}
+              value={metrics.financial.enterpriseOwners}
               footer={{
-                title: "Entrepreneurship",
+                title: `${metrics.financial.enterpriseRate}% of total`,
                 description: "Business ownership",
               }}
               icon={<Building2 className="size-4" />}
+              className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-950/50 dark:to-yellow-950/50"
             />
           </div>
         </MetricSection>
@@ -483,41 +452,36 @@ export function SimplifiedParticipantAnalytics({
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <MetricCard
               title="Vocational Skills"
-              value={formatValueWithPercentage(
-                metrics.skills.hasVocationalSkills,
-                metrics.skills.vocationalRate
-              )}
+              value={metrics.skills.hasVocationalSkills}
               footer={{
-                title: "Technical training",
-                description: "Job-ready skills",
+                title: `${metrics.skills.vocationalRate}% trained`,
+                description: "Technical training",
               }}
               icon={<Award className="size-4" />}
+              className="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/50 dark:to-purple-950/50"
             />
             <MetricCard
               title="Business Skills"
-              value={formatValueWithPercentage(
-                metrics.skills.hasBusinessSkills,
-                metrics.skills.businessRate
-              )}
+              value={metrics.skills.hasBusinessSkills}
               footer={{
-                title: "Entrepreneurship",
+                title: `${metrics.skills.businessRate}% trained`,
                 description: "Business management",
               }}
               icon={<TrendingUp className="size-4" />}
+              className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950/50 dark:to-blue-950/50"
             />
             <MetricCard
               title="Skills Coverage"
-              value={formatPercentageValue(
-                Math.max(
-                  metrics.skills.vocationalRate,
-                  metrics.skills.businessRate
-                )
-              )}
+              value={`${Math.max(
+                metrics.skills.vocationalRate,
+                metrics.skills.businessRate
+              )}%`}
               footer={{
                 title: "Training reach",
                 description: "Participants with skills",
               }}
               icon={<BarChart3 className="size-4" />}
+              className="bg-gradient-to-br from-teal-50 to-green-50 dark:from-teal-950/50 dark:to-green-950/50"
             />
           </div>
         </MetricSection>
@@ -540,15 +504,13 @@ export function SimplifiedParticipantAnalytics({
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <MetricCard
               title="VSLA Members"
-              value={formatValueWithPercentage(
-                metrics.financial.vslaMembers,
-                metrics.financial.vslaRate
-              )}
+              value={metrics.financial.vslaMembers}
               footer={{
-                title: "Savings groups",
+                title: `${metrics.financial.vslaRate}% of total`,
                 description: "Community finance",
               }}
               icon={<Users className="size-4" />}
+              className="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/50 dark:to-green-950/50"
             />
             <MetricCard
               title="Enterprise Owners"
@@ -558,20 +520,20 @@ export function SimplifiedParticipantAnalytics({
                 description: "Economic empowerment",
               }}
               icon={<Building2 className="size-4" />}
+              className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/50 dark:to-amber-950/50"
             />
             <MetricCard
               title="Financial Inclusion Rate"
-              value={formatPercentageValue(
-                Math.max(
-                  metrics.financial.vslaRate,
-                  metrics.financial.enterpriseRate
-                )
-              )}
+              value={`${Math.max(
+                metrics.financial.vslaRate,
+                metrics.financial.enterpriseRate
+              )}%`}
               footer={{
                 title: "Access to finance",
                 description: "Economic participation",
               }}
               icon={<TrendingUp className="size-4" />}
+              className="bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-950/50 dark:to-blue-950/50"
             />
           </div>
         </MetricSection>

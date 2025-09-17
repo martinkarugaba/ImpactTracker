@@ -271,6 +271,7 @@ export function SimpleParticipantFilters({
     businessSkills: [],
   });
   const [isLoadingSkills, setIsLoadingSkills] = useState(true);
+  const [localSearchValue, setLocalSearchValue] = useState("");
 
   // Jotai state
   const filters = useAtomValue(participantFiltersAtom);
@@ -278,6 +279,20 @@ export function SimpleParticipantFilters({
   const hasActiveFilters = useAtomValue(hasActiveFiltersAtom);
   const updateFilter = useSetAtom(updateFilterAtom);
   const clearFilters = useSetAtom(clearFiltersAtom);
+
+  // Initialize local search value from Jotai state
+  useEffect(() => {
+    setLocalSearchValue(searchValue);
+  }, [searchValue]);
+
+  // Debounced search effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchValue(localSearchValue);
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(timer);
+  }, [localSearchValue, setSearchValue]);
 
   // Load unique skills on component mount
   useEffect(() => {
@@ -377,38 +392,47 @@ export function SimpleParticipantFilters({
       <div className="flex flex-wrap items-center gap-3">
         {/* Search */}
         <div className="relative min-w-[250px] flex-1">
-          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-          <Input
-            placeholder="Search participants..."
-            value={searchValue}
-            onChange={e => setSearchValue(e.target.value)}
-            className="pl-9"
-          />
+          <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Search Participants
+          </label>
+          <div className="relative">
+            <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+            <Input
+              placeholder="Search participants..."
+              value={localSearchValue}
+              onChange={e => setLocalSearchValue(e.target.value)}
+              className="pl-9"
+            />
+          </div>
         </div>
 
         {/* Quick Filters */}
         {filterGroups.quick.map(filter => (
-          <Select
-            key={filter.key}
-            value={getFilterValue(filter.key)}
-            onValueChange={value =>
-              handleFilterUpdate(
-                filter.key as keyof ParticipantFiltersType,
-                value
-              )
-            }
-          >
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder={filter.label} />
-            </SelectTrigger>
-            <SelectContent>
-              {filter.values.map(option => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div key={filter.key} className="min-w-[140px]">
+            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              {filter.label}
+            </label>
+            <Select
+              value={getFilterValue(filter.key)}
+              onValueChange={value =>
+                handleFilterUpdate(
+                  filter.key as keyof ParticipantFiltersType,
+                  value
+                )
+              }
+            >
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder={filter.label} />
+              </SelectTrigger>
+              <SelectContent>
+                {filter.values.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         ))}
 
         {/* More Filters Popover */}

@@ -86,6 +86,31 @@ export function FixDuplicatesDialog({
 
   const duplicateGroups = findDuplicates();
 
+  const handleSelectAllInGroup = (group: DuplicateGroup, checked: boolean) => {
+    const groupIds = group.participants.map(p => p.id);
+    setSelectedForDeletion(prev => {
+      if (checked) {
+        // Add all IDs from this group that aren't already selected
+        const newIds = groupIds.filter(id => !prev.includes(id));
+        return [...prev, ...newIds];
+      } else {
+        // Remove all IDs from this group
+        return prev.filter(id => !groupIds.includes(id));
+      }
+    });
+  };
+
+  const isGroupFullySelected = (group: DuplicateGroup) => {
+    return group.participants.every(p => selectedForDeletion.includes(p.id));
+  };
+
+  const isGroupPartiallySelected = (group: DuplicateGroup) => {
+    return (
+      group.participants.some(p => selectedForDeletion.includes(p.id)) &&
+      !isGroupFullySelected(group)
+    );
+  };
+
   const handleSelectForDeletion = (participantId: string, checked: boolean) => {
     setSelectedForDeletion(prev => {
       if (checked) {
@@ -132,11 +157,11 @@ export function FixDuplicatesDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[85vh] max-w-5xl flex-col">
+      <DialogContent className="flex max-h-[85vh] max-w-[95vw] flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Fix Duplicate Participants
+            Find Duplicate Participants
           </DialogTitle>
           <DialogDescription>
             {duplicateGroups.length > 0 ? (
@@ -169,14 +194,36 @@ export function FixDuplicatesDialog({
                   key={group.key}
                   className="rounded-lg border border-orange-200 bg-orange-50 p-4 dark:border-orange-800 dark:bg-orange-950/20"
                 >
-                  <div className="mb-3 flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-orange-600" />
-                    <h4 className="font-medium text-orange-900 dark:text-orange-100">
-                      Duplicate Group {groupIndex + 1}
-                    </h4>
-                    <Badge variant="outline" className="text-orange-700">
-                      {group.duplicateFields.join(", ")} Match
-                    </Badge>
+                  <div className="mb-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="h-5 w-5 text-orange-600" />
+                      <h4 className="font-medium text-orange-900 dark:text-orange-100">
+                        Duplicate Group {groupIndex + 1}
+                      </h4>
+                      <Badge variant="outline" className="text-orange-700">
+                        {group.duplicateFields.join(", ")} Match
+                      </Badge>
+                      <Badge variant="secondary">
+                        {group.participants.length} participants
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={isGroupFullySelected(group)}
+                        ref={ref => {
+                          if (ref && "indeterminate" in ref) {
+                            (ref as HTMLInputElement).indeterminate =
+                              isGroupPartiallySelected(group);
+                          }
+                        }}
+                        onCheckedChange={checked =>
+                          handleSelectAllInGroup(group, !!checked)
+                        }
+                      />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        Select All in Group
+                      </span>
+                    </div>
                   </div>
 
                   <div className="overflow-x-auto">

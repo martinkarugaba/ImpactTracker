@@ -49,19 +49,36 @@ export function NavSecondary({
         <SidebarMenu>
           {filteredItems.map(item => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild tooltip={item.title}>
-                <Link href={item.url} title={item.title}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
+              <SidebarMenuButton
+                asChild
+                tooltip={item.title}
+                className="transition-all duration-200 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20"
+              >
+                <Link
+                  href={item.url}
+                  title={item.title}
+                  className="flex items-center gap-3"
+                >
+                  {item.icon && (
+                    <item.icon className="text-purple-600 dark:text-purple-400" />
+                  )}
+                  <span className="text-muted-foreground hover:text-foreground transition-colors">
+                    {item.title}
+                  </span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
           <SidebarMenuItem className="group-data-[collapsible=icon]:hidden">
-            <SidebarMenuButton asChild>
-              <label className="flex cursor-pointer items-center gap-2">
-                <IconBrightness />
-                <span>Dark Mode</span>
+            <SidebarMenuButton
+              asChild
+              className="hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 dark:hover:from-amber-900/20 dark:hover:to-orange-900/20"
+            >
+              <label className="flex cursor-pointer items-center gap-3">
+                <IconBrightness className="text-amber-600 dark:text-amber-400" />
+                <span className="text-muted-foreground hover:text-foreground transition-colors">
+                  Dark Mode
+                </span>
                 {mounted ? (
                   <Switch
                     className="ml-auto"

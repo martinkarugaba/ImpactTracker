@@ -908,6 +908,7 @@ export function ParticipantDemographicsAnalytics({
               description: "Trade and vocational training",
             }}
             icon={<Briefcase className="size-4" />}
+            className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50"
           />
 
           <MetricCard
@@ -918,6 +919,7 @@ export function ParticipantDemographicsAnalytics({
               description: "Communication & leadership",
             }}
             icon={<Users className="size-4" />}
+            className="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/50 dark:to-green-950/50"
           />
 
           <MetricCard
@@ -928,6 +930,7 @@ export function ParticipantDemographicsAnalytics({
               description: "Business management skills",
             }}
             icon={<Building2 className="size-4" />}
+            className="bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/50 dark:to-violet-950/50"
           />
         </div>
 
@@ -946,6 +949,7 @@ export function ParticipantDemographicsAnalytics({
                 description: "All vocational training entries",
               }}
               icon={<Users className="size-4" />}
+              className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/50"
             />
 
             <MetricCard
@@ -956,6 +960,7 @@ export function ParticipantDemographicsAnalytics({
                 description: "Successfully finished programs",
               }}
               icon={<Award className="size-4" />}
+              className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50"
             />
 
             <MetricCard
@@ -966,6 +971,7 @@ export function ParticipantDemographicsAnalytics({
                 description: "Received official certification",
               }}
               icon={<Award className="size-4" />}
+              className="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950/50 dark:to-amber-950/50"
             />
 
             <MetricCard
@@ -976,6 +982,7 @@ export function ParticipantDemographicsAnalytics({
                 description: "Overall training success",
               }}
               icon={<TrendingUp className="size-4" />}
+              className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/50 dark:to-purple-950/50"
             />
           </div>
         </div>
@@ -995,6 +1002,7 @@ export function ParticipantDemographicsAnalytics({
                 description: "All soft skills training entries",
               }}
               icon={<Users className="size-4" />}
+              className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/50 dark:to-teal-950/50"
             />
 
             <MetricCard
@@ -1005,6 +1013,7 @@ export function ParticipantDemographicsAnalytics({
                 description: "Successfully finished programs",
               }}
               icon={<Award className="size-4" />}
+              className="bg-gradient-to-br from-green-50 to-lime-50 dark:from-green-950/50 dark:to-lime-950/50"
             />
 
             <MetricCard
@@ -1015,6 +1024,7 @@ export function ParticipantDemographicsAnalytics({
                 description: "Received official certification",
               }}
               icon={<Award className="size-4" />}
+              className="bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-950/50 dark:to-blue-950/50"
             />
 
             <MetricCard
@@ -1025,6 +1035,7 @@ export function ParticipantDemographicsAnalytics({
                 description: "Overall training success",
               }}
               icon={<TrendingUp className="size-4" />}
+              className="bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/50 dark:to-emerald-950/50"
             />
           </div>
         </div>

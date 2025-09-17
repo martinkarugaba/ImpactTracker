@@ -92,8 +92,8 @@ export function getParticipantColumns({
         if (isMale) {
           return (
             <Badge
-              variant="secondary"
-              className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+              variant="outline"
+              className="border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
             >
               M
             </Badge>
@@ -103,8 +103,8 @@ export function getParticipantColumns({
         if (isFemale) {
           return (
             <Badge
-              variant="secondary"
-              className="bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200"
+              variant="outline"
+              className="border-pink-200 bg-pink-100 text-pink-800 dark:border-pink-800 dark:bg-pink-900/20 dark:text-pink-400"
             >
               F
             </Badge>
@@ -153,17 +153,17 @@ export function getParticipantColumns({
         let className = "";
 
         if (ageNum <= 35) {
-          variant = "secondary";
+          variant = "outline";
           className =
-            "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+            "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800";
         } else if (ageNum <= 50) {
-          variant = "secondary";
+          variant = "outline";
           className =
-            "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+            "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800";
         } else {
-          variant = "secondary";
+          variant = "outline";
           className =
-            "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200";
+            "bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800";
         }
 
         return (
@@ -244,8 +244,8 @@ export function getParticipantColumns({
 
         return (
           <Badge
-            variant="secondary"
-            className="bg-purple-100 font-mono text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-200"
+            variant="outline"
+            className="border-purple-200 bg-purple-100 font-mono text-purple-800 hover:bg-purple-200 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
             title={name}
           >
             {acronym}
@@ -266,8 +266,8 @@ export function getParticipantColumns({
         return (
           <div className="flex items-center gap-2">
             <Badge
-              variant="secondary"
-              className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200"
+              variant="outline"
+              className="border-emerald-200 bg-emerald-100 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400"
               title={name}
             >
               {acronym}
@@ -289,23 +289,28 @@ export function getParticipantColumns({
         const statusMap = {
           employed: {
             label: "Employed",
-            color: "bg-green-100 text-green-800",
+            color:
+              "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800",
           },
           unemployed: {
             label: "Unemployed",
-            color: "bg-red-100 text-red-800",
+            color:
+              "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800",
           },
           "self-employed": {
             label: "Self-Employed",
-            color: "bg-blue-100 text-blue-800",
+            color:
+              "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800",
           },
           student: {
             label: "Student",
-            color: "bg-purple-100 text-purple-800",
+            color:
+              "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800",
           },
           retired: {
             label: "Retired",
-            color: "bg-gray-100 text-gray-800",
+            color:
+              "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-700",
           },
         };
 
@@ -322,7 +327,7 @@ export function getParticipantColumns({
 
         return (
           <Badge
-            variant="secondary"
+            variant="outline"
             className={`${statusInfo.color} max-w-[150px] truncate`}
           >
             {statusInfo.label}
@@ -341,14 +346,20 @@ export function getParticipantColumns({
 
         if (isSubscribed) {
           return (
-            <Badge variant="secondary" className="bg-green-100 text-green-800">
+            <Badge
+              variant="outline"
+              className="border-green-200 bg-green-100 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400"
+            >
               ✓ Member
             </Badge>
           );
         }
 
         return (
-          <Badge variant="outline" className="text-gray-600">
+          <Badge
+            variant="outline"
+            className="border-gray-200 bg-gray-100 text-gray-600 dark:border-gray-700 dark:bg-gray-900/20 dark:text-gray-400"
+          >
             Not Member
           </Badge>
         );
@@ -440,13 +451,26 @@ export function getParticipantColumns({
         if (!maritalStatus) return "—";
 
         const statusMap = {
-          single: { label: "Single", color: "bg-blue-100 text-blue-800" },
-          married: { label: "Married", color: "bg-green-100 text-green-800" },
+          single: {
+            label: "Single",
+            color:
+              "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800",
+          },
+          married: {
+            label: "Married",
+            color:
+              "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800",
+          },
           divorced: {
             label: "Divorced",
-            color: "bg-orange-100 text-orange-800",
+            color:
+              "bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800",
           },
-          widowed: { label: "Widowed", color: "bg-gray-100 text-gray-800" },
+          widowed: {
+            label: "Widowed",
+            color:
+              "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-700",
+          },
         };
 
         const statusInfo = statusMap[maritalStatus as keyof typeof statusMap];
@@ -471,16 +495,30 @@ export function getParticipantColumns({
         if (!educationLevel) return "—";
 
         const levelMap = {
-          none: { label: "None", color: "bg-red-100 text-red-800" },
-          primary: { label: "Primary", color: "bg-yellow-100 text-yellow-800" },
-          secondary: { label: "Secondary", color: "bg-blue-100 text-blue-800" },
+          none: {
+            label: "None",
+            color:
+              "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800",
+          },
+          primary: {
+            label: "Primary",
+            color:
+              "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800",
+          },
+          secondary: {
+            label: "Secondary",
+            color:
+              "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800",
+          },
           tertiary: {
             label: "Tertiary",
-            color: "bg-purple-100 text-purple-800",
+            color:
+              "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800",
           },
           university: {
             label: "University",
-            color: "bg-green-100 text-green-800",
+            color:
+              "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800",
           },
         };
 
@@ -507,8 +545,8 @@ export function getParticipantColumns({
         if (ownsEnterprise) {
           return (
             <Badge
-              variant="secondary"
-              className="bg-emerald-100 text-emerald-800"
+              variant="outline"
+              className="border-emerald-200 bg-emerald-100 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400"
             >
               ✓ Owner
             </Badge>
@@ -516,7 +554,10 @@ export function getParticipantColumns({
         }
 
         return (
-          <Badge variant="outline" className="text-gray-600">
+          <Badge
+            variant="outline"
+            className="border-gray-200 bg-gray-100 text-gray-600 dark:border-gray-700 dark:bg-gray-900/20 dark:text-gray-400"
+          >
             No Enterprise
           </Badge>
         );
@@ -562,7 +603,10 @@ export function getParticipantColumns({
 
         return (
           <div className="space-y-1">
-            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+            <Badge
+              variant="outline"
+              className="border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+            >
               {participations.length} Skills
             </Badge>
             <div className="max-w-[150px] text-xs">
@@ -589,10 +633,21 @@ export function getParticipantColumns({
 
         return (
           <div className="space-y-1">
-            <Badge variant="secondary" className="bg-green-100 text-green-800">
+            <Badge
+              variant="outline"
+              className="border-green-200 bg-green-100 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400"
+            >
               {completions.length} Completed
             </Badge>
-            <div className="max-w-[150px] text-xs">
+            <div
+              className="max-w-[150px] truncate text-xs"
+              title={
+                completions.slice(0, 2).join(", ") +
+                (completions.length > 2
+                  ? ` +${completions.length - 2} more`
+                  : "")
+              }
+            >
               {completions.slice(0, 2).join(", ")}
               {completions.length > 2 && ` +${completions.length - 2} more`}
             </div>
@@ -616,10 +671,21 @@ export function getParticipantColumns({
 
         return (
           <div className="space-y-1">
-            <Badge variant="secondary" className="bg-amber-100 text-amber-800">
+            <Badge
+              variant="outline"
+              className="border-amber-200 bg-amber-100 text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400"
+            >
               {certifications.length} Certified
             </Badge>
-            <div className="max-w-[150px] text-xs">
+            <div
+              className="max-w-[150px] truncate text-xs"
+              title={
+                certifications.slice(0, 2).join(", ") +
+                (certifications.length > 2
+                  ? ` +${certifications.length - 2} more`
+                  : "")
+              }
+            >
               {certifications.slice(0, 2).join(", ")}
               {certifications.length > 2 &&
                 ` +${certifications.length - 2} more`}
@@ -644,12 +710,20 @@ export function getParticipantColumns({
         return (
           <div className="space-y-1">
             <Badge
-              variant="secondary"
-              className="bg-purple-100 text-purple-800"
+              variant="outline"
+              className="border-purple-200 bg-purple-100 text-purple-800 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
             >
               {participations.length} Skills
             </Badge>
-            <div className="max-w-[150px] text-xs">
+            <div
+              className="max-w-[150px] truncate text-xs"
+              title={
+                participations.slice(0, 2).join(", ") +
+                (participations.length > 2
+                  ? ` +${participations.length - 2} more`
+                  : "")
+              }
+            >
               {participations.slice(0, 2).join(", ")}
               {participations.length > 2 &&
                 ` +${participations.length - 2} more`}
@@ -674,12 +748,20 @@ export function getParticipantColumns({
         return (
           <div className="space-y-1">
             <Badge
-              variant="secondary"
-              className="bg-indigo-100 text-indigo-800"
+              variant="outline"
+              className="border-indigo-200 bg-indigo-100 text-indigo-800 dark:border-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400"
             >
               {completions.length} Completed
             </Badge>
-            <div className="max-w-[150px] text-xs">
+            <div
+              className="max-w-[150px] truncate text-xs"
+              title={
+                completions.slice(0, 2).join(", ") +
+                (completions.length > 2
+                  ? ` +${completions.length - 2} more`
+                  : "")
+              }
+            >
               {completions.slice(0, 2).join(", ")}
               {completions.length > 2 && ` +${completions.length - 2} more`}
             </div>
@@ -702,10 +784,21 @@ export function getParticipantColumns({
 
         return (
           <div className="space-y-1">
-            <Badge variant="secondary" className="bg-cyan-100 text-cyan-800">
+            <Badge
+              variant="outline"
+              className="border-cyan-200 bg-cyan-100 text-cyan-800 dark:border-cyan-800 dark:bg-cyan-900/20 dark:text-cyan-400"
+            >
               {certifications.length} Certified
             </Badge>
-            <div className="max-w-[150px] text-xs">
+            <div
+              className="max-w-[150px] truncate text-xs"
+              title={
+                certifications.slice(0, 2).join(", ") +
+                (certifications.length > 2
+                  ? ` +${certifications.length - 2} more`
+                  : "")
+              }
+            >
               {certifications.slice(0, 2).join(", ")}
               {certifications.length > 2 &&
                 ` +${certifications.length - 2} more`}
@@ -724,9 +817,11 @@ export function getParticipantColumns({
         const hasSkills = row.original.hasBusinessSkills === "yes";
         return (
           <Badge
-            variant={hasSkills ? "secondary" : "outline"}
+            variant={hasSkills ? "outline" : "outline"}
             className={
-              hasSkills ? "bg-emerald-100 text-emerald-800" : "text-gray-600"
+              hasSkills
+                ? "border-emerald-200 bg-emerald-100 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400"
+                : "border-gray-200 bg-gray-100 text-gray-600 dark:border-gray-700 dark:bg-gray-900/20 dark:text-gray-400"
             }
           >
             {hasSkills ? "✓ Has Skills" : "No Skills"}
@@ -748,8 +843,8 @@ export function getParticipantColumns({
           return (
             <div className="space-y-1">
               <Badge
-                variant="secondary"
-                className="bg-purple-100 text-purple-800"
+                variant="outline"
+                className="border-purple-200 bg-purple-100 text-purple-800 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
               >
                 ✓ PWD
               </Badge>
@@ -766,7 +861,10 @@ export function getParticipantColumns({
         }
 
         return (
-          <Badge variant="outline" className="text-gray-600">
+          <Badge
+            variant="outline"
+            className="border-gray-200 bg-gray-100 text-gray-600 dark:border-gray-700 dark:bg-gray-900/20 dark:text-gray-400"
+          >
             No
           </Badge>
         );
@@ -783,12 +881,36 @@ export function getParticipantColumns({
         if (!segment) return "—";
 
         const segmentMap = {
-          youth: { label: "Youth", color: "bg-green-100 text-green-800" },
-          women: { label: "Women", color: "bg-pink-100 text-pink-800" },
-          pwd: { label: "PWD", color: "bg-purple-100 text-purple-800" },
-          elderly: { label: "Elderly", color: "bg-orange-100 text-orange-800" },
-          refugee: { label: "Refugee", color: "bg-red-100 text-red-800" },
-          host: { label: "Host", color: "bg-blue-100 text-blue-800" },
+          youth: {
+            label: "Youth",
+            color:
+              "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800",
+          },
+          women: {
+            label: "Women",
+            color:
+              "bg-pink-100 text-pink-800 border-pink-200 dark:bg-pink-900/20 dark:text-pink-400 dark:border-pink-800",
+          },
+          pwd: {
+            label: "PWD",
+            color:
+              "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800",
+          },
+          elderly: {
+            label: "Elderly",
+            color:
+              "bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800",
+          },
+          refugee: {
+            label: "Refugee",
+            color:
+              "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800",
+          },
+          host: {
+            label: "Host",
+            color:
+              "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800",
+          },
         };
 
         const segmentInfo = segmentMap[segment as keyof typeof segmentMap];
@@ -819,17 +941,21 @@ export function getParticipantColumns({
           minimumFractionDigits: 0,
         }).format(income);
 
-        let colorClass = "bg-gray-100 text-gray-800";
+        let colorClass =
+          "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-700";
         if (income < 100000) {
-          colorClass = "bg-red-100 text-red-800";
+          colorClass =
+            "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800";
         } else if (income < 500000) {
-          colorClass = "bg-yellow-100 text-yellow-800";
+          colorClass =
+            "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800";
         } else {
-          colorClass = "bg-green-100 text-green-800";
+          colorClass =
+            "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800";
         }
 
         return (
-          <Badge variant="secondary" className={colorClass}>
+          <Badge variant="outline" className={colorClass}>
             {formattedIncome}
           </Badge>
         );
@@ -875,19 +1001,24 @@ export function getParticipantColumns({
         const children = row.original.numberOfChildren;
         if (children === null || children === undefined) return "—";
 
-        let colorClass = "bg-gray-100 text-gray-800";
+        let colorClass =
+          "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-700";
         if (children === 0) {
-          colorClass = "bg-blue-100 text-blue-800";
+          colorClass =
+            "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800";
         } else if (children <= 2) {
-          colorClass = "bg-green-100 text-green-800";
+          colorClass =
+            "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800";
         } else if (children <= 4) {
-          colorClass = "bg-yellow-100 text-yellow-800";
+          colorClass =
+            "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800";
         } else {
-          colorClass = "bg-red-100 text-red-800";
+          colorClass =
+            "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800";
         }
 
         return (
-          <Badge variant="secondary" className={colorClass}>
+          <Badge variant="outline" className={colorClass}>
             {children}
           </Badge>
         );
@@ -903,9 +1034,11 @@ export function getParticipantColumns({
         const isStudent = row.original.isActiveStudent === "yes";
         return (
           <Badge
-            variant={isStudent ? "secondary" : "outline"}
+            variant="outline"
             className={
-              isStudent ? "bg-indigo-100 text-indigo-800" : "text-gray-600"
+              isStudent
+                ? "border-indigo-200 bg-indigo-100 text-indigo-800 dark:border-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400"
+                : "border-gray-200 bg-gray-100 text-gray-600 dark:border-gray-700 dark:bg-gray-900/20 dark:text-gray-400"
             }
           >
             {isStudent ? "✓ Student" : "Not Student"}
@@ -923,7 +1056,10 @@ export function getParticipantColumns({
         const isTeenMother = row.original.isTeenMother === "yes";
         if (!isTeenMother) return "—";
         return (
-          <Badge variant="secondary" className="bg-pink-100 text-pink-800">
+          <Badge
+            variant="outline"
+            className="border-pink-200 bg-pink-100 text-pink-800 dark:border-pink-800 dark:bg-pink-900/20 dark:text-pink-400"
+          >
             ✓ Teen Mother
           </Badge>
         );

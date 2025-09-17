@@ -71,7 +71,7 @@ export function JotaiParticipantsContainer({
           <TabsList className="bg-muted/30 grid h-11 w-auto grid-cols-3 rounded-lg p-1">
             <TabsTrigger
               value="participants"
-              className="data-[state=active]:bg-background flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:shadow-sm"
+              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
             >
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">Participants</span>
@@ -79,7 +79,7 @@ export function JotaiParticipantsContainer({
             </TabsTrigger>
             <TabsTrigger
               value="analytics"
-              className="data-[state=active]:bg-background flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:shadow-sm"
+              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
             >
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">Analytics</span>
@@ -87,7 +87,7 @@ export function JotaiParticipantsContainer({
             </TabsTrigger>
             <TabsTrigger
               value="charts"
-              className="data-[state=active]:bg-background flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:shadow-sm"
+              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
             >
               <PieChart className="h-4 w-4" />
               <span className="hidden sm:inline">Charts</span>
@@ -122,7 +122,7 @@ export function JotaiParticipantsContainer({
             onEditParticipant={handleEditWrapper}
             onDeleteParticipant={handleDeleteWrapper}
             onViewParticipant={state.handleView}
-            onExportData={() => {}} // TODO: Implement export
+            onExportData={format => state.handleExport(format)}
             onImport={() => {}} // TODO: Implement import
             setIsImportDialogOpen={state.setIsImportDialogOpen}
           />

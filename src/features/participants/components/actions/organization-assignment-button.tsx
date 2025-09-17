@@ -48,7 +48,11 @@ export function OrganizationAssignmentButton({
     <>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" className={className}>
+          <Button
+            variant="outline"
+            size="sm"
+            className={`border-gray-200 bg-gray-100 text-gray-800 hover:bg-gray-200 dark:border-gray-800 dark:bg-gray-900/20 dark:text-gray-400 dark:hover:bg-gray-900/30 ${className || ""}`}
+          >
             <Settings className="mr-2 h-4 w-4" />
             Fix Organizations
           </Button>
