@@ -31,7 +31,7 @@ import {
 import toast from "react-hot-toast";
 import { SimpleParticipantFilters } from "../filters/simple-participant-filters";
 import { OrganizationAssignmentButton } from "../actions/organization-assignment-button";
-import { EnhancedFixDuplicatesDialog } from "../data-table/enhanced-fix-duplicates-dialog";
+import { FixDuplicatesDialog } from "../fix-duplicates";
 import { useThemeConfig } from "@/features/themes/components/active-theme";
 
 interface ParticipantsTabProps {
@@ -354,7 +354,7 @@ export function ParticipantsTab({
         />
 
         {/* Fix Duplicates Dialog - Enhanced to check all database */}
-        <EnhancedFixDuplicatesDialog
+        <FixDuplicatesDialog
           open={isFixDuplicatesDialogOpen}
           onOpenChange={setIsFixDuplicatesDialogOpen}
           onDeleteCompleted={deletedCount => {
