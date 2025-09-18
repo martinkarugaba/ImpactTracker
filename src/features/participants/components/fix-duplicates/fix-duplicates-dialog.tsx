@@ -41,11 +41,18 @@ export function FixDuplicatesDialog({
     }
   }, [open, duplicatesData, loadDuplicates]);
 
+  // Determine if we should show wide layout (when showing duplicate groups)
+  const showWideLayout = duplicateGroups.length > 0 && !isLoading;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="flex max-h-[85vh] !w-[98vw] !max-w-none flex-col"
-        style={{ width: "98vw", maxWidth: "1600px" }}
+        className={`flex max-h-[85vh] flex-col ${
+          showWideLayout ? "!w-[80vw] !max-w-none" : "w-full max-w-7xl"
+        }`}
+        style={
+          showWideLayout ? { width: "80vw", maxWidth: "1300px" } : undefined
+        }
       >
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">

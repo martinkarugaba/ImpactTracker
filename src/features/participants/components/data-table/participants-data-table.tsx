@@ -65,7 +65,7 @@ export function ParticipantsDataTable({
     rowSelectionState,
     handleClearSelection,
     setRowSelectionState,
-  } = useTableState(undefined, data);
+  } = useTableState("", data);
 
   // Notify parent about selected rows changes
   React.useEffect(() => {

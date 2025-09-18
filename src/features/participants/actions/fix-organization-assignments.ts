@@ -3,7 +3,7 @@
 import { auth } from "@/features/auth/auth";
 import { db } from "@/lib/db";
 import { participants, organizations } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 // Mapping function to determine organization based on subcounty
 function mapSubCountyToOrgKeyword(subCountyName: string): string | null {
@@ -544,6 +544,144 @@ export async function assignParticipantsBySubCounty(
     };
   } catch (error) {
     console.error("Error assigning participants by subcounty:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
+// Function to assign participants from multiple subcounties to a specific organization
+export async function assignParticipantsByMultipleSubCounties(
+  subCounties: string[],
+  organizationId: string
+) {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return { success: false, error: "Not authenticated" };
+    }
+
+    // Check if user has permission to assign participants by subcounty (super_admin or cluster_manager only)
+    if (
+      session.user.role !== "super_admin" &&
+      session.user.role !== "cluster_manager"
+    ) {
+      return {
+        success: false,
+        error:
+          "Access denied. Only super administrators and cluster managers can assign participants by subcounty.",
+      };
+    }
+
+    console.log(
+      `Assigning participants from ${subCounties.length} subcounties to organization ${organizationId}...`
+    );
+
+    // Get organization details for logging
+    const organization = await db.query.organizations.findFirst({
+      where: eq(organizations.id, organizationId),
+      columns: {
+        id: true,
+        name: true,
+      },
+    });
+
+    if (!organization) {
+      return { success: false, error: "Organization not found" };
+    }
+
+    let totalParticipantsFound = 0;
+    let totalParticipantsUpdated = 0;
+    const results: Array<{
+      subCounty: string;
+      participantsFound: number;
+      participantsUpdated: number;
+    }> = [];
+
+    // Process each subcounty
+    for (const subCounty of subCounties) {
+      console.log(`Processing subcounty: ${subCounty}`);
+
+      // Find all participants from the specified subcounty
+      const participantsToUpdate = await db.query.participants.findMany({
+        where: eq(participants.subCounty, subCounty),
+        columns: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          subCounty: true,
+          organization_id: true,
+        },
+      });
+
+      console.log(
+        `Found ${participantsToUpdate.length} participants from ${subCounty}`
+      );
+
+      totalParticipantsFound += participantsToUpdate.length;
+
+      if (participantsToUpdate.length === 0) {
+        results.push({
+          subCounty,
+          participantsFound: 0,
+          participantsUpdated: 0,
+        });
+        continue;
+      }
+
+      // Filter participants that actually need updating
+      const participantsNeedingUpdate = participantsToUpdate.filter(
+        p => p.organization_id !== organizationId
+      );
+
+      console.log(
+        `${participantsNeedingUpdate.length} participants from ${subCounty} need organization update`
+      );
+
+      if (participantsNeedingUpdate.length > 0) {
+        // Extract IDs for batch update
+        const participantIds = participantsNeedingUpdate.map(p => p.id);
+
+        // Perform batch update
+        await db
+          .update(participants)
+          .set({
+            organization_id: organizationId,
+            updated_at: new Date(),
+          })
+          .where(sql`${participants.id} = ANY(${participantIds})`);
+
+        console.log(
+          `Updated ${participantsNeedingUpdate.length} participants from ${subCounty} to organization ${organization.name}`
+        );
+
+        totalParticipantsUpdated += participantsNeedingUpdate.length;
+      }
+
+      results.push({
+        subCounty,
+        participantsFound: participantsToUpdate.length,
+        participantsUpdated: participantsNeedingUpdate.length,
+      });
+    }
+
+    return {
+      success: true,
+      message: `Successfully processed ${subCounties.length} subcounties. Updated ${totalParticipantsUpdated} participants to ${organization.name}`,
+      details: {
+        organizationName: organization.name,
+        totalSubCounties: subCounties.length,
+        totalParticipantsFound,
+        totalParticipantsUpdated,
+        results,
+      },
+    };
+  } catch (error) {
+    console.error(
+      "Error assigning participants by multiple subcounties:",
+      error
+    );
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred",

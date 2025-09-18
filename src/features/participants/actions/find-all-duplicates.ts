@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { participants, organizations } from "@/lib/db/schema";
-import { sql, eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 
 export interface DuplicateGroup {
   key: string;
@@ -199,11 +199,12 @@ export async function deleteParticipants(
       participantIds
     );
 
+    // Use inArray for better compatibility with different databases
     await db
       .delete(participants)
-      .where(sql`${participants.id} = ANY(${participantIds})`);
+      .where(inArray(participants.id, participantIds));
 
-    console.log(`Successfully deleted participants`);
+    console.log(`Successfully deleted ${participantIds.length} participants`);
   } catch (error) {
     console.error("Error deleting participants:", error);
     throw new Error("Failed to delete participants");

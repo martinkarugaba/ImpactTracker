@@ -81,6 +81,7 @@ export function DuplicateGroupCard({ group, index }: DuplicateGroupCardProps) {
               <TableHead>Name</TableHead>
               <TableHead>Contact</TableHead>
               <TableHead>District</TableHead>
+              <TableHead>Sub County</TableHead>
               <TableHead>Organization</TableHead>
               <TableHead>Created</TableHead>
             </TableRow>
@@ -101,6 +102,7 @@ export function DuplicateGroupCard({ group, index }: DuplicateGroupCardProps) {
                 </TableCell>
                 <TableCell>{formatContact(participant.contact)}</TableCell>
                 <TableCell>{participant.district || "—"}</TableCell>
+                <TableCell>{participant.subCounty || "—"}</TableCell>
                 <TableCell>
                   {participant.organizationName ||
                     participant.organization_id ||
