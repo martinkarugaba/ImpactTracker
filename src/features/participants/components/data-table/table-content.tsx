@@ -4,6 +4,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { type Participant } from "../../types/types";
 import { type ParticipantFormValues } from "../participant-form";
 import { getParticipantColumns } from "./columns";
+import { TableSkeleton } from "./table-skeleton";
 
 interface TableContentProps {
   data: Participant[];
@@ -28,7 +29,7 @@ interface TableContentProps {
 export function TableContent({
   data,
   pagination,
-  isLoading: _isLoading,
+  isLoading,
   searchValue: _searchValue,
   onSearchChange: _onSearchChange,
   onEditParticipant,
@@ -65,6 +66,13 @@ export function TableContent({
         return columnVisibility[column.id as string] !== false;
       })
     : allColumns;
+
+  // Show skeleton while loading
+  if (isLoading) {
+    return (
+      <TableSkeleton rows={pagination.limit} columns={visibleColumns.length} />
+    );
+  }
 
   return (
     <DataTable

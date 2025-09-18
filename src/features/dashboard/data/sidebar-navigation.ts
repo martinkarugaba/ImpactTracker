@@ -125,7 +125,7 @@ export const navigationData = {
   kpis: [
     {
       name: "Overview",
-      url: "/dashboard/overview",
+      url: "/dashboard/user-overview",
       icon: IconDatabase,
     },
     {

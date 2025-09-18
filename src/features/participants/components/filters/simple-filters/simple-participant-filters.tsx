@@ -9,6 +9,7 @@ import { MoreFiltersPopover } from "./more-filters-popover";
 import { ActiveFilterBadges } from "./active-filter-badges";
 import { generateDynamicFilterOptions } from "./utils";
 import { type SimpleParticipantFiltersProps } from "./types";
+import { ParticipantFiltersLoadingSkeleton } from "../filter-loading-skeleton";
 
 export function SimpleParticipantFilters({
   projects,
@@ -16,6 +17,7 @@ export function SimpleParticipantFilters({
   districts = [],
   subCounties = [],
   participants = [],
+  isLoading = false,
 }: SimpleParticipantFiltersProps) {
   const filters = useAtomValue(participantFiltersAtom);
 
@@ -33,6 +35,11 @@ export function SimpleParticipantFilters({
   };
 
   const activeFiltersCount = getActiveFiltersCount();
+
+  // Show loading skeleton while data is loading
+  if (isLoading) {
+    return <ParticipantFiltersLoadingSkeleton />;
+  }
 
   return (
     <div className="space-y-3">

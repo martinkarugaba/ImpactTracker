@@ -6,3 +6,4 @@ export { ParticipantsDataTable } from "./participants-data-table";
 export { BulkDeleteButton } from "./bulk-delete-button";
 export { getParticipantColumns } from "./columns";
 export { ActionCell } from "./action-cell";
+export { TableSkeleton } from "./table-skeleton";

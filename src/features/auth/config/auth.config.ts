@@ -10,6 +10,7 @@ import bcrypt from "bcryptjs";
 export const authConfig: NextAuthConfig = {
   secret: process.env.AUTH_SECRET,
   pages: {
+    signIn: "/auth/login",
     error: "/auth/error",
   },
   session: {
@@ -126,10 +127,33 @@ export const authConfig: NextAuthConfig = {
         try {
           console.log("Attempting database connection...");
 
-          // Find user by email
-          const user = await db.query.users.findFirst({
-            where: eq(users.email, email),
-          });
+          // Add retry logic for database connection issues
+          let user = null;
+          let retryCount = 0;
+          const maxRetries = 3;
+
+          while (retryCount < maxRetries && !user) {
+            try {
+              // Find user by email
+              user = await db.query.users.findFirst({
+                where: eq(users.email, email),
+              });
+              break; // Success, exit retry loop
+            } catch (dbError) {
+              retryCount++;
+              console.log(
+                `Database connection attempt ${retryCount} failed:`,
+                dbError
+              );
+
+              if (retryCount >= maxRetries) {
+                throw dbError; // Re-throw after max retries
+              }
+
+              // Wait 1 second before retry
+              await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+          }
 
           console.log("Database query completed. User found:", !!user);
 

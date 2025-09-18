@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { login } from "@/features/auth/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +32,6 @@ interface LoginFormProps {
 
 export function LoginForm({ onSuccess }: LoginFormProps = {}) {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(LoginFormSchema),
@@ -52,13 +50,19 @@ export function LoginForm({ onSuccess }: LoginFormProps = {}) {
       if (result.success) {
         toast.success("You have been logged in successfully.");
         onSuccess?.(); // Call the success callback if provided
-        router.push("/dashboard");
-        router.refresh();
+
+        // Add a small delay to ensure session is fully established before redirect
+        setTimeout(() => {
+          window.location.href = "/dashboard/user-overview";
+        }, 100);
       } else {
         toast.error(result.error || "Failed to log in. Please try again.");
       }
-    } catch {
-      toast.error("An unexpected error occurred. Please try again.");
+    } catch (loginError) {
+      console.error("Login process error:", loginError);
+      toast.error(
+        "An unexpected error occurred during login. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }

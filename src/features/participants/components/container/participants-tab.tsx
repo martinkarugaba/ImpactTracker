@@ -302,6 +302,7 @@ export function ParticipantsTab({
           districts={filterOptions.districts}
           subCounties={filterOptions.subCounties}
           participants={participants}
+          isLoading={isParticipantsLoading}
         />
 
         {/* Participants Table - Primary interface now includes search and add actions */}

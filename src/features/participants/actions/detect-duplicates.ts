@@ -148,21 +148,34 @@ function calculateMatch(
     reasons.push("Name similar");
   }
 
-  // Phone number matching
+  // Phone number matching (but only award points if names are also similar)
   if (importRow.contact && existingParticipant.contact) {
     const normalizedImport = normalizePhone(importRow.contact);
     const normalizedExisting = normalizePhone(existingParticipant.contact);
 
     if (normalizedImport && normalizedExisting) {
       if (normalizedImport === normalizedExisting) {
-        score += 30 * geoScore.modifier;
-        reasons.push("Phone exact match");
+        // Phone matches exactly, but only count it if names are also reasonably similar
+        if (nameSim >= 50) {
+          // Require at least 50% name similarity for phone match to count
+          score += 30 * geoScore.modifier;
+          reasons.push("Phone exact match with name similarity");
+        } else {
+          reasons.push(
+            "Phone match but names too different - likely different people"
+          );
+        }
       } else if (
         normalizedImport.includes(normalizedExisting) ||
         normalizedExisting.includes(normalizedImport)
       ) {
-        score += 20 * geoScore.modifier;
-        reasons.push("Phone partial match");
+        // Partial phone match, require higher name similarity
+        if (nameSim >= 60) {
+          score += 20 * geoScore.modifier;
+          reasons.push("Phone partial match with name similarity");
+        } else {
+          reasons.push("Phone partial match but names too different");
+        }
       }
     }
   }

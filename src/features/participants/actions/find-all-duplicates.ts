@@ -256,10 +256,10 @@ export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
       }
     }
 
-    // Find contact-based duplicates with geographic assessment
+    // Find contact-based duplicates with geographic assessment and name similarity requirement
     for (const [normalizedPhone, group] of Object.entries(phoneGroups)) {
       if (group.length > 1) {
-        // For each group, find pairs that might be duplicates considering geography
+        // For each group, find pairs that might be duplicates considering geography and names
         const validDuplicates: typeof group = [];
 
         for (let i = 0; i < group.length; i++) {
@@ -270,21 +270,35 @@ export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
             const geoAssessment = assessGeographicCompatibility(p1, p2);
 
             if (geoAssessment.compatible) {
-              // For phone matches, require higher threshold for cross-location
-              const requiredThreshold = geoAssessment.penalty > 10 ? 95 : 70; // Very high threshold for different districts
-
-              // Phone numbers match exactly, so base score is 100
-              const adjustedSimilarity = Math.max(
-                0,
-                100 - geoAssessment.penalty
+              // Calculate name similarity between the two participants
+              const firstNameSim = calculateSimilarity(
+                p1.firstName,
+                p2.firstName
               );
+              const lastNameSim = calculateSimilarity(p1.lastName, p2.lastName);
+              const avgNameSim = (firstNameSim + lastNameSim) / 2;
 
-              if (adjustedSimilarity >= requiredThreshold) {
-                if (!validDuplicates.find(p => p.id === p1.id))
-                  validDuplicates.push(p1);
-                if (!validDuplicates.find(p => p.id === p2.id))
-                  validDuplicates.push(p2);
+              // Require meaningful name similarity for contact-based duplicates
+              const requiredNameSimilarity =
+                geoAssessment.penalty > 10 ? 70 : 50; // Higher name similarity required for cross-location
+
+              if (avgNameSim >= requiredNameSimilarity) {
+                // Phone numbers match exactly, so base score is 100
+                const adjustedSimilarity = Math.max(
+                  0,
+                  100 - geoAssessment.penalty
+                );
+
+                const requiredThreshold = geoAssessment.penalty > 10 ? 90 : 70;
+
+                if (adjustedSimilarity >= requiredThreshold) {
+                  if (!validDuplicates.find(p => p.id === p1.id))
+                    validDuplicates.push(p1);
+                  if (!validDuplicates.find(p => p.id === p2.id))
+                    validDuplicates.push(p2);
+                }
               }
+              // If names are too different, we don't consider them duplicates even with same phone
             }
           }
         }

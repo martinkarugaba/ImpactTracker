@@ -106,13 +106,8 @@ const impactMetrics = [
 export default async function SuccessStoriesPage() {
   const session = await auth();
 
-  if (!session?.user) {
-    redirect("/login");
-  }
-
-  // Restrict to super admin only
-  if (session.user.role !== "super_admin") {
-    redirect("/dashboard");
+  if (!session || session.user.role !== "super_admin") {
+    redirect("/auth/login");
   }
 
   const featuredStories = mockSuccessStories.filter(story => story.featured);

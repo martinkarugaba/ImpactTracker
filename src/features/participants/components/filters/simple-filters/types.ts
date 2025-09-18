@@ -25,4 +25,5 @@ export interface SimpleParticipantFiltersProps {
   districts?: Array<{ id: string; name: string }>;
   subCounties?: Array<{ id: string; name: string }>;
   participants?: Participant[];
+  isLoading?: boolean;
 }
