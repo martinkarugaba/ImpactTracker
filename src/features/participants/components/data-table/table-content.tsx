@@ -67,8 +67,8 @@ export function TableContent({
       })
     : allColumns;
 
-  // Show skeleton while loading
-  if (isLoading) {
+  // Show skeleton while loading initially (no data)
+  if (isLoading && data.length === 0) {
     return (
       <TableSkeleton
         rows={pagination.limit}
@@ -89,6 +89,7 @@ export function TableContent({
       onRowSelectionStateChange={onRowSelectionStateChange}
       serverSideTotal={pagination.total}
       serverSideFiltered={pagination.total}
+      isLoading={isLoading} // Pass loading state to show overlay during pagination
     />
   );
 }
