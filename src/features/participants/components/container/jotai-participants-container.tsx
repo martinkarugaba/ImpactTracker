@@ -31,7 +31,7 @@ export function JotaiParticipantsContainer({
   const { activeTab, setActiveTab } = useParticipantState();
 
   const filterOptions = useFilterOptions({
-    participants: state.participants,
+    clusterId,
     locationNames: state.locationNames,
   });
 

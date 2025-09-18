@@ -71,7 +71,7 @@ function MembersPageSkeleton() {
 
 // Main page component with proper metadata
 export const metadata = {
-  title: "Members | KPI Edge",
+  title: "Members | Impact Tracker",
   description: "Manage cluster members and organizations",
 };
 

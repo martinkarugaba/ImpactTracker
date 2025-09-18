@@ -32,7 +32,9 @@ export function HeroSection() {
             </h1>
             <p className="text-muted-foreground/80 max-w-4xl text-lg md:text-xl lg:text-2xl">
               Empower your non-profit with{" "}
-              <span className="text-foreground font-semibold">ImpactTrack</span>
+              <span className="text-foreground font-semibold">
+                Impact Tracker
+              </span>
               , the all-in-one platform for participant tracking, training
               management, and VSLA monitoring. Gain insights, optimize programs,
               and demonstrate your impact.

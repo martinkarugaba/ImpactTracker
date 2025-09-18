@@ -20,7 +20,7 @@ import { auth } from "@/features/auth/auth";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Success Stories",
+  title: "Success Stories | Impact Tracker",
   description: "Inspiring stories from our community members and partners.",
 };
 
