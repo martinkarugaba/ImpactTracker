@@ -39,8 +39,9 @@ export function AssignmentResults({
                 <p className="font-medium">Breakdown by subcounty:</p>
                 {assignmentData.details.results.map((result, index) => (
                   <div key={index} className="ml-2 text-xs">
-                    • {result.subCounty}: {result.participantsUpdated} of{" "}
-                    {result.participantsFound} participants
+                    • {result.subcounty || result.parish}:{" "}
+                    {result.participantsUpdated} of {result.participantsFound}{" "}
+                    participants
                   </div>
                 ))}
               </div>

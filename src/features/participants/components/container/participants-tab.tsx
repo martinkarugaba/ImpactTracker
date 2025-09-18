@@ -271,10 +271,12 @@ export function ParticipantsTab({
                         ]
                       }
                       onCheckedChange={checked =>
-                        setColumnVisibility(prev => ({
-                          ...prev,
-                          [column.id]: !!checked,
-                        }))
+                        setColumnVisibility(
+                          (prev: typeof columnVisibility) => ({
+                            ...prev,
+                            [column.id]: !!checked,
+                          })
+                        )
                       }
                     >
                       {column.label}

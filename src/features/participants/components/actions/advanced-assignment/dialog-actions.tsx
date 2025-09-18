@@ -1,20 +1,27 @@
 import { Button } from "@/components/ui/button";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { Building2 } from "lucide-react";
+import type { AssignmentLevel } from "../../advanced-assignment/types";
 
 interface DialogActionsProps {
-  selectedSubCounties: string[];
+  assignmentLevel: AssignmentLevel;
+  selectedItems: string[];
   selectedOrganization: string;
   isPending: boolean;
   onAssign: () => void;
 }
 
 export function DialogActions({
-  selectedSubCounties,
+  assignmentLevel,
+  selectedItems,
   selectedOrganization,
   isPending,
   onAssign,
 }: DialogActionsProps) {
+  const itemType = assignmentLevel === "subcounty" ? "subcounty" : "parish";
+  const itemTypePlural =
+    assignmentLevel === "subcounty" ? "subcounties" : "parishes";
+
   return (
     <DialogFooter>
       <DialogClose asChild>
@@ -25,7 +32,7 @@ export function DialogActions({
       <Button
         onClick={onAssign}
         disabled={
-          selectedSubCounties.length === 0 || !selectedOrganization || isPending
+          selectedItems.length === 0 || !selectedOrganization || isPending
         }
       >
         {isPending ? (
@@ -34,8 +41,8 @@ export function DialogActions({
           <>
             <Building2 className="mr-2 h-4 w-4" />
             Assign Participants
-            {selectedSubCounties.length > 0 &&
-              ` (${selectedSubCounties.length} subcounty${selectedSubCounties.length > 1 ? "ies" : ""})`}
+            {selectedItems.length > 0 &&
+              ` (${selectedItems.length} ${selectedItems.length > 1 ? itemTypePlural : itemType})`}
           </>
         )}
       </Button>

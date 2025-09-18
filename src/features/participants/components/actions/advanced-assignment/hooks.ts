@@ -1,40 +1,65 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAtom, useSetAtom } from "jotai";
 import { toast } from "sonner";
-import { assignParticipantsByMultipleSubCounties } from "../../../actions/fix-organization-assignments";
 import {
+  assignParticipantsByMultipleSubCounties,
+  assignParticipantsByMultipleParishes,
+} from "../../../actions/fix-organization-assignments";
+import {
+  assignmentLevelAtom,
   selectedSubCountiesAtom,
+  selectedParishesAtom,
   selectedOrganizationAtom,
   clearSelectionAtom,
+  switchAssignmentLevelAtom,
   toggleSubCountyAtom,
+  toggleParishAtom,
   removeSubCountyAtom,
+  removeParishAtom,
   selectAllSubCountiesAtom,
+  selectAllParishesAtom,
 } from "./atoms";
-import type { SubCountyOption } from "./types";
+import type { AssignmentLevel } from "../../advanced-assignment/types";
+import type { SubCountyOption, ParishOption } from "./types";
 
 export function useAdvancedAssignment() {
+  const [assignmentLevel] = useAtom(assignmentLevelAtom);
   const [selectedSubCounties] = useAtom(selectedSubCountiesAtom);
+  const [selectedParishes] = useAtom(selectedParishesAtom);
   const [selectedOrganization, setSelectedOrganization] = useAtom(
     selectedOrganizationAtom
   );
   const clearSelection = useSetAtom(clearSelectionAtom);
+  const switchAssignmentLevel = useSetAtom(switchAssignmentLevelAtom);
   const toggleSubCounty = useSetAtom(toggleSubCountyAtom);
+  const toggleParish = useSetAtom(toggleParishAtom);
   const removeSubCounty = useSetAtom(removeSubCountyAtom);
+  const removeParish = useSetAtom(removeParishAtom);
   const selectAllSubCounties = useSetAtom(selectAllSubCountiesAtom);
+  const selectAllParishes = useSetAtom(selectAllParishesAtom);
   const queryClient = useQueryClient();
 
   const assignMutation = useMutation({
     mutationFn: async ({
-      subCounties,
+      level,
+      items,
       organizationId,
     }: {
-      subCounties: string[];
+      level: AssignmentLevel;
+      items: string[];
       organizationId: string;
     }) => {
-      return await assignParticipantsByMultipleSubCounties(
-        subCounties,
-        organizationId
-      );
+      if (level === "subcounty") {
+        return await assignParticipantsByMultipleSubCounties(
+          items,
+          organizationId
+        );
+      } else {
+        return await assignParticipantsByMultipleParishes(
+          items,
+          organizationId
+        );
+      }
     },
     onSuccess: data => {
       queryClient.invalidateQueries({ queryKey: ["participants"] });
@@ -53,26 +78,47 @@ export function useAdvancedAssignment() {
     },
   });
 
+  const handleLevelChange = (level: AssignmentLevel) => {
+    switchAssignmentLevel(level);
+  };
+
   const handleSubCountyToggle = (subCountyName: string) => {
     toggleSubCounty(subCountyName);
   };
 
-  const handleSelectAll = (subCounties: SubCountyOption[]) => {
+  const handleParishToggle = (parishName: string) => {
+    toggleParish(parishName);
+  };
+
+  const handleSelectAllSubCounties = (subCounties: SubCountyOption[]) => {
     selectAllSubCounties(subCounties);
+  };
+
+  const handleSelectAllParishes = (parishes: ParishOption[]) => {
+    selectAllParishes(parishes);
   };
 
   const handleRemoveSubCounty = (subCountyName: string) => {
     removeSubCounty(subCountyName);
   };
 
+  const handleRemoveParish = (parishName: string) => {
+    removeParish(parishName);
+  };
+
   const handleAssign = () => {
-    if (selectedSubCounties.length === 0 || !selectedOrganization) {
-      toast.error("Please select at least one subcounty and an organization");
+    const selectedItems =
+      assignmentLevel === "subcounty" ? selectedSubCounties : selectedParishes;
+
+    if (selectedItems.length === 0 || !selectedOrganization) {
+      const itemType = assignmentLevel === "subcounty" ? "subcounty" : "parish";
+      toast.error(`Please select at least one ${itemType} and an organization`);
       return;
     }
 
     assignMutation.mutate({
-      subCounties: selectedSubCounties,
+      level: assignmentLevel,
+      items: selectedItems,
       organizationId: selectedOrganization,
     });
   };
@@ -86,14 +132,20 @@ export function useAdvancedAssignment() {
 
   return {
     // State
+    assignmentLevel,
     selectedSubCounties,
+    selectedParishes,
     selectedOrganization,
     setSelectedOrganization,
 
     // Actions
+    handleLevelChange,
     handleSubCountyToggle,
-    handleSelectAll,
+    handleParishToggle,
+    handleSelectAllSubCounties,
+    handleSelectAllParishes,
     handleRemoveSubCounty,
+    handleRemoveParish,
     handleAssign,
     clearSelection,
 
