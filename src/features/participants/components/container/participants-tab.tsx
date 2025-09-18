@@ -22,7 +22,8 @@ import {
   FileText,
   Trash2,
 } from "lucide-react";
-import { ParticipantsDataTable } from "../participants-data-table";
+import { ParticipantsDataTable } from "../data-table/participants-data-table";
+import { PaginationControls } from "../data-table/pagination-controls";
 import {
   type Participant,
   type ParticipantFilters as ParticipantFiltersType,
@@ -97,6 +98,9 @@ export function ParticipantsTab({
   const [selectedParticipants, setSelectedParticipants] = useState<
     Participant[]
   >([]);
+  const [clearSelectionHandler, setClearSelectionHandler] = useState<
+    () => void
+  >(() => () => {});
 
   // Get active theme for the Add Participant button
   const { activeTheme } = useThemeConfig();
@@ -227,21 +231,35 @@ export function ParticipantsTab({
                 </DropdownMenuContent>
               </DropdownMenu>
               {selectedParticipants.length > 0 && (
-                <Button
-                  onClick={() => {
-                    // TODO: Implement bulk delete
-                    toast.success(
-                      `Selected ${selectedParticipants.length} participants for deletion`
-                    );
-                    setSelectedParticipants([]);
-                  }}
-                  variant="outline"
-                  size="sm"
-                  className="border-red-200 bg-red-100 text-red-800 hover:bg-red-200 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete Selected ({selectedParticipants.length})
-                </Button>
+                <>
+                  <Button
+                    onClick={() => {
+                      // TODO: Implement bulk delete
+                      toast.success(
+                        `Selected ${selectedParticipants.length} participants for deletion`
+                      );
+                      clearSelectionHandler();
+                      setSelectedParticipants([]);
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="border-red-200 bg-red-100 text-red-800 hover:bg-red-200 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete Selected ({selectedParticipants.length})
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      clearSelectionHandler();
+                      setSelectedParticipants([]);
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="border-gray-200 bg-gray-100 text-gray-800 hover:bg-gray-200 dark:border-gray-800 dark:bg-gray-900/20 dark:text-gray-400 dark:hover:bg-gray-900/30"
+                  >
+                    Clear Selection
+                  </Button>
+                </>
               )}
             </div>
 
@@ -305,6 +323,42 @@ export function ParticipantsTab({
           isLoading={isParticipantsLoading}
         />
 
+        {/* Pagination Controls - Right above table */}
+        <div className="-mb-5 flex items-center justify-between">
+          <div className="text-muted-foreground text-sm">
+            {(() => {
+              const data = participantsData as ParticipantsResponse;
+              return data?.success && data.data
+                ? `${data.data.pagination.total} total participants`
+                : "0 total participants";
+            })()}
+          </div>
+          <PaginationControls
+            pagination={(() => {
+              const data = participantsData as ParticipantsResponse;
+              if (data?.success && data.data) {
+                return {
+                  page: pagination.page,
+                  limit: pagination.pageSize,
+                  total: data.data.pagination.total,
+                  totalPages: data.data.pagination.totalPages,
+                };
+              }
+              return {
+                page: pagination.page,
+                limit: pagination.pageSize,
+                total: 0,
+                totalPages: 0,
+              };
+            })()}
+            selectedCount={selectedParticipants.length}
+            onPaginationChange={onPaginationChange}
+            onPageChange={onPageChange}
+            isLoading={isParticipantsLoading}
+            position="top"
+          />
+        </div>
+
         {/* Participants Table - Primary interface now includes search and add actions */}
         <ParticipantsDataTable
           data={participants}
@@ -354,6 +408,7 @@ export function ParticipantsTab({
           onImport={onImport}
           columnVisibility={columnVisibility}
           onSelectedRowsChange={setSelectedParticipants}
+          onClearSelectionChange={setClearSelectionHandler}
         />
 
         {/* Fix Duplicates Dialog - Enhanced to check all database */}

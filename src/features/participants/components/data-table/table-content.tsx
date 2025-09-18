@@ -70,7 +70,11 @@ export function TableContent({
   // Show skeleton while loading
   if (isLoading) {
     return (
-      <TableSkeleton rows={pagination.limit} columns={visibleColumns.length} />
+      <TableSkeleton
+        rows={pagination.limit}
+        columns={visibleColumns.length}
+        showRealColumns={true}
+      />
     );
   }
 
