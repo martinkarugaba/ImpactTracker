@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { ChevronDown, ChevronRight, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -226,23 +227,30 @@ export function ParticipantFilters({
   return (
     <div className="space-y-3">
       {/* Active Filter Header - Only show when there are active filters */}
-      {hasActiveFilters && (
-        <div className="animate-in slide-in-from-top-2 duration-300">
-          <FilterHeader
-            hasActiveFilters={hasActiveFilters}
-            onClearFilters={clearFilters}
-            filters={filters}
-            filterOptions={{
-              projects,
-              organizations,
-              districts,
-              subCounties,
-              enterprises,
-            }}
-            onRemoveFilter={removeFilter}
-          />
-        </div>
-      )}
+      <AnimatePresence>
+        {hasActiveFilters && (
+          <motion.div
+            initial={{ opacity: 0, height: 0, y: -10 }}
+            animate={{ opacity: 1, height: "auto", y: 0 }}
+            exit={{ opacity: 0, height: 0, y: -10 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            <FilterHeader
+              hasActiveFilters={hasActiveFilters}
+              onClearFilters={clearFilters}
+              filters={filters}
+              filterOptions={{
+                projects,
+                organizations,
+                districts,
+                subCounties,
+                enterprises,
+              }}
+              onRemoveFilter={removeFilter}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Essential Filters - Always visible */}
       <div className="space-y-2">
