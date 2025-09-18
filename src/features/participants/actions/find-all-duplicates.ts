@@ -86,7 +86,85 @@ export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
       return digits;
     };
 
-    // Group by normalized names
+    // Helper function to calculate similarity score for potential duplicates
+    const calculateSimilarity = (str1: string, str2: string): number => {
+      if (!str1 || !str2) return 0;
+      const s1 = str1.toLowerCase().trim();
+      const s2 = str2.toLowerCase().trim();
+      if (s1 === s2) return 100;
+
+      // Simple Levenshtein distance for basic similarity
+      const len1 = s1.length;
+      const len2 = s2.length;
+      const matrix = Array(len1 + 1)
+        .fill(null)
+        .map(() => Array(len2 + 1).fill(0));
+
+      for (let i = 0; i <= len1; i++) matrix[i][0] = i;
+      for (let j = 0; j <= len2; j++) matrix[0][j] = j;
+
+      for (let i = 1; i <= len1; i++) {
+        for (let j = 1; j <= len2; j++) {
+          const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j - 1] + cost
+          );
+        }
+      }
+
+      const distance = matrix[len1][len2];
+      const maxLength = Math.max(len1, len2);
+      return Math.round(((maxLength - distance) / maxLength) * 100);
+    };
+
+    // Helper function to assess geographic compatibility
+    const assessGeographicCompatibility = (
+      p1: (typeof allParticipants)[0],
+      p2: (typeof allParticipants)[0]
+    ): {
+      compatible: boolean;
+      penalty: number;
+      reason: string;
+    } => {
+      const district1 = p1.district?.toLowerCase().trim() || "";
+      const district2 = p2.district?.toLowerCase().trim() || "";
+      const subcounty1 = p1.subCounty?.toLowerCase().trim() || "";
+      const subcounty2 = p2.subCounty?.toLowerCase().trim() || "";
+
+      // Missing location data - proceed with caution
+      if (!district1 || !district2 || !subcounty1 || !subcounty2) {
+        return {
+          compatible: true,
+          penalty: 15,
+          reason: "Missing location data - requires high similarity",
+        };
+      }
+
+      // Same subcounty - normal detection
+      if (district1 === district2 && subcounty1 === subcounty2) {
+        return { compatible: true, penalty: 0, reason: "Same location" };
+      }
+
+      // Same district - moderate penalty
+      if (district1 === district2) {
+        return {
+          compatible: true,
+          penalty: 10,
+          reason: "Same district, different subcounty",
+        };
+      }
+
+      // Different districts - high penalty but still possible
+      return {
+        compatible: true,
+        penalty: 20,
+        reason: "Different districts - very high similarity required",
+      };
+    };
+
+    // Group by normalized names (without strict subcounty separation)
     const nameGroups: Record<string, typeof allParticipants> = {};
     for (const participant of allParticipants) {
       if (participant.firstName || participant.lastName) {
@@ -94,6 +172,7 @@ export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
           participant.firstName,
           participant.lastName
         );
+
         if (normalizedName && normalizedName !== " ") {
           if (!nameGroups[normalizedName]) {
             nameGroups[normalizedName] = [];
@@ -103,37 +182,72 @@ export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
       }
     }
 
-    // Find name-based duplicates
+    // Find name-based duplicates with geographic assessment
     for (const [normalizedName, group] of Object.entries(nameGroups)) {
       if (group.length > 1) {
-        duplicateGroups.push({
-          key: `name:${normalizedName}`,
-          type: "name",
-          participants: group.map(p => ({
-            id: p.id,
-            firstName: p.firstName,
-            lastName: p.lastName,
-            contact: p.contact,
-            district: p.district,
-            subCounty: p.subCounty,
-            organizationName: p.organizationName,
-            organization_id: p.organization_id,
-            created_at: p.created_at,
-          })),
-        });
+        // For each group, find pairs that might be duplicates considering geography
+        const validDuplicates: typeof group = [];
 
-        // Mark these participants as processed to avoid double-counting in contact duplicates
-        group.forEach(p => processedParticipants.add(p.id));
+        for (let i = 0; i < group.length; i++) {
+          for (let j = i + 1; j < group.length; j++) {
+            const p1 = group[i];
+            const p2 = group[j];
+
+            const geoAssessment = assessGeographicCompatibility(p1, p2);
+
+            if (geoAssessment.compatible) {
+              // Calculate overall name similarity
+              const nameSim1 = calculateSimilarity(p1.firstName, p2.firstName);
+              const nameSim2 = calculateSimilarity(p1.lastName, p2.lastName);
+              const avgNameSim = (nameSim1 + nameSim2) / 2;
+
+              // Apply geographic penalty and check threshold
+              const adjustedSimilarity = Math.max(
+                0,
+                avgNameSim - geoAssessment.penalty
+              );
+              const requiredThreshold = geoAssessment.penalty > 0 ? 85 : 70; // Higher threshold for cross-location
+
+              if (adjustedSimilarity >= requiredThreshold) {
+                if (!validDuplicates.find(p => p.id === p1.id))
+                  validDuplicates.push(p1);
+                if (!validDuplicates.find(p => p.id === p2.id))
+                  validDuplicates.push(p2);
+              }
+            }
+          }
+        }
+
+        if (validDuplicates.length > 1) {
+          duplicateGroups.push({
+            key: `name:${normalizedName}`,
+            type: "name",
+            participants: validDuplicates.map(p => ({
+              id: p.id,
+              firstName: p.firstName,
+              lastName: p.lastName,
+              contact: p.contact,
+              district: p.district,
+              subCounty: p.subCounty,
+              organizationName: p.organizationName,
+              organization_id: p.organization_id,
+              created_at: p.created_at,
+            })),
+          });
+
+          // Mark these participants as processed
+          validDuplicates.forEach(p => processedParticipants.add(p.id));
+        }
       }
     }
 
-    // Group by normalized phone numbers (only for participants not already flagged for name duplicates)
+    // Group by normalized phone numbers (without strict subcounty separation)
     const phoneGroups: Record<string, typeof allParticipants> = {};
     for (const participant of allParticipants) {
       if (!processedParticipants.has(participant.id) && participant.contact) {
         const normalizedPhone = normalizePhone(participant.contact);
+
         if (normalizedPhone && normalizedPhone.length >= 9) {
-          // Valid phone number length
           if (!phoneGroups[normalizedPhone]) {
             phoneGroups[normalizedPhone] = [];
           }
@@ -142,24 +256,56 @@ export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
       }
     }
 
-    // Find contact-based duplicates
+    // Find contact-based duplicates with geographic assessment
     for (const [normalizedPhone, group] of Object.entries(phoneGroups)) {
       if (group.length > 1) {
-        duplicateGroups.push({
-          key: `contact:${normalizedPhone}`,
-          type: "contact",
-          participants: group.map(p => ({
-            id: p.id,
-            firstName: p.firstName,
-            lastName: p.lastName,
-            contact: p.contact,
-            district: p.district,
-            subCounty: p.subCounty,
-            organizationName: p.organizationName,
-            organization_id: p.organization_id,
-            created_at: p.created_at,
-          })),
-        });
+        // For each group, find pairs that might be duplicates considering geography
+        const validDuplicates: typeof group = [];
+
+        for (let i = 0; i < group.length; i++) {
+          for (let j = i + 1; j < group.length; j++) {
+            const p1 = group[i];
+            const p2 = group[j];
+
+            const geoAssessment = assessGeographicCompatibility(p1, p2);
+
+            if (geoAssessment.compatible) {
+              // For phone matches, require higher threshold for cross-location
+              const requiredThreshold = geoAssessment.penalty > 10 ? 95 : 70; // Very high threshold for different districts
+
+              // Phone numbers match exactly, so base score is 100
+              const adjustedSimilarity = Math.max(
+                0,
+                100 - geoAssessment.penalty
+              );
+
+              if (adjustedSimilarity >= requiredThreshold) {
+                if (!validDuplicates.find(p => p.id === p1.id))
+                  validDuplicates.push(p1);
+                if (!validDuplicates.find(p => p.id === p2.id))
+                  validDuplicates.push(p2);
+              }
+            }
+          }
+        }
+
+        if (validDuplicates.length > 1) {
+          duplicateGroups.push({
+            key: `contact:${normalizedPhone}`,
+            type: "contact",
+            participants: validDuplicates.map(p => ({
+              id: p.id,
+              firstName: p.firstName,
+              lastName: p.lastName,
+              contact: p.contact,
+              district: p.district,
+              subCounty: p.subCounty,
+              organizationName: p.organizationName,
+              organization_id: p.organization_id,
+              created_at: p.created_at,
+            })),
+          });
+        }
       }
     }
 
