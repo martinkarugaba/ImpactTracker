@@ -1,5 +1,6 @@
 "use client";
 
+import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
@@ -77,63 +78,72 @@ export function FilterHeader({
       label: key.charAt(0).toUpperCase() + key.slice(1),
     }));
 
+  // Don't render if no active filters
+  if (!hasActiveFilters) return null;
+
   return (
-    <div className="bg-muted/30 flex items-center justify-between space-y-0 rounded-lg p-3">
-      {/* Active Filter Badges Container - Uses transform for zero layout shift */}
-      <div className="flex-1 overflow-hidden">
-        <div
-          className={`transform transition-all duration-300 ease-in-out ${
-            activeFilters.length > 0
-              ? "translate-y-0 opacity-100"
-              : "-translate-y-full opacity-0"
-          }`}
-          style={{
-            height: activeFilters.length > 0 ? "auto" : "0",
-            marginBottom: activeFilters.length > 0 ? "0" : "0",
-          }}
-        >
+    <div className="bg-muted/30 overflow-hidden rounded-lg">
+      <div className="flex items-center justify-between p-3">
+        {/* Active Filter Badges Container */}
+        <div className="flex-1 overflow-hidden">
           <div className="flex min-h-[2rem] flex-wrap items-center gap-2">
-            <span className="text-muted-foreground text-sm font-medium">
+            <motion.span
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-muted-foreground text-sm font-medium"
+            >
               Active filters:
-            </span>
-            {activeFilters.map((filter, index) => (
-              <Badge
-                key={filter.key}
-                variant="outline"
-                className="bg-background border-border hover:bg-muted/50 animate-in fade-in-0 slide-in-from-left-1 flex items-center gap-1 px-2 py-1 text-xs duration-200"
-                style={{
-                  animationDelay: `${index * 50}ms`,
-                }}
-              >
-                <span className="font-medium">{filter.displayName}</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="hover:bg-destructive/20 hover:text-destructive h-3.5 w-3.5 cursor-pointer rounded-full p-0 transition-colors"
-                  onClick={() => onRemoveFilter(filter.key)}
+            </motion.span>
+            <AnimatePresence mode="popLayout">
+              {activeFilters.map((filter, index) => (
+                <motion.div
+                  key={filter.key}
+                  initial={{ opacity: 0, scale: 0.8, x: -10 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, x: 10 }}
+                  transition={{
+                    duration: 0.2,
+                    delay: index * 0.05,
+                    ease: "easeOut",
+                  }}
+                  layout
                 >
-                  <X className="h-2.5 w-2.5" />
-                  <span className="sr-only">Remove {filter.label} filter</span>
-                </Button>
-              </Badge>
-            ))}
+                  <Badge
+                    variant="outline"
+                    className="bg-background border-border hover:bg-muted/50 flex items-center gap-1.5 px-2.5 py-1 text-xs transition-all duration-200"
+                  >
+                    <span className="font-medium">{filter.displayName}</span>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onRemoveFilter(filter.key);
+                      }}
+                      className="hover:bg-destructive/20 hover:text-destructive flex h-4 w-4 cursor-pointer items-center justify-center rounded-full transition-colors duration-200"
+                    >
+                      <X className="h-2.5 w-2.5" />
+                      <span className="sr-only">
+                        Remove {filter.label} filter
+                      </span>
+                    </motion.button>
+                  </Badge>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
         </div>
-      </div>
 
-      {/* Clear All Button - Slides in smoothly when needed */}
-      <div className="ml-4 overflow-hidden">
-        <div
-          className={`transform transition-all duration-300 ease-in-out ${
-            hasActiveFilters
-              ? "translate-y-0 opacity-100"
-              : "-translate-y-full opacity-0"
-          }`}
-          style={{
-            height: hasActiveFilters ? "auto" : "0",
-          }}
+        {/* Clear All Button */}
+        <motion.div
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
+          className="ml-4"
         >
-          <div className="flex items-center justify-end">
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button
               variant="outline"
               onClick={onClearFilters}
@@ -142,8 +152,8 @@ export function FilterHeader({
               Clear all
               <X className="ml-1.5 h-3.5 w-3.5" />
             </Button>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );

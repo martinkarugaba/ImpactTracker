@@ -2,7 +2,9 @@
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart3, Users, PieChart } from "lucide-react";
-import { useParticipantContainerJotai, useParticipantState } from "../../state";
+import { useParticipantContainerJotai } from "../../state/use-participant-container-jotai";
+import { useParticipantState } from "../../state/use-participant-state";
+import type { Participant } from "../../types/types";
 import { useFilterOptions } from "./use-filter-options";
 import { AnalyticsTab } from "./metrics-tab";
 import { ChartsTab } from "./charts-tab";
@@ -29,20 +31,24 @@ export function JotaiParticipantsContainer({
   const { activeTab, setActiveTab } = useParticipantState();
 
   const filterOptions = useFilterOptions({
-    participants: state.participants,
+    clusterId,
     locationNames: state.locationNames,
   });
 
   // Wrapper functions to match ParticipantsTab interface
   const handleEditWrapper = (data: unknown, id: string) => {
-    const participant = state.participants?.find(p => p.id === id);
+    const participant = state.participants?.find(
+      (p: Participant) => p.id === id
+    );
     if (participant) {
       state.handleEdit(participant);
     }
   };
 
   const handleDeleteWrapper = (id: string) => {
-    const participant = state.participants?.find(p => p.id === id);
+    const participant = state.participants?.find(
+      (p: Participant) => p.id === id
+    );
     if (participant) {
       state.handleDelete(participant);
     }

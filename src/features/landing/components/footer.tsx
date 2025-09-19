@@ -68,10 +68,11 @@ export function Footer() {
         <Separator />
         <div className="flex flex-col items-center justify-between py-6 md:flex-row">
           <div className="flex items-center space-x-2">
-            <span className="text-lg font-bold">ImpactTrack</span>
+            <span className="text-lg font-bold">Impact Tracker</span>
           </div>
           <p className="text-muted-foreground mt-4 text-sm md:mt-0">
-            &copy; {new Date().getFullYear()} ImpactTrack. All rights reserved.
+            &copy; {new Date().getFullYear()} Impact Tracker. All rights
+            reserved.
           </p>
           <div className="mt-4 flex space-x-4 md:mt-0">
             <Link

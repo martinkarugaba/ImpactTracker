@@ -3,7 +3,6 @@ import { useParticipantMetrics } from "./hooks/use-participant-metrics";
 import {
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
   type ChartConfig,
@@ -31,6 +30,75 @@ interface ParticipantMetricsChartsProps {
   isLoading: boolean;
 }
 
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    name: string;
+    value: number;
+    payload: {
+      fill: string;
+      total?: number;
+    };
+    color?: string;
+    dataKey?: string;
+  }>;
+  label?: string;
+}
+
+// Custom tooltip component for pie charts with percentages
+const PieTooltipContent = ({ active, payload }: TooltipProps) => {
+  if (active && payload && payload.length) {
+    const data = payload[0];
+    const total = payload[0].payload.total || 0;
+    const percentage = total > 0 ? ((data.value / total) * 100).toFixed(1) : 0;
+
+    return (
+      <div className="bg-background rounded-lg border p-3 shadow-md">
+        <div className="flex items-center gap-2">
+          <div
+            className="h-3 w-3 rounded-sm"
+            style={{ backgroundColor: data.payload.fill }}
+          />
+          <span className="font-medium">{data.name}</span>
+        </div>
+        <div className="text-muted-foreground mt-1 text-sm">
+          {data.value} ({percentage}%)
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
+// Custom tooltip component for bar charts with percentages
+const BarTooltipContent = ({ active, payload, label }: TooltipProps) => {
+  if (active && payload && payload.length) {
+    const total = payload.reduce((sum: number, entry) => sum + entry.value, 0);
+
+    return (
+      <div className="bg-background rounded-lg border p-3 shadow-md">
+        <div className="mb-2 font-medium">{label}</div>
+        {payload.map((entry, index: number) => {
+          const percentage =
+            total > 0 ? ((entry.value / total) * 100).toFixed(1) : 0;
+          return (
+            <div key={index} className="mb-1 flex items-center gap-2">
+              <div
+                className="h-3 w-3 rounded-sm"
+                style={{ backgroundColor: entry.color }}
+              />
+              <span className="text-sm">
+                {entry.dataKey}: {entry.value} ({percentage}%)
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+  return null;
+};
+
 export function ParticipantMetricsCharts({
   participants,
   isLoading,
@@ -45,11 +113,13 @@ export function ParticipantMetricsCharts({
       name: "VSLA Member",
       value: vslaMembers.length,
       fill: "#10b981", // emerald-500
+      total: participants.length,
     },
     {
       name: "Non-Member",
       value: nonVslaMembers,
       fill: "#f59e42", // orange-400
+      total: participants.length,
     },
   ];
 
@@ -91,11 +161,13 @@ export function ParticipantMetricsCharts({
       name: "Female",
       value: totalFemales,
       fill: "#ec4899", // pink-500
+      total: participants.length,
     },
     {
       name: "Male",
       value: totalMales,
       fill: "#3b82f6", // blue-500
+      total: participants.length,
     },
   ];
 
@@ -119,11 +191,13 @@ export function ParticipantMetricsCharts({
       name: "Non-PWD",
       value: participants.length - disabled.length,
       fill: "#64748b", // slate-500
+      total: participants.length,
     },
     {
       name: "PWD",
       value: disabled.length,
       fill: "#8b5cf6", // purple-500
+      total: participants.length,
     },
   ];
 
@@ -175,23 +249,23 @@ export function ParticipantMetricsCharts({
 
   return (
     <div className="space-y-6">
-      {/* First Row - Gender, Age Groups, and Disability Status */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* Gender Distribution Chart */}
-        <Card className="col-span-1">
-          <CardHeader>
+      {/* First Row - Pie Charts (1 column each) and Bar Chart (2 columns) */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {/* Gender Distribution Chart - Pie Chart (1 column) */}
+        <Card className="col-span-1 lg:col-span-1">
+          <CardHeader className="text-center">
             <CardTitle>Gender Distribution</CardTitle>
             <CardDescription>
               Breakdown of participants by gender
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex justify-center">
             <ChartContainer
               config={genderChartConfig}
-              className="aspect-square max-h-[280px]"
+              className="aspect-square max-h-[280px] w-full"
             >
-              <PieChart>
-                <ChartTooltip content={<ChartTooltipContent />} />
+              <PieChart width={280} height={280}>
+                <ChartTooltip content={<PieTooltipContent />} />
                 <Pie
                   data={genderData}
                   cx="50%"
@@ -211,47 +285,21 @@ export function ParticipantMetricsCharts({
           </CardContent>
         </Card>
 
-        {/* Age Groups by Gender Chart */}
-        <Card className="col-span-1">
-          <CardHeader>
-            <CardTitle>Age Groups by Gender</CardTitle>
-            <CardDescription>
-              Age distribution across gender groups
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer
-              config={ageChartConfig}
-              className="aspect-square max-h-[280px]"
-            >
-              <BarChart data={ageGenderData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <ChartLegend content={<ChartLegendContent />} />
-                <Bar dataKey="Female" fill="#ec4899" />
-                <Bar dataKey="Male" fill="#3b82f6" />
-              </BarChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-
-        {/* PWD vs Non-PWD Chart */}
-        <Card className="col-span-1">
-          <CardHeader>
+        {/* PWD vs Non-PWD Chart - Pie Chart (1 column) */}
+        <Card className="col-span-1 lg:col-span-1">
+          <CardHeader className="text-center">
             <CardTitle>Disability Status</CardTitle>
             <CardDescription>
               Distribution of participants with disabilities
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex justify-center">
             <ChartContainer
               config={genderChartConfig}
-              className="aspect-square max-h-[280px]"
+              className="aspect-square max-h-[280px] w-full"
             >
-              <PieChart>
-                <ChartTooltip content={<ChartTooltipContent />} />
+              <PieChart width={280} height={280}>
+                <ChartTooltip content={<PieTooltipContent />} />
                 <Pie
                   data={pwdData}
                   cx="50%"
@@ -270,46 +318,75 @@ export function ParticipantMetricsCharts({
             </ChartContainer>
           </CardContent>
         </Card>
+
+        {/* Age Groups by Gender Chart - Bar Chart (2 columns) */}
+        <Card className="col-span-1 md:col-span-2 lg:col-span-2">
+          <CardHeader className="text-center">
+            <CardTitle>Age Groups by Gender</CardTitle>
+            <CardDescription>
+              Age distribution across gender groups
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center">
+            <ChartContainer
+              config={ageChartConfig}
+              className="h-[280px] w-full"
+            >
+              <BarChart data={ageGenderData} width={500} height={280}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <ChartTooltip content={<BarTooltipContent />} />
+                <ChartLegend content={<ChartLegendContent />} />
+                <Bar dataKey="Female" fill="#ec4899" />
+                <Bar dataKey="Male" fill="#3b82f6" />
+              </BarChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Second Row - PWD Breakdown and VSLA Membership */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        {/* PWD Breakdown Chart */}
-        <Card className="col-span-1">
-          <CardHeader>
+      {/* Second Row - PWD Breakdown (Bar Chart - 2 columns) and VSLA Membership (Pie Chart - 1 column) */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* PWD Breakdown Chart - Bar Chart (2 columns) */}
+        <Card className="col-span-1 md:col-span-2 lg:col-span-2">
+          <CardHeader className="text-center">
             <CardTitle>PWD Demographics</CardTitle>
             <CardDescription>
               Detailed breakdown of participants with disabilities
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={genderChartConfig} className="h-[280px]">
-              <BarChart data={pwdBreakdownData}>
+          <CardContent className="flex justify-center">
+            <ChartContainer
+              config={genderChartConfig}
+              className="h-[280px] w-full"
+            >
+              <BarChart data={pwdBreakdownData} width={500} height={280}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
-                <ChartTooltip content={<ChartTooltipContent />} />
+                <ChartTooltip content={<BarTooltipContent />} />
                 <Bar dataKey="value" fill="#8b5cf6" />
               </BarChart>
             </ChartContainer>
           </CardContent>
         </Card>
 
-        {/* VSLA Membership Chart */}
-        <Card className="col-span-1">
-          <CardHeader>
+        {/* VSLA Membership Chart - Pie Chart (1 column) */}
+        <Card className="col-span-1 lg:col-span-1">
+          <CardHeader className="text-center">
             <CardTitle>VSLA Membership</CardTitle>
             <CardDescription>
               Distribution of participants by VSLA membership
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex justify-center">
             <ChartContainer
               config={genderChartConfig}
-              className="aspect-square max-h-[280px]"
+              className="aspect-square max-h-[280px] w-full"
             >
-              <PieChart>
-                <ChartTooltip content={<ChartTooltipContent />} />
+              <PieChart width={280} height={280}>
+                <ChartTooltip content={<PieTooltipContent />} />
                 <Pie
                   data={vslaData}
                   cx="50%"

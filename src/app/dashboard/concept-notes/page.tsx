@@ -71,7 +71,7 @@ function ConceptNotesPageSkeleton() {
 
 // Main page component with proper metadata
 export const metadata = {
-  title: "Concept Notes | KPI Edge",
+  title: "Concept Notes | Impact Tracker",
   description: "Manage and track concept notes for activities",
 };
 

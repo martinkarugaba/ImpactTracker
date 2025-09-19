@@ -21,8 +21,10 @@ import {
   FileSpreadsheet,
   FileText,
   Trash2,
+  Settings,
 } from "lucide-react";
-import { ParticipantsDataTable } from "../participants-data-table";
+import { ParticipantsDataTable } from "../data-table/participants-data-table";
+import { PaginationControls } from "../data-table/pagination-controls";
 import {
   type Participant,
   type ParticipantFilters as ParticipantFiltersType,
@@ -30,9 +32,17 @@ import {
 } from "../../types/types";
 import toast from "react-hot-toast";
 import { SimpleParticipantFilters } from "../filters/simple-participant-filters";
-import { OrganizationAssignmentButton } from "../actions/organization-assignment-button";
-import { EnhancedFixDuplicatesDialog } from "../data-table/enhanced-fix-duplicates-dialog";
+import { FixDuplicatesDialog } from "../fix-duplicates";
+import { AdvancedAssignmentDialog } from "../actions/advanced-assignment-dialog";
 import { useThemeConfig } from "@/features/themes/components/active-theme";
+import { useSession } from "next-auth/react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface ParticipantsTabProps {
   participants: Participant[];
@@ -94,9 +104,23 @@ export function ParticipantsTab({
 }: ParticipantsTabProps) {
   const [isFixDuplicatesDialogOpen, setIsFixDuplicatesDialogOpen] =
     useState(false);
+  const [isOrgAssignmentDialogOpen, setIsOrgAssignmentDialogOpen] =
+    useState(false);
+  const [isAdvancedAssignmentDialogOpen, setIsAdvancedAssignmentDialogOpen] =
+    useState(false);
   const [selectedParticipants, setSelectedParticipants] = useState<
     Participant[]
   >([]);
+  const [clearSelectionHandler, setClearSelectionHandler] = useState<
+    () => void
+  >(() => () => {});
+
+  const { data: session } = useSession();
+
+  // Check if user has permission to assign organizations
+  const hasOrgAssignmentPermission =
+    session?.user?.role === "super_admin" ||
+    session?.user?.role === "cluster_manager";
 
   // Get active theme for the Add Participant button
   const { activeTheme } = useThemeConfig();
@@ -175,10 +199,38 @@ export function ParticipantsTab({
           <div className="flex flex-wrap items-center justify-between gap-3">
             {/* Left side - Secondary Actions */}
             <div className="flex items-center gap-2">
-              <OrganizationAssignmentButton
-                subCounties={filterOptions.subCounties}
-                organizations={organizations}
-              />
+              {/* Management Actions Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                  >
+                    <Settings className="h-4 w-4" />
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  {hasOrgAssignmentPermission && (
+                    <DropdownMenuItem
+                      onClick={() => setIsOrgAssignmentDialogOpen(true)}
+                      className="flex items-center gap-2"
+                    >
+                      <Settings className="h-4 w-4" />
+                      Assign Organization
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem
+                    onClick={() => setIsFixDuplicatesDialogOpen(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <Users className="h-4 w-4" />
+                    Find Duplicates
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               <Button
                 onClick={() => setIsImportDialogOpen(true)}
                 variant="outline"
@@ -187,15 +239,6 @@ export function ParticipantsTab({
               >
                 <Upload className="mr-2 h-4 w-4" />
                 Import from Excel
-              </Button>
-              <Button
-                onClick={() => setIsFixDuplicatesDialogOpen(true)}
-                variant="outline"
-                size="sm"
-                className="border-orange-200 bg-orange-100 text-orange-800 hover:bg-orange-200 dark:border-orange-800 dark:bg-orange-900/20 dark:text-orange-400 dark:hover:bg-orange-900/30"
-              >
-                <Users className="mr-2 h-4 w-4" />
-                Find Duplicates
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -227,21 +270,35 @@ export function ParticipantsTab({
                 </DropdownMenuContent>
               </DropdownMenu>
               {selectedParticipants.length > 0 && (
-                <Button
-                  onClick={() => {
-                    // TODO: Implement bulk delete
-                    toast.success(
-                      `Selected ${selectedParticipants.length} participants for deletion`
-                    );
-                    setSelectedParticipants([]);
-                  }}
-                  variant="outline"
-                  size="sm"
-                  className="border-red-200 bg-red-100 text-red-800 hover:bg-red-200 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete Selected ({selectedParticipants.length})
-                </Button>
+                <>
+                  <Button
+                    onClick={() => {
+                      // TODO: Implement bulk delete
+                      toast.success(
+                        `Selected ${selectedParticipants.length} participants for deletion`
+                      );
+                      clearSelectionHandler();
+                      setSelectedParticipants([]);
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="border-red-200 bg-red-100 text-red-800 hover:bg-red-200 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete Selected ({selectedParticipants.length})
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      clearSelectionHandler();
+                      setSelectedParticipants([]);
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="border-gray-200 bg-gray-100 text-gray-800 hover:bg-gray-200 dark:border-gray-800 dark:bg-gray-900/20 dark:text-gray-400 dark:hover:bg-gray-900/30"
+                  >
+                    Clear Selection
+                  </Button>
+                </>
               )}
             </div>
 
@@ -271,10 +328,12 @@ export function ParticipantsTab({
                         ]
                       }
                       onCheckedChange={checked =>
-                        setColumnVisibility(prev => ({
-                          ...prev,
-                          [column.id]: !!checked,
-                        }))
+                        setColumnVisibility(
+                          (prev: typeof columnVisibility) => ({
+                            ...prev,
+                            [column.id]: !!checked,
+                          })
+                        )
                       }
                     >
                       {column.label}
@@ -300,7 +359,44 @@ export function ParticipantsTab({
           districts={filterOptions.districts}
           subCounties={filterOptions.subCounties}
           participants={participants}
+          isLoading={isParticipantsLoading}
         />
+
+        {/* Pagination Controls - Right above table */}
+        <div className="-mb-5 flex items-center justify-between">
+          <div className="text-muted-foreground text-sm">
+            {(() => {
+              const data = participantsData as ParticipantsResponse;
+              return data?.success && data.data
+                ? `${data.data.pagination.total} total participants`
+                : "0 total participants";
+            })()}
+          </div>
+          <PaginationControls
+            pagination={(() => {
+              const data = participantsData as ParticipantsResponse;
+              if (data?.success && data.data) {
+                return {
+                  page: pagination.page,
+                  limit: pagination.pageSize,
+                  total: data.data.pagination.total,
+                  totalPages: data.data.pagination.totalPages,
+                };
+              }
+              return {
+                page: pagination.page,
+                limit: pagination.pageSize,
+                total: 0,
+                totalPages: 0,
+              };
+            })()}
+            selectedCount={selectedParticipants.length}
+            onPaginationChange={onPaginationChange}
+            onPageChange={onPageChange}
+            isLoading={isParticipantsLoading}
+            position="top"
+          />
+        </div>
 
         {/* Participants Table - Primary interface now includes search and add actions */}
         <ParticipantsDataTable
@@ -351,10 +447,56 @@ export function ParticipantsTab({
           onImport={onImport}
           columnVisibility={columnVisibility}
           onSelectedRowsChange={setSelectedParticipants}
+          onClearSelectionChange={setClearSelectionHandler}
+        />
+
+        {/* Organization Assignment Dialog */}
+        <Dialog
+          open={isOrgAssignmentDialogOpen}
+          onOpenChange={setIsOrgAssignmentDialogOpen}
+        >
+          <DialogContent className="max-w-4xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                Organization Assignment
+              </DialogTitle>
+              <DialogDescription>
+                Fix participants with missing organization assignments or update
+                existing assignments.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <p className="text-muted-foreground text-sm">
+                Choose an assignment method to fix organization assignments for
+                participants.
+              </p>
+              <div className="flex gap-4">
+                <Button
+                  onClick={() => {
+                    setIsOrgAssignmentDialogOpen(false);
+                    setIsAdvancedAssignmentDialogOpen(true);
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <Settings className="h-4 w-4" />
+                  Advanced Assignment
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Advanced Assignment Dialog */}
+        <AdvancedAssignmentDialog
+          isOpen={isAdvancedAssignmentDialogOpen}
+          onOpenChange={setIsAdvancedAssignmentDialogOpen}
+          subCounties={filterOptions.subCounties}
+          organizations={organizations}
         />
 
         {/* Fix Duplicates Dialog - Enhanced to check all database */}
-        <EnhancedFixDuplicatesDialog
+        <FixDuplicatesDialog
           open={isFixDuplicatesDialogOpen}
           onOpenChange={setIsFixDuplicatesDialogOpen}
           onDeleteCompleted={deletedCount => {

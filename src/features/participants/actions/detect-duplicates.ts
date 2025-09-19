@@ -54,6 +54,60 @@ function normalizePhone(phone: string): string {
   return phone.replace(/[\s\-\(\)]/g, "").replace(/^(\+?256|0)/, "");
 }
 
+// Helper function to calculate geographic relationship and score modifier
+function calculateGeographicScore(
+  importRow: ParticipantFormValues,
+  existingParticipant: {
+    district: string;
+    subCounty: string;
+  }
+): { modifier: number; penalty: number; reason: string } {
+  const importDistrict = importRow.district?.toLowerCase().trim() || "";
+  const importSubCounty = importRow.subCounty?.toLowerCase().trim() || "";
+  const existingDistrict =
+    existingParticipant.district?.toLowerCase().trim() || "";
+  const existingSubCounty =
+    existingParticipant.subCounty?.toLowerCase().trim() || "";
+
+  // Missing location data - treat with caution but don't disqualify
+  if (
+    !importSubCounty ||
+    !existingSubCounty ||
+    !importDistrict ||
+    !existingDistrict
+  ) {
+    return {
+      modifier: 0.7,
+      penalty: 15,
+      reason: "Missing location data - requires higher similarity",
+    };
+  }
+
+  // Same subcounty - normal duplicate detection
+  if (
+    importSubCounty === existingSubCounty &&
+    importDistrict === existingDistrict
+  ) {
+    return { modifier: 1.0, penalty: 0, reason: "Same location" };
+  }
+
+  // Same district, different subcounty - moderate penalty
+  if (importDistrict === existingDistrict) {
+    return {
+      modifier: 0.8,
+      penalty: 10,
+      reason: "Same district, different subcounty",
+    };
+  }
+
+  // Different districts - significant penalty but not disqualifying
+  return {
+    modifier: 0.6,
+    penalty: 20,
+    reason: "Different districts - requires very high similarity",
+  };
+}
+
 // Helper function to calculate match score and reasons
 function calculateMatch(
   importRow: ParticipantFormValues,
@@ -71,6 +125,10 @@ function calculateMatch(
   const reasons: string[] = [];
   let score = 0;
 
+  // Calculate geographic relationship and scoring modifiers
+  const geoScore = calculateGeographicScore(importRow, existingParticipant);
+  reasons.push(geoScore.reason);
+
   // Name matching (weighted heavily)
   const firstNameSim = calculateSimilarity(
     importRow.firstName,
@@ -83,28 +141,41 @@ function calculateMatch(
   const nameSim = (firstNameSim + lastNameSim) / 2;
 
   if (nameSim >= 90) {
-    score += 40;
+    score += 40 * geoScore.modifier;
     reasons.push("Name exact match");
   } else if (nameSim >= 70) {
-    score += 25;
+    score += 25 * geoScore.modifier;
     reasons.push("Name similar");
   }
 
-  // Phone number matching
+  // Phone number matching (but only award points if names are also similar)
   if (importRow.contact && existingParticipant.contact) {
     const normalizedImport = normalizePhone(importRow.contact);
     const normalizedExisting = normalizePhone(existingParticipant.contact);
 
     if (normalizedImport && normalizedExisting) {
       if (normalizedImport === normalizedExisting) {
-        score += 30;
-        reasons.push("Phone exact match");
+        // Phone matches exactly, but only count it if names are also reasonably similar
+        if (nameSim >= 50) {
+          // Require at least 50% name similarity for phone match to count
+          score += 30 * geoScore.modifier;
+          reasons.push("Phone exact match with name similarity");
+        } else {
+          reasons.push(
+            "Phone match but names too different - likely different people"
+          );
+        }
       } else if (
         normalizedImport.includes(normalizedExisting) ||
         normalizedExisting.includes(normalizedImport)
       ) {
-        score += 20;
-        reasons.push("Phone partial match");
+        // Partial phone match, require higher name similarity
+        if (nameSim >= 60) {
+          score += 20 * geoScore.modifier;
+          reasons.push("Phone partial match with name similarity");
+        } else {
+          reasons.push("Phone partial match but names too different");
+        }
       }
     }
   }
@@ -119,36 +190,25 @@ function calculateMatch(
       .split("T")[0];
 
     if (importDate === existingDate) {
-      score += 20;
+      score += 20 * geoScore.modifier;
       reasons.push("Date of birth match");
     }
   }
 
-  // Location matching
-  if (importRow.district && existingParticipant.district) {
-    const districtSim = calculateSimilarity(
-      importRow.district,
-      existingParticipant.district
-    );
-    if (districtSim >= 90) {
-      score += 5;
-      reasons.push("District match");
+  // Apply geographic penalty
+  score = Math.max(0, score - geoScore.penalty);
 
-      // Subcounty matching (only if district matches)
-      if (importRow.subCounty && existingParticipant.subCounty) {
-        const subCountySim = calculateSimilarity(
-          importRow.subCounty,
-          existingParticipant.subCounty
-        );
-        if (subCountySim >= 90) {
-          score += 5;
-          reasons.push("Subcounty match");
-        }
-      }
+  // For cross-geographic matches, require higher thresholds
+  let adjustedScore = score;
+  if (geoScore.modifier < 1.0) {
+    // Require higher similarity for cross-location matches
+    const requiredBoost = (1.0 - geoScore.modifier) * 30;
+    if (score < 70 + requiredBoost) {
+      adjustedScore = Math.max(0, score * 0.8); // Further reduce score for weak cross-location matches
     }
   }
 
-  return { score: Math.min(score, 100), reasons };
+  return { score: Math.min(adjustedScore, 100), reasons };
 }
 
 export async function detectDuplicates(

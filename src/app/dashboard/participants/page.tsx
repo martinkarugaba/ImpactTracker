@@ -218,7 +218,7 @@ async function ParticipantsPageContent() {
 
 // Main page component with proper metadata
 export const metadata = {
-  title: "Participants | KPI Edge",
+  title: "Participants | Impact Tracker",
   description: "Manage and track project participants and beneficiaries",
 };
 

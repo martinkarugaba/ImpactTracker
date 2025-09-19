@@ -3,6 +3,7 @@
 
 import { useState, useMemo } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { motion, AnimatePresence } from "motion/react";
 import { Search, X, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -91,20 +92,41 @@ export function JotaiParticipantFilters({
       .filter(
         ([key, value]) => key !== "search" && value !== "" && value !== "all"
       )
-      .map(([key, value]) => {
+      .map(([key, value], index) => {
         const filterOption = allFilters.find(f => f?.key === key);
         const displayValue = filterOption
           ? filterOption.values.find(v => v.value === value)?.label || value
           : value;
 
         return (
-          <Badge key={key} variant="secondary" className="gap-1 text-xs">
-            {filterOption?.label || key}: {displayValue}
-            <X
-              className="hover:text-destructive h-3 w-3 cursor-pointer"
-              onClick={() => handleFilterUpdate(key, "all")}
-            />
-          </Badge>
+          <motion.div
+            key={key}
+            initial={{ opacity: 0, scale: 0.8, x: -10 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            exit={{ opacity: 0, scale: 0.8, x: 10 }}
+            transition={{
+              duration: 0.2,
+              delay: index * 0.05,
+              ease: "easeOut",
+            }}
+            layout
+          >
+            <Badge variant="secondary" className="gap-1.5 text-xs">
+              {filterOption?.label || key}: {displayValue}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleFilterUpdate(key, "all");
+                }}
+                className="hover:text-destructive flex h-3 w-3 cursor-pointer items-center justify-center"
+              >
+                <X className="h-3 w-3" />
+              </motion.button>
+            </Badge>
+          </motion.div>
         );
       });
   };
@@ -161,20 +183,45 @@ export function JotaiParticipantFilters({
       </div>
 
       {/* Active Filter Badges */}
-      {hasActiveFilters && (
-        <div className="animate-in fade-in-0 slide-in-from-top-1 flex flex-wrap items-center gap-2 duration-300">
-          <span className="text-muted-foreground text-sm">Active filters:</span>
-          {getActiveFilterBadges()}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleClearFilters}
-            className="ml-auto h-6 px-2 text-xs"
+      <AnimatePresence>
+        {hasActiveFilters && (
+          <motion.div
+            initial={{ opacity: 0, height: 0, y: -10 }}
+            animate={{ opacity: 1, height: "auto", y: 0 }}
+            exit={{ opacity: 0, height: 0, y: -10 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="overflow-hidden"
           >
-            Clear All
-          </Button>
-        </div>
-      )}
+            <div className="flex flex-wrap items-center gap-2">
+              <motion.span
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-muted-foreground text-sm"
+              >
+                Active filters:
+              </motion.span>
+              <AnimatePresence mode="popLayout">
+                {getActiveFilterBadges()}
+              </AnimatePresence>
+              <motion.div
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleClearFilters}
+                  className="ml-auto h-6 px-2 text-xs"
+                >
+                  Clear All
+                </Button>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

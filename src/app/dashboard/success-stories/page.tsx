@@ -20,7 +20,7 @@ import { auth } from "@/features/auth/auth";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Success Stories",
+  title: "Success Stories | Impact Tracker",
   description: "Inspiring stories from our community members and partners.",
 };
 
@@ -106,13 +106,8 @@ const impactMetrics = [
 export default async function SuccessStoriesPage() {
   const session = await auth();
 
-  if (!session?.user) {
-    redirect("/login");
-  }
-
-  // Restrict to super admin only
-  if (session.user.role !== "super_admin") {
-    redirect("/dashboard");
+  if (!session || session.user.role !== "super_admin") {
+    redirect("/auth/login");
   }
 
   const featuredStories = mockSuccessStories.filter(story => story.featured);

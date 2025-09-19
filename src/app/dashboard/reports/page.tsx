@@ -74,7 +74,7 @@ async function ReportsPageContent() {
 
 // Main page component with proper metadata
 export const metadata = {
-  title: "Reports | KPI Edge",
+  title: "Reports | Impact Tracker",
   description: "View and manage activity reports and documentation",
 };
 

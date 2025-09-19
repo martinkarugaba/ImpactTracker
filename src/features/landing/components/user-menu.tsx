@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,11 +19,8 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ session }: UserMenuProps) {
-  const router = useRouter();
-
   const handleSignOut = async () => {
-    await signOut({ redirect: false });
-    router.push("/");
+    await signOut({ callbackUrl: "/auth/login" });
   };
 
   return (
@@ -60,10 +56,14 @@ export function UserMenu({ session }: UserMenuProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => router.push("/dashboard/profile")}>
+          <DropdownMenuItem
+            onClick={() => (window.location.href = "/dashboard/profile")}
+          >
             Profile
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push("/dashboard/settings")}>
+          <DropdownMenuItem
+            onClick={() => (window.location.href = "/dashboard/settings")}
+          >
             Settings
           </DropdownMenuItem>
         </DropdownMenuGroup>

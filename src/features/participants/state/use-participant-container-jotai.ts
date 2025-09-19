@@ -2,10 +2,20 @@
 
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useAtom } from "jotai";
 import { useParticipants } from "../hooks/use-participants";
 import { useParticipantMetrics } from "../hooks/use-participant-metrics";
 import { useLocationNames } from "../hooks/use-location-names";
-import { useParticipantState } from "./use-participant-state";
+import {
+  participantFiltersAtom,
+  participantPaginationAtom,
+  participantSearchAtom,
+  activeTabAtom,
+  createDialogAtom,
+  importDialogAtom,
+  editingParticipantAtom,
+  deletingParticipantAtom,
+} from "../atoms/participants-atoms";
 import { type Participant, type ParticipantsResponse } from "../types/types";
 import { getAllFilteredParticipantsForExport } from "../actions";
 import {
@@ -31,24 +41,39 @@ export function useParticipantContainerJotai({
   const router = useRouter();
 
   // Get all state from Jotai atoms
-  const {
-    filters,
-    pagination,
-    searchValue,
-    activeTab,
-    isCreateDialogOpen,
-    setIsCreateDialogOpen,
-    isImportDialogOpen,
-    setIsImportDialogOpen,
-    editingParticipant,
-    setEditingParticipant,
-    deletingParticipant,
-    setDeletingParticipant,
-    handlePaginationChange,
-    handleSearchChange,
-    handleEdit,
-    handleDelete,
-  } = useParticipantState();
+  const [filters] = useAtom(participantFiltersAtom);
+  const [pagination, setPagination] = useAtom(participantPaginationAtom);
+  const [searchValue, setSearchValue] = useAtom(participantSearchAtom);
+  const [activeTab] = useAtom(activeTabAtom);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useAtom(createDialogAtom);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useAtom(importDialogAtom);
+  const [editingParticipant, setEditingParticipant] = useAtom(
+    editingParticipantAtom
+  );
+  const [deletingParticipant, setDeletingParticipant] = useAtom(
+    deletingParticipantAtom
+  );
+
+  // Event handlers
+  const handlePaginationChange = (newPage: number, newPageSize?: number) => {
+    setPagination(prev => ({
+      page: newPage,
+      pageSize: newPageSize || prev.pageSize,
+    }));
+  };
+
+  const handleSearchChange = (newSearch: string) => {
+    setSearchValue(newSearch);
+    setPagination(prev => ({ ...prev, page: 1 }));
+  };
+
+  const handleEdit = (participant: Participant) => {
+    setEditingParticipant(participant);
+  };
+
+  const handleDelete = (participant: Participant) => {
+    setDeletingParticipant(participant);
+  };
 
   // Data fetching with Jotai state
   const {
