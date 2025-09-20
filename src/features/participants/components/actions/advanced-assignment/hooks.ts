@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import {
   assignParticipantsByMultipleSubCounties,
   assignParticipantsByMultipleParishes,
-} from "../../../actions/fix-organization-assignments";
+} from "../../../actions/organization-assignments";
 import {
   assignmentLevelAtom,
   selectedSubCountiesAtom,
@@ -62,7 +62,14 @@ export function useAdvancedAssignment() {
       }
     },
     onSuccess: data => {
+      // Invalidate all participant-related queries
       queryClient.invalidateQueries({ queryKey: ["participants"] });
+      queryClient.invalidateQueries({
+        queryKey: ["all-participants-for-filters"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["all-participants-for-metrics"],
+      });
 
       if (data.success) {
         toast.success(data.message || "Participants assigned successfully!");
