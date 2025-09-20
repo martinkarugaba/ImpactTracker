@@ -1,16 +1,21 @@
 "use client";
 
-import React from "react";
+import * as React from "react";
 import { type Project } from "@/features/projects/types";
 import { type Organization } from "@/features/organizations/types";
 import { type Participant } from "../../types/types";
-import { type ParticipantFormValues } from "../participant-form";
 import { PaginationControls } from "./pagination-controls";
 import { TableContent } from "./table-content";
 import { useTableState } from "./use-table-state";
 
+// Define the ref interface for external access
+export interface ParticipantsDataTableRef {
+  clearSelection: () => void;
+}
+
 interface ParticipantsDataTableProps {
   data: Participant[];
+  clusterId: string;
   pagination: {
     page: number;
     limit: number;
@@ -20,47 +25,44 @@ interface ParticipantsDataTableProps {
   selectedProject: Project | null;
   selectedOrg: Organization | null;
   isLoading: boolean;
-  clusterId: string;
-  onPaginationChange: (page: number, limit: number) => void;
+  onPaginationChange: (page: number, pageSize: number) => void;
   onPageChange: (page: number) => void;
-  onSearchChange?: (search: string) => void;
-  searchTerm?: string;
   onAddParticipant: () => void;
-  onEditParticipant: (data: ParticipantFormValues, id: string) => void;
+  onEditParticipant: (data: unknown, id: string) => void;
   onDeleteParticipant: (id: string) => void;
-  onViewParticipant?: (participant: Participant) => void;
   onDeleteMultipleParticipants?: (ids: string[]) => void;
-  onExportData?: () => void;
-  onImport?: (data: unknown[]) => void;
-  onFixOrganizations?: () => void;
-  columnVisibility?: Record<string, boolean>;
+  onViewParticipant?: (participant: Participant) => void;
+  onExportData: () => void;
+  onImport: (data: unknown[]) => void;
+  columnVisibility?: Partial<Record<string, boolean>>;
   onSelectedRowsChange?: (selectedRows: Participant[]) => void;
-  onClearSelectionChange?: (clearHandler: () => void) => void;
 }
 
-export function ParticipantsDataTable({
-  data,
-  pagination,
-  selectedProject: _selectedProject,
-  selectedOrg: _selectedOrg,
-  isLoading,
-  clusterId: _clusterId,
-  onPaginationChange,
-  onPageChange,
-  onSearchChange: _onSearchChange,
-  searchTerm: _searchTerm,
-  onAddParticipant: _onAddParticipant,
-  onEditParticipant,
-  onDeleteParticipant,
-  onViewParticipant,
-  onDeleteMultipleParticipants: _onDeleteMultipleParticipants,
-  onExportData: _onExportData,
-  onImport: _onImport,
-  onFixOrganizations: _onFixOrganizations,
-  columnVisibility,
-  onSelectedRowsChange,
-  onClearSelectionChange,
-}: ParticipantsDataTableProps) {
+export const ParticipantsDataTable = React.forwardRef<
+  ParticipantsDataTableRef,
+  ParticipantsDataTableProps
+>(function ParticipantsDataTable(
+  {
+    data,
+    clusterId: _clusterId,
+    pagination,
+    selectedProject: _selectedProject,
+    selectedOrg: _selectedOrg,
+    isLoading,
+    onPaginationChange,
+    onPageChange,
+    onAddParticipant: _onAddParticipant,
+    onEditParticipant,
+    onDeleteParticipant,
+    onDeleteMultipleParticipants: _onDeleteMultipleParticipants,
+    onViewParticipant,
+    onExportData: _onExportData,
+    onImport: _onImport,
+    columnVisibility,
+    onSelectedRowsChange,
+  },
+  ref
+) {
   const {
     selectedRows,
     rowSelectionState,
@@ -68,19 +70,21 @@ export function ParticipantsDataTable({
     setRowSelectionState,
   } = useTableState("", data);
 
+  // Expose clear selection function via ref
+  React.useImperativeHandle(
+    ref,
+    () => ({
+      clearSelection: handleClearSelection,
+    }),
+    [handleClearSelection]
+  );
+
   // Notify parent about selected rows changes
   React.useEffect(() => {
     if (onSelectedRowsChange) {
       onSelectedRowsChange(selectedRows);
     }
   }, [selectedRows, onSelectedRowsChange]);
-
-  // Notify parent about clear selection handler
-  React.useEffect(() => {
-    if (onClearSelectionChange) {
-      onClearSelectionChange(handleClearSelection);
-    }
-  }, [onClearSelectionChange, handleClearSelection]);
 
   return (
     <div className="space-y-4">
@@ -95,7 +99,7 @@ export function ParticipantsDataTable({
         onDeleteParticipant={onDeleteParticipant}
         onViewParticipant={onViewParticipant}
         actionButtons={null} // No longer needed since actions moved to parent
-        columnVisibility={columnVisibility}
+        columnVisibility={columnVisibility as Record<string, boolean>}
         rowSelection={rowSelectionState}
         onRowSelectionStateChange={setRowSelectionState}
       />
@@ -111,4 +115,4 @@ export function ParticipantsDataTable({
       />
     </div>
   );
-}
+});

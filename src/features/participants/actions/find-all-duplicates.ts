@@ -29,8 +29,14 @@ export interface AllDuplicatesResult {
 /**
  * Find all duplicate participants in the database
  * Checks for duplicates based on:
- * 1. Name similarity (first name + last name)
- * 2. Contact number similarity
+ * 1. Name similarity (first name + last name) within the same district
+ * 2. Contact number similarity with name correlation within the same district
+ *
+ * Geographic Rules:
+ * - Participants in different districts are NOT considered duplicates
+ * - Same district, same subcounty: normal duplicate detection
+ * - Same district, different subcounty: light penalty applied
+ * - Missing district data: high penalty with very strict thresholds
  */
 export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
   try {
@@ -133,34 +139,43 @@ export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
       const subcounty1 = p1.subCounty?.toLowerCase().trim() || "";
       const subcounty2 = p2.subCounty?.toLowerCase().trim() || "";
 
-      // Missing location data - proceed with caution
-      if (!district1 || !district2 || !subcounty1 || !subcounty2) {
+      // Different districts - NOT compatible (too unlikely to be same person)
+      if (district1 && district2 && district1 !== district2) {
         return {
-          compatible: true,
-          penalty: 15,
-          reason: "Missing location data - requires high similarity",
+          compatible: false,
+          penalty: 100,
+          reason: "Different districts - considered separate individuals",
         };
       }
 
-      // Same subcounty - normal detection
+      // Missing district data for one or both - proceed with extreme caution
+      if (!district1 || !district2) {
+        return {
+          compatible: true,
+          penalty: 30,
+          reason: "Missing district data - requires very high similarity",
+        };
+      }
+
+      // Same district, same subcounty - normal detection
       if (district1 === district2 && subcounty1 === subcounty2) {
         return { compatible: true, penalty: 0, reason: "Same location" };
       }
 
-      // Same district - moderate penalty
+      // Same district, different subcounty - light penalty
       if (district1 === district2) {
         return {
           compatible: true,
-          penalty: 10,
+          penalty: 5,
           reason: "Same district, different subcounty",
         };
       }
 
-      // Different districts - high penalty but still possible
+      // Same district, missing subcounty data - moderate penalty
       return {
         compatible: true,
-        penalty: 20,
-        reason: "Different districts - very high similarity required",
+        penalty: 15,
+        reason: "Same district, missing subcounty data",
       };
     };
 
@@ -206,7 +221,7 @@ export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
                 0,
                 avgNameSim - geoAssessment.penalty
               );
-              const requiredThreshold = geoAssessment.penalty > 0 ? 85 : 70; // Higher threshold for cross-location
+              const requiredThreshold = geoAssessment.penalty > 15 ? 90 : 75; // Higher threshold for missing data
 
               if (adjustedSimilarity >= requiredThreshold) {
                 if (!validDuplicates.find(p => p.id === p1.id))
@@ -280,7 +295,7 @@ export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
 
               // Require meaningful name similarity for contact-based duplicates
               const requiredNameSimilarity =
-                geoAssessment.penalty > 10 ? 70 : 50; // Higher name similarity required for cross-location
+                geoAssessment.penalty > 15 ? 80 : 60; // Higher name similarity required for missing data
 
               if (avgNameSim >= requiredNameSimilarity) {
                 // Phone numbers match exactly, so base score is 100
@@ -289,7 +304,7 @@ export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
                   100 - geoAssessment.penalty
                 );
 
-                const requiredThreshold = geoAssessment.penalty > 10 ? 90 : 70;
+                const requiredThreshold = geoAssessment.penalty > 15 ? 95 : 80;
 
                 if (adjustedSimilarity >= requiredThreshold) {
                   if (!validDuplicates.find(p => p.id === p1.id))
