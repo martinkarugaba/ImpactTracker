@@ -88,7 +88,7 @@ export function FaqSection() {
             Got questions? We've got answers. Can't find what you're looking
             for?{" "}
             <Link
-              href="mailto:support@impacttrack.com"
+              href="mailto:support@impact-tracker.com"
               className="text-primary hover:text-primary/80 decoration-primary/30 font-medium underline underline-offset-4 transition-colors"
             >
               Reach out to our support team

@@ -5,9 +5,11 @@ import {
   IconDotsVertical,
   IconLogout,
   IconNotification,
+  IconUser,
   IconUserCircle,
 } from "@tabler/icons-react";
 import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -29,6 +31,7 @@ import {
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { data: session } = useSession();
+  const router = useRouter();
 
   return (
     <SidebarMenu>
@@ -88,6 +91,12 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
+              <DropdownMenuItem
+                onClick={() => router.push("/dashboard/profile")}
+              >
+                <IconUser />
+                Profile
+              </DropdownMenuItem>
               <DropdownMenuItem>
                 <IconUserCircle />
                 Account
@@ -102,7 +111,9 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => signOut()}>
+            <DropdownMenuItem
+              onClick={() => signOut({ callbackUrl: "/auth/login" })}
+            >
               <IconLogout />
               Log out
             </DropdownMenuItem>

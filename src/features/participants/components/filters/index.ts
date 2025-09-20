@@ -7,3 +7,4 @@ export { FilterSelect } from "./filter-select";
 export { OrganizationFilters } from "./organization-filters";
 export { LocationFilters } from "./location-filters";
 export { DemographicFilters } from "./demographic-filters";
+export { ParticipantFiltersLoadingSkeleton } from "./filter-loading-skeleton";

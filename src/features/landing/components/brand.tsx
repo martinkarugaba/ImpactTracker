@@ -20,7 +20,7 @@ export function Brand() {
           />
         </svg>
       </div>
-      <span className="text-xl font-bold">ImpactTrack</span>
+      <span className="text-xl font-bold">Impact Tracker</span>
     </Link>
   );
 }

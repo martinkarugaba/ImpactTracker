@@ -14,7 +14,6 @@ import {
   IconNote,
   IconReport,
   IconSearch,
-  IconUser,
   IconUsers,
   IconUsersGroup,
 } from "@tabler/icons-react";
@@ -57,60 +56,7 @@ export const navigationData = {
       icon: IconLocation,
     },
   ],
-  // navClouds: [
-  //   {
-  //     title: "Capture",
-  //     icon: IconCamera,
-  //     isActive: true,
-  //     url: "#",
-  //     items: [
-  //       {
-  //         title: "Active Proposals",
-  //         url: "#",
-  //       },
-  //       {
-  //         title: "Archived",
-  //         url: "#",
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     title: "Proposal",
-  //     icon: IconFileDescription,
-  //     url: "#",
-  //     items: [
-  //       {
-  //         title: "Active Proposals",
-  //         url: "#",
-  //       },
-  //       {
-  //         title: "Archived",
-  //         url: "#",
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     title: "Prompts",
-  //     icon: IconFileAi,
-  //     url: "#",
-  //     items: [
-  //       {
-  //         title: "Active Proposals",
-  //         url: "#",
-  //       },
-  //       {
-  //         title: "Archived",
-  //         url: "#",
-  //       },
-  //     ],
-  //   },
-  // ],
   navSecondary: [
-    {
-      title: "Profile",
-      url: "/dashboard/profile",
-      icon: IconUser,
-    },
     {
       title: "Get Help",
       url: "#",
@@ -125,7 +71,7 @@ export const navigationData = {
   kpis: [
     {
       name: "Overview",
-      url: "/dashboard/overview",
+      url: "/dashboard/user-overview",
       icon: IconDatabase,
     },
     {

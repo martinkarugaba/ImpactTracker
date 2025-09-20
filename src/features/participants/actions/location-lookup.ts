@@ -1,7 +1,13 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { districts, counties, subCounties, countries } from "@/lib/db/schema";
+import {
+  districts,
+  counties,
+  subCounties,
+  parishes,
+  countries,
+} from "@/lib/db/schema";
 import { eq, sql } from "drizzle-orm";
 
 export type LocationLookupResult = {
@@ -233,6 +239,112 @@ export async function batchGetCountryNames(
     );
   } catch (error) {
     console.error("Error batch fetching country names:", error);
+    return {};
+  }
+}
+
+export async function getParishes(
+  subCountyId?: string
+): Promise<LocationLookupResult[]> {
+  try {
+    if (!subCountyId) {
+      // If no subcounty specified, return all parishes
+      const allParishes = await db.query.parishes.findMany({
+        columns: {
+          id: true,
+          name: true,
+        },
+        orderBy: [parishes.name],
+      });
+
+      return allParishes.map(parish => ({
+        id: parish.id,
+        name: parish.name,
+      }));
+    }
+
+    // If subcounty is specified, filter parishes by subcounty
+    const parishesInSubCounty = await db.query.parishes.findMany({
+      where: eq(parishes.sub_county_id, subCountyId),
+      columns: {
+        id: true,
+        name: true,
+      },
+      orderBy: [parishes.name],
+    });
+
+    return parishesInSubCounty.map(parish => ({
+      id: parish.id,
+      name: parish.name,
+    }));
+  } catch (error) {
+    console.error("Error fetching parishes:", error);
+    return [];
+  }
+}
+
+export async function getParishName(
+  id: string
+): Promise<LocationLookupResult | null> {
+  try {
+    if (!id) return null;
+
+    // Check if it's already a name (not a UUID)
+    if (!id.includes("-")) {
+      return { id, name: id };
+    }
+
+    const parish = await db.query.parishes.findFirst({
+      where: eq(parishes.id, id),
+      columns: {
+        id: true,
+        name: true,
+      },
+    });
+
+    return parish || null;
+  } catch (error) {
+    console.error("Error fetching parish name:", error);
+    return null;
+  }
+}
+
+export async function batchGetParishNames(
+  ids: string[]
+): Promise<Record<string, string>> {
+  try {
+    if (!ids.length) return {};
+
+    // Filter out only UUID-like IDs
+    const uuidIds = ids.filter(id => id && id.includes("-"));
+    if (!uuidIds.length) {
+      // Return a map of name:name for non-UUID strings
+      return ids.reduce(
+        (acc: Record<string, string>, id: string) => {
+          if (id) acc[id] = id;
+          return acc;
+        },
+        {} as Record<string, string>
+      );
+    }
+
+    const parishesData = await db.query.parishes.findMany({
+      where: sql`${parishes.id} IN (${uuidIds.join(",")})`,
+      columns: {
+        id: true,
+        name: true,
+      },
+    });
+
+    return parishesData.reduce(
+      (acc: Record<string, string>, parish: { id: string; name: string }) => {
+        acc[parish.id] = parish.name;
+        return acc;
+      },
+      {} as Record<string, string>
+    );
+  } catch (error) {
+    console.error("Error batch fetching parish names:", error);
     return {};
   }
 }

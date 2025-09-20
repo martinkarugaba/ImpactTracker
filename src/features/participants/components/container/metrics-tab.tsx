@@ -1,12 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import { TabsContent } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, Settings, Eye } from "lucide-react";
-import { ParticipantDemographicsAnalytics } from "../metrics/participant-demographics-analytics";
-import { SimplifiedParticipantAnalytics } from "../metrics/simplified-participant-analytics";
+import { BarChart3 } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useCalculatedParticipantMetrics } from "../../hooks/use-calculated-participant-metrics";
+import {
+  DemographicsMetrics,
+  YouthEmploymentMetrics,
+  WageEmploymentMetrics,
+  SelfEmploymentMetrics,
+  SecondaryEmploymentMetrics,
+} from "../metrics/detailed-metrics";
 import { type Participant } from "../../types/types";
 
 interface AnalyticsTabProps {
@@ -14,19 +19,81 @@ interface AnalyticsTabProps {
   isMetricsLoading: boolean;
 }
 
+function DetailedParticipantMetrics({
+  participants,
+  isLoading = false,
+}: {
+  participants: Participant[];
+  isLoading?: boolean;
+}) {
+  const metrics = useCalculatedParticipantMetrics(participants);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-10 w-96 rounded-lg bg-gray-200 dark:bg-gray-700" />
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="h-32 rounded-lg bg-gray-200 dark:bg-gray-700" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <Tabs defaultValue="demographics" className="w-full">
+      <TabsList className="grid w-full grid-cols-5">
+        <TabsTrigger value="demographics">Demographics</TabsTrigger>
+        <TabsTrigger value="youth-employment">Youth in Work</TabsTrigger>
+        <TabsTrigger value="wage-employment">Wage Employment</TabsTrigger>
+        <TabsTrigger value="self-employment">Self Employment</TabsTrigger>
+        <TabsTrigger value="secondary-employment">
+          Secondary Employment
+        </TabsTrigger>
+      </TabsList>
+
+      {/* Demographics Tab */}
+      <TabsContent value="demographics" className="mt-6">
+        <DemographicsMetrics metrics={metrics} />
+      </TabsContent>
+
+      {/* Youth Employment Tab */}
+      <TabsContent value="youth-employment" className="mt-6">
+        <YouthEmploymentMetrics metrics={metrics} />
+      </TabsContent>
+
+      {/* Wage Employment Tab */}
+      <TabsContent value="wage-employment" className="mt-6">
+        <WageEmploymentMetrics metrics={metrics} />
+      </TabsContent>
+
+      {/* Self Employment Tab */}
+      <TabsContent value="self-employment" className="mt-6">
+        <SelfEmploymentMetrics metrics={metrics} />
+      </TabsContent>
+
+      {/* Secondary Employment Tab */}
+      <TabsContent value="secondary-employment" className="mt-6">
+        <SecondaryEmploymentMetrics metrics={metrics} />
+      </TabsContent>
+    </Tabs>
+  );
+}
+
 export function AnalyticsTab({
   metricsParticipants,
   isMetricsLoading,
 }: AnalyticsTabProps) {
-  const [viewMode, setViewMode] = useState<"simplified" | "detailed">(
-    "simplified"
-  );
-
   return (
     <TabsContent value="analytics" className="mt-6">
-      {/* Colorful Analytics Container */}
-      <div className="space-y-8 rounded-xl bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-        {/* View Mode Toggle */}
+      {/* Analytics Container */}
+      <div className="space-y-6 rounded-xl p-6">
+        {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 pb-4 dark:border-gray-700">
           <div className="flex items-center gap-3">
             <div className="rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 p-2 shadow-lg">
@@ -34,53 +101,24 @@ export function AnalyticsTab({
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                Participant Analytics
+                Participant Metrics
               </h2>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Comprehensive insights and demographics
+                Comprehensive metrics across all participant categories
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="text-xs">
-              {metricsParticipants.length} participants
-            </Badge>
-            <div className="flex items-center gap-1 rounded-lg bg-white p-1 shadow-sm dark:bg-gray-800">
-              <Button
-                variant={viewMode === "simplified" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("simplified")}
-                className="text-xs"
-              >
-                <Eye className="mr-1 h-3 w-3" />
-                Simplified
-              </Button>
-              <Button
-                variant={viewMode === "detailed" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("detailed")}
-                className="text-xs"
-              >
-                <Settings className="mr-1 h-3 w-3" />
-                Detailed
-              </Button>
-            </div>
-          </div>
+          <Badge variant="secondary" className="text-xs">
+            {metricsParticipants.length} participants
+          </Badge>
         </div>
 
-        {/* Analytics Content */}
-        {viewMode === "simplified" ? (
-          <SimplifiedParticipantAnalytics
-            participants={metricsParticipants}
-            isLoading={isMetricsLoading}
-          />
-        ) : (
-          <ParticipantDemographicsAnalytics
-            participants={metricsParticipants}
-            isLoading={isMetricsLoading}
-          />
-        )}
+        {/* Detailed Metrics with Tabs */}
+        <DetailedParticipantMetrics
+          participants={metricsParticipants}
+          isLoading={isMetricsLoading}
+        />
       </div>
     </TabsContent>
   );

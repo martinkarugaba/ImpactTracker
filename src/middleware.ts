@@ -44,6 +44,19 @@ export async function middleware(request: NextRequest) {
 
         return response;
       }
+
+      // Handle role-based redirects for dashboard root
+      if (request.nextUrl.pathname === "/dashboard") {
+        if (user.role === "super_admin") {
+          // Super admin stays on main dashboard
+          return NextResponse.next();
+        } else {
+          // Regular users get redirected to user-overview
+          return NextResponse.redirect(
+            new URL("/dashboard/user-overview", request.url)
+          );
+        }
+      }
     } catch (dbError) {
       console.error("Database connection error in middleware:", dbError);
       // On database error, we'll let the user proceed but log the issue

@@ -6,5 +6,4 @@ export { ParticipantsDataTable } from "./participants-data-table";
 export { BulkDeleteButton } from "./bulk-delete-button";
 export { getParticipantColumns } from "./columns";
 export { ActionCell } from "./action-cell";
-export { FixDuplicatesDialog } from "./fix-duplicates-dialog";
-export { EnhancedFixDuplicatesDialog } from "./enhanced-fix-duplicates-dialog";
+export { TableSkeleton } from "./table-skeleton";

@@ -6,7 +6,7 @@ export default async function ProfilePage() {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/login");
+    redirect("/auth/login");
   }
 
   // Restrict to super admin only during development

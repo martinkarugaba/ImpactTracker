@@ -29,8 +29,9 @@ const publicSans = Public_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "kpi-edge app",
-  description: "Track your KPIs across organizations and projects",
+  title: "Impact Tracker",
+  description:
+    "Track your impact across organizations and projects with precision",
 };
 
 export const viewport: Viewport = {

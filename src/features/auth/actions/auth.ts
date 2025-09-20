@@ -37,6 +37,14 @@ export async function login(email: string, password: string) {
 
     console.log("SignIn result:", result);
 
+    // Handle case where signIn returns a URL string (NextAuth redirect behavior)
+    if (typeof result === "string") {
+      // If result is a URL string, it means authentication was successful
+      // and NextAuth is providing the redirect URL
+      console.log("Login successful - NextAuth returned redirect URL");
+      return { success: true };
+    }
+
     // Check if signIn returned an error
     if (result?.error) {
       console.error("SignIn error:", result.error);
@@ -48,7 +56,7 @@ export async function login(email: string, password: string) {
 
     // Check if signIn was successful
     if (result?.ok) {
-      console.log("Login successful");
+      console.log("Login successful - returning success");
       return { success: true };
     }
 
@@ -59,7 +67,16 @@ export async function login(email: string, password: string) {
       error: "An unexpected error occurred during login",
     };
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("Login error caught:", error);
+    console.error("Error type:", typeof error);
+    console.error(
+      "Error message:",
+      error instanceof Error ? error.message : "Unknown error"
+    );
+    console.error(
+      "Error stack:",
+      error instanceof Error ? error.stack : "No stack trace"
+    );
 
     // Check if it's a specific NextAuth error
     if (error instanceof Error) {
