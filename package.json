@@ -24,6 +24,7 @@
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx scripts/seed-locations.ts",
     "db:seed-countries": "tsx scripts/seed-countries.ts",
+    "db:cleanup-countries": "tsx scripts/cleanup-non-east-african-countries.ts",
     "db:seed-districts": "tsx scripts/seed-districts.ts",
     "db:seed-subcounties": "tsx scripts/seed-subcounties.ts",
     "db:update-district-names": "tsx scripts/update-district-names.ts",

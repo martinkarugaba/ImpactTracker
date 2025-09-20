@@ -47,6 +47,7 @@ export function EditOrganizationDialog({
         <OrganizationForm
           clusters={clusters}
           defaultClusterId={organization.cluster_id || ""}
+          organization={organization}
           onSuccess={() => setOpen(false)}
           isLoading={isLoading}
           setIsLoading={setIsLoading}

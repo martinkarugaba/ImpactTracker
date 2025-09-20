@@ -54,12 +54,12 @@ export async function getDistricts(
 ) {
   try {
     const { pagination = {}, countryId } = params;
-    const { page = 1, limit = 10, search } = pagination;
+    const { page = 1, limit = 50, search } = pagination;
 
     // Validate pagination parameters
     if (page < 1) throw new Error("Page must be greater than 0");
-    if (limit < 1 || limit > 100)
-      throw new Error("Limit must be between 1 and 100");
+    if (limit < 1 || limit > 200)
+      throw new Error("Limit must be between 1 and 200");
 
     // Build where conditions
     const whereConditions = [];
@@ -112,6 +112,53 @@ export async function getDistricts(
     };
   } catch (error) {
     console.error("Error fetching districts:", error);
+    return {
+      success: false as const,
+      error:
+        error instanceof Error ? error.message : "Failed to fetch districts",
+    };
+  }
+}
+
+/**
+ * Helper function to fetch all districts for a specific country without pagination
+ * Useful for populating dropdowns and selectors
+ */
+export async function getAllDistrictsForCountry(countryId: string) {
+  try {
+    if (!countryId) {
+      return {
+        success: false as const,
+        error: "Country ID is required",
+      };
+    }
+
+    // Get all districts for the country (limited to 200 for safety)
+    const data = await db.query.districts.findMany({
+      where: eq(districts.country_id, countryId),
+      with: {
+        country: true,
+      },
+      orderBy: (districts, { asc }) => [asc(districts.name)],
+      limit: 200,
+    });
+
+    return {
+      success: true as const,
+      data: {
+        data,
+        pagination: {
+          page: 1,
+          limit: 200,
+          total: data.length,
+          totalPages: 1,
+          hasNext: false,
+          hasPrev: false,
+        },
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching all districts for country:", error);
     return {
       success: false as const,
       error:

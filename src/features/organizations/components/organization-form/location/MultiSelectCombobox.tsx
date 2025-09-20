@@ -30,6 +30,7 @@ interface MultiSelectComboboxProps {
   onChange: (selected: string[]) => void;
   placeholder?: string;
   emptyText?: string;
+  disabled?: boolean;
 }
 
 export function MultiSelectCombobox({
@@ -38,10 +39,13 @@ export function MultiSelectCombobox({
   onChange,
   placeholder = "Select options",
   emptyText = "No options found.",
+  disabled = false,
 }: MultiSelectComboboxProps) {
   const [open, setOpen] = React.useState(false);
 
   const handleSelect = (value: string) => {
+    if (disabled) return;
+
     if (selected.includes(value)) {
       onChange(selected.filter(item => item !== value));
     } else {
@@ -50,6 +54,7 @@ export function MultiSelectCombobox({
   };
 
   const handleRemove = (value: string) => {
+    if (disabled) return;
     onChange(selected.filter(item => item !== value));
   };
 
@@ -61,7 +66,11 @@ export function MultiSelectCombobox({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between"
+            disabled={disabled}
+            className={cn(
+              "w-full justify-between",
+              disabled && "cursor-not-allowed opacity-50"
+            )}
           >
             <span className="truncate">
               {selected.length > 0
@@ -112,8 +121,11 @@ export function MultiSelectCombobox({
               >
                 {option?.label || value}
                 <X
-                  className="ml-1 h-3 w-3 cursor-pointer"
-                  onClick={() => handleRemove(value)}
+                  className={cn(
+                    "ml-1 h-3 w-3",
+                    disabled ? "cursor-not-allowed" : "cursor-pointer"
+                  )}
+                  onClick={() => !disabled && handleRemove(value)}
                 />
               </Badge>
             );

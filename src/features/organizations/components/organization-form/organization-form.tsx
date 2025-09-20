@@ -32,8 +32,8 @@ import {
   type districts,
   type subCounties,
 } from "@/lib/db/schema";
-import { getCountries } from "@/features/locations/actions/countries";
-import { getDistricts } from "@/features/locations/actions/districts";
+import { getAllCountries } from "@/features/locations/actions/countries";
+import { getAllDistrictsForCountry } from "@/features/locations/actions/districts";
 import { getSubCounties } from "@/features/locations/actions/subcounties";
 import { getVillages } from "@/features/locations/actions/villages";
 import { getMunicipalities } from "@/features/locations/actions/municipalities";
@@ -45,11 +45,17 @@ import {
 } from "@/features/locations/actions/administrative-units";
 import { Project } from "@/features/projects/types";
 import { getProjects } from "@/features/projects/actions/projects";
-import { createOrganization } from "@/features/organizations/actions/organizations";
+import {
+  createOrganization,
+  updateOrganization,
+} from "@/features/organizations/actions/organizations";
+import { MultiSelectCombobox } from "./location/MultiSelectCombobox";
+import { Organization } from "@/features/organizations/types";
 
 interface OrganizationFormProps {
   clusters: Cluster[];
   defaultClusterId?: string;
+  organization?: Organization | null; // For editing existing organization
   onSuccess: () => void;
   isLoading: boolean;
   setIsLoading: (isLoading: boolean) => void;
@@ -62,21 +68,10 @@ type SubCounty = InferSelectModel<typeof subCounties> & {
   type?: "subcounty" | "municipality";
 };
 
-// Add type for the option with search value
-// interface SearchableOption extends ComboboxOption {
-//   searchValue?: string;
-// }
-
-// Add type for administrative units
-// interface AdministrativeUnit {
-//   code: string;
-//   name: string;
-//   type?: 'subcounty' | 'city' | 'municipality';
-// }
-
 export function OrganizationForm({
   clusters,
   defaultClusterId,
+  organization,
   onSuccess,
   isLoading,
   setIsLoading,
@@ -139,7 +134,7 @@ export function OrganizationForm({
     const loadCountries = async () => {
       try {
         setLoading(prev => ({ ...prev, locations: true }));
-        const response = await getCountries();
+        const response = await getAllCountries();
         if (response.success && response.data?.data) {
           setCountries(response.data.data);
         } else {
@@ -155,9 +150,116 @@ export function OrganizationForm({
     loadCountries();
   }, []);
 
+  // Pre-load location data when editing an existing organization
+  useEffect(() => {
+    const preLoadLocationData = async () => {
+      if (!organization || !organization.country) return;
+
+      console.log(
+        "Pre-loading location data for existing organization:",
+        organization
+      );
+
+      setLoading(prev => ({ ...prev, locations: true }));
+
+      try {
+        // Find the country ID from the organization's country code/name
+        const countryRecord = countries.find(
+          c =>
+            c.code === organization.country || c.name === organization.country
+        );
+
+        if (countryRecord) {
+          // Load districts for the organization's country
+          const districtsResponse = await getAllDistrictsForCountry(
+            countryRecord.id
+          );
+          if (districtsResponse.success && districtsResponse.data?.data) {
+            setDistricts(districtsResponse.data.data);
+            console.log(
+              `Loaded ${districtsResponse.data.data.length} districts for country ${organization.country}`
+            );
+          }
+        } else {
+          console.warn(`Country not found: ${organization.country}`);
+        }
+
+        // Load subcounties for the organization's district
+        if (organization.district) {
+          const [subCountiesResponse, municipalitiesResponse] =
+            await Promise.all([
+              getSubCounties({
+                countryId: organization.country,
+                districtId: organization.district,
+              }),
+              getMunicipalities({
+                districtId: organization.district,
+              }),
+            ]);
+
+          // Combine administrative units
+          const combinedUnits = [
+            ...(
+              (subCountiesResponse.success && subCountiesResponse.data?.data) ||
+              []
+            ).map(unit => ({
+              ...unit,
+              type: "subcounty" as const,
+            })),
+            ...(
+              (municipalitiesResponse.success &&
+                municipalitiesResponse.data?.data) ||
+              []
+            ).map(unit => ({
+              ...unit,
+              type: "municipality" as const,
+            })),
+          ];
+
+          setSubCounties(combinedUnits);
+          console.log(
+            `Loaded ${combinedUnits.length} administrative units for district ${organization.district}`
+          );
+        }
+
+        // Load parishes if organization has a subcounty that supports parishes
+        if (organization.sub_county_id && organization.parish) {
+          const parishesResponse = await getParishes({
+            subCountyId: organization.sub_county_id,
+          });
+          if (parishesResponse.success && parishesResponse.data?.data) {
+            setParishes(parishesResponse.data.data);
+            console.log(
+              `Loaded ${parishesResponse.data.data.length} parishes for subcounty ${organization.sub_county_id}`
+            );
+          }
+
+          // Load villages if organization has a parish
+          if (organization.parish) {
+            const villagesResponse = await getVillages({
+              parishId: organization.parish,
+            });
+            if (villagesResponse.success && villagesResponse.data?.data) {
+              setVillages(villagesResponse.data.data);
+              console.log(
+                `Loaded ${villagesResponse.data.data.length} villages for parish ${organization.parish}`
+              );
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error pre-loading location data:", error);
+      } finally {
+        setLoading(prev => ({ ...prev, locations: false }));
+      }
+    };
+
+    preLoadLocationData();
+  }, [organization, countries]);
+
   // Load districts when country changes
-  const handleCountryChange = async (countryCode: string) => {
-    console.log(`handleCountryChange called with countryCode: ${countryCode}`);
+  const handleCountryChange = async (countryId: string) => {
+    console.log(`handleCountryChange called with countryId: ${countryId}`);
 
     // Reset dependent fields for all cases
     form.setValue("district", "");
@@ -171,44 +273,44 @@ export function OrganizationForm({
     setVillages([]);
 
     // Only load districts if a valid country (not 'none') is selected
-    if (countryCode && countryCode !== "none") {
-      console.log(`Loading districts for country ${countryCode}`);
+    if (countryId && countryId !== "none") {
+      console.log(`Loading districts for country ID ${countryId}`);
       // Set loading state
       setLoading(prev => ({ ...prev, locations: true }));
 
       // Load districts for this country
       try {
-        const response = await getDistricts({ countryId: countryCode });
-        console.log(`Districts returned for ${countryCode}:`, response);
+        const response = await getAllDistrictsForCountry(countryId);
+        console.log(`Districts returned for ${countryId}:`, response);
 
         if (response.success && response.data?.data) {
           setDistricts(response.data.data);
           console.log(
-            `${response.data.data.length} districts set for ${countryCode}`
+            `${response.data.data.length} districts set for ${countryId}`
           );
         } else {
-          console.warn(`No districts found for country ${countryCode}`);
+          console.warn(`No districts found for country ${countryId}`);
         }
       } catch (error) {
         console.error(
-          `Error fetching districts for country ${countryCode}:`,
+          `Error fetching districts for country ${countryId}:`,
           error
         );
       } finally {
         setLoading(prev => ({ ...prev, locations: false }));
       }
     } else {
-      console.log("No valid country code provided, skipping district loading");
+      console.log("No valid country ID provided, skipping district loading");
     }
   };
 
   // Load sub-counties when district changes
   const handleDistrictChange = async (
     districtCode: string,
-    countryCode: string
+    countryId: string
   ) => {
     console.log(
-      `handleDistrictChange called with districtCode: ${districtCode}, countryCode: ${countryCode}`
+      `handleDistrictChange called with districtCode: ${districtCode}, countryId: ${countryId}`
     );
 
     // Set the form value
@@ -228,7 +330,7 @@ export function OrganizationForm({
       // Fetch all administrative units for this district
       const [subCountiesResponse, municipalitiesResponse] = await Promise.all([
         getSubCounties({
-          countryId: countryCode,
+          countryId: countryId,
           districtId: districtCode,
         }),
         getMunicipalities({
@@ -553,7 +655,7 @@ export function OrganizationForm({
     city_id: z.string().optional(),
     ward_id: z.string().optional(),
     division_id: z.string().optional(),
-    operation_sub_counties: z.array(z.string()).default([]),
+    operation_sub_counties: z.array(z.string()).default([]).optional(),
     parish: z.string().optional(),
     village: z.string().optional(),
     address: z.string().min(1, { message: "Address is required" }),
@@ -564,27 +666,77 @@ export function OrganizationForm({
 
   // Initialize form with default values that match the schema
   const defaultFormValues = {
-    name: "",
-    acronym: "",
-    cluster_id: defaultClusterId || "",
-    project_id: "none",
-    country: "",
-    district: "",
-    sub_county_id: "", // Will be validated before submission
-    municipality_id: "",
+    name: organization?.name || "",
+    acronym: organization?.acronym || "",
+    cluster_id: organization?.cluster_id || defaultClusterId || "",
+    project_id: organization?.project_id || "none",
+    country: "", // Will be set by useEffect when countries load
+    district: "", // Will be set by useEffect when districts load
+    sub_county_id: "", // Will be set by useEffect when subcounties load
+    municipality_id: "", // TODO: Add these fields to Organization type if needed
     city_id: "",
     ward_id: "",
     division_id: "",
-    operation_sub_counties: [], // Required by server action
-    parish: "",
-    village: "",
-    address: "",
+    operation_sub_counties: [], // Will be set by useEffect when subcounties load
+    parish: organization?.parish || "",
+    village: organization?.village || "",
+    address: organization?.address || "",
   };
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: defaultFormValues,
   });
+
+  // Convert organization data from codes to names for form when data is loaded
+  useEffect(() => {
+    if (!organization || countries.length === 0) return;
+
+    // Convert country code to name
+    if (organization.country) {
+      const country = countries.find(c => c.code === organization.country);
+      if (country && form.getValues("country") !== country.name) {
+        form.setValue("country", country.name);
+      }
+    }
+
+    // Convert district code to name
+    if (organization.district && districts.length > 0) {
+      const district = districts.find(d => d.code === organization.district);
+      if (district && form.getValues("district") !== district.name) {
+        form.setValue("district", district.name);
+      }
+    }
+
+    // Convert sub_county code to name
+    if (organization.sub_county_id && subCounties.length > 0) {
+      const subCounty = subCounties.find(
+        s => s.code === organization.sub_county_id
+      );
+      if (subCounty && form.getValues("sub_county_id") !== subCounty.name) {
+        form.setValue("sub_county_id", subCounty.name);
+      }
+    }
+
+    // Convert operation subcounty codes to names
+    if (
+      organization.operation_sub_counties &&
+      organization.operation_sub_counties.length > 0 &&
+      subCounties.length > 0
+    ) {
+      const operationSubCountyNames = organization.operation_sub_counties
+        .map(code => {
+          const subCounty = subCounties.find(s => s.code === code);
+          return subCounty ? subCounty.name : code; // fallback to code if no match
+        })
+        .filter(Boolean);
+
+      if (operationSubCountyNames.length > 0) {
+        form.setValue("operation_sub_counties", operationSubCountyNames);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [organization, countries, districts, subCounties]);
 
   const onSubmit = async (values: FormValues) => {
     console.log("Form values being submitted:", values);
@@ -611,11 +763,10 @@ export function OrganizationForm({
       return;
     }
 
-    // Ensure country is using the country code not name
+    // Convert names to codes for backend API
+    // Country: convert name to code
     const countryName = values.country;
-    const countryMatch = countries.find(
-      c => c.name === countryName || c.code === countryName
-    );
+    const countryMatch = countries.find(c => c.name === countryName);
     if (countryMatch) {
       console.log(
         `Converting country from "${values.country}" to code "${countryMatch.code}"`
@@ -623,11 +774,48 @@ export function OrganizationForm({
       values.country = countryMatch.code;
     }
 
+    // District: convert name to code
+    const districtName = values.district;
+    const districtMatch = districts.find(d => d.name === districtName);
+    if (districtMatch) {
+      console.log(
+        `Converting district from "${values.district}" to code "${districtMatch.code}"`
+      );
+      values.district = districtMatch.code;
+    }
+
+    // Sub-county: convert name to code
+    const subCountyName = values.sub_county_id;
+    const subCountyMatch = subCounties.find(s => s.name === subCountyName);
+    if (subCountyMatch) {
+      console.log(
+        `Converting sub_county from "${values.sub_county_id}" to code "${subCountyMatch.code}"`
+      );
+      values.sub_county_id = subCountyMatch.code;
+    }
+
+    // Operation subcounties: convert names to codes
+    const operationSubCountyNames = values.operation_sub_counties || [];
+    const operationSubCountyCodes = operationSubCountyNames
+      .map(name => {
+        const match = subCounties.find(s => s.name === name);
+        return match ? match.code : name; // fallback to name if no match
+      })
+      .filter(Boolean);
+
+    console.log(
+      `Converting operation subcounties from names:`,
+      operationSubCountyNames,
+      `to codes:`,
+      operationSubCountyCodes
+    );
+    values.operation_sub_counties = operationSubCountyCodes;
+
     setIsLoading(true);
     setError(null);
 
     try {
-      // Use server action to create the organization instead of fetch API
+      // Use server action to create or update the organization
       // Prepare data to match the CreateOrganizationInput type
       const organizationData = {
         ...values,
@@ -635,10 +823,20 @@ export function OrganizationForm({
         operation_sub_counties: values.operation_sub_counties || [],
       };
 
-      const result = await createOrganization(organizationData);
+      let result;
+      if (organization) {
+        // Update existing organization
+        result = await updateOrganization(organization.id, organizationData);
+      } else {
+        // Create new organization
+        result = await createOrganization(organizationData);
+      }
 
       if (!result.success) {
-        throw new Error(result.error || "Failed to create organization");
+        throw new Error(
+          result.error ||
+            `Failed to ${organization ? "update" : "create"} organization`
+        );
       }
 
       router.refresh();
@@ -768,21 +966,22 @@ export function OrganizationForm({
                       options={[
                         { value: "none", label: "Select a country" },
                         ...countries.map(country => ({
-                          value: country.code,
+                          value: country.name,
                           label: country.name,
                         })),
                       ]}
                       value={field.value || ""}
                       onValueChange={value => {
-                        console.log(
-                          "Country selected:",
-                          value,
-                          "Label:",
-                          countries.find(c => c.code === value)?.name ||
-                            "Select a country"
-                        );
+                        console.log("Country selected:", value);
                         field.onChange(value);
-                        handleCountryChange(value);
+                        // Find country ID for API calls
+                        const selectedCountry = countries.find(
+                          c => c.name === value
+                        );
+                        if (selectedCountry) {
+                          console.log("Found country:", selectedCountry);
+                          handleCountryChange(selectedCountry.id);
+                        }
                       }}
                       placeholder="Select a country"
                       emptyMessage="No matching countries found"
@@ -807,16 +1006,24 @@ export function OrganizationForm({
                       options={[
                         { value: "none", label: "Select a district" },
                         ...districts.map(district => ({
-                          value: district.code,
+                          value: district.name,
                           label: district.name,
                         })),
                       ]}
                       value={field.value || ""}
                       onValueChange={value => {
                         field.onChange(value);
-                        const countryCode = form.getValues("country");
-                        if (countryCode && countryCode !== "none") {
-                          handleDistrictChange(value, countryCode);
+                        // Find district code and country ID for API calls
+                        const district = districts.find(d => d.name === value);
+                        const countryName = form.getValues("country");
+                        const selectedCountry = countries.find(
+                          c => c.name === countryName
+                        );
+                        if (district && selectedCountry) {
+                          handleDistrictChange(
+                            district.code,
+                            selectedCountry.id
+                          );
                         }
                       }}
                       placeholder={
@@ -856,14 +1063,14 @@ export function OrganizationForm({
                       options={[
                         { value: "none", label: "Select a location" },
                         ...subCounties.map(unit => ({
-                          value: unit.code,
+                          value: unit.name,
                           label: `${unit.name} (${unit.type})`,
                         })),
                       ]}
                       value={field.value || ""}
                       onValueChange={value => {
                         field.onChange(value);
-                        const unit = subCounties.find(s => s.code === value);
+                        const unit = subCounties.find(s => s.name === value);
                         if (unit) {
                           handleSubCountyChange(
                             unit.code,
@@ -889,63 +1096,75 @@ export function OrganizationForm({
               )}
             />
 
-            {/* Operation sub-counties field */}
-            <FormField
-              control={form.control}
-              name="operation_sub_counties"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Operation Sub Counties</FormLabel>
-                  <FormControl>
-                    <Combobox
-                      options={[
-                        {
-                          value: "none",
-                          label: "Select operation sub-counties",
-                        },
-                        ...subCounties.map(subCounty => ({
-                          value: subCounty.code,
+            {/* Operation sub-counties field - Only show for Uganda */}
+            {form.getValues("country") === "Uganda" && (
+              <FormField
+                control={form.control}
+                name="operation_sub_counties"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Operation Sub Counties</FormLabel>
+                    <FormControl>
+                      <MultiSelectCombobox
+                        options={subCounties.map(subCounty => ({
+                          value: subCounty.name,
                           label: subCounty.name,
-                        })),
-                      ]}
-                      value={
-                        field.value && field.value.length > 0
-                          ? field.value[0]
-                          : ""
-                      }
-                      onValueChange={value => {
-                        const currentValues = field.value || [];
-                        const updatedValues = currentValues.includes(value)
-                          ? currentValues.filter((v: string) => v !== value)
-                          : [...currentValues, value];
-                        field.onChange(updatedValues);
-                      }}
-                      placeholder={
-                        subCounties.length > 0
-                          ? field.value && field.value.length > 0
-                            ? `${field.value.length} sub-counties selected`
-                            : "Select operation sub-counties"
-                          : "Select a district first"
-                      }
-                      emptyMessage="No matching sub-counties found"
-                      disabled={subCounties.length === 0 || loading.locations}
-                    />
-                  </FormControl>
-                  <FormDescription className="mt-2 flex flex-wrap gap-2">
-                    <span className="mr-1">Selected:</span>
-                    {Array.isArray(field.value) && field.value.length > 0
-                      ? field.value
-                          .map((id: string) => {
-                            const sc = subCounties.find(s => s.code === id);
-                            return sc ? sc.name : "";
-                          })
-                          .join(", ")
-                      : "None"}
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
+                        }))}
+                        selected={field.value || []}
+                        onChange={selected => {
+                          console.log(
+                            "Operation subcounties selected:",
+                            selected
+                          );
+                          field.onChange(selected);
+                        }}
+                        placeholder={
+                          subCounties.length > 0
+                            ? "Select operation sub-counties"
+                            : "Select a district first"
+                        }
+                        emptyText="No matching sub-counties found"
+                        disabled={subCounties.length === 0 || loading.locations}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Select the sub-counties where this organization operates
+                      in Uganda.
+                      {field.value && field.value.length > 0 && (
+                        <span className="mt-1 block text-sm">
+                          <strong>Selected:</strong> {field.value.length}{" "}
+                          sub-counties
+                        </span>
+                      )}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {/* Information message for non-Uganda countries */}
+            {form.getValues("country") &&
+              form.getValues("country") !== "none" &&
+              form.getValues("country") !== "Uganda" && (
+                <div className="rounded-md border border-blue-200 bg-blue-50 p-4">
+                  <div className="flex">
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium text-blue-800">
+                        Operation Areas
+                      </h3>
+                      <div className="mt-2 text-sm text-blue-700">
+                        <p>
+                          The operation sub-counties selection is currently
+                          available only for organizations in Uganda. For
+                          organizations in other countries, please specify your
+                          operation areas in the address field.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
-            />
           </div>
 
           {/* Municipalities and Cities - Only show if sub-county has municipalities */}
@@ -1320,7 +1539,13 @@ export function OrganizationForm({
             Cancel
           </Button>
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Creating..." : "Create Organization"}
+            {isLoading
+              ? organization
+                ? "Updating..."
+                : "Creating..."
+              : organization
+                ? "Update Organization"
+                : "Create Organization"}
           </Button>
         </div>
       </form>
