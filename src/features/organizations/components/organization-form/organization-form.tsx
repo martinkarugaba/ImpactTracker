@@ -88,7 +88,7 @@ export function OrganizationForm({
   const [villages, setVillages] = useState<
     { id: string; code: string; name: string }[]
   >([]);
-  const [municipalities, setMunicipalities] = useState<
+  const [municipalities, _setMunicipalities] = useState<
     { id: string; code: string; name: string }[]
   >([]);
   const [cities, setCities] = useState<
@@ -263,7 +263,6 @@ export function OrganizationForm({
 
     // Reset dependent fields for all cases
     form.setValue("district", "");
-    form.setValue("sub_county_id", "");
     form.setValue("operation_sub_counties", []);
     form.setValue("parish", "");
     form.setValue("village", "");
@@ -306,18 +305,17 @@ export function OrganizationForm({
 
   // Load sub-counties when district changes
   const handleDistrictChange = async (
-    districtCode: string,
+    districtId: string,
     countryId: string
   ) => {
     console.log(
-      `handleDistrictChange called with districtCode: ${districtCode}, countryId: ${countryId}`
+      `handleDistrictChange called with districtId: ${districtId}, countryId: ${countryId}`
     );
 
-    // Set the form value
-    form.setValue("district", districtCode);
+    // Set the form value (we need to keep the district name in the form)
+    // The form field already has the correct district name from the onValueChange above
 
     // Reset dependent fields
-    form.setValue("sub_county_id", "");
     form.setValue("operation_sub_counties", []);
     setSubCounties([]);
     setParishes([]);
@@ -331,10 +329,10 @@ export function OrganizationForm({
       const [subCountiesResponse, municipalitiesResponse] = await Promise.all([
         getSubCounties({
           countryId: countryId,
-          districtId: districtCode,
+          districtId: districtId,
         }),
         getMunicipalities({
-          districtId: districtCode,
+          districtId: districtId,
         }),
       ]);
 
@@ -361,102 +359,9 @@ export function OrganizationForm({
       setSubCounties(combinedUnits);
     } catch (error) {
       console.error(
-        `Error fetching administrative units for district ${districtCode}:`,
+        `Error fetching administrative units for district ${districtId}:`,
         error
       );
-    } finally {
-      setLoading(prev => ({ ...prev, locations: false }));
-    }
-  };
-
-  const handleSubCountyChange = async (
-    unitCode: string,
-    unitName: string,
-    unitType: string
-  ) => {
-    console.log(
-      `handleSubCountyChange called with unitCode: ${unitCode}, name: ${unitName}, type: ${unitType}`
-    );
-
-    if (!unitCode || unitCode === "none") {
-      console.log("No valid unit code provided, skipping data fetch");
-      return;
-    }
-
-    // Reset dependent fields
-    form.setValue("parish", "");
-    form.setValue("village", "");
-    form.setValue("municipality_id", "");
-    form.setValue("city_id", "");
-    form.setValue("ward_id", "");
-    form.setValue("division_id", "");
-    setParishes([]);
-    setVillages([]);
-    setMunicipalities([]);
-    setCities([]);
-    setWards([]);
-    setDivisions([]);
-
-    // Set loading state
-    setLoading(prev => ({ ...prev, locations: true }));
-
-    try {
-      if (unitType === "subcounty") {
-        // For sub-counties, fetch parishes
-        const response = await getParishes({ subCountyId: unitCode });
-        if (response.success && response.data?.data) {
-          setParishes(response.data.data);
-        }
-      } else if (unitType === "city") {
-        // For cities, fetch wards and divisions
-        const [wardsResponse, divisionsResponse] = await Promise.all([
-          getWards(unitCode),
-          getDivisions(unitCode),
-        ]);
-        if (wardsResponse.success && wardsResponse.data) {
-          setWards(
-            wardsResponse.data.map(ward => ({
-              id: ward.id,
-              code: ward.code,
-              name: ward.name,
-            }))
-          );
-        }
-        if (divisionsResponse.success && divisionsResponse.data) {
-          setDivisions(
-            divisionsResponse.data.map(division => ({
-              id: division.id,
-              code: division.code,
-              name: division.name,
-            }))
-          );
-        }
-      } else if (unitType === "municipality") {
-        // For municipalities, fetch cities, wards, and divisions
-        const [citiesResponse, wardsResponse, divisionsResponse] =
-          await Promise.all([
-            getCities(unitCode),
-            getWards(unitCode),
-            getDivisions(unitCode),
-          ]);
-        if (citiesResponse.success && citiesResponse.data) {
-          setCities(
-            citiesResponse.data.map(city => ({
-              id: city.id,
-              code: city.code,
-              name: city.name,
-            }))
-          );
-        }
-        if (wardsResponse.success && wardsResponse.data) {
-          setWards(wardsResponse.data);
-        }
-        if (divisionsResponse.success && divisionsResponse.data) {
-          setDivisions(divisionsResponse.data);
-        }
-      }
-    } catch (error) {
-      console.error(`Error fetching data for ${unitType} ${unitCode}:`, error);
     } finally {
       setLoading(prev => ({ ...prev, locations: false }));
     }
@@ -621,25 +526,6 @@ export function OrganizationForm({
     }
   };
 
-  // Initialize form with default values
-  // const defaultValues = {
-  //   name: '',
-  //   acronym: '',
-  //   cluster_id: defaultClusterId || '',
-  //   project_id: null,
-  //   country: '',
-  //   district: '',
-  //   sub_county_id: '',
-  //   municipality_id: '',
-  //   city_id: '',
-  //   ward_id: '',
-  //   division_id: '',
-  //   operation_sub_counties: [],
-  //   parish: '',
-  //   village: '',
-  //   address: '',
-  // };
-
   // Define form schema with required and optional fields
   const formSchema = z.object({
     name: z.string().min(2, { message: "Organization name is required" }),
@@ -648,9 +534,7 @@ export function OrganizationForm({
     project_id: z.string().nullable(),
     country: z.string().min(1, { message: "Country is required" }),
     district: z.string().min(1, { message: "District is required" }),
-    sub_county_id: z
-      .string()
-      .min(1, { message: "Organization subcounty is required" }),
+    sub_county_id: z.string().optional(),
     municipality_id: z.string().optional(),
     city_id: z.string().optional(),
     ward_id: z.string().optional(),
@@ -708,16 +592,6 @@ export function OrganizationForm({
       }
     }
 
-    // Convert sub_county code to name
-    if (organization.sub_county_id && subCounties.length > 0) {
-      const subCounty = subCounties.find(
-        s => s.code === organization.sub_county_id
-      );
-      if (subCounty && form.getValues("sub_county_id") !== subCounty.name) {
-        form.setValue("sub_county_id", subCounty.name);
-      }
-    }
-
     // Convert operation subcounty codes to names
     if (
       organization.operation_sub_counties &&
@@ -755,14 +629,6 @@ export function OrganizationForm({
       return;
     }
 
-    // Make sure sub_county_id is not empty or 'none'
-    if (!values.sub_county_id || values.sub_county_id === "none") {
-      form.setError("sub_county_id", {
-        message: "Organization subcounty is required",
-      });
-      return;
-    }
-
     // Convert names to codes for backend API
     // Country: convert name to code
     const countryName = values.country;
@@ -782,16 +648,6 @@ export function OrganizationForm({
         `Converting district from "${values.district}" to code "${districtMatch.code}"`
       );
       values.district = districtMatch.code;
-    }
-
-    // Sub-county: convert name to code
-    const subCountyName = values.sub_county_id;
-    const subCountyMatch = subCounties.find(s => s.name === subCountyName);
-    if (subCountyMatch) {
-      console.log(
-        `Converting sub_county from "${values.sub_county_id}" to code "${subCountyMatch.code}"`
-      );
-      values.sub_county_id = subCountyMatch.code;
     }
 
     // Operation subcounties: convert names to codes
@@ -819,7 +675,7 @@ export function OrganizationForm({
       // Prepare data to match the CreateOrganizationInput type
       const organizationData = {
         ...values,
-        sub_county_id: values.sub_county_id,
+        sub_county_id: values.sub_county_id || "",
         operation_sub_counties: values.operation_sub_counties || [],
       };
 
@@ -1013,17 +869,14 @@ export function OrganizationForm({
                       value={field.value || ""}
                       onValueChange={value => {
                         field.onChange(value);
-                        // Find district code and country ID for API calls
+                        // Find district and country for API calls
                         const district = districts.find(d => d.name === value);
                         const countryName = form.getValues("country");
                         const selectedCountry = countries.find(
                           c => c.name === countryName
                         );
                         if (district && selectedCountry) {
-                          handleDistrictChange(
-                            district.code,
-                            selectedCountry.id
-                          );
+                          handleDistrictChange(district.id, selectedCountry.id);
                         }
                       }}
                       placeholder={
@@ -1051,51 +904,6 @@ export function OrganizationForm({
 
           {/* Sub-counties fields - 2 column layout */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {/* Sub-county location field */}
-            <FormField
-              control={form.control}
-              name="sub_county_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Organization Location (Optional)</FormLabel>
-                  <FormControl>
-                    <Combobox
-                      options={[
-                        { value: "none", label: "Select a location" },
-                        ...subCounties.map(unit => ({
-                          value: unit.name,
-                          label: `${unit.name} (${unit.type})`,
-                        })),
-                      ]}
-                      value={field.value || ""}
-                      onValueChange={value => {
-                        field.onChange(value);
-                        const unit = subCounties.find(s => s.name === value);
-                        if (unit) {
-                          handleSubCountyChange(
-                            unit.code,
-                            unit.name,
-                            unit.type || "subcounty"
-                          );
-                        }
-                      }}
-                      placeholder={
-                        subCounties.length > 0
-                          ? "Select location"
-                          : "Select a district first"
-                      }
-                      emptyMessage="No matching locations found"
-                      disabled={subCounties.length === 0 || loading.locations}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    The location where this organization is physically located
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             {/* Operation sub-counties field - Only show for Uganda */}
             {form.getValues("country") === "Uganda" && (
               <FormField
@@ -1125,11 +933,16 @@ export function OrganizationForm({
                         }
                         emptyText="No matching sub-counties found"
                         disabled={subCounties.length === 0 || loading.locations}
+                        allowCustom={true}
+                        customOptionLabel={(input: string) =>
+                          `Add "${input}" as custom subcounty`
+                        }
                       />
                     </FormControl>
                     <FormDescription>
                       Select the sub-counties where this organization operates
-                      in Uganda.
+                      in Uganda. If your subcounty is not listed, you can type
+                      it and add it as a custom option.
                       {field.value && field.value.length > 0 && (
                         <span className="mt-1 block text-sm">
                           <strong>Selected:</strong> {field.value.length}{" "}
