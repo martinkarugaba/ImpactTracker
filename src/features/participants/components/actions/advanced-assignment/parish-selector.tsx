@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { MultiSelectCombobox } from "@/features/organizations/components/organization-form/location/MultiSelectCombobox";
 import type { ParishOption } from "./types";
 
 interface ParishSelectorProps {
@@ -15,6 +15,29 @@ export function ParishSelector({
   onParishToggle,
   onSelectAll,
 }: ParishSelectorProps) {
+  // Convert ParishOption[] to Option[] format expected by MultiSelectCombobox
+  const options =
+    parishes?.map(parish => ({
+      value: parish.name,
+      label: parish.name,
+    })) || [];
+
+  const handleSelectionChange = (selected: string[]) => {
+    // Calculate which items were added or removed and call onParishToggle for each
+    const currentSet = new Set(selectedParishes);
+    const newSet = new Set(selected);
+
+    // Find items that were added
+    const added = selected.filter(item => !currentSet.has(item));
+    // Find items that were removed
+    const removed = selectedParishes.filter(item => !newSet.has(item));
+
+    // Toggle each changed item
+    [...added, ...removed].forEach(item => {
+      onParishToggle(item);
+    });
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -31,23 +54,13 @@ export function ParishSelector({
         </Button>
       </div>
 
-      <div className="grid max-h-60 grid-cols-2 gap-3 overflow-y-auto rounded-md border p-3 md:grid-cols-3 lg:grid-cols-4">
-        {parishes?.map(parish => (
-          <div key={parish.id} className="flex items-center space-x-2">
-            <Checkbox
-              id={parish.id}
-              checked={selectedParishes.includes(parish.name)}
-              onCheckedChange={() => onParishToggle(parish.name)}
-            />
-            <label
-              htmlFor={parish.id}
-              className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              {parish.name}
-            </label>
-          </div>
-        ))}
-      </div>
+      <MultiSelectCombobox
+        options={options}
+        selected={selectedParishes}
+        onChange={handleSelectionChange}
+        placeholder="Select parishes"
+        emptyText="No parishes found."
+      />
     </div>
   );
 }

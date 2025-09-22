@@ -1,63 +1,103 @@
-"use client";
-
-import { motion } from "motion/react";
-import { Loader2, MapPinned } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export default function LocationDetailLoading() {
   return (
-    <div className="flex h-[calc(100vh-8rem)] w-full flex-col items-center justify-center">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-        className="bg-card flex flex-col items-center gap-4 rounded-lg p-8 shadow-lg"
-      >
-        <div className="relative">
-          <MapPinned className="text-muted-foreground absolute h-10 w-10 opacity-10" />
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="text-primary"
-          >
-            <Loader2 className="h-12 w-12" />
-          </motion.div>
-        </div>
-        <motion.div
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.3 }}
-          className="flex flex-col items-center gap-1"
-        >
-          <h3 className="text-primary text-xl font-semibold">
-            Loading Location Details
-          </h3>
-          <p className="text-muted-foreground text-sm">
-            Please wait while we retrieve location data...
-          </p>
-        </motion.div>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="space-y-2">
+        <Skeleton className="h-8 w-48" /> {/* Page title */}
+        <Skeleton className="h-4 w-96" /> {/* Breadcrumb or description */}
+      </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 0.5 }}
-          className="mt-4 flex gap-2"
-        >
-          {[1, 2, 3, 4, 5].map(i => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0.3 }}
-              animate={{ opacity: 1 }}
-              transition={{
-                repeat: Infinity,
-                repeatType: "reverse",
-                duration: 0.8,
-                delay: i * 0.1,
-              }}
-              className="bg-primary h-2 w-2 rounded-full"
-            />
+      {/* Location Details Card */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <Skeleton className="h-6 w-32" /> {/* Location name */}
+              <Skeleton className="h-4 w-24" /> {/* Location type */}
+            </div>
+            <div className="flex gap-2">
+              <Skeleton className="h-9 w-20" /> {/* Edit button */}
+              <Skeleton className="h-9 w-24" /> {/* Delete button */}
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Basic Information */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-16" /> {/* Label */}
+              <Skeleton className="h-6 w-32" /> {/* Value */}
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-20" /> {/* Label */}
+              <Skeleton className="h-6 w-24" /> {/* Value */}
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-24" /> {/* Label */}
+              <Skeleton className="h-6 w-40" /> {/* Value */}
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-18" /> {/* Label */}
+              <Skeleton className="h-6 w-28" /> {/* Value */}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Related Data Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-6 w-40" /> {/* Section title */}
+          <Skeleton className="h-9 w-32" /> {/* Add button */}
+        </div>
+
+        {/* Related Items Grid */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Card key={index}>
+              <CardContent className="p-4">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Skeleton className="h-5 w-24" /> {/* Item name */}
+                    <Skeleton className="h-4 w-4 rounded-full" />{" "}
+                    {/* Status indicator */}
+                  </div>
+                  <div className="space-y-1">
+                    <Skeleton className="h-4 w-20" /> {/* Item detail 1 */}
+                    <Skeleton className="h-4 w-28" /> {/* Item detail 2 */}
+                  </div>
+                  <div className="flex justify-end">
+                    <Skeleton className="h-8 w-16" /> {/* View button */}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           ))}
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
+
+      {/* Statistics Section */}
+      <div className="space-y-4">
+        <Skeleton className="h-6 w-32" /> {/* Statistics title */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <Card key={index}>
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-4">
+                  <Skeleton className="h-10 w-10 rounded-lg" /> {/* Icon */}
+                  <div className="space-y-2">
+                    <Skeleton className="h-6 w-16" /> {/* Number */}
+                    <Skeleton className="h-4 w-24" /> {/* Label */}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

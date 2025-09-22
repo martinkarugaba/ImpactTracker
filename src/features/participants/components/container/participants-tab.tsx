@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useParticipantTable } from "../../state/use-participant-table";
 import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
@@ -23,7 +23,10 @@ import {
   Trash2,
   Settings,
 } from "lucide-react";
-import { ParticipantsDataTable } from "../data-table/participants-data-table";
+import {
+  ParticipantsDataTable,
+  type ParticipantsDataTableRef,
+} from "../data-table/participants-data-table";
 import { PaginationControls } from "../data-table/pagination-controls";
 import {
   type Participant,
@@ -111,9 +114,7 @@ export function ParticipantsTab({
   const [selectedParticipants, setSelectedParticipants] = useState<
     Participant[]
   >([]);
-  const [clearSelectionHandler, setClearSelectionHandler] = useState<
-    () => void
-  >(() => () => {});
+  const dataTableRef = useRef<ParticipantsDataTableRef>(null);
 
   const { data: session } = useSession();
 
@@ -277,7 +278,7 @@ export function ParticipantsTab({
                       toast.success(
                         `Selected ${selectedParticipants.length} participants for deletion`
                       );
-                      clearSelectionHandler();
+                      dataTableRef.current?.clearSelection();
                       setSelectedParticipants([]);
                     }}
                     variant="outline"
@@ -289,7 +290,7 @@ export function ParticipantsTab({
                   </Button>
                   <Button
                     onClick={() => {
-                      clearSelectionHandler();
+                      dataTableRef.current?.clearSelection();
                       setSelectedParticipants([]);
                     }}
                     variant="outline"
@@ -400,6 +401,7 @@ export function ParticipantsTab({
 
         {/* Participants Table - Primary interface now includes search and add actions */}
         <ParticipantsDataTable
+          ref={dataTableRef}
           data={participants}
           clusterId={clusterId}
           pagination={(() => {
@@ -447,7 +449,6 @@ export function ParticipantsTab({
           onImport={onImport}
           columnVisibility={columnVisibility}
           onSelectedRowsChange={setSelectedParticipants}
-          onClearSelectionChange={setClearSelectionHandler}
         />
 
         {/* Organization Assignment Dialog */}

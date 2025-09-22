@@ -8,6 +8,10 @@ import {
   createOrganizationSchema,
   type CreateOrganizationInput,
 } from "../schemas/organization-schema";
+import {
+  batchGetDistrictNamesByCodes,
+  batchGetSubCountyNamesByCodes,
+} from "./organization-location-lookup";
 
 // Type that aligns with what the database expects for organization insert
 type OrganizationInsertType = typeof organizations.$inferInsert;
@@ -108,9 +112,27 @@ export async function getOrganizations(cluster_id?: string) {
       .leftJoin(projects, eq(organizations.project_id, projects.id))
       .where(cluster_id ? eq(organizations.cluster_id, cluster_id) : undefined);
 
-    // Transform the data to match the Organization interface
+    // Collect all district codes and subcounty codes for batch lookup
+    const districtCodes = orgs.map(org => org.district).filter(Boolean);
+    const allSubCountyCodes = orgs.flatMap(
+      org => org.operation_sub_counties || []
+    );
+
+    // Batch lookup location names
+    const [districtNameMap, subCountyNameMap] = await Promise.all([
+      batchGetDistrictNamesByCodes(districtCodes),
+      batchGetSubCountyNamesByCodes(allSubCountyCodes),
+    ]);
+
+    // Transform the data to include location names
     const transformedOrgs = orgs.map(org => ({
       ...org,
+      // Convert district code to name
+      district: districtNameMap[org.district] || org.district,
+      // Convert operation subcounty codes to names
+      operation_sub_counties: (org.operation_sub_counties || []).map(
+        code => subCountyNameMap[code] || code
+      ),
       project: org.project
         ? {
             id: org.project.id,
@@ -164,9 +186,21 @@ export async function getOrganization(id: string) {
       return { success: false, error: "Organization not found" };
     }
 
-    // Transform the data to match the Organization interface
+    // Lookup location names
+    const [districtNameMap, subCountyNameMap] = await Promise.all([
+      batchGetDistrictNamesByCodes([organization.district]),
+      batchGetSubCountyNamesByCodes(organization.operation_sub_counties || []),
+    ]);
+
+    // Transform the data to include location names
     const transformedOrg = {
       ...organization,
+      // Convert district code to name
+      district: districtNameMap[organization.district] || organization.district,
+      // Convert operation subcounty codes to names
+      operation_sub_counties: (organization.operation_sub_counties || []).map(
+        code => subCountyNameMap[code] || code
+      ),
       project: organization.project
         ? {
             id: organization.project.id,
@@ -268,9 +302,21 @@ export async function getCurrentOrganizationWithCluster(
       return { success: false, error: "Organization not found" };
     }
 
-    // Transform the data to match the Organization interface
+    // Lookup location names
+    const [districtNameMap, subCountyNameMap] = await Promise.all([
+      batchGetDistrictNamesByCodes([organization.district]),
+      batchGetSubCountyNamesByCodes(organization.operation_sub_counties || []),
+    ]);
+
+    // Transform the data to include location names
     const transformedOrg = {
       ...organization,
+      // Convert district code to name
+      district: districtNameMap[organization.district] || organization.district,
+      // Convert operation subcounty codes to names
+      operation_sub_counties: (organization.operation_sub_counties || []).map(
+        code => subCountyNameMap[code] || code
+      ),
       project: organization.project
         ? {
             id: organization.project.id,
@@ -320,7 +366,37 @@ export async function getOrganizationsByCluster(clusterId: string) {
       .leftJoin(projects, eq(organizations.project_id, projects.id))
       .where(eq(organizations.cluster_id, clusterId));
 
-    return { success: true, data: orgs };
+    // Collect all district codes and subcounty codes for batch lookup
+    const districtCodes = orgs.map(org => org.district).filter(Boolean);
+    const allSubCountyCodes = orgs.flatMap(
+      org => org.operation_sub_counties || []
+    );
+
+    // Batch lookup location names
+    const [districtNameMap, subCountyNameMap] = await Promise.all([
+      batchGetDistrictNamesByCodes(districtCodes),
+      batchGetSubCountyNamesByCodes(allSubCountyCodes),
+    ]);
+
+    // Transform the data to include location names
+    const transformedOrgs = orgs.map(org => ({
+      ...org,
+      // Convert district code to name
+      district: districtNameMap[org.district] || org.district,
+      // Convert operation subcounty codes to names
+      operation_sub_counties: (org.operation_sub_counties || []).map(
+        code => subCountyNameMap[code] || code
+      ),
+      project: org.project
+        ? {
+            id: org.project.id,
+            name: org.project.name,
+            acronym: org.project.acronym || "",
+          }
+        : null,
+    }));
+
+    return { success: true, data: transformedOrgs };
   } catch (error) {
     console.error("Error fetching organizations:", error);
     return { success: false, error: "Failed to fetch organizations" };

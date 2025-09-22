@@ -1,9 +1,9 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Organization } from "../types";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Cluster } from "@/features/clusters/components/clusters-table";
 import { ActionsCell } from "./organization-table-actions";
+import type { Organization } from "../types";
+import type { Cluster } from "@/features/clusters/types";
 
 interface OrganizationTableColumnsProps {
   clusters: Cluster[];
@@ -78,12 +78,53 @@ export function getOrganizationTableColumns({
       },
     },
     {
-      id: "location",
-      header: "Location",
+      id: "district",
+      header: "District",
       enableHiding: true,
       cell: ({ row }) => {
         const organization = row.original;
-        return <div>{organization.district}</div>;
+        return (
+          <div className="text-sm">
+            {organization.district || "No district"}
+          </div>
+        );
+      },
+    },
+    {
+      id: "operation_subcounties",
+      header: "Operation Subcounties",
+      enableHiding: true,
+      cell: ({ row }) => {
+        const organization = row.original;
+        return (
+          <div className="space-y-1">
+            {organization.operation_sub_counties &&
+            organization.operation_sub_counties.length > 0 ? (
+              <div className="flex flex-wrap gap-1">
+                {organization.operation_sub_counties
+                  .slice(0, 2)
+                  .map((subcounty: string, index: number) => (
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="px-2 py-0.5 text-xs"
+                    >
+                      {subcounty}
+                    </Badge>
+                  ))}
+                {organization.operation_sub_counties.length > 2 && (
+                  <Badge variant="outline" className="px-2 py-0.5 text-xs">
+                    +{organization.operation_sub_counties.length - 2} more
+                  </Badge>
+                )}
+              </div>
+            ) : (
+              <div className="text-muted-foreground text-xs">
+                No subcounties specified
+              </div>
+            )}
+          </div>
+        );
       },
     },
     {

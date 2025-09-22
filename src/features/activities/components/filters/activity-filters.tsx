@@ -137,16 +137,16 @@ export function ActivityFiltersComponent({
               <div className="space-y-2">
                 <label className="text-sm font-medium">Activity Type</label>
                 <Select
-                  value={filters.type || ""}
+                  value={filters.type || "all"}
                   onValueChange={value =>
-                    updateFilters("type", value || undefined)
+                    updateFilters("type", value === "all" ? undefined : value)
                   }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All types</SelectItem>
+                    <SelectItem value="all">All types</SelectItem>
                     {ACTIVITY_TYPES.map(type => (
                       <SelectItem key={type} value={type}>
                         {type
@@ -165,16 +165,16 @@ export function ActivityFiltersComponent({
               <div className="space-y-2">
                 <label className="text-sm font-medium">Status</label>
                 <Select
-                  value={filters.status || ""}
+                  value={filters.status || "all"}
                   onValueChange={value =>
-                    updateFilters("status", value || undefined)
+                    updateFilters("status", value === "all" ? undefined : value)
                   }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All statuses</SelectItem>
+                    <SelectItem value="all">All statuses</SelectItem>
                     {ACTIVITY_STATUSES.map(status => (
                       <SelectItem key={status} value={status}>
                         {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -188,16 +188,19 @@ export function ActivityFiltersComponent({
               <div className="space-y-2">
                 <label className="text-sm font-medium">Organization</label>
                 <Select
-                  value={filters.organizationId || ""}
+                  value={filters.organizationId || "all"}
                   onValueChange={value =>
-                    updateFilters("organizationId", value || undefined)
+                    updateFilters(
+                      "organizationId",
+                      value === "all" ? undefined : value
+                    )
                   }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select organization" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All organizations</SelectItem>
+                    <SelectItem value="all">All organizations</SelectItem>
                     {organizations.map(org => (
                       <SelectItem key={org.id} value={org.id}>
                         {org.name}
@@ -212,16 +215,19 @@ export function ActivityFiltersComponent({
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Cluster</label>
                   <Select
-                    value={filters.clusterId || ""}
+                    value={filters.clusterId || "all"}
                     onValueChange={value =>
-                      updateFilters("clusterId", value || undefined)
+                      updateFilters(
+                        "clusterId",
+                        value === "all" ? undefined : value
+                      )
                     }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select cluster" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All clusters</SelectItem>
+                      <SelectItem value="all">All clusters</SelectItem>
                       {clusters.map(cluster => (
                         <SelectItem key={cluster.id} value={cluster.id}>
                           {cluster.name}
@@ -237,16 +243,19 @@ export function ActivityFiltersComponent({
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Project</label>
                   <Select
-                    value={filters.projectId || ""}
+                    value={filters.projectId || "all"}
                     onValueChange={value =>
-                      updateFilters("projectId", value || undefined)
+                      updateFilters(
+                        "projectId",
+                        value === "all" ? undefined : value
+                      )
                     }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select project" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All projects</SelectItem>
+                      <SelectItem value="all">All projects</SelectItem>
                       {projects.map(project => (
                         <SelectItem key={project.id} value={project.id}>
                           {project.name}

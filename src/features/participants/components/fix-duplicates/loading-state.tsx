@@ -1,9 +1,8 @@
 "use client";
 
 import { useAtomValue } from "jotai";
-import { UserX } from "lucide-react";
+import { Search } from "lucide-react";
 import { isLoadingDuplicatesAtom } from "./atoms";
-import { LoadingSkeleton } from "./loading-skeleton";
 
 export function LoadingState() {
   const isLoading = useAtomValue(isLoadingDuplicatesAtom);
@@ -11,17 +10,19 @@ export function LoadingState() {
   if (!isLoading) return null;
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-center py-8">
-        <div className="text-center">
-          <UserX className="mx-auto h-12 w-12 animate-pulse text-gray-400" />
-          <h3 className="mt-4 text-lg font-medium">Scanning for Duplicates</h3>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Analyzing participant data across the entire database...
-          </p>
+    <div className="flex min-h-[400px] items-center justify-center">
+      <div className="text-center">
+        <div className="relative">
+          <Search className="mx-auto h-16 w-16 text-gray-300 dark:text-gray-600" />
+          <div className="absolute inset-0 mx-auto h-16 w-16 animate-ping rounded-full bg-blue-100 opacity-30 dark:bg-blue-900" />
         </div>
+        <h3 className="mt-6 text-lg font-medium text-gray-900 dark:text-gray-100">
+          Scanning for duplicates
+        </h3>
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          This may take a moment...
+        </p>
       </div>
-      <LoadingSkeleton />
     </div>
   );
 }
