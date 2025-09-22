@@ -8,7 +8,28 @@ import { eq } from "drizzle-orm";
 
 const createCountrySchema = z.object({
   name: z.string().min(1, "Name is required"),
-  code: z.string().min(1, "Code is required"),
+  code: z
+    .string()
+    .min(1, "Code is required")
+    .refine(
+      code => {
+        // Only allow East African countries and Ethiopia
+        const eastAfricanCountryCodes = [
+          "UG",
+          "KE",
+          "TZ",
+          "RW",
+          "BI",
+          "SS",
+          "ET",
+        ];
+        return eastAfricanCountryCodes.includes(code.toUpperCase());
+      },
+      {
+        message:
+          "Only East African countries and Ethiopia are allowed (UG, KE, TZ, RW, BI, SS, ET)",
+      }
+    ),
 });
 
 export async function addCountry(data: z.infer<typeof createCountrySchema>) {
@@ -43,7 +64,7 @@ export async function deleteCountry(id: string) {
   }
 }
 
-import { count, ilike, asc } from "drizzle-orm";
+import { count, ilike, asc, inArray, and } from "drizzle-orm";
 import type { PaginationParams } from "../types/pagination";
 
 export async function getCountries(params: PaginationParams = {}) {
@@ -55,10 +76,14 @@ export async function getCountries(params: PaginationParams = {}) {
     const validatedLimit = Math.min(Math.max(1, limit), 100);
     const offset = (validatedPage - 1) * validatedLimit;
 
-    // Build search condition
+    // Define East African countries and Ethiopia by ISO codes
+    const eastAfricanCountryCodes = ["UG", "KE", "TZ", "RW", "BI", "SS", "ET"];
+
+    // Build search condition - only include East African countries
+    const baseCondition = inArray(countries.code, eastAfricanCountryCodes);
     const searchCondition = search
-      ? ilike(countries.name, `%${search}%`)
-      : undefined;
+      ? and(baseCondition, ilike(countries.name, `%${search}%`))
+      : baseCondition;
 
     // Get total count
     const [totalResult] = await db
@@ -138,17 +163,21 @@ export async function getCountryById(id: string) {
 }
 
 /**
- * Helper function to fetch all countries without pagination
+ * Helper function to fetch all East African countries without pagination
  * Useful for populating dropdowns and selectors
  */
 export async function getAllCountries() {
   try {
-    // Get all countries ordered by name
+    // Define East African countries and Ethiopia by ISO codes
+    const eastAfricanCountryCodes = ["UG", "KE", "TZ", "RW", "BI", "SS", "ET"];
+
+    // Get East African countries ordered by name
     const data = await db
       .select()
       .from(countries)
+      .where(inArray(countries.code, eastAfricanCountryCodes))
       .orderBy(asc(countries.name))
-      .limit(1000); // Set a high limit to get effectively all countries
+      .limit(50); // Set a reasonable limit for East African countries
 
     // Include pagination info in the response to match the expected format
     return {
@@ -157,7 +186,7 @@ export async function getAllCountries() {
         data,
         pagination: {
           page: 1,
-          limit: 1000,
+          limit: 50,
           total: data.length,
           totalPages: 1,
           hasNext: false,
@@ -174,7 +203,7 @@ export async function getAllCountries() {
         data: [],
         pagination: {
           page: 1,
-          limit: 1000,
+          limit: 50,
           total: 0,
           totalPages: 0,
           hasNext: false,

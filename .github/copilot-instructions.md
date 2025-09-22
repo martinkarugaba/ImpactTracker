@@ -65,6 +65,12 @@ PostgreSQL, and shadcn/ui.
 
 ## Development Workflow
 
+### Package Manager
+
+- **ALWAYS use pnpm** - This project uses pnpm for package management
+- Never use npm or yarn commands - all package operations should use pnpm
+- Examples: `pnpm install`, `pnpm add`, `pnpm remove`, `pnpm exec`
+
 ### Scripts & Commands
 
 ```bash

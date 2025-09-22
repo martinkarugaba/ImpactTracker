@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { MultiSelectCombobox } from "@/features/organizations/components/organization-form/location/MultiSelectCombobox";
 import type { SubCountyOption } from "./types";
 
 interface SubCountySelectorProps {
@@ -15,6 +15,29 @@ export function SubCountySelector({
   onSubCountyToggle,
   onSelectAll,
 }: SubCountySelectorProps) {
+  // Convert SubCountyOption[] to Option[] format expected by MultiSelectCombobox
+  const options =
+    subCounties?.map(sc => ({
+      value: sc.name,
+      label: sc.name,
+    })) || [];
+
+  const handleSelectionChange = (selected: string[]) => {
+    // Calculate which items were added or removed and call onSubCountyToggle for each
+    const currentSet = new Set(selectedSubCounties);
+    const newSet = new Set(selected);
+
+    // Find items that were added
+    const added = selected.filter(item => !currentSet.has(item));
+    // Find items that were removed
+    const removed = selectedSubCounties.filter(item => !newSet.has(item));
+
+    // Toggle each changed item
+    [...added, ...removed].forEach(item => {
+      onSubCountyToggle(item);
+    });
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -31,23 +54,13 @@ export function SubCountySelector({
         </Button>
       </div>
 
-      <div className="grid max-h-60 grid-cols-2 gap-3 overflow-y-auto rounded-md border p-3 md:grid-cols-3 lg:grid-cols-4">
-        {subCounties?.map(sc => (
-          <div key={sc.id} className="flex items-center space-x-2">
-            <Checkbox
-              id={sc.id}
-              checked={selectedSubCounties.includes(sc.name)}
-              onCheckedChange={() => onSubCountyToggle(sc.name)}
-            />
-            <label
-              htmlFor={sc.id}
-              className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              {sc.name}
-            </label>
-          </div>
-        ))}
-      </div>
+      <MultiSelectCombobox
+        options={options}
+        selected={selectedSubCounties}
+        onChange={handleSelectionChange}
+        placeholder="Select subcounties"
+        emptyText="No subcounties found."
+      />
     </div>
   );
 }

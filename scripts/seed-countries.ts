@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { db } from "@/lib/db";
 import { countries } from "@/lib/db/schema";
 import { Country } from "country-state-city";
@@ -20,28 +21,45 @@ async function checkExistingData() {
 
 async function seedCountries(existingCodes: Set<string> = new Set()) {
   try {
-    console.log("🌱 Starting to seed countries...");
+    console.log("🌱 Starting to seed East African countries and Ethiopia...");
 
     // Get countries data from the country-state-city package
     const allCountries = Country.getAllCountries();
 
+    // Define East African countries and Ethiopia by ISO codes
+    const eastAfricanCountryCodes = new Set([
+      "UG", // Uganda
+      "KE", // Kenya
+      "TZ", // Tanzania
+      "RW", // Rwanda
+      "BI", // Burundi
+      "SS", // South Sudan
+      "ET", // Ethiopia
+    ]);
+
+    // Filter to only include East African countries and Ethiopia
+    const targetCountries = allCountries.filter(country =>
+      eastAfricanCountryCodes.has(country.isoCode)
+    );
+
     // Filter out countries that already exist
-    const newCountries = allCountries.filter(
+    const newCountries = targetCountries.filter(
       country => !existingCodes.has(country.isoCode)
     );
+
     console.log(
-      `Found ${allCountries.length} total countries, ${newCountries.length} new countries to seed`
+      `Found ${targetCountries.length} East African countries (+ Ethiopia), ${newCountries.length} new countries to seed`
     );
 
     if (newCountries.length === 0) {
       console.log(
-        "✅ No new countries to add. Database is already up to date."
+        "✅ No new East African countries to add. Database is already up to date."
       );
       return;
     }
 
     // Insert all countries in batches for better performance
-    const batchSize = 50;
+    const batchSize = 10; // Smaller batch size since we have fewer countries
     let successCount = 0;
     let errorCount = 0;
 
@@ -58,6 +76,11 @@ async function seedCountries(existingCodes: Set<string> = new Set()) {
         console.log(
           `✅ Added countries batch ${Math.floor(i / batchSize) + 1} of ${Math.ceil(newCountries.length / batchSize)}`
         );
+
+        // Log which countries were added
+        batch.forEach(country => {
+          console.log(`  - Added: ${country.name} (${country.isoCode})`);
+        });
       } catch (error) {
         errorCount += 1;
         console.error(
@@ -81,6 +104,7 @@ async function seedCountries(existingCodes: Set<string> = new Set()) {
                 code: country.isoCode,
               });
               successCount += 1;
+              console.log(`  - Added: ${country.name} (${country.isoCode})`);
             } else {
               console.log(
                 `  - Country ${country.name} (${country.isoCode}) already exists, skipping`
@@ -97,10 +121,12 @@ async function seedCountries(existingCodes: Set<string> = new Set()) {
     }
 
     if (successCount > 0) {
-      console.log(`✅ Successfully seeded ${successCount} countries!`);
+      console.log(
+        `✅ Successfully seeded ${successCount} East African countries!`
+      );
     } else {
       console.log(
-        `✅ No new countries were added. All countries already exist in the database.`
+        `✅ No new East African countries were added. All target countries already exist in the database.`
       );
     }
 
