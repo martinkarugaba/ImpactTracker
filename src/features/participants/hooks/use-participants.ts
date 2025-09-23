@@ -33,7 +33,7 @@ export function useParticipants(
       educationLevel?: string;
       isSubscribedToVSLA?: string;
       ownsEnterprise?: string;
-      employmentType?: string;
+      employmentStatus?: string;
       employmentSector?: string;
       hasVocationalSkills?: string;
       hasSoftSkills?: string;
@@ -85,7 +85,7 @@ export function useParticipantsMetrics(
       educationLevel?: string;
       isSubscribedToVSLA?: string;
       ownsEnterprise?: string;
-      employmentType?: string;
+      employmentStatus?: string;
       employmentSector?: string;
       hasVocationalSkills?: string;
       hasSoftSkills?: string;
@@ -199,7 +199,7 @@ export function useExportParticipants() {
         educationLevel?: string;
         isSubscribedToVSLA?: string;
         ownsEnterprise?: string;
-        employmentType?: string;
+        employmentStatus?: string;
         employmentSector?: string;
         hasVocationalSkills?: string;
         hasSoftSkills?: string;

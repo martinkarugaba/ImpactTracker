@@ -47,7 +47,7 @@ export function UltraSimpleFilters({
       district: "all",
       sex: "all",
       ageGroup: "all",
-      employmentType: "all",
+      employmentStatus: "all",
       isSubscribedToVSLA: "all",
     });
   };
@@ -59,7 +59,7 @@ export function UltraSimpleFilters({
       "district",
       "sex",
       "ageGroup",
-      "employmentType",
+      "employmentStatus",
       "isSubscribedToVSLA",
     ];
     return activeKeys.filter(
@@ -260,9 +260,9 @@ export function UltraSimpleFilters({
                     Employment Status
                   </label>
                   <Select
-                    value={filters.employmentType}
+                    value={filters.employmentStatus}
                     onValueChange={value =>
-                      updateFilter("employmentType", value)
+                      updateFilter("employmentStatus", value)
                     }
                   >
                     <SelectTrigger>

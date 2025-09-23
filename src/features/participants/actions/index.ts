@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { participants, organizations, clusterMembers } from "@/lib/db/schema";
-import { eq, and, sql, asc } from "drizzle-orm";
+import { eq, and, sql, asc, count } from "drizzle-orm";
 import {
   type NewParticipant,
   type ParticipantResponse,
@@ -31,7 +31,7 @@ export async function getParticipants(
       educationLevel?: string;
       isSubscribedToVSLA?: string;
       ownsEnterprise?: string;
-      employmentType?: string;
+      employmentStatus?: string;
       employmentSector?: string;
       hasVocationalSkills?: string;
       hasSoftSkills?: string;
@@ -55,12 +55,17 @@ export async function getParticipants(
   try {
     console.log("🔍 getParticipants called with:", {
       clusterId,
-      params,
+      page: params?.page || 1,
+      limit: params?.limit || 10,
+      hasFilters: !!params?.filters,
+      hasSearch: !!params?.search,
     });
 
     const page = params?.page || 1;
     const limit = params?.limit || 10;
     const offset = (page - 1) * limit;
+
+    console.log("📊 Pagination params:", { page, limit, offset });
 
     const whereConditions = [eq(participants.cluster_id, clusterId)];
 
@@ -68,8 +73,11 @@ export async function getParticipants(
     if (params?.filters) {
       console.log("📝 Processing filters:", params.filters);
 
+      const appliedFilters: string[] = [];
+
       if (params.filters.project && params.filters.project !== "all") {
         console.log("Adding project filter:", params.filters.project);
+        appliedFilters.push("project");
         whereConditions.push(
           eq(participants.project_id, params.filters.project)
         );
@@ -79,38 +87,45 @@ export async function getParticipants(
         params.filters.organization !== "all"
       ) {
         console.log("Adding organization filter:", params.filters.organization);
+        appliedFilters.push("organization");
         whereConditions.push(
           eq(participants.organization_id, params.filters.organization)
         );
       }
       if (params.filters.district && params.filters.district !== "all") {
         console.log("Adding district filter:", params.filters.district);
+        appliedFilters.push("district");
         whereConditions.push(
           eq(participants.district, params.filters.district)
         );
       }
       if (params.filters.subCounty && params.filters.subCounty !== "all") {
         console.log("Adding subCounty filter:", params.filters.subCounty);
+        appliedFilters.push("subCounty");
         whereConditions.push(
           eq(participants.subCounty, params.filters.subCounty)
         );
       }
       if (params.filters.enterprise && params.filters.enterprise !== "all") {
         console.log("Adding enterprise filter:", params.filters.enterprise);
+        appliedFilters.push("enterprise");
         whereConditions.push(
           eq(participants.enterprise, params.filters.enterprise)
         );
       }
       if (params.filters.sex && params.filters.sex !== "all") {
         console.log("Adding sex filter:", params.filters.sex);
+        appliedFilters.push("sex");
         whereConditions.push(eq(participants.sex, params.filters.sex));
       }
       if (params.filters.isPWD && params.filters.isPWD !== "all") {
         console.log("Adding isPWD filter:", params.filters.isPWD);
+        appliedFilters.push("isPWD");
         whereConditions.push(eq(participants.isPWD, params.filters.isPWD));
       }
       if (params.filters.ageGroup && params.filters.ageGroup !== "all") {
         console.log("Adding ageGroup filter:", params.filters.ageGroup);
+        appliedFilters.push("ageGroup");
         if (params.filters.ageGroup === "young") {
           console.log("Applying young filter: age >= 15 AND age <= 35");
           whereConditions.push(
@@ -127,7 +142,14 @@ export async function getParticipants(
         }
       }
 
+      console.log(
+        `📊 Applied ${appliedFilters.length} core filters:`,
+        appliedFilters.join(", ")
+      );
+
       // Additional filters for comprehensive participant filtering
+      const additionalFilters: string[] = [];
+
       if (
         params.filters.maritalStatus &&
         params.filters.maritalStatus !== "all"
@@ -136,6 +158,7 @@ export async function getParticipants(
           "Adding maritalStatus filter:",
           params.filters.maritalStatus
         );
+        additionalFilters.push("maritalStatus");
         whereConditions.push(
           eq(participants.maritalStatus, params.filters.maritalStatus)
         );
@@ -148,6 +171,7 @@ export async function getParticipants(
           "Adding educationLevel filter:",
           params.filters.educationLevel
         );
+        additionalFilters.push("educationLevel");
         whereConditions.push(
           eq(participants.educationLevel, params.filters.educationLevel)
         );
@@ -160,6 +184,7 @@ export async function getParticipants(
           "Adding isSubscribedToVSLA filter:",
           params.filters.isSubscribedToVSLA
         );
+        additionalFilters.push("isSubscribedToVSLA");
         whereConditions.push(
           eq(participants.isSubscribedToVSLA, params.filters.isSubscribedToVSLA)
         );
@@ -172,20 +197,22 @@ export async function getParticipants(
           "Adding ownsEnterprise filter:",
           params.filters.ownsEnterprise
         );
+        additionalFilters.push("ownsEnterprise");
         whereConditions.push(
           eq(participants.ownsEnterprise, params.filters.ownsEnterprise)
         );
       }
       if (
-        params.filters.employmentType &&
-        params.filters.employmentType !== "all"
+        params.filters.employmentStatus &&
+        params.filters.employmentStatus !== "all"
       ) {
         console.log(
-          "Adding employmentType filter:",
-          params.filters.employmentType
+          "Adding employmentStatus filter:",
+          params.filters.employmentStatus
         );
+        additionalFilters.push("employmentStatus");
         whereConditions.push(
-          eq(participants.employmentType, params.filters.employmentType)
+          eq(participants.employmentStatus, params.filters.employmentStatus)
         );
       }
       if (
@@ -196,6 +223,7 @@ export async function getParticipants(
           "Adding employmentSector filter:",
           params.filters.employmentSector
         );
+        additionalFilters.push("employmentSector");
         whereConditions.push(
           eq(participants.employmentSector, params.filters.employmentSector)
         );
@@ -208,6 +236,7 @@ export async function getParticipants(
           "Adding hasVocationalSkills filter:",
           params.filters.hasVocationalSkills
         );
+        additionalFilters.push("hasVocationalSkills");
         whereConditions.push(
           eq(
             participants.hasVocationalSkills,
@@ -223,6 +252,7 @@ export async function getParticipants(
           "Adding hasSoftSkills filter:",
           params.filters.hasSoftSkills
         );
+        additionalFilters.push("hasSoftSkills");
         whereConditions.push(
           eq(participants.hasSoftSkills, params.filters.hasSoftSkills)
         );
@@ -235,6 +265,7 @@ export async function getParticipants(
           "Adding hasBusinessSkills filter:",
           params.filters.hasBusinessSkills
         );
+        additionalFilters.push("hasBusinessSkills");
         whereConditions.push(
           eq(participants.hasBusinessSkills, params.filters.hasBusinessSkills)
         );
@@ -249,6 +280,7 @@ export async function getParticipants(
           "Adding specificVocationalSkill filter:",
           params.filters.specificVocationalSkill
         );
+        additionalFilters.push("specificVocationalSkill");
         whereConditions.push(
           sql`(
             ${participants.vocationalSkillsParticipations} && ARRAY[${params.filters.specificVocationalSkill}] OR
@@ -265,6 +297,7 @@ export async function getParticipants(
           "Adding specificSoftSkill filter:",
           params.filters.specificSoftSkill
         );
+        additionalFilters.push("specificSoftSkill");
         whereConditions.push(
           sql`(
             ${participants.softSkillsParticipations} && ARRAY[${params.filters.specificSoftSkill}] OR
@@ -281,6 +314,7 @@ export async function getParticipants(
           "Adding specificBusinessSkill filter:",
           params.filters.specificBusinessSkill
         );
+        additionalFilters.push("specificBusinessSkill");
         // For business skills, we might need to check a different field or implement business skill tracking
         // For now, let's check if it's mentioned in vocational skills as well
         whereConditions.push(
@@ -300,6 +334,7 @@ export async function getParticipants(
           "Adding populationSegment filter:",
           params.filters.populationSegment
         );
+        additionalFilters.push("populationSegment");
         whereConditions.push(
           eq(participants.populationSegment, params.filters.populationSegment)
         );
@@ -312,6 +347,7 @@ export async function getParticipants(
           "Adding isActiveStudent filter:",
           params.filters.isActiveStudent
         );
+        additionalFilters.push("isActiveStudent");
         whereConditions.push(
           eq(participants.isActiveStudent, params.filters.isActiveStudent)
         );
@@ -321,6 +357,7 @@ export async function getParticipants(
         params.filters.isTeenMother !== "all"
       ) {
         console.log("Adding isTeenMother filter:", params.filters.isTeenMother);
+        additionalFilters.push("isTeenMother");
         whereConditions.push(
           eq(participants.isTeenMother, params.filters.isTeenMother)
         );
@@ -333,6 +370,7 @@ export async function getParticipants(
           "Adding sourceOfIncome filter:",
           params.filters.sourceOfIncome
         );
+        additionalFilters.push("sourceOfIncome");
         whereConditions.push(
           eq(participants.sourceOfIncome, params.filters.sourceOfIncome)
         );
@@ -345,6 +383,7 @@ export async function getParticipants(
           "Adding enterpriseSector filter:",
           params.filters.enterpriseSector
         );
+        additionalFilters.push("enterpriseSector");
         whereConditions.push(
           eq(participants.enterpriseSector, params.filters.enterpriseSector)
         );
@@ -357,12 +396,14 @@ export async function getParticipants(
           "Adding businessScale filter:",
           params.filters.businessScale
         );
+        additionalFilters.push("businessScale");
         whereConditions.push(
           eq(participants.businessScale, params.filters.businessScale)
         );
       }
       if (params.filters.nationality && params.filters.nationality !== "all") {
         console.log("Adding nationality filter:", params.filters.nationality);
+        additionalFilters.push("nationality");
         whereConditions.push(
           eq(participants.nationality, params.filters.nationality)
         );
@@ -375,27 +416,39 @@ export async function getParticipants(
           "Adding locationSetting filter:",
           params.filters.locationSetting
         );
+        additionalFilters.push("locationSetting");
         whereConditions.push(
           eq(participants.locationSetting, params.filters.locationSetting)
         );
       }
       if (params.filters.isRefugee && params.filters.isRefugee !== "all") {
         console.log("Adding isRefugee filter:", params.filters.isRefugee);
+        additionalFilters.push("isRefugee");
         whereConditions.push(
           eq(participants.isRefugee, params.filters.isRefugee)
         );
       }
       if (params.filters.isMother && params.filters.isMother !== "all") {
         console.log("Adding isMother filter:", params.filters.isMother);
+        additionalFilters.push("isMother");
         whereConditions.push(
           eq(participants.isMother, params.filters.isMother)
         );
       }
+
+      console.log(
+        `🎯 Applied ${additionalFilters.length} additional filters:`,
+        additionalFilters.join(", ")
+      );
+      console.log(
+        `📋 Total active filters: ${appliedFilters.length + additionalFilters.length}`
+      );
     }
 
     // Add search condition if search term is provided
     if (params?.search) {
       const searchTerm = `%${params.search.toLowerCase()}%`;
+      console.log("🔍 Adding search filter:", params.search);
 
       whereConditions.push(
         sql`(LOWER(${participants.firstName}) LIKE ${searchTerm} OR 
@@ -405,7 +458,10 @@ export async function getParticipants(
       );
     }
 
-    const [participantsData, totalCount] = await Promise.all([
+    console.log("⏱️ Starting database queries...");
+    const startTime = Date.now();
+
+    const [participantsData, totalCountResult] = await Promise.all([
       db.query.participants.findMany({
         where: and(...whereConditions),
         limit,
@@ -416,13 +472,22 @@ export async function getParticipants(
           project: true,
         },
       }),
-      db.query.participants.findMany({
-        where: and(...whereConditions),
-        columns: {
-          id: true,
-        },
-      }),
+      db
+        .select({ count: count() })
+        .from(participants)
+        .where(and(...whereConditions)),
     ]);
+
+    const queryTime = Date.now() - startTime;
+    const totalCount = totalCountResult[0]?.count || 0;
+
+    console.log("✅ Database queries completed:", {
+      queryTime: `${queryTime}ms`,
+      participantsReturned: participantsData.length,
+      totalCount,
+      page,
+      limit,
+    });
 
     // Get organization names for all participants
     const organizationIds = [
@@ -466,9 +531,9 @@ export async function getParticipants(
         pagination: {
           page,
           limit,
-          total: totalCount.length,
-          totalPages: Math.ceil(totalCount.length / limit),
-          hasNext: page * limit < totalCount.length,
+          total: totalCount,
+          totalPages: Math.ceil(totalCount / limit),
+          hasNext: page * limit < totalCount,
           hasPrev: page > 1,
         },
       },
@@ -694,7 +759,7 @@ export async function getAllFilteredParticipantsForExport(
     educationLevel?: string;
     isSubscribedToVSLA?: string;
     ownsEnterprise?: string;
-    employmentType?: string;
+    employmentStatus?: string;
     employmentSector?: string;
     hasVocationalSkills?: string;
     hasSoftSkills?: string;
@@ -801,10 +866,13 @@ export async function getAllFilteredParticipantsForExport(
           eq(participants.ownsEnterprise, filters.ownsEnterprise)
         );
       }
-      if (filters.employmentType && filters.employmentType !== "all") {
-        console.log("Adding employmentType filter:", filters.employmentType);
+      if (filters.employmentStatus && filters.employmentStatus !== "all") {
+        console.log(
+          "Adding employmentStatus filter:",
+          filters.employmentStatus
+        );
         whereConditions.push(
-          eq(participants.employmentType, filters.employmentType)
+          eq(participants.employmentStatus, filters.employmentStatus)
         );
       }
       if (filters.employmentSector && filters.employmentSector !== "all") {
