@@ -119,6 +119,7 @@ export function DuplicateGroupCard({ group, index }: DuplicateGroupCardProps) {
               <TableHead className="w-12">Select</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Contact</TableHead>
+              <TableHead>Date of Birth</TableHead>
               <TableHead>District</TableHead>
               <TableHead>Sub County</TableHead>
               <TableHead>Organization</TableHead>
@@ -140,6 +141,11 @@ export function DuplicateGroupCard({ group, index }: DuplicateGroupCardProps) {
                   {formatParticipantName(participant)}
                 </TableCell>
                 <TableCell>{formatContact(participant.contact)}</TableCell>
+                <TableCell>
+                  {participant.dateOfBirth
+                    ? new Date(participant.dateOfBirth).toLocaleDateString()
+                    : "—"}
+                </TableCell>
                 <TableCell>
                   {participant.district ? (
                     <Badge
