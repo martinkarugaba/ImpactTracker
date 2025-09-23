@@ -83,7 +83,7 @@ export type ParticipantFilters = {
   educationLevel: string;
   isSubscribedToVSLA: string;
   ownsEnterprise: string;
-  employmentType: string;
+  employmentStatus: string;
   employmentSector: string;
   hasVocationalSkills: string;
   hasSoftSkills: string;

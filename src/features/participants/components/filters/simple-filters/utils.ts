@@ -92,15 +92,15 @@ export function generateDynamicFilterOptions(
   };
 
   // Employment and enterprise filters - Use static options for common ones
-  const employmentTypeOptions = {
-    key: "employmentType",
-    label: "Employment Type",
+  const employmentStatusOptions = {
+    key: "employmentStatus",
+    label: "Employment Status",
     values: [
       { value: "all", label: "All" },
-      { value: "formal", label: "Formal Employment" },
-      { value: "informal", label: "Informal Employment" },
-      { value: "self-employed", label: "Self-Employed" },
+      { value: "employed", label: "Employed" },
       { value: "unemployed", label: "Unemployed" },
+      { value: "self-employed", label: "Self-Employed" },
+      { value: "student", label: "Student" },
     ],
   };
 
@@ -213,7 +213,7 @@ export function generateDynamicFilterOptions(
 
   // Return organized filter groups with static demographic options
   return {
-    quick: [sexOptions, ageGroupOptions, employmentTypeOptions, vslaOptions],
+    quick: [sexOptions, ageGroupOptions, employmentStatusOptions, vslaOptions],
 
     enterprise: [
       enterpriseOwnershipOptions,
@@ -237,7 +237,7 @@ export function generateDynamicFilterOptions(
       teenMotherOptions,
     ],
 
-    employment: [employmentTypeOptions, employmentSectorOptions].filter(
+    employment: [employmentStatusOptions, employmentSectorOptions].filter(
       option => option.values.length > 1
     ),
   };

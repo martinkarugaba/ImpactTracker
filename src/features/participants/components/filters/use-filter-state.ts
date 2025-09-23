@@ -37,7 +37,7 @@ export function useFilterState({
       educationLevel: "all",
       isSubscribedToVSLA: "all",
       ownsEnterprise: "all",
-      employmentType: "all",
+      employmentStatus: "all",
       employmentSector: "all",
       hasVocationalSkills: "all",
       hasSoftSkills: "all",

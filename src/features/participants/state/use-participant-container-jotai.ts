@@ -119,8 +119,10 @@ export function useParticipantContainerJotai({
           : undefined,
       ownsEnterprise:
         filters.ownsEnterprise !== "all" ? filters.ownsEnterprise : undefined,
-      employmentType:
-        filters.employmentType !== "all" ? filters.employmentType : undefined,
+      employmentStatus:
+        filters.employmentStatus !== "all"
+          ? filters.employmentStatus
+          : undefined,
       employmentSector:
         filters.employmentSector !== "all"
           ? filters.employmentSector
@@ -240,8 +242,10 @@ export function useParticipantContainerJotai({
             : undefined,
         ownsEnterprise:
           filters.ownsEnterprise !== "all" ? filters.ownsEnterprise : undefined,
-        employmentType:
-          filters.employmentType !== "all" ? filters.employmentType : undefined,
+        employmentStatus:
+          filters.employmentStatus !== "all"
+            ? filters.employmentStatus
+            : undefined,
         employmentSector:
           filters.employmentSector !== "all"
             ? filters.employmentSector
