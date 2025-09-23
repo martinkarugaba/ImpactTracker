@@ -41,46 +41,70 @@ export function generateDynamicFilterOptions(
     };
   };
 
-  // Core demographic filters
-  const sexOptions = createDynamicOptions("sex", "Gender", value =>
-    value === "male"
-      ? "Male"
-      : value === "female"
-        ? "Female"
-        : capitalizeFirst(value)
-  );
+  // Core demographic filters - STATIC options that should never disappear
+  const sexOptions = {
+    key: "sex",
+    label: "Gender",
+    values: [
+      { value: "all", label: "All" },
+      { value: "male", label: "Male" },
+      { value: "female", label: "Female" },
+      { value: "other", label: "Other" },
+    ],
+  };
 
-  const hasAgeData = participants.some(p => p.age || p.dateOfBirth);
-  const ageGroupOptions = hasAgeData
-    ? {
-        key: "ageGroup",
-        label: "Age",
-        values: [
-          { value: "all", label: "All Ages" },
-          { value: "young", label: "Youth (15-35)" },
-          { value: "adult", label: "Adults (36-59)" },
-          { value: "older", label: "Elderly (60+)" },
-        ],
-      }
-    : null;
+  const ageGroupOptions = {
+    key: "ageGroup",
+    label: "Age",
+    values: [
+      { value: "all", label: "All Ages" },
+      { value: "young", label: "Youth (15-35)" },
+      { value: "adult", label: "Adults (36-59)" },
+      { value: "older", label: "Elderly (60+)" },
+    ],
+  };
 
-  // Employment and enterprise filters
-  const employmentTypeOptions = createDynamicOptions(
-    "employmentType",
-    "Employment Type"
-  );
+  // Education Level - STATIC options
+  const educationLevelOptions = {
+    key: "educationLevel",
+    label: "Education",
+    values: [
+      { value: "all", label: "All Levels" },
+      { value: "none", label: "No Formal Education" },
+      { value: "primary", label: "Primary" },
+      { value: "secondary", label: "Secondary" },
+      { value: "tertiary", label: "Tertiary" },
+      { value: "university", label: "University" },
+    ],
+  };
 
-  // Add fallback options for employment type if no data exists
-  if (employmentTypeOptions.values.length <= 1) {
-    employmentTypeOptions.values = [
+  // Marital Status - STATIC options
+  const maritalStatusOptions = {
+    key: "maritalStatus",
+    label: "Marital Status",
+    values: [
+      { value: "all", label: "All Statuses" },
+      { value: "single", label: "Single" },
+      { value: "married", label: "Married" },
+      { value: "divorced", label: "Divorced" },
+      { value: "widowed", label: "Widowed" },
+    ],
+  };
+
+  // Employment and enterprise filters - Use static options for common ones
+  const employmentTypeOptions = {
+    key: "employmentType",
+    label: "Employment Type",
+    values: [
       { value: "all", label: "All" },
       { value: "formal", label: "Formal Employment" },
       { value: "informal", label: "Informal Employment" },
       { value: "self-employed", label: "Self-Employed" },
       { value: "unemployed", label: "Unemployed" },
-    ];
-  }
+    ],
+  };
 
+  // Keep dynamic options for sector-specific filters (these can be dynamic as they're less critical)
   const employmentSectorOptions = createDynamicOptions(
     "employmentSector",
     "Employment Sector"
@@ -125,15 +149,7 @@ export function generateDynamicFilterOptions(
     ],
   };
 
-  // Education and demographics
-  const educationLevelOptions = createDynamicOptions(
-    "educationLevel",
-    "Education"
-  );
-  const maritalStatusOptions = createDynamicOptions(
-    "maritalStatus",
-    "Marital Status"
-  );
+  // Education and demographics - use the static options we defined above
   const sourceOfIncomeOptions = createDynamicOptions(
     "sourceOfIncome",
     "Income Source"
@@ -195,11 +211,9 @@ export function generateDynamicFilterOptions(
     ],
   };
 
-  // Return organized filter groups
+  // Return organized filter groups with static demographic options
   return {
-    quick: [sexOptions, ageGroupOptions, employmentTypeOptions, vslaOptions]
-      .filter(Boolean)
-      .filter((item): item is NonNullable<typeof item> => item !== null),
+    quick: [sexOptions, ageGroupOptions, employmentTypeOptions, vslaOptions],
 
     enterprise: [
       enterpriseOwnershipOptions,
@@ -221,7 +235,7 @@ export function generateDynamicFilterOptions(
       populationSegmentOptions,
       pwdOptions,
       teenMotherOptions,
-    ].filter(option => option.values.length > 1),
+    ],
 
     employment: [employmentTypeOptions, employmentSectorOptions].filter(
       option => option.values.length > 1

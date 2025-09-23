@@ -111,7 +111,7 @@ export function JotaiParticipantsContainer({
             }}
             participantsData={state.participantsData}
             filters={state.filters}
-            onFiltersChange={() => {}} // No longer needed - Jotai handles this
+            onFiltersChange={state.handleFiltersChange}
             projects={projects}
             clusters={clusters}
             organizations={organizations}

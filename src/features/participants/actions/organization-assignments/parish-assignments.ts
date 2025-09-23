@@ -51,9 +51,16 @@ export async function assignParticipantsByParish(
         firstName: true,
         lastName: true,
         parish: true,
+        subCounty: true,
         organization_id: true,
       },
     });
+
+    // Get the subcounty that contains this parish
+    const subCountyName =
+      participantsToUpdate.length > 0
+        ? participantsToUpdate[0].subCounty
+        : "Unknown";
 
     console.log(
       `Found ${participantsToUpdate.length} participants from parish ${parishName}`
@@ -78,14 +85,16 @@ export async function assignParticipantsByParish(
     if (participantsNeedingUpdate.length === 0) {
       return {
         success: true,
-        message: `All participants from ${parishName} are already assigned to ${organization.name}`,
+        message: `All participants from parish ${parishName} (${subCountyName} subcounty) are already assigned to ${organization.name}`,
         details: {
           organizationName: organization.name,
+          assignmentMethod: "parish",
+          totalSubCounties: 1,
           totalParticipantsFound: participantsToUpdate.length,
           totalParticipantsUpdated: 0,
           results: [
             {
-              parish: parishName,
+              subCounty: subCountyName,
               participantsFound: participantsToUpdate.length,
               participantsUpdated: 0,
             },
@@ -112,14 +121,16 @@ export async function assignParticipantsByParish(
 
     return {
       success: true,
-      message: `Successfully updated ${participantsNeedingUpdate.length} participants from ${parishName} to ${organization.name}`,
+      message: `Successfully updated ${participantsNeedingUpdate.length} participants from parish ${parishName} (${subCountyName} subcounty) to ${organization.name}`,
       details: {
         organizationName: organization.name,
+        assignmentMethod: "parish",
+        totalSubCounties: 1,
         totalParticipantsFound: participantsToUpdate.length,
         totalParticipantsUpdated: participantsNeedingUpdate.length,
         results: [
           {
-            parish: parishName,
+            subCounty: subCountyName,
             participantsFound: participantsToUpdate.length,
             participantsUpdated: participantsNeedingUpdate.length,
           },
@@ -173,11 +184,14 @@ export async function assignParticipantsByMultipleParishes(
 
     let totalParticipantsFound = 0;
     let totalParticipantsUpdated = 0;
-    const results: Array<{
-      parish: string;
-      participantsFound: number;
-      participantsUpdated: number;
-    }> = [];
+    // Group results by subcounty since that's what we want to report
+    const subCountyResults = new Map<
+      string,
+      {
+        participantsFound: number;
+        participantsUpdated: number;
+      }
+    >();
 
     // Process each parish
     for (const parish of parishes) {
@@ -191,6 +205,7 @@ export async function assignParticipantsByMultipleParishes(
           firstName: true,
           lastName: true,
           parish: true,
+          subCounty: true,
           organization_id: true,
         },
       });
@@ -202,56 +217,85 @@ export async function assignParticipantsByMultipleParishes(
       totalParticipantsFound += participantsToUpdate.length;
 
       if (participantsToUpdate.length === 0) {
-        results.push({
-          parish,
-          participantsFound: 0,
-          participantsUpdated: 0,
-        });
         continue;
       }
 
-      // Filter participants that actually need updating
-      const participantsNeedingUpdate = participantsToUpdate.filter(
-        p => p.organization_id !== organizationId
-      );
-
-      console.log(
-        `${participantsNeedingUpdate.length} participants from parish ${parish} need organization update`
-      );
-
-      if (participantsNeedingUpdate.length > 0) {
-        // Extract IDs for batch update
-        const participantIds = participantsNeedingUpdate.map(p => p.id);
-
-        // Perform batch update using inArray
-        await db
-          .update(participants)
-          .set({
-            organization_id: organizationId,
-            updated_at: new Date(),
-          })
-          .where(inArray(participants.id, participantIds));
-
-        console.log(
-          `Updated ${participantsNeedingUpdate.length} participants from parish ${parish} to organization ${organization.name}`
-        );
-
-        totalParticipantsUpdated += participantsNeedingUpdate.length;
+      // Group participants by subcounty
+      const participantsBySubCounty = new Map<
+        string,
+        typeof participantsToUpdate
+      >();
+      for (const participant of participantsToUpdate) {
+        const subCounty = participant.subCounty || "Unknown";
+        if (!participantsBySubCounty.has(subCounty)) {
+          participantsBySubCounty.set(subCounty, []);
+        }
+        participantsBySubCounty.get(subCounty)!.push(participant);
       }
 
-      results.push({
-        parish,
-        participantsFound: participantsToUpdate.length,
-        participantsUpdated: participantsNeedingUpdate.length,
-      });
+      // Process each subcounty group
+      for (const [
+        subCounty,
+        subCountyParticipants,
+      ] of participantsBySubCounty) {
+        const participantsNeedingUpdate = subCountyParticipants.filter(
+          p => p.organization_id !== organizationId
+        );
+
+        console.log(
+          `${participantsNeedingUpdate.length} participants from parish ${parish} (${subCounty} subcounty) need organization update`
+        );
+
+        if (participantsNeedingUpdate.length > 0) {
+          // Extract IDs for batch update
+          const participantIds = participantsNeedingUpdate.map(p => p.id);
+
+          // Perform batch update using inArray
+          await db
+            .update(participants)
+            .set({
+              organization_id: organizationId,
+              updated_at: new Date(),
+            })
+            .where(inArray(participants.id, participantIds));
+
+          console.log(
+            `Updated ${participantsNeedingUpdate.length} participants from parish ${parish} (${subCounty} subcounty) to organization ${organization.name}`
+          );
+
+          totalParticipantsUpdated += participantsNeedingUpdate.length;
+        }
+
+        // Update subcounty results
+        const existing = subCountyResults.get(subCounty) || {
+          participantsFound: 0,
+          participantsUpdated: 0,
+        };
+        subCountyResults.set(subCounty, {
+          participantsFound:
+            existing.participantsFound + subCountyParticipants.length,
+          participantsUpdated:
+            existing.participantsUpdated + participantsNeedingUpdate.length,
+        });
+      }
     }
+
+    // Convert subcounty results map to array
+    const results = Array.from(subCountyResults.entries()).map(
+      ([subCounty, data]) => ({
+        subCounty,
+        participantsFound: data.participantsFound,
+        participantsUpdated: data.participantsUpdated,
+      })
+    );
 
     return {
       success: true,
-      message: `Successfully processed ${parishes.length} parishes. Updated ${totalParticipantsUpdated} participants to ${organization.name}`,
+      message: `Successfully processed ${parishes.length} parishes across ${results.length} subcounties. Updated ${totalParticipantsUpdated} participants to ${organization.name}`,
       details: {
         organizationName: organization.name,
-        totalParishes: parishes.length,
+        assignmentMethod: "parish",
+        totalSubCounties: results.length,
         totalParticipantsFound,
         totalParticipantsUpdated,
         results,

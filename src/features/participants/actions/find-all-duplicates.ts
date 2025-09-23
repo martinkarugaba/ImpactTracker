@@ -12,6 +12,7 @@ export interface DuplicateGroup {
     firstName: string;
     lastName: string;
     contact: string | null;
+    dateOfBirth: Date | null;
     district: string;
     subCounty: string;
     organizationName: string | null;
@@ -51,6 +52,7 @@ export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
         firstName: participants.firstName,
         lastName: participants.lastName,
         contact: participants.contact,
+        dateOfBirth: participants.dateOfBirth,
         district: participants.district,
         subCounty: participants.subCounty,
         organizationName: organizations.name,
@@ -128,7 +130,8 @@ export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
     // Helper function to assess geographic compatibility
     const assessGeographicCompatibility = (
       p1: (typeof allParticipants)[0],
-      p2: (typeof allParticipants)[0]
+      p2: (typeof allParticipants)[0],
+      isDuplicateType: "name" | "contact"
     ): {
       compatible: boolean;
       penalty: number;
@@ -148,6 +151,23 @@ export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
         };
       }
 
+      // For name-based duplicates: if participants have same name but are in different subcounties,
+      // they should NOT be considered duplicates
+      if (
+        isDuplicateType === "name" &&
+        district1 === district2 &&
+        subcounty1 &&
+        subcounty2 &&
+        subcounty1 !== subcounty2
+      ) {
+        return {
+          compatible: false,
+          penalty: 100,
+          reason:
+            "Same name but different subcounties - considered separate individuals",
+        };
+      }
+
       // Missing district data for one or both - proceed with extreme caution
       if (!district1 || !district2) {
         return {
@@ -162,12 +182,12 @@ export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
         return { compatible: true, penalty: 0, reason: "Same location" };
       }
 
-      // Same district, different subcounty - light penalty
-      if (district1 === district2) {
+      // Same district, different subcounty - for contact-based duplicates only
+      if (district1 === district2 && isDuplicateType === "contact") {
         return {
           compatible: true,
           penalty: 5,
-          reason: "Same district, different subcounty",
+          reason: "Same district, different subcounty (contact match)",
         };
       }
 
@@ -208,7 +228,7 @@ export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
             const p1 = group[i];
             const p2 = group[j];
 
-            const geoAssessment = assessGeographicCompatibility(p1, p2);
+            const geoAssessment = assessGeographicCompatibility(p1, p2, "name");
 
             if (geoAssessment.compatible) {
               // Calculate overall name similarity
@@ -242,6 +262,7 @@ export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
               firstName: p.firstName,
               lastName: p.lastName,
               contact: p.contact,
+              dateOfBirth: p.dateOfBirth,
               district: p.district,
               subCounty: p.subCounty,
               organizationName: p.organizationName,
@@ -282,7 +303,11 @@ export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
             const p1 = group[i];
             const p2 = group[j];
 
-            const geoAssessment = assessGeographicCompatibility(p1, p2);
+            const geoAssessment = assessGeographicCompatibility(
+              p1,
+              p2,
+              "contact"
+            );
 
             if (geoAssessment.compatible) {
               // Calculate name similarity between the two participants
@@ -327,6 +352,7 @@ export async function findAllDuplicates(): Promise<AllDuplicatesResult> {
               firstName: p.firstName,
               lastName: p.lastName,
               contact: p.contact,
+              dateOfBirth: p.dateOfBirth,
               district: p.district,
               subCounty: p.subCounty,
               organizationName: p.organizationName,

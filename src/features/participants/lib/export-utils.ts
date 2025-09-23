@@ -1,5 +1,4 @@
 import { type Participant } from "../types/types";
-import * as XLSX from "xlsx";
 
 // Extended participant type for export that includes the additional fields
 type ParticipantForExport = Participant & {
@@ -130,119 +129,233 @@ export function downloadCSV(csvContent: string, filename: string): void {
 }
 
 // Convert participant data to Excel format (using proper Excel format with SheetJS)
-export function participantsToExcel(participants: Participant[]): ArrayBuffer {
-  // Prepare data in the same structure as CSV but as an array of objects
-  const data = participants.map(participant => ({
-    "First Name": participant.firstName || "",
-    "Last Name": participant.lastName || "",
-    Sex: participant.sex || "",
-    Age: participant.age || "",
-    "Date of Birth": participant.dateOfBirth || "",
-    Contact: participant.contact || "",
-    "Is PWD": participant.isPWD || "",
-    "Marital Status": participant.maritalStatus || "",
-    "Education Level": participant.educationLevel || "",
-    "Employment Type": participant.employmentType || "",
-    "Employment Sector": participant.employmentSector || "",
-    "Monthly Income": participant.monthlyIncome || "",
-    "Number of Children": participant.numberOfChildren || "",
-    "Is Refugee": participant.isRefugee || "",
-    "Is Mother": participant.isMother || "",
-    "Is Teen Mother": participant.isTeenMother || "",
-    "Population Segment": participant.populationSegment || "",
-    "Source of Income": participant.sourceOfIncome || "",
-    "VSLA Member": participant.isSubscribedToVSLA || "",
-    "VSLA Name": participant.vslaName || "",
-    "Enterprise Owner": participant.ownsEnterprise || "",
-    "Enterprise Name": participant.enterpriseName || "",
-    "Enterprise Sector": participant.enterpriseSector || "",
-    "Business Scale": participant.businessScale || "",
-    "Has Vocational Skills": participant.hasVocationalSkills || "",
-    "Vocational Skills Participations": Array.isArray(
-      participant.vocationalSkillsParticipations
-    )
-      ? participant.vocationalSkillsParticipations.join("; ")
-      : "",
-    "Vocational Skills Completions": Array.isArray(
-      participant.vocationalSkillsCompletions
-    )
-      ? participant.vocationalSkillsCompletions.join("; ")
-      : "",
-    "Vocational Skills Certifications": Array.isArray(
-      participant.vocationalSkillsCertifications
-    )
-      ? participant.vocationalSkillsCertifications.join("; ")
-      : "",
-    "Has Soft Skills": participant.hasSoftSkills || "",
-    "Soft Skills Participations": Array.isArray(
-      participant.softSkillsParticipations
-    )
-      ? participant.softSkillsParticipations.join("; ")
-      : "",
-    "Soft Skills Completions": Array.isArray(participant.softSkillsCompletions)
-      ? participant.softSkillsCompletions.join("; ")
-      : "",
-    "Soft Skills Certifications": Array.isArray(
-      participant.softSkillsCertifications
-    )
-      ? participant.softSkillsCertifications.join("; ")
-      : "",
-    "Has Business Skills": participant.hasBusinessSkills || "",
-    Organization: (participant as ParticipantForExport).organizationName || "",
-    Project: (participant as ParticipantForExport).projectName || "",
-    District: (participant as ParticipantForExport).districtName || "",
-    "Sub County": (participant as ParticipantForExport).subCountyName || "",
-    Parish: participant.parish || "",
-    Village: participant.village || "",
-    Country: (participant as ParticipantForExport).countyName || "",
-    Designation: participant.designation || "",
-    Enterprise: participant.enterprise || "",
-    "Created At": participant.created_at
-      ? new Date(participant.created_at).toLocaleDateString()
-      : "",
-  }));
+export async function participantsToExcel(
+  participants: Participant[]
+): Promise<ArrayBuffer> {
+  // Ensure we're in a browser environment
+  if (typeof window === "undefined") {
+    throw new Error("Excel export is only supported in browser environment");
+  }
 
-  // Create a new workbook and worksheet
-  const workbook = XLSX.utils.book_new();
-  const worksheet = XLSX.utils.json_to_sheet(data);
+  try {
+    // Dynamic import to ensure XLSX is loaded in the browser
+    const XLSX = await import("xlsx");
 
-  // Auto-size columns for better readability
-  const columnWidths = Object.keys(data[0] || {}).map(key => ({
-    wch: Math.max(key.length, 15), // Minimum width of 15 characters
-  }));
-  worksheet["!cols"] = columnWidths;
+    if (!XLSX || !XLSX.utils) {
+      throw new Error("XLSX library failed to load properly");
+    }
 
-  // Add the worksheet to the workbook
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Participants");
+    // Prepare data in the same structure as CSV but as an array of objects
+    const data = participants.map(participant => ({
+      "First Name": participant.firstName || "",
+      "Last Name": participant.lastName || "",
+      Sex: participant.sex || "",
+      Age: participant.age || "",
+      "Date of Birth": participant.dateOfBirth || "",
+      Contact: participant.contact || "",
+      "Is PWD": participant.isPWD || "",
+      "Marital Status": participant.maritalStatus || "",
+      "Education Level": participant.educationLevel || "",
+      "Employment Type": participant.employmentType || "",
+      "Employment Sector": participant.employmentSector || "",
+      "Monthly Income": participant.monthlyIncome || "",
+      "Number of Children": participant.numberOfChildren || "",
+      "Is Refugee": participant.isRefugee || "",
+      "Is Mother": participant.isMother || "",
+      "Is Teen Mother": participant.isTeenMother || "",
+      "Population Segment": participant.populationSegment || "",
+      "Source of Income": participant.sourceOfIncome || "",
+      "VSLA Member": participant.isSubscribedToVSLA || "",
+      "VSLA Name": participant.vslaName || "",
+      "Enterprise Owner": participant.ownsEnterprise || "",
+      "Enterprise Name": participant.enterpriseName || "",
+      "Enterprise Sector": participant.enterpriseSector || "",
+      "Business Scale": participant.businessScale || "",
+      "Has Vocational Skills": participant.hasVocationalSkills || "",
+      "Vocational Skills Participations": Array.isArray(
+        participant.vocationalSkillsParticipations
+      )
+        ? participant.vocationalSkillsParticipations.join("; ")
+        : "",
+      "Vocational Skills Completions": Array.isArray(
+        participant.vocationalSkillsCompletions
+      )
+        ? participant.vocationalSkillsCompletions.join("; ")
+        : "",
+      "Vocational Skills Certifications": Array.isArray(
+        participant.vocationalSkillsCertifications
+      )
+        ? participant.vocationalSkillsCertifications.join("; ")
+        : "",
+      "Has Soft Skills": participant.hasSoftSkills || "",
+      "Soft Skills Participations": Array.isArray(
+        participant.softSkillsParticipations
+      )
+        ? participant.softSkillsParticipations.join("; ")
+        : "",
+      "Soft Skills Completions": Array.isArray(
+        participant.softSkillsCompletions
+      )
+        ? participant.softSkillsCompletions.join("; ")
+        : "",
+      "Soft Skills Certifications": Array.isArray(
+        participant.softSkillsCertifications
+      )
+        ? participant.softSkillsCertifications.join("; ")
+        : "",
+      "Has Business Skills": participant.hasBusinessSkills || "",
+      Organization:
+        (participant as ParticipantForExport).organizationName || "",
+      Project: (participant as ParticipantForExport).projectName || "",
+      District: (participant as ParticipantForExport).districtName || "",
+      "Sub County": (participant as ParticipantForExport).subCountyName || "",
+      Parish: participant.parish || "",
+      Village: participant.village || "",
+      Country: (participant as ParticipantForExport).countyName || "",
+      Designation: participant.designation || "",
+      Enterprise: participant.enterprise || "",
+      "Created At": participant.created_at
+        ? new Date(participant.created_at).toLocaleDateString()
+        : "",
+    }));
 
-  // Generate Excel file as ArrayBuffer
-  return XLSX.write(workbook, {
-    bookType: "xlsx",
-    type: "array",
-    compression: true,
-  });
+    if (data.length === 0) {
+      throw new Error("No data to export");
+    }
+
+    // Create a new workbook and worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(data);
+
+    // Auto-size columns for better readability
+    const columnWidths = Object.keys(data[0] || {}).map(key => ({
+      wch: Math.max(key.length, 15), // Minimum width of 15 characters
+    }));
+    worksheet["!cols"] = columnWidths;
+
+    // Add the worksheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Participants");
+
+    // Generate Excel file as ArrayBuffer
+    const buffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+      compression: true,
+    });
+
+    return buffer as ArrayBuffer;
+  } catch (error) {
+    console.error("Error creating Excel file:", error);
+    throw new Error(
+      `Failed to create Excel file: ${error instanceof Error ? error.message : "Unknown error"}`
+    );
+  }
 }
 
-// Download Excel file
+// Download Excel file with enhanced error handling and production compatibility
 export function downloadExcel(
   excelBuffer: ArrayBuffer,
   filename: string
 ): void {
-  const blob = new Blob([excelBuffer], {
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  });
+  try {
+    // Check if we're in a browser environment
+    if (typeof window === "undefined" || typeof document === "undefined") {
+      console.error("Download not supported in server environment");
+      return;
+    }
+
+    // Check for required APIs
+    if (typeof Blob === "undefined") {
+      console.error("Blob API not supported");
+      throw new Error("Blob API not supported in this browser");
+    }
+
+    if (typeof URL === "undefined" || !URL.createObjectURL) {
+      console.error("URL.createObjectURL not supported");
+      throw new Error("URL.createObjectURL not supported in this browser");
+    }
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    // Try modern download approach first
+    if ("showSaveFilePicker" in window) {
+      // Use File System Access API if available (Chrome/Edge)
+      try {
+        type FileSystemAPI = {
+          showSaveFilePicker: (options: {
+            suggestedName: string;
+            types: Array<{
+              description: string;
+              accept: Record<string, string[]>;
+            }>;
+          }) => Promise<{
+            createWritable: () => Promise<{
+              write: (data: Blob) => void;
+              close: () => Promise<void>;
+            }>;
+          }>;
+        };
+
+        (window as typeof window & FileSystemAPI)
+          .showSaveFilePicker({
+            suggestedName: filename,
+            types: [
+              {
+                description: "Excel files",
+                accept: {
+                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                    [".xlsx"],
+                },
+              },
+            ],
+          })
+          .then(fileHandle => {
+            return fileHandle.createWritable();
+          })
+          .then(writable => {
+            writable.write(blob);
+            return writable.close();
+          })
+          .catch((_error: unknown) => {
+            // Fall back to traditional download if user cancels or API fails
+            console.log("Modern download cancelled or failed, using fallback");
+            fallbackDownload(blob, filename);
+          });
+        return;
+      } catch (_error) {
+        console.log("Modern download API failed, using fallback");
+      }
+    }
+
+    // Traditional download approach
+    fallbackDownload(blob, filename);
+  } catch (error) {
+    console.error("Excel download failed:", error);
+    throw error;
+  }
+}
+
+// Fallback download function for broader browser compatibility
+function fallbackDownload(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
 
-  if (link.download !== undefined) {
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", filename);
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }
+  // Set download attributes
+  link.href = url;
+  link.download = filename;
+  link.style.display = "none";
+
+  // Append to DOM, click, and cleanup
+  document.body.appendChild(link);
+
+  // Trigger download
+  link.click();
+
+  // Cleanup
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 // Format filename with current date and filters

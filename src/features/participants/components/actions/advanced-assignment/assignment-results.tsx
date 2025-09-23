@@ -1,5 +1,5 @@
 import { CheckCircle2 } from "lucide-react";
-import type { AssignmentResult } from "./types";
+import type { AssignmentResult } from "../../../actions/organization-assignments/types";
 
 interface AssignmentResultsProps {
   assignmentData?: AssignmentResult;
@@ -32,16 +32,22 @@ export function AssignmentResults({
               {assignmentData.details.totalParticipantsUpdated || 0} out of{" "}
               {assignmentData.details.totalParticipantsFound || 0} participants
               across {assignmentData.details.totalSubCounties || 0} subcounties
+              {assignmentData.details.assignmentMethod && (
+                <span className="ml-2 text-xs opacity-75">
+                  (assigned by {assignmentData.details.assignmentMethod})
+                </span>
+              )}
             </p>
 
             {assignmentData.details.results && (
               <div className="mt-2 space-y-1">
-                <p className="font-medium">Breakdown by subcounty:</p>
+                <p className="font-medium">
+                  Subcounties assigned to organization:
+                </p>
                 {assignmentData.details.results.map((result, index) => (
                   <div key={index} className="ml-2 text-xs">
-                    • {result.subcounty || result.parish}:{" "}
-                    {result.participantsUpdated} of {result.participantsFound}{" "}
-                    participants
+                    • {result.subCounty}: {result.participantsUpdated} of{" "}
+                    {result.participantsFound} participants
                   </div>
                 ))}
               </div>

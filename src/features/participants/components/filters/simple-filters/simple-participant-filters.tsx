@@ -44,11 +44,21 @@ export function SimpleParticipantFilters({
   return (
     <div className="space-y-3">
       {/* Main Filter Bar */}
-      <div className="flex flex-wrap items-center gap-3">
-        <SearchFilter />
+      <div className="relative flex flex-wrap items-center gap-3">
+        {/* Loading Indicator for Quick Filters */}
+        {isLoading && (
+          <div className="absolute inset-0 z-10 flex items-center justify-start bg-white/60 backdrop-blur-sm dark:bg-gray-900/60">
+            <div className="flex items-center gap-2 rounded-md bg-white px-3 py-1.5 shadow-sm dark:bg-gray-800">
+              <div className="h-3 w-3 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
+              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                Applying filters...
+              </span>
+            </div>
+          </div>
+        )}
 
-        <QuickFilters quickFilters={filterGroups.quick} />
-
+        <SearchFilter isLoading={isLoading} />
+        <QuickFilters quickFilters={filterGroups.quick} isLoading={isLoading} />
         <MoreFiltersPopover
           filterGroups={filterGroups}
           projects={projects}
@@ -56,6 +66,7 @@ export function SimpleParticipantFilters({
           districts={districts}
           subCounties={subCounties}
           activeFiltersCount={activeFiltersCount}
+          isLoading={isLoading}
         />
       </div>
 

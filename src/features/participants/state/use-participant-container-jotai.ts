@@ -15,8 +15,13 @@ import {
   importDialogAtom,
   editingParticipantAtom,
   deletingParticipantAtom,
+  updateFilterAtom,
 } from "../atoms/participants-atoms";
-import { type Participant, type ParticipantsResponse } from "../types/types";
+import {
+  type Participant,
+  type ParticipantsResponse,
+  type ParticipantFilters,
+} from "../types/types";
 import { getAllFilteredParticipantsForExport } from "../actions";
 import {
   participantsToCSV,
@@ -42,6 +47,7 @@ export function useParticipantContainerJotai({
 
   // Get all state from Jotai atoms
   const [filters] = useAtom(participantFiltersAtom);
+  const [, updateFilter] = useAtom(updateFilterAtom);
   const [pagination, setPagination] = useAtom(participantPaginationAtom);
   const [searchValue, setSearchValue] = useAtom(participantSearchAtom);
   const [activeTab] = useAtom(activeTabAtom);
@@ -53,6 +59,15 @@ export function useParticipantContainerJotai({
   const [deletingParticipant, setDeletingParticipant] = useAtom(
     deletingParticipantAtom
   );
+
+  const handleFiltersChange = (newFilters: ParticipantFilters) => {
+    // Update each filter individually using the updateFilterAtom
+    Object.entries(newFilters).forEach(([key, value]) => {
+      if (filters[key as keyof ParticipantFilters] !== value) {
+        updateFilter({ key: key as keyof ParticipantFilters, value });
+      }
+    });
+  };
 
   // Event handlers
   const handlePaginationChange = (newPage: number, newPageSize?: number) => {
@@ -304,16 +319,24 @@ export function useParticipantContainerJotai({
 
       // Convert and download based on format
       if (format === "excel") {
-        const excelContent = participantsToExcel(exportParticipants);
-        const filename = generateExportFilename(
-          "participants",
-          exportFilters,
-          "excel"
-        );
-        downloadExcel(excelContent, filename);
-        toast.success(
-          `Exported ${exportParticipants.length} participants to ${filename}`
-        );
+        try {
+          const excelContent = await participantsToExcel(exportParticipants);
+          const filename = generateExportFilename(
+            "participants",
+            exportFilters,
+            "excel"
+          );
+          downloadExcel(excelContent, filename);
+          toast.success(
+            `Exported ${exportParticipants.length} participants to ${filename}`
+          );
+        } catch (excelError) {
+          console.error("Excel export error:", excelError);
+          toast.error(
+            "Failed to create Excel file. Please try CSV export instead."
+          );
+          return;
+        }
       } else {
         const csvContent = participantsToCSV(exportParticipants);
         const filename = generateExportFilename(
@@ -363,6 +386,7 @@ export function useParticipantContainerJotai({
     // Event handlers
     handlePaginationChange,
     handleSearchChange,
+    handleFiltersChange,
     handleEdit,
     handleDelete,
     handleView,

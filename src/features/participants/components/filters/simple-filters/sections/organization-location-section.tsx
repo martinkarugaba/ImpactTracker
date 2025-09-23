@@ -19,6 +19,7 @@ interface OrganizationLocationSectionProps {
   organizations: SimpleParticipantFiltersProps["organizations"];
   districts: SimpleParticipantFiltersProps["districts"];
   subCounties: SimpleParticipantFiltersProps["subCounties"];
+  isLoading?: boolean;
 }
 
 export function OrganizationLocationSection({
@@ -26,6 +27,7 @@ export function OrganizationLocationSection({
   organizations,
   districts = [],
   subCounties = [],
+  isLoading = false,
 }: OrganizationLocationSectionProps) {
   const filters = useAtomValue(participantFiltersAtom);
   const updateFilter = useSetAtom(updateFilterAtom);
@@ -41,6 +43,7 @@ export function OrganizationLocationSection({
           <Select
             value={filters.project}
             onValueChange={value => updateFilter({ key: "project", value })}
+            disabled={isLoading}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select project..." />
@@ -63,6 +66,7 @@ export function OrganizationLocationSection({
             onValueChange={value =>
               updateFilter({ key: "organization", value })
             }
+            disabled={isLoading}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select organization..." />
@@ -83,6 +87,7 @@ export function OrganizationLocationSection({
           <Select
             value={filters.district}
             onValueChange={value => updateFilter({ key: "district", value })}
+            disabled={isLoading}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select district..." />
@@ -103,6 +108,7 @@ export function OrganizationLocationSection({
           <Select
             value={filters.subCounty}
             onValueChange={value => updateFilter({ key: "subCounty", value })}
+            disabled={isLoading}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select sub county..." />

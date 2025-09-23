@@ -6,6 +6,20 @@ const nextConfig: NextConfig = {
   // External packages that should not be bundled by webpack
   serverExternalPackages: ["@node-rs/argon2"],
 
+  // Webpack configuration for client-side libraries
+  webpack: (config, { isServer }) => {
+    // Ensure XLSX works properly in production builds
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        crypto: false,
+      };
+    }
+    return config;
+  },
+
   // Experimental features configuration
   experimental: {
     // Use empty object for now - no experimental features enabled

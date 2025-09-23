@@ -17,10 +17,12 @@ import { type FilterGroups } from "../types";
 
 interface DemographicsSectionProps {
   filterGroups: FilterGroups;
+  isLoading?: boolean;
 }
 
 export function DemographicsSection({
   filterGroups,
+  isLoading = false,
 }: DemographicsSectionProps) {
   const filters = useAtomValue(participantFiltersAtom);
   const updateFilter = useSetAtom(updateFilterAtom);
@@ -58,6 +60,7 @@ export function DemographicsSection({
                   value
                 )
               }
+              disabled={isLoading}
             >
               <SelectTrigger>
                 <SelectValue
