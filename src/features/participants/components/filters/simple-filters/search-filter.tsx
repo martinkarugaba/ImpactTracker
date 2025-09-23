@@ -6,7 +6,11 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { participantSearchAtom } from "../../../atoms/participants-atoms";
 
-export function SearchFilter() {
+interface SearchFilterProps {
+  isLoading?: boolean;
+}
+
+export function SearchFilter({ isLoading = false }: SearchFilterProps) {
   const [localSearchValue, setLocalSearchValue] = useState("");
   const [searchValue, setSearchValue] = useAtom(participantSearchAtom);
 
@@ -36,6 +40,7 @@ export function SearchFilter() {
           value={localSearchValue}
           onChange={e => setLocalSearchValue(e.target.value)}
           className="pl-9"
+          disabled={isLoading}
         />
       </div>
     </div>

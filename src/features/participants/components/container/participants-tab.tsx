@@ -39,6 +39,7 @@ import { FixDuplicatesDialog } from "../fix-duplicates";
 import { AdvancedAssignmentDialog } from "../actions/advanced-assignment-dialog";
 import { useThemeConfig } from "@/features/themes/components/active-theme";
 import { useSession } from "next-auth/react";
+import { debugExcelExport } from "../../lib/excel-export-debug";
 import {
   Dialog,
   DialogContent,
@@ -241,6 +242,20 @@ export function ParticipantsTab({
                 <Upload className="mr-2 h-4 w-4" />
                 Import from Excel
               </Button>
+              {/* Debug button for development */}
+              {process.env.NODE_ENV === "development" && (
+                <Button
+                  onClick={() => {
+                    debugExcelExport();
+                    toast.success("Debug info logged to console");
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="border-yellow-200 bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:border-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400 dark:hover:bg-yellow-900/30"
+                >
+                  🔍 Debug Excel
+                </Button>
+              )}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button

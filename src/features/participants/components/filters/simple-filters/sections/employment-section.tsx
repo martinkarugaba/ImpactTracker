@@ -17,9 +17,13 @@ import { type FilterGroups } from "../types";
 
 interface EmploymentSectionProps {
   filterGroups: FilterGroups;
+  isLoading?: boolean;
 }
 
-export function EmploymentSection({ filterGroups }: EmploymentSectionProps) {
+export function EmploymentSection({
+  filterGroups,
+  isLoading = false,
+}: EmploymentSectionProps) {
   const filters = useAtomValue(participantFiltersAtom);
   const updateFilter = useSetAtom(updateFilterAtom);
 
@@ -56,6 +60,7 @@ export function EmploymentSection({ filterGroups }: EmploymentSectionProps) {
                   value
                 )
               }
+              disabled={isLoading}
             >
               <SelectTrigger>
                 <SelectValue

@@ -17,9 +17,13 @@ import { type FilterGroup } from "./types";
 
 interface QuickFiltersProps {
   quickFilters: FilterGroup[];
+  isLoading?: boolean;
 }
 
-export function QuickFilters({ quickFilters }: QuickFiltersProps) {
+export function QuickFilters({
+  quickFilters,
+  isLoading = false,
+}: QuickFiltersProps) {
   const filters = useAtomValue(participantFiltersAtom);
   const updateFilter = useSetAtom(updateFilterAtom);
 
@@ -50,6 +54,7 @@ export function QuickFilters({ quickFilters }: QuickFiltersProps) {
                 value
               )
             }
+            disabled={isLoading}
           >
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder={filter.label} />
