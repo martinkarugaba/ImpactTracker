@@ -4,5 +4,4 @@ export type {
   AdvancedAssignmentDialogProps,
   OrganizationOption,
   SubCountyOption,
-  AssignmentResult,
 } from "./types";

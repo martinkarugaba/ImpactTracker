@@ -4,13 +4,12 @@ export interface AssignmentResult {
   error?: string;
   details?: {
     organizationName: string;
-    totalSubCounties?: number;
-    totalParishes?: number;
+    assignmentMethod: "subcounty" | "parish";
+    totalSubCounties: number;
     totalParticipantsFound: number;
     totalParticipantsUpdated: number;
     results: Array<{
-      subCounty?: string;
-      parish?: string;
+      subCounty: string;
       participantsFound: number;
       participantsUpdated: number;
     }>;

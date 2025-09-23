@@ -24,22 +24,3 @@ export interface ParishOption {
   name: string;
   subCountyId: string;
 }
-
-export interface AssignmentResult {
-  success: boolean;
-  message?: string;
-  error?: string;
-  details?: {
-    totalParticipantsUpdated: number;
-    totalParticipantsFound: number;
-    totalSubCounties?: number;
-    totalParishes?: number;
-    organizationName: string;
-    results: Array<{
-      subcounty?: string;
-      parish?: string;
-      participantsFound: number;
-      participantsUpdated: number;
-    }>;
-  };
-}
