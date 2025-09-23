@@ -1,5 +1,9 @@
 name: Create/Delete Branch for Pull Request
 
+# Required repository setup:
+# - Repository variable: NEON_PROJECT_ID (your Neon project ID)
+# - Repository secret: NEON_API_KEY (your Neon API key)
+
 on:
   pull_request:
     types:
@@ -25,8 +29,8 @@ jobs:
   create_neon_branch:
     name: Create Neon Branch
     outputs:
-      db_url: ${{ steps.create_neon_branch_encode.outputs.db_url }}
-      db_url_with_pooler: ${{ steps.create_neon_branch_encode.outputs.db_url_with_pooler }}
+      db_url: ${{ steps.create_neon_branch.outputs.db_url }}
+      db_url_with_pooler: ${{ steps.create_neon_branch.outputs.db_url_with_pooler }}
     needs: setup
     if: |
       github.event_name == 'pull_request' && (
