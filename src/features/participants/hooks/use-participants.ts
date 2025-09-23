@@ -50,6 +50,10 @@ export function useParticipants(
       locationSetting?: string;
       isRefugee?: string;
       isMother?: string;
+      // Specific skills filters
+      specificVocationalSkill?: string;
+      specificSoftSkill?: string;
+      specificBusinessSkill?: string;
     };
   }
 ) {
@@ -102,6 +106,10 @@ export function useParticipantsMetrics(
       locationSetting?: string;
       isRefugee?: string;
       isMother?: string;
+      // Specific skills filters
+      specificVocationalSkill?: string;
+      specificSoftSkill?: string;
+      specificBusinessSkill?: string;
     };
     applyFilters: boolean;
   }
@@ -216,6 +224,10 @@ export function useExportParticipants() {
         locationSetting?: string;
         isRefugee?: string;
         isMother?: string;
+        // Specific skills filters
+        specificVocationalSkill?: string;
+        specificSoftSkill?: string;
+        specificBusinessSkill?: string;
       };
       search?: string;
     }) => {

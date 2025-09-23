@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/popover";
 
 import { EmploymentSection } from "./sections/employment-section";
-import { type SimpleParticipantFiltersProps, type FilterGroups } from "./types";
+import { type FilterGroups } from "./types";
 import { OrganizationLocationSection } from "./sections/organization-location-section";
 import { EnterpriseBusinessSection } from "./sections/enterprise-business-section";
 import { SkillsEducationSection } from "./sections/skills-education-section";
@@ -19,10 +19,10 @@ import { DemographicsSection } from "./sections/demographics-section";
 
 interface MoreFiltersPopoverProps {
   filterGroups: FilterGroups;
-  projects: SimpleParticipantFiltersProps["projects"];
-  organizations: SimpleParticipantFiltersProps["organizations"];
-  districts: SimpleParticipantFiltersProps["districts"];
-  subCounties: SimpleParticipantFiltersProps["subCounties"];
+  projects: Array<{ id: string; name: string; acronym: string }>;
+  organizations: Array<{ id: string; name: string; acronym: string }>;
+  districts: Array<{ id: string; name: string }>;
+  subCounties: Array<{ id: string; name: string }>;
   activeFiltersCount: number;
   isLoading?: boolean;
 }

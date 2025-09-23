@@ -5,7 +5,6 @@ import { BarChart3, Users, PieChart } from "lucide-react";
 import { useParticipantContainerJotai } from "../../state/use-participant-container-jotai";
 import { useParticipantState } from "../../state/use-participant-state";
 import type { Participant } from "../../types/types";
-import { useFilterOptions } from "./use-filter-options";
 import { AnalyticsTab } from "./metrics-tab";
 import { ChartsTab } from "./charts-tab";
 import { ParticipantsTab } from "./participants-tab";
@@ -29,11 +28,6 @@ export function JotaiParticipantsContainer({
 
   // Get tab state from Jotai
   const { activeTab, setActiveTab } = useParticipantState();
-
-  const filterOptions = useFilterOptions({
-    clusterId,
-    locationNames: state.locationNames,
-  });
 
   // Wrapper functions to match ParticipantsTab interface
   const handleEditWrapper = (data: unknown, id: string) => {
@@ -115,10 +109,11 @@ export function JotaiParticipantsContainer({
             projects={projects}
             clusters={clusters}
             organizations={organizations}
-            filterOptions={filterOptions}
+            filterOptions={{ districts: [], subCounties: [], enterprises: [] }}
             searchValue={state.searchValue}
             onSearchChange={() => {}} // No longer needed - Jotai handles this
             isParticipantsLoading={state.isParticipantsLoading}
+            isFiltering={state.isFiltering}
             locationNamesLoading={false}
             onPaginationChange={state.handlePaginationChange}
             onPageChange={page =>

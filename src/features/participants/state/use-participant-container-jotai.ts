@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import { useParticipants } from "../hooks/use-participants";
@@ -16,6 +16,8 @@ import {
   editingParticipantAtom,
   deletingParticipantAtom,
   updateFilterAtom,
+  isFilteringAtom,
+  clearFilteringAtom,
 } from "../atoms/participants-atoms";
 import {
   type Participant,
@@ -59,6 +61,8 @@ export function useParticipantContainerJotai({
   const [deletingParticipant, setDeletingParticipant] = useAtom(
     deletingParticipantAtom
   );
+  const [isFiltering] = useAtom(isFilteringAtom);
+  const [, clearFiltering] = useAtom(clearFilteringAtom);
 
   const handleFiltersChange = (newFilters: ParticipantFilters) => {
     // Update each filter individually using the updateFilterAtom
@@ -78,6 +82,11 @@ export function useParticipantContainerJotai({
   };
 
   const handleSearchChange = (newSearch: string) => {
+    // Set filtering state when search changes
+    clearFiltering(); // Clear any existing filtering state
+    if (newSearch !== searchValue) {
+      updateFilter({ key: "search", value: newSearch });
+    }
     setSearchValue(newSearch);
     setPagination(prev => ({ ...prev, page: 1 }));
   };
@@ -159,8 +168,56 @@ export function useParticipantContainerJotai({
         filters.locationSetting !== "all" ? filters.locationSetting : undefined,
       isRefugee: filters.isRefugee !== "all" ? filters.isRefugee : undefined,
       isMother: filters.isMother !== "all" ? filters.isMother : undefined,
+      // Specific skills filters
+      specificVocationalSkill:
+        filters.specificVocationalSkill !== "all"
+          ? filters.specificVocationalSkill
+          : undefined,
+      specificSoftSkill:
+        filters.specificSoftSkill !== "all"
+          ? filters.specificSoftSkill
+          : undefined,
+      specificBusinessSkill:
+        filters.specificBusinessSkill !== "all"
+          ? filters.specificBusinessSkill
+          : undefined,
     },
   });
+
+  // Debug logging for filters being passed to backend
+  useEffect(() => {
+    const activeFilters = {
+      specificVocationalSkill:
+        filters.specificVocationalSkill !== "all"
+          ? filters.specificVocationalSkill
+          : undefined,
+      specificSoftSkill:
+        filters.specificSoftSkill !== "all"
+          ? filters.specificSoftSkill
+          : undefined,
+      specificBusinessSkill:
+        filters.specificBusinessSkill !== "all"
+          ? filters.specificBusinessSkill
+          : undefined,
+    };
+
+    const hasActiveSkillsFilters = Object.values(activeFilters).some(
+      value => value !== undefined
+    );
+
+    if (hasActiveSkillsFilters) {
+      console.log(
+        "🎯 Active skills filters being sent to backend:",
+        activeFilters
+      );
+      console.log("🎯 Full filters object:", filters);
+    }
+  }, [
+    filters.specificVocationalSkill,
+    filters.specificSoftSkill,
+    filters.specificBusinessSkill,
+    filters,
+  ]);
 
   const {
     data: metricsData,
@@ -174,6 +231,18 @@ export function useParticipantContainerJotai({
     },
     searchValue
   );
+
+  // Clear filtering state when data finishes loading
+  useEffect(() => {
+    if (!isParticipantsLoading && (participantsData || participantsError)) {
+      clearFiltering();
+    }
+  }, [
+    isParticipantsLoading,
+    participantsData,
+    participantsError,
+    clearFiltering,
+  ]);
 
   // Computed values
   const participants = useMemo(() => {
@@ -384,6 +453,7 @@ export function useParticipantContainerJotai({
     // Loading & Error states
     isParticipantsLoading,
     isMetricsLoading,
+    isFiltering,
     participantsError,
     metricsError,
 
