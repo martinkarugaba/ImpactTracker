@@ -40,20 +40,20 @@ export function EnterpriseFilters({
         </Select>
       </div>
 
-      {/* Employment Type */}
+      {/* Employment Status */}
       <div className="space-y-1">
         <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
-          Employment Type
+          Employment Status
         </label>
         <Select
-          value={filters.employmentType}
-          onValueChange={value => updateFilter("employmentType", value)}
+          value={filters.employmentStatus}
+          onValueChange={value => updateFilter("employmentStatus", value)}
         >
           <SelectTrigger className="h-9 w-36">
-            <SelectValue placeholder="Select type..." />
+            <SelectValue placeholder="Select status..." />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="formal">Formal Employment</SelectItem>
             <SelectItem value="informal">Informal Work</SelectItem>
             <SelectItem value="self-employed">Self-Employed</SelectItem>

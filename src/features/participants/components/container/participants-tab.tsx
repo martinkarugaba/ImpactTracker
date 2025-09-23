@@ -242,8 +242,8 @@ export function ParticipantsTab({
                 <Upload className="mr-2 h-4 w-4" />
                 Import from Excel
               </Button>
-              {/* Debug button for development */}
-              {process.env.NODE_ENV === "development" && (
+              {/* Debug button for super_admins only */}
+              {session?.user?.role === "super_admin" && (
                 <Button
                   onClick={() => {
                     debugExcelExport();
