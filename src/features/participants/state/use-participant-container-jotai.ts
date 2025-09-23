@@ -319,16 +319,24 @@ export function useParticipantContainerJotai({
 
       // Convert and download based on format
       if (format === "excel") {
-        const excelContent = participantsToExcel(exportParticipants);
-        const filename = generateExportFilename(
-          "participants",
-          exportFilters,
-          "excel"
-        );
-        downloadExcel(excelContent, filename);
-        toast.success(
-          `Exported ${exportParticipants.length} participants to ${filename}`
-        );
+        try {
+          const excelContent = await participantsToExcel(exportParticipants);
+          const filename = generateExportFilename(
+            "participants",
+            exportFilters,
+            "excel"
+          );
+          downloadExcel(excelContent, filename);
+          toast.success(
+            `Exported ${exportParticipants.length} participants to ${filename}`
+          );
+        } catch (excelError) {
+          console.error("Excel export error:", excelError);
+          toast.error(
+            "Failed to create Excel file. Please try CSV export instead."
+          );
+          return;
+        }
       } else {
         const csvContent = participantsToCSV(exportParticipants);
         const filename = generateExportFilename(

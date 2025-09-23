@@ -24,6 +24,7 @@ interface MoreFiltersPopoverProps {
   districts: SimpleParticipantFiltersProps["districts"];
   subCounties: SimpleParticipantFiltersProps["subCounties"];
   activeFiltersCount: number;
+  isLoading?: boolean;
 }
 
 export function MoreFiltersPopover({
@@ -33,6 +34,7 @@ export function MoreFiltersPopover({
   districts = [],
   subCounties = [],
   activeFiltersCount,
+  isLoading = false,
 }: MoreFiltersPopoverProps) {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
@@ -58,9 +60,21 @@ export function MoreFiltersPopover({
         </PopoverTrigger>
         <PopoverContent
           align="end"
-          className="animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 h-[500px] w-[85vw] max-w-5xl overflow-y-auto"
+          className="animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 h-[500px] w-[800px] max-w-[90vw] overflow-y-auto"
         >
-          <div className="space-y-4">
+          <div className="relative space-y-4">
+            {/* Loading Overlay */}
+            {isLoading && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/80 backdrop-blur-sm dark:bg-gray-900/80">
+                <div className="flex items-center gap-3">
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    Applying filters...
+                  </span>
+                </div>
+              </div>
+            )}
+
             <div className="flex items-center justify-between">
               <h4 className="font-semibold">Additional Filters</h4>
             </div>
@@ -70,15 +84,28 @@ export function MoreFiltersPopover({
               organizations={organizations}
               districts={districts}
               subCounties={subCounties}
+              isLoading={isLoading}
             />
 
-            <EnterpriseBusinessSection filterGroups={filterGroups} />
+            <EnterpriseBusinessSection
+              filterGroups={filterGroups}
+              isLoading={isLoading}
+            />
 
-            <SkillsEducationSection filterGroups={filterGroups} />
+            <SkillsEducationSection
+              filterGroups={filterGroups}
+              isLoading={isLoading}
+            />
 
-            <DemographicsSection filterGroups={filterGroups} />
+            <DemographicsSection
+              filterGroups={filterGroups}
+              isLoading={isLoading}
+            />
 
-            <EmploymentSection filterGroups={filterGroups} />
+            <EmploymentSection
+              filterGroups={filterGroups}
+              isLoading={isLoading}
+            />
           </div>
         </PopoverContent>
       </Popover>

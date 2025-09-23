@@ -17,10 +17,12 @@ import { type FilterGroups } from "../types";
 
 interface EnterpriseBusinessSectionProps {
   filterGroups: FilterGroups;
+  isLoading?: boolean;
 }
 
 export function EnterpriseBusinessSection({
   filterGroups,
+  isLoading = false,
 }: EnterpriseBusinessSectionProps) {
   const filters = useAtomValue(participantFiltersAtom);
   const updateFilter = useSetAtom(updateFilterAtom);
@@ -58,6 +60,7 @@ export function EnterpriseBusinessSection({
                   value
                 )
               }
+              disabled={isLoading}
             >
               <SelectTrigger>
                 <SelectValue

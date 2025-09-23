@@ -23,10 +23,12 @@ import { type FilterGroups } from "../types";
 
 interface SkillsEducationSectionProps {
   filterGroups: FilterGroups;
+  isLoading?: boolean;
 }
 
 export function SkillsEducationSection({
   filterGroups,
+  isLoading = false,
 }: SkillsEducationSectionProps) {
   const filters = useAtomValue(participantFiltersAtom);
   const updateFilter = useSetAtom(updateFilterAtom);
@@ -100,6 +102,7 @@ export function SkillsEducationSection({
                     value
                   )
                 }
+                disabled={isLoading}
               >
                 <SelectTrigger className="h-9">
                   <SelectValue
@@ -142,7 +145,7 @@ export function SkillsEducationSection({
                   : "Select vocational skill..."
               }
               emptyMessage="No vocational skills found"
-              disabled={isLoadingSkills}
+              disabled={isLoadingSkills || isLoading}
               className="h-9"
             />
           </div>
@@ -162,7 +165,7 @@ export function SkillsEducationSection({
                 isLoadingSkills ? "Loading skills..." : "Select soft skill..."
               }
               emptyMessage="No soft skills found"
-              disabled={isLoadingSkills}
+              disabled={isLoadingSkills || isLoading}
               className="h-9"
             />
           </div>
