@@ -169,6 +169,8 @@ export async function fixOrganizationAssignments(
         message: "No organization assignments need to be fixed",
         details: {
           organizationName: "Multiple",
+          assignmentMethod: "subcounty",
+          totalSubCounties: 0,
           totalParticipantsFound: preview.data.summary.totalParticipants,
           totalParticipantsUpdated: 0,
           results: [],
@@ -232,6 +234,8 @@ export async function fixOrganizationAssignments(
       message: `Successfully updated ${totalUpdated} participants across ${Object.keys(participantsByOrg).length} organizations`,
       details: {
         organizationName: "Multiple",
+        assignmentMethod: "subcounty",
+        totalSubCounties: results.length,
         totalParticipantsFound: preview.data.summary.totalParticipants,
         totalParticipantsUpdated: totalUpdated,
         results,
@@ -319,6 +323,8 @@ export async function fixKyarusoziAssignments(): Promise<AssignmentResult> {
           "All Kyarusozi participants are already assigned to Balinda Children's Foundation",
         details: {
           organizationName: "Balinda Children's Foundation",
+          assignmentMethod: "subcounty",
+          totalSubCounties: 1,
           totalParticipantsFound: kyarusoziParticipants.length,
           totalParticipantsUpdated: 0,
           results: [
@@ -353,6 +359,8 @@ export async function fixKyarusoziAssignments(): Promise<AssignmentResult> {
       message: `Successfully reassigned ${participantsToUpdate.length} Kyarusozi participants to Balinda Children's Foundation`,
       details: {
         organizationName: "Balinda Children's Foundation",
+        assignmentMethod: "subcounty",
+        totalSubCounties: 1,
         totalParticipantsFound: kyarusoziParticipants.length,
         totalParticipantsUpdated: participantsToUpdate.length,
         results: [

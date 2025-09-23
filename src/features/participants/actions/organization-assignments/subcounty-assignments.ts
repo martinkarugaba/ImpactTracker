@@ -81,6 +81,8 @@ export async function assignParticipantsBySubCounty(
         message: `All participants from ${subCountyName} are already assigned to ${organization.name}`,
         details: {
           organizationName: organization.name,
+          assignmentMethod: "subcounty",
+          totalSubCounties: 1,
           totalParticipantsFound: participantsToUpdate.length,
           totalParticipantsUpdated: 0,
           results: [
@@ -115,6 +117,8 @@ export async function assignParticipantsBySubCounty(
       message: `Successfully updated ${participantsNeedingUpdate.length} participants from ${subCountyName} to ${organization.name}`,
       details: {
         organizationName: organization.name,
+        assignmentMethod: "subcounty",
+        totalSubCounties: 1,
         totalParticipantsFound: participantsToUpdate.length,
         totalParticipantsUpdated: participantsNeedingUpdate.length,
         results: [
@@ -294,6 +298,7 @@ export async function assignParticipantsByMultipleSubCounties(
       message: `Successfully processed ${subCounties.length} subcounties. Updated ${totalParticipantsUpdated} participants to ${organization.name}`,
       details: {
         organizationName: organization.name,
+        assignmentMethod: "subcounty",
         totalSubCounties: subCounties.length,
         totalParticipantsFound,
         totalParticipantsUpdated,

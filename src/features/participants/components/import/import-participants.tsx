@@ -304,12 +304,12 @@ export function ImportParticipants({
       <DialogContent
         className={`max-h-[90vh] overflow-auto ${
           currentStep === "preview"
-            ? "!w-[98vw] !max-w-none"
+            ? "!w-[95vw] !max-w-[1400px]"
             : "w-full max-w-2xl"
         }`}
         style={
           currentStep === "preview"
-            ? { width: "98vw", maxWidth: "1600px" }
+            ? { width: "95vw", maxWidth: "1400px" }
             : undefined
         }
       >
