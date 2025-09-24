@@ -10,7 +10,6 @@ import {
 } from "../../../atoms/participants-atoms";
 import { SearchFilter } from "./search-filter";
 import { QuickFilters } from "./quick-filters";
-import { SpecificSkillsPopover } from "./specific-skills-popover";
 import { type SimpleParticipantFiltersProps } from "./types";
 
 export function SimpleParticipantFilters({
@@ -71,21 +70,6 @@ export function SimpleParticipantFilters({
     }).length;
   };
 
-  // Count specific skills filters separately
-  const getSpecificSkillsFiltersCount = () => {
-    const skillsKeys = [
-      "specificVocationalSkill",
-      "specificSoftSkill",
-      "specificBusinessSkill",
-    ];
-    return skillsKeys.filter(key => {
-      const value = (filters as Record<string, string>)[key];
-      return value && value !== "all";
-    }).length;
-  };
-
-  const specificSkillsCount = getSpecificSkillsFiltersCount();
-
   // Function to remove individual filters
   const removeFilter = (key: string) => {
     if (key === "search") {
@@ -108,12 +92,6 @@ export function SimpleParticipantFilters({
 
         <SearchFilter isLoading={isLoading} />
         <QuickFilters quickFilters={quickFilters} isLoading={isLoading} />
-
-        {/* Specific Skills Filters Popover */}
-        <SpecificSkillsPopover
-          activeFiltersCount={specificSkillsCount}
-          isLoading={isLoading}
-        />
       </div>
 
       {/* Active Filter Badges */}

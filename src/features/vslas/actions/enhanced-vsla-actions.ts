@@ -10,7 +10,7 @@ import {
   vslaMeetingTransactions,
 } from "../schemas/enhanced-vsla-drizzle";
 import { vslaMembers } from "@/lib/db/schema";
-import { eq, and, desc, sum, sql } from "drizzle-orm";
+import { eq, and, desc, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import type {
   NewVSLALoan,
@@ -234,7 +234,7 @@ async function updateMemberTotalSavings(memberId: string) {
   try {
     const result = await db
       .select({
-        total: sum(vslaSavings.amount),
+        total: sql`sum(${vslaSavings.amount})`,
       })
       .from(vslaSavings)
       .where(eq(vslaSavings.member_id, memberId));
@@ -257,7 +257,7 @@ async function updateMemberTotalLoans(memberId: string) {
   try {
     const result = await db
       .select({
-        total: sum(vslaLoans.balance_remaining),
+        total: sql`sum(${vslaLoans.balance_remaining})`,
       })
       .from(vslaLoans)
       .where(
@@ -283,14 +283,14 @@ export async function getVSLAFinancialSummary(vslaId: string) {
   try {
     const [totalSavings] = await db
       .select({
-        total: sum(vslaSavings.amount),
+        total: sql`sum(${vslaSavings.amount})`,
       })
       .from(vslaSavings)
       .where(eq(vslaSavings.vsla_id, vslaId));
 
     const [activeLoans] = await db
       .select({
-        total: sum(vslaLoans.balance_remaining),
+        total: sql`sum(${vslaLoans.balance_remaining})`,
         count: sql<number>`count(*)`,
       })
       .from(vslaLoans)
@@ -300,7 +300,7 @@ export async function getVSLAFinancialSummary(vslaId: string) {
 
     const [totalLoanPayments] = await db
       .select({
-        total: sum(vslaLoanPayments.payment_amount),
+        total: sql`sum(${vslaLoanPayments.payment_amount})`,
       })
       .from(vslaLoanPayments)
       .leftJoin(vslaLoans, eq(vslaLoanPayments.loan_id, vslaLoans.id))

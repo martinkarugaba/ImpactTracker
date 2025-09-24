@@ -4,7 +4,7 @@ import { z } from "zod";
 import { subCounties, districts, counties } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import { eq, and, count, ilike } from "drizzle-orm";
+import { eq, and, sql, ilike } from "drizzle-orm";
 import type { PaginationParams } from "../types/pagination";
 
 const createSubCountySchema = z.object({
@@ -109,11 +109,11 @@ export async function getSubCounties(
 
     // Get total count
     const [totalResult] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(subCounties)
       .where(finalWhereCondition);
 
-    const total = totalResult.count;
+    const total = totalResult.count as number;
 
     // Get paginated data
     const data = await db.query.subCounties.findMany({

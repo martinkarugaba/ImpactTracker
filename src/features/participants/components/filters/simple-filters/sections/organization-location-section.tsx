@@ -12,13 +12,12 @@ import {
   participantFiltersAtom,
   updateFilterAtom,
 } from "../../../../atoms/participants-atoms";
-import { type SimpleParticipantFiltersProps } from "../types";
 
 interface OrganizationLocationSectionProps {
-  projects: SimpleParticipantFiltersProps["projects"];
-  organizations: SimpleParticipantFiltersProps["organizations"];
-  districts: SimpleParticipantFiltersProps["districts"];
-  subCounties: SimpleParticipantFiltersProps["subCounties"];
+  projects: Array<{ id: string; name: string; acronym: string }>;
+  organizations: Array<{ id: string; name: string; acronym: string }>;
+  districts: Array<{ id: string; name: string }>;
+  subCounties: Array<{ id: string; name: string }>;
   isLoading?: boolean;
 }
 

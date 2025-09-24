@@ -2,21 +2,21 @@
 
 import { db } from "@/lib/db";
 import { participants } from "@/lib/db/schema";
-import { eq, and, count, sql } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { type CountResult } from "../types/types";
 
 export async function getParticipantMetrics(clusterId: string) {
   try {
     // Total participants
-    const totalParticipants: CountResult = await db
-      .select({ count: count() })
+    const totalParticipants = await db
+      .select({ count: sql`count(*)` })
       .from(participants)
       .where(eq(participants.cluster_id, clusterId))
-      .then(res => res[0]);
+      .then(res => res[0] as CountResult);
 
     // Total females
-    const totalFemales: CountResult = await db
-      .select({ count: count() })
+    const totalFemales = await db
+      .select({ count: sql`count(*)` })
       .from(participants)
       .where(
         and(
@@ -24,11 +24,11 @@ export async function getParticipantMetrics(clusterId: string) {
           eq(participants.sex, "female")
         )
       )
-      .then(res => res[0]);
+      .then(res => res[0] as CountResult);
 
     // Females aged 15-35
-    const femalesYouth: CountResult = await db
-      .select({ count: count() })
+    const femalesYouth = await db
+      .select({ count: sql`count(*)` })
       .from(participants)
       .where(
         and(
@@ -38,11 +38,38 @@ export async function getParticipantMetrics(clusterId: string) {
           sql`${participants.age} <= 35`
         )
       )
-      .then(res => res[0]);
+      .then(res => res[0] as CountResult);
+
+    // Females aged 36-64
+    const femalesAdult = await db
+      .select({ count: sql`count(*)` })
+      .from(participants)
+      .where(
+        and(
+          eq(participants.cluster_id, clusterId),
+          eq(participants.sex, "female"),
+          sql`${participants.age} >= 36`,
+          sql`${participants.age} <= 64`
+        )
+      )
+      .then(res => res[0] as CountResult);
+
+    // Females aged 65+
+    const femalesElderly = await db
+      .select({ count: sql`count(*)` })
+      .from(participants)
+      .where(
+        and(
+          eq(participants.cluster_id, clusterId),
+          eq(participants.sex, "female"),
+          sql`${participants.age} >= 65`
+        )
+      )
+      .then(res => res[0] as CountResult);
 
     // Females > 35
-    const femalesOlder: CountResult = await db
-      .select({ count: count() })
+    const femalesOlder = await db
+      .select({ count: sql`count(*)` })
       .from(participants)
       .where(
         and(
@@ -51,11 +78,11 @@ export async function getParticipantMetrics(clusterId: string) {
           sql`${participants.age} > 35`
         )
       )
-      .then(res => res[0]);
+      .then(res => res[0] as CountResult);
 
     // Total males
-    const totalMales: CountResult = await db
-      .select({ count: count() })
+    const totalMales = await db
+      .select({ count: sql`count(*)` })
       .from(participants)
       .where(
         and(
@@ -63,11 +90,11 @@ export async function getParticipantMetrics(clusterId: string) {
           eq(participants.sex, "male")
         )
       )
-      .then(res => res[0]);
+      .then(res => res[0] as CountResult);
 
     // Males aged 15-35
-    const malesYouth: CountResult = await db
-      .select({ count: count() })
+    const malesYouth = await db
+      .select({ count: sql`count(*)` })
       .from(participants)
       .where(
         and(
@@ -77,11 +104,38 @@ export async function getParticipantMetrics(clusterId: string) {
           sql`${participants.age} <= 35`
         )
       )
-      .then(res => res[0]);
+      .then(res => res[0] as CountResult);
+
+    // Males aged 36-64
+    const malesAdult = await db
+      .select({ count: sql`count(*)` })
+      .from(participants)
+      .where(
+        and(
+          eq(participants.cluster_id, clusterId),
+          eq(participants.sex, "male"),
+          sql`${participants.age} >= 36`,
+          sql`${participants.age} <= 64`
+        )
+      )
+      .then(res => res[0] as CountResult);
+
+    // Males aged 65+
+    const malesElderly = await db
+      .select({ count: sql`count(*)` })
+      .from(participants)
+      .where(
+        and(
+          eq(participants.cluster_id, clusterId),
+          eq(participants.sex, "male"),
+          sql`${participants.age} >= 65`
+        )
+      )
+      .then(res => res[0] as CountResult);
 
     // Males > 35
-    const malesOlder: CountResult = await db
-      .select({ count: count() })
+    const malesOlder = await db
+      .select({ count: sql`count(*)` })
       .from(participants)
       .where(
         and(
@@ -90,11 +144,11 @@ export async function getParticipantMetrics(clusterId: string) {
           sql`${participants.age} > 35`
         )
       )
-      .then(res => res[0]);
+      .then(res => res[0] as CountResult);
 
     // Total persons with disabilities
-    const totalPWD: CountResult = await db
-      .select({ count: count() })
+    const totalPWD = await db
+      .select({ count: sql`count(*)` })
       .from(participants)
       .where(
         and(
@@ -102,11 +156,11 @@ export async function getParticipantMetrics(clusterId: string) {
           eq(participants.isPWD, "yes")
         )
       )
-      .then(res => res[0]);
+      .then(res => res[0] as CountResult);
 
     // Male persons with disabilities
-    const pwdMale: CountResult = await db
-      .select({ count: count() })
+    const pwdMale = await db
+      .select({ count: sql`count(*)` })
       .from(participants)
       .where(
         and(
@@ -115,11 +169,11 @@ export async function getParticipantMetrics(clusterId: string) {
           eq(participants.sex, "male")
         )
       )
-      .then(res => res[0]);
+      .then(res => res[0] as CountResult);
 
     // Female persons with disabilities
-    const pwdFemale: CountResult = await db
-      .select({ count: count() })
+    const pwdFemale = await db
+      .select({ count: sql`count(*)` })
       .from(participants)
       .where(
         and(
@@ -128,7 +182,7 @@ export async function getParticipantMetrics(clusterId: string) {
           eq(participants.sex, "female")
         )
       )
-      .then(res => res[0]);
+      .then(res => res[0] as CountResult);
 
     return {
       success: true,
@@ -136,9 +190,13 @@ export async function getParticipantMetrics(clusterId: string) {
         totalParticipants: totalParticipants.count,
         totalFemales: totalFemales.count,
         femalesYouth: femalesYouth.count,
+        femalesAdult: femalesAdult.count,
+        femalesElderly: femalesElderly.count,
         femalesOlder: femalesOlder.count,
         totalMales: totalMales.count,
         malesYouth: malesYouth.count,
+        malesAdult: malesAdult.count,
+        malesElderly: malesElderly.count,
         malesOlder: malesOlder.count,
         totalPWD: totalPWD.count,
         pwdMale: pwdMale.count,

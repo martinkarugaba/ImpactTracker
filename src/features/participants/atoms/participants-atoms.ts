@@ -52,6 +52,9 @@ export const activeTabAtom = atomWithStorage(
   "participants"
 );
 
+// Loading state for filtering operations
+export const isFilteringAtom = atom(false);
+
 // Dialog state atoms
 export const createDialogAtom = atom(false);
 export const importDialogAtom = atom(false);
@@ -149,15 +152,30 @@ export const updateFilterAtom = atom(
     { key, value }: { key: keyof ParticipantFilters; value: string }
   ) => {
     const currentFilters = get(participantFiltersAtom);
+
+    // Set filtering state to true when filters change
+    set(isFilteringAtom, true);
+
     set(participantFiltersAtom, {
       ...currentFilters,
       [key]: value,
     });
+
     // Reset pagination when filters change
     set(participantPaginationAtom, prev => ({ ...prev, page: 1 }));
+
+    // Auto-clear filtering state after a short delay for batched operations
+    setTimeout(() => {
+      set(isFilteringAtom, false);
+    }, 800);
   }
 );
 
 export const clearTableSelectionAtom = atom(null, (get, set) => {
   set(tableRowSelectionAtom, {});
+});
+
+// Action atom to clear filtering state when data is loaded
+export const clearFilteringAtom = atom(null, (get, set) => {
+  set(isFilteringAtom, false);
 });

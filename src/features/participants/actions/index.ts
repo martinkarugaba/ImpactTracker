@@ -3,63 +3,72 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { participants, organizations, clusterMembers } from "@/lib/db/schema";
-import { eq, and, sql, asc, count } from "drizzle-orm";
+import { eq, and, sql, asc, inArray } from "drizzle-orm";
 import {
   type NewParticipant,
   type ParticipantResponse,
   type ParticipantsResponse,
 } from "../types/types";
+
+// Define parameter types for getParticipants function
+export interface GetParticipantsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  filters?: {
+    project?: string;
+    organization?: string;
+    district?: string;
+    subCounty?: string;
+    enterprise?: string;
+    sex?: string;
+    isPWD?: string;
+    ageGroup?: string;
+    maritalStatus?: string;
+    educationLevel?: string;
+    isSubscribedToVSLA?: string;
+    ownsEnterprise?: string;
+    employmentStatus?: string;
+    employmentSector?: string;
+    hasVocationalSkills?: string;
+    hasSoftSkills?: string;
+    hasBusinessSkills?: string;
+    specificVocationalSkill?: string;
+    specificSoftSkill?: string;
+    specificBusinessSkill?: string;
+    populationSegment?: string;
+    isActiveStudent?: string;
+    isTeenMother?: string;
+    sourceOfIncome?: string;
+    enterpriseSector?: string;
+    businessScale?: string;
+    nationality?: string;
+    locationSetting?: string;
+    isRefugee?: string;
+    isMother?: string;
+  };
+}
+
+export type GetParticipantsResponse = ParticipantsResponse;
 import { calculateAge, validateDateOfBirth } from "../lib/age-calculator";
 
 export async function getParticipants(
-  clusterId: string,
-  params?: {
-    page?: number;
-    limit?: number;
-    search?: string;
-    filters?: {
-      cluster?: string;
-      project?: string;
-      organization?: string;
-      district?: string;
-      subCounty?: string;
-      enterprise?: string;
-      sex?: string;
-      isPWD?: string;
-      ageGroup?: string;
-      maritalStatus?: string;
-      educationLevel?: string;
-      isSubscribedToVSLA?: string;
-      ownsEnterprise?: string;
-      employmentStatus?: string;
-      employmentSector?: string;
-      hasVocationalSkills?: string;
-      hasSoftSkills?: string;
-      hasBusinessSkills?: string;
-      specificVocationalSkill?: string;
-      specificSoftSkill?: string;
-      specificBusinessSkill?: string;
-      populationSegment?: string;
-      isActiveStudent?: string;
-      isTeenMother?: string;
-      sourceOfIncome?: string;
-      enterpriseSector?: string;
-      businessScale?: string;
-      nationality?: string;
-      locationSetting?: string;
-      isRefugee?: string;
-      isMother?: string;
-    };
-  }
-): Promise<ParticipantsResponse> {
+  clusterId?: string,
+  params: GetParticipantsParams = {}
+): Promise<GetParticipantsResponse> {
   try {
-    console.log("🔍 getParticipants called with:", {
-      clusterId,
-      page: params?.page || 1,
-      limit: params?.limit || 10,
-      hasFilters: !!params?.filters,
-      hasSearch: !!params?.search,
-    });
+    // Debug logging for skills filters
+    if (
+      params.filters?.specificVocationalSkill ||
+      params.filters?.specificSoftSkill ||
+      params.filters?.specificBusinessSkill
+    ) {
+      console.log("🚀 Backend received skills filters:", {
+        specificVocationalSkill: params.filters.specificVocationalSkill,
+        specificSoftSkill: params.filters.specificSoftSkill,
+        specificBusinessSkill: params.filters.specificBusinessSkill,
+      });
+    }
 
     const page = params?.page || 1;
     const limit = params?.limit || 10;
@@ -67,13 +76,19 @@ export async function getParticipants(
 
     console.log("📊 Pagination params:", { page, limit, offset });
 
-    const whereConditions = [eq(participants.cluster_id, clusterId)];
+    // Build base where conditions with cluster ID check
+    const whereConditions = [];
+    if (clusterId) {
+      whereConditions.push(eq(participants.cluster_id, clusterId));
+    }
+
+    // Initialize filter tracking arrays
+    const appliedFilters: string[] = [];
+    const additionalFilters: string[] = [];
 
     // Add filter conditions
     if (params?.filters) {
       console.log("📝 Processing filters:", params.filters);
-
-      const appliedFilters: string[] = [];
 
       if (params.filters.project && params.filters.project !== "all") {
         console.log("Adding project filter:", params.filters.project);
@@ -148,7 +163,6 @@ export async function getParticipants(
       );
 
       // Additional filters for comprehensive participant filtering
-      const additionalFilters: string[] = [];
 
       if (
         params.filters.maritalStatus &&
@@ -277,15 +291,19 @@ export async function getParticipants(
         params.filters.specificVocationalSkill !== "all"
       ) {
         console.log(
-          "Adding specificVocationalSkill filter:",
+          "🎯 Adding specificVocationalSkill filter:",
           params.filters.specificVocationalSkill
+        );
+        console.log(
+          "🎯 SQL query will be:",
+          `${params.filters.specificVocationalSkill} = ANY(vocationalSkillsParticipations)`
         );
         additionalFilters.push("specificVocationalSkill");
         whereConditions.push(
           sql`(
-            ${participants.vocationalSkillsParticipations} && ARRAY[${params.filters.specificVocationalSkill}] OR
-            ${participants.vocationalSkillsCompletions} && ARRAY[${params.filters.specificVocationalSkill}] OR
-            ${participants.vocationalSkillsCertifications} && ARRAY[${params.filters.specificVocationalSkill}]
+            ${params.filters.specificVocationalSkill} = ANY(${participants.vocationalSkillsParticipations}) OR
+            ${params.filters.specificVocationalSkill} = ANY(${participants.vocationalSkillsCompletions}) OR
+            ${params.filters.specificVocationalSkill} = ANY(${participants.vocationalSkillsCertifications})
           )`
         );
       }
@@ -294,15 +312,19 @@ export async function getParticipants(
         params.filters.specificSoftSkill !== "all"
       ) {
         console.log(
-          "Adding specificSoftSkill filter:",
+          "🎯 Adding specificSoftSkill filter:",
           params.filters.specificSoftSkill
+        );
+        console.log(
+          "🎯 SQL query will be:",
+          `${params.filters.specificSoftSkill} = ANY(softSkillsParticipations)`
         );
         additionalFilters.push("specificSoftSkill");
         whereConditions.push(
           sql`(
-            ${participants.softSkillsParticipations} && ARRAY[${params.filters.specificSoftSkill}] OR
-            ${participants.softSkillsCompletions} && ARRAY[${params.filters.specificSoftSkill}] OR
-            ${participants.softSkillsCertifications} && ARRAY[${params.filters.specificSoftSkill}]
+            ${params.filters.specificSoftSkill} = ANY(${participants.softSkillsParticipations}) OR
+            ${params.filters.specificSoftSkill} = ANY(${participants.softSkillsCompletions}) OR
+            ${params.filters.specificSoftSkill} = ANY(${participants.softSkillsCertifications})
           )`
         );
       }
@@ -319,9 +341,9 @@ export async function getParticipants(
         // For now, let's check if it's mentioned in vocational skills as well
         whereConditions.push(
           sql`(
-            ${participants.vocationalSkillsParticipations} && ARRAY[${params.filters.specificBusinessSkill}] OR
-            ${participants.vocationalSkillsCompletions} && ARRAY[${params.filters.specificBusinessSkill}] OR
-            ${participants.vocationalSkillsCertifications} && ARRAY[${params.filters.specificBusinessSkill}]
+            ${params.filters.specificBusinessSkill} = ANY(${participants.vocationalSkillsParticipations}) OR
+            ${params.filters.specificBusinessSkill} = ANY(${participants.vocationalSkillsCompletions}) OR
+            ${params.filters.specificBusinessSkill} = ANY(${participants.vocationalSkillsCertifications})
           )`
         );
       }
@@ -459,7 +481,18 @@ export async function getParticipants(
     }
 
     console.log("⏱️ Starting database queries...");
+    console.log("🔍 Final whereConditions count:", whereConditions.length);
+    console.log("📋 All applied filters:", [
+      ...appliedFilters,
+      ...additionalFilters,
+    ]);
     const startTime = Date.now();
+
+    // Debug: Log the total number of where conditions
+    console.log(`🔍 Total where conditions: ${whereConditions.length}`);
+    console.log(
+      `🔍 Applied filters: ${appliedFilters.length + additionalFilters.length}`
+    );
 
     const [participantsData, totalCountResult] = await Promise.all([
       db.query.participants.findMany({
@@ -473,13 +506,13 @@ export async function getParticipants(
         },
       }),
       db
-        .select({ count: count() })
+        .select({ count: sql`count(*)` })
         .from(participants)
         .where(and(...whereConditions)),
     ]);
 
     const queryTime = Date.now() - startTime;
-    const totalCount = totalCountResult[0]?.count || 0;
+    const totalCount = (totalCountResult[0]?.count as number) || 0;
 
     console.log("✅ Database queries completed:", {
       queryTime: `${queryTime}ms`,
@@ -497,8 +530,7 @@ export async function getParticipants(
     let orgs: Array<{ id: string; name: string }> = [];
     if (organizationIds.length > 0) {
       orgs = await db.query.organizations.findMany({
-        where: (organizations, { inArray }) =>
-          inArray(organizations.id, organizationIds),
+        where: inArray(organizations.id, organizationIds),
         columns: {
           id: true,
           name: true,
@@ -923,9 +955,9 @@ export async function getAllFilteredParticipantsForExport(
         );
         whereConditions.push(
           sql`(
-            ${participants.vocationalSkillsParticipations} && ARRAY[${filters.specificVocationalSkill}] OR
-            ${participants.vocationalSkillsCompletions} && ARRAY[${filters.specificVocationalSkill}] OR
-            ${participants.vocationalSkillsCertifications} && ARRAY[${filters.specificVocationalSkill}]
+            ${filters.specificVocationalSkill} = ANY(${participants.vocationalSkillsParticipations}) OR
+            ${filters.specificVocationalSkill} = ANY(${participants.vocationalSkillsCompletions}) OR
+            ${filters.specificVocationalSkill} = ANY(${participants.vocationalSkillsCertifications})
           )`
         );
       }
@@ -936,9 +968,9 @@ export async function getAllFilteredParticipantsForExport(
         );
         whereConditions.push(
           sql`(
-            ${participants.softSkillsParticipations} && ARRAY[${filters.specificSoftSkill}] OR
-            ${participants.softSkillsCompletions} && ARRAY[${filters.specificSoftSkill}] OR
-            ${participants.softSkillsCertifications} && ARRAY[${filters.specificSoftSkill}]
+            ${filters.specificSoftSkill} = ANY(${participants.softSkillsParticipations}) OR
+            ${filters.specificSoftSkill} = ANY(${participants.softSkillsCompletions}) OR
+            ${filters.specificSoftSkill} = ANY(${participants.softSkillsCertifications})
           )`
         );
       }
@@ -952,9 +984,9 @@ export async function getAllFilteredParticipantsForExport(
         );
         whereConditions.push(
           sql`(
-            ${participants.vocationalSkillsParticipations} && ARRAY[${filters.specificBusinessSkill}] OR
-            ${participants.vocationalSkillsCompletions} && ARRAY[${filters.specificBusinessSkill}] OR
-            ${participants.vocationalSkillsCertifications} && ARRAY[${filters.specificBusinessSkill}]
+            ${filters.specificBusinessSkill} = ANY(${participants.vocationalSkillsParticipations}) OR
+            ${filters.specificBusinessSkill} = ANY(${participants.vocationalSkillsCompletions}) OR
+            ${filters.specificBusinessSkill} = ANY(${participants.vocationalSkillsCertifications})
           )`
         );
       }
@@ -1050,8 +1082,7 @@ export async function getAllFilteredParticipantsForExport(
     let orgs: Array<{ id: string; name: string }> = [];
     if (organizationIds.length > 0) {
       orgs = await db.query.organizations.findMany({
-        where: (organizations, { inArray }) =>
-          inArray(organizations.id, organizationIds),
+        where: inArray(organizations.id, organizationIds),
         columns: {
           id: true,
           name: true,

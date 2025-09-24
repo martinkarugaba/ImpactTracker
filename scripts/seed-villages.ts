@@ -12,8 +12,9 @@ import parishesData from "ug-locale/parishes.json";
 import * as dotenv from "dotenv";
 import path from "path";
 
-// Load environment variables from .env file
+// Load environment variables from both .env and .env.local files
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
 function normalizeParishName(name: string): string[] {
   // Clean the name by removing special characters and converting to lowercase

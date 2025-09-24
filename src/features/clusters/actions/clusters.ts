@@ -1,12 +1,24 @@
 "use server";
 
 import { db } from "@/lib/db";
+import type {
+  ActionResponse,
+  ClusterMember,
+  ClusterData,
+  ClusterUpdateData,
+} from "./types";
 import { clusters, clusterMembers, organizations } from "@/lib/db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 // Get all clusters
-export async function getClusters() {
+/**
+ * Fetches all clusters from the database
+ * @returns {Promise<ActionResponse<Array<typeof clusters.$inferSelect>>>} List of clusters or error message
+ */
+export async function getClusters(): Promise<
+  ActionResponse<Array<typeof clusters.$inferSelect>>
+> {
   try {
     console.log("🔄 Attempting to fetch clusters...");
 
@@ -44,7 +56,14 @@ export async function getClusters() {
 }
 
 // Get a single cluster by ID
-export async function getClusterById(id: string) {
+/**
+ * Fetches a single cluster by its ID
+ * @param {string} id - The ID of the cluster to fetch
+ * @returns {Promise<ActionResponse<typeof clusters.$inferSelect>>} The cluster or error message
+ */
+export async function getClusterById(
+  id: string
+): Promise<ActionResponse<typeof clusters.$inferSelect>> {
   try {
     const [cluster] = await db
       .select()
@@ -63,7 +82,14 @@ export async function getClusterById(id: string) {
 }
 
 // Get cluster member organizations
-export async function getClusterMembers(clusterId: string) {
+/**
+ * Fetches all members of a specific cluster
+ * @param {string} clusterId - The ID of the cluster
+ * @returns {Promise<ActionResponse<ClusterMember[]>>} List of cluster members or error message
+ */
+export async function getClusterMembers(
+  clusterId: string
+): Promise<ActionResponse<ClusterMember[]>> {
   try {
     const members = await db
       .select({
@@ -90,10 +116,16 @@ export async function getClusterMembers(clusterId: string) {
 }
 
 // Add organization to cluster
+/**
+ * Adds an organization to a cluster
+ * @param {string} clusterId - The ID of the cluster
+ * @param {string} organizationId - The ID of the organization to add
+ * @returns {Promise<ActionResponse<typeof clusterMembers.$inferSelect>>} The new membership or error message
+ */
 export async function addClusterMember(
   clusterId: string,
   organizationId: string
-) {
+): Promise<ActionResponse<typeof clusterMembers.$inferSelect>> {
   try {
     // Check if the membership already exists
     const existingMember = await db
@@ -131,10 +163,16 @@ export async function addClusterMember(
 }
 
 // Remove organization from cluster
+/**
+ * Removes an organization from a cluster
+ * @param {string} membershipId - The ID of the membership to remove
+ * @param {string} clusterId - The ID of the cluster
+ * @returns {Promise<ActionResponse<void>>} Success status or error message
+ */
 export async function removeClusterMember(
   membershipId: string,
   clusterId: string
-) {
+): Promise<ActionResponse<void>> {
   try {
     await db.delete(clusterMembers).where(eq(clusterMembers.id, membershipId));
 
@@ -150,10 +188,17 @@ export async function removeClusterMember(
 }
 
 // Get organizations that are not members of the specified cluster
-export async function getNonMemberOrganizations(clusterId: string) {
+/**
+ * Fetches organizations that are not members of a specific cluster
+ * @param {string} clusterId - The ID of the cluster
+ * @returns {Promise<ActionResponse<Array<typeof organizations.$inferSelect>>>} List of non-member organizations or error message
+ */
+export async function getNonMemberOrganizations(
+  clusterId: string
+): Promise<ActionResponse<Array<typeof organizations.$inferSelect>>> {
   try {
     // Get organizations that are not in the clusterMembers table for this cluster
-    const nonMembers = await db.execute(sql`
+    const result = await db.execute(sql`
       SELECT o.* FROM organizations o
       WHERE NOT EXISTS (
         SELECT 1 FROM cluster_members cm
@@ -162,7 +207,14 @@ export async function getNonMemberOrganizations(clusterId: string) {
       )
     `);
 
-    return { success: true, data: nonMembers.rows };
+    // Safely type cast the result to an array
+    const nonMembers = result as unknown as Array<
+      typeof organizations.$inferSelect
+    >;
+
+    return { success: true, data: nonMembers };
+
+    return { success: true, data: nonMembers };
   } catch (error) {
     console.error("Error fetching non-member organizations:", error);
     return { success: false, error: "Failed to fetch available organizations" };
@@ -170,12 +222,14 @@ export async function getNonMemberOrganizations(clusterId: string) {
 }
 
 // Create a new cluster
-export async function createCluster(data: {
-  name: string;
-  about?: string | null;
-  country: string;
-  districts: string[];
-}) {
+/**
+ * Creates a new cluster
+ * @param {ClusterData} data - The cluster data
+ * @returns {Promise<ActionResponse<typeof clusters.$inferSelect>>} The created cluster or error message
+ */
+export async function createCluster(
+  data: ClusterData
+): Promise<ActionResponse<typeof clusters.$inferSelect>> {
   try {
     const [newCluster] = await db
       .insert(clusters)
@@ -196,13 +250,14 @@ export async function createCluster(data: {
 }
 
 // Update an existing cluster
-export async function updateCluster(data: {
-  id: string;
-  name: string;
-  about?: string | null;
-  country: string;
-  districts: string[];
-}) {
+/**
+ * Updates an existing cluster
+ * @param {ClusterUpdateData} data - The updated cluster data
+ * @returns {Promise<ActionResponse<typeof clusters.$inferSelect>>} The updated cluster or error message
+ */
+export async function updateCluster(
+  data: ClusterUpdateData
+): Promise<ActionResponse<typeof clusters.$inferSelect>> {
   try {
     const [updatedCluster] = await db
       .update(clusters)
