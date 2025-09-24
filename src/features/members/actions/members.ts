@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { clusterMembers, organizations, projects } from "@/lib/db/schema";
-import { eq, and, desc, count, ilike, isNull } from "drizzle-orm";
+import { eq, and, desc, sql, ilike, isNull } from "drizzle-orm";
 import { getUserClusterId } from "@/features/auth/actions";
 
 export type ClusterMember = {
@@ -112,7 +112,7 @@ export async function getClusterMembers(
 
     // Get total count
     const [totalResult] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(clusterMembers)
       .leftJoin(
         organizations,
@@ -120,7 +120,7 @@ export async function getClusterMembers(
       )
       .where(and(...whereConditions));
 
-    const total = totalResult.count;
+    const total = totalResult.count as number;
     const totalPages = Math.ceil(total / limit);
     const offset = (page - 1) * limit;
 
@@ -197,7 +197,7 @@ export async function getMembersMetrics(): Promise<MembersMetricsResponse> {
     // Get current metrics
     const membersResult = await db
       .select({
-        total: count(),
+        total: sql`count(*)`,
         district: organizations.district,
         project_id: organizations.project_id,
       })
@@ -219,7 +219,7 @@ export async function getMembersMetrics(): Promise<MembersMetricsResponse> {
 
     // Get this month count
     const [thisMonthResult] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(clusterMembers)
       .where(
         and(
@@ -230,7 +230,7 @@ export async function getMembersMetrics(): Promise<MembersMetricsResponse> {
 
     // Get last month count for trends (simplified calculation)
     const [lastMonthResult] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(clusterMembers)
       .where(
         and(
@@ -239,8 +239,8 @@ export async function getMembersMetrics(): Promise<MembersMetricsResponse> {
         )
       );
 
-    const thisMonth = thisMonthResult.count;
-    const lastMonthTotal = lastMonthResult.count;
+    const thisMonth = thisMonthResult.count as number;
+    const lastMonthTotal = lastMonthResult.count as number;
 
     // Calculate trends (simplified)
     const totalChange =

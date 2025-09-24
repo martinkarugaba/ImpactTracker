@@ -15,7 +15,7 @@ import {
   clusters,
   clusterUsers,
 } from "@/lib/db/schema";
-import { count, sum, sql, eq, and, gte, lte, desc } from "drizzle-orm";
+import { sql, eq, and, gte, lte, desc } from "drizzle-orm";
 import { auth } from "@/features/auth/auth";
 
 export interface KPIOverviewMetrics {
@@ -215,26 +215,22 @@ export async function getKPIOverviewMetrics(): Promise<{
 
     const [participantStats] = await db
       .select({
-        total: count(),
-        males: sum(
-          sql`CASE WHEN ${participants.sex} = 'male' THEN 1 ELSE 0 END`
-        ).mapWith(Number),
-        females: sum(
-          sql`CASE WHEN ${participants.sex} = 'female' THEN 1 ELSE 0 END`
-        ).mapWith(Number),
+        total: sql`count(*)`,
+        males: sql`sum(CASE WHEN ${participants.sex} = 'male' THEN 1 ELSE 0 END)`,
+        females: sql`sum(CASE WHEN ${participants.sex} = 'female' THEN 1 ELSE 0 END)`,
       })
       .from(participants)
       .where(participantsQuery);
 
     const [participantsThisMonth] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(participants)
       .where(
         and(participantsQuery, gte(participants.created_at, thisMonthStart))
       );
 
     const [participantsLastMonth] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(participants)
       .where(
         and(
@@ -248,12 +244,12 @@ export async function getKPIOverviewMetrics(): Promise<{
     const participantsByDistrict = await db
       .select({
         district: participants.district,
-        count: count(),
+        count: sql`count(*)`,
       })
       .from(participants)
       .where(participantsQuery)
       .groupBy(participants.district)
-      .orderBy(desc(count()))
+      .orderBy(desc(sql`count(*)`))
       .limit(5);
 
     // Participants by age group
@@ -269,7 +265,7 @@ export async function getKPIOverviewMetrics(): Promise<{
             ELSE 'Unknown'
           END
         `.as("ageGroup"),
-        count: count(),
+        count: sql`count(*)`,
       })
       .from(participants)
       .where(participantsQuery)
@@ -285,7 +281,7 @@ export async function getKPIOverviewMetrics(): Promise<{
         END
       `
       )
-      .orderBy(desc(count()));
+      .orderBy(desc(sql`count(*)`));
 
     // Recent participants
     const recentParticipants = await db
@@ -318,30 +314,22 @@ export async function getKPIOverviewMetrics(): Promise<{
 
     const [activityStats] = await db
       .select({
-        total: count(),
-        completed: sum(
-          sql`CASE WHEN ${activities.status} = 'completed' THEN 1 ELSE 0 END`
-        ).mapWith(Number),
-        ongoing: sum(
-          sql`CASE WHEN ${activities.status} = 'ongoing' THEN 1 ELSE 0 END`
-        ).mapWith(Number),
-        planned: sum(
-          sql`CASE WHEN ${activities.status} = 'planned' THEN 1 ELSE 0 END`
-        ).mapWith(Number),
-        cancelled: sum(
-          sql`CASE WHEN ${activities.status} = 'cancelled' THEN 1 ELSE 0 END`
-        ).mapWith(Number),
+        total: sql`count(*)`,
+        completed: sql`sum(CASE WHEN ${activities.status} = 'completed' THEN 1 ELSE 0 END)`,
+        ongoing: sql`sum(CASE WHEN ${activities.status} = 'ongoing' THEN 1 ELSE 0 END)`,
+        planned: sql`sum(CASE WHEN ${activities.status} = 'planned' THEN 1 ELSE 0 END)`,
+        cancelled: sql`sum(CASE WHEN ${activities.status} = 'cancelled' THEN 1 ELSE 0 END)`,
       })
       .from(activities)
       .where(activitiesQuery);
 
     const [activitiesThisMonth] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(activities)
       .where(and(activitiesQuery, gte(activities.created_at, thisMonthStart)));
 
     const [activitiesLastMonth] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(activities)
       .where(
         and(
@@ -355,23 +343,23 @@ export async function getKPIOverviewMetrics(): Promise<{
     const activitiesByStatus = await db
       .select({
         status: activities.status,
-        count: count(),
+        count: sql`count(*)`,
       })
       .from(activities)
       .where(activitiesQuery)
       .groupBy(activities.status)
-      .orderBy(desc(count()));
+      .orderBy(desc(sql`count(*)`));
 
     // Activities by type
     const activitiesByType = await db
       .select({
         type: activities.type,
-        count: count(),
+        count: sql`count(*)`,
       })
       .from(activities)
       .where(activitiesQuery)
       .groupBy(activities.type)
-      .orderBy(desc(count()))
+      .orderBy(desc(sql`count(*)`))
       .limit(5);
 
     // Recent activities
@@ -405,15 +393,11 @@ export async function getKPIOverviewMetrics(): Promise<{
 
     const [vslaStats] = await db
       .select({
-        total: count(),
-        active: sum(
-          sql`CASE WHEN ${vslas.status} = 'active' THEN 1 ELSE 0 END`
-        ).mapWith(Number),
-        inactive: sum(
-          sql`CASE WHEN ${vslas.status} != 'active' THEN 1 ELSE 0 END`
-        ).mapWith(Number),
-        totalSavings: sum(vslas.total_savings).mapWith(Number),
-        totalLoans: sum(vslas.total_loans).mapWith(Number),
+        total: sql`count(*)`,
+        active: sql`sum(CASE WHEN ${vslas.status} = 'active' THEN 1 ELSE 0 END)`,
+        inactive: sql`sum(CASE WHEN ${vslas.status} != 'active' THEN 1 ELSE 0 END)`,
+        totalSavings: sql`sum(${vslas.total_savings})`,
+        totalLoans: sql`sum(${vslas.total_loans})`,
       })
       .from(vslas)
       .where(vslasQuery);
@@ -421,19 +405,19 @@ export async function getKPIOverviewMetrics(): Promise<{
     // VSLA member count
     const [vslaMemberCount] = await db
       .select({
-        totalMembers: count(),
+        totalMembers: sql`count(*)`,
       })
       .from(vslaMembers)
       .leftJoin(vslas, eq(vslaMembers.vsla_id, vslas.id))
       .where(vslasQuery);
 
     const [vslasThisMonth] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(vslas)
       .where(and(vslasQuery, gte(vslas.created_at, thisMonthStart)));
 
     const [vslasLastMonth] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(vslas)
       .where(
         and(
@@ -447,13 +431,13 @@ export async function getKPIOverviewMetrics(): Promise<{
     const vslasByDistrict = await db
       .select({
         district: vslas.district,
-        count: count(),
-        totalSavings: sum(vslas.total_savings).mapWith(Number),
+        count: sql`count(*)`,
+        totalSavings: sql`sum(${vslas.total_savings})`,
       })
       .from(vslas)
       .where(vslasQuery)
       .groupBy(vslas.district)
-      .orderBy(desc(count()))
+      .orderBy(desc(sql`count(*)`))
       .limit(5);
 
     // Top performing VSLAs
@@ -475,14 +459,14 @@ export async function getKPIOverviewMetrics(): Promise<{
 
     const [conceptNoteStats] = await db
       .select({
-        total: count(),
+        total: sql`count(*)`,
       })
       .from(conceptNotes)
       .innerJoin(activities, eq(conceptNotes.activity_id, activities.id))
       .where(activitiesQuery);
 
     const [conceptNotesThisMonth] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(conceptNotes)
       .innerJoin(activities, eq(conceptNotes.activity_id, activities.id))
       .where(
@@ -490,7 +474,7 @@ export async function getKPIOverviewMetrics(): Promise<{
       );
 
     const [conceptNotesLastMonth] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(conceptNotes)
       .innerJoin(activities, eq(conceptNotes.activity_id, activities.id))
       .where(
@@ -531,16 +515,10 @@ export async function getKPIOverviewMetrics(): Promise<{
 
     const [trainingStats] = await db
       .select({
-        total: count(),
-        completed: sum(
-          sql`CASE WHEN ${trainings.status} = 'completed' THEN 1 ELSE 0 END`
-        ).mapWith(Number),
-        ongoing: sum(
-          sql`CASE WHEN ${trainings.status} = 'ongoing' THEN 1 ELSE 0 END`
-        ).mapWith(Number),
-        planned: sum(
-          sql`CASE WHEN ${trainings.status} = 'planned' THEN 1 ELSE 0 END`
-        ).mapWith(Number),
+        total: sql`count(*)`,
+        completed: sql`sum(CASE WHEN ${trainings.status} = 'completed' THEN 1 ELSE 0 END)`,
+        ongoing: sql`sum(CASE WHEN ${trainings.status} = 'ongoing' THEN 1 ELSE 0 END)`,
+        planned: sql`sum(CASE WHEN ${trainings.status} = 'planned' THEN 1 ELSE 0 END)`,
       })
       .from(trainings)
       .where(trainingsQuery);
@@ -548,19 +526,19 @@ export async function getKPIOverviewMetrics(): Promise<{
     // Training participants count
     const [trainingParticipantCount] = await db
       .select({
-        totalParticipants: count(),
+        totalParticipants: sql`count(*)`,
       })
       .from(trainingParticipants)
       .leftJoin(trainings, eq(trainingParticipants.training_id, trainings.id))
       .where(trainingsQuery);
 
     const [trainingsThisMonth] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(trainings)
       .where(and(trainingsQuery, gte(trainings.created_at, thisMonthStart)));
 
     const [trainingsLastMonth] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(trainings)
       .where(
         and(
@@ -588,14 +566,14 @@ export async function getKPIOverviewMetrics(): Promise<{
     const activityReportsQuery = undefined; // Will filter through activities relationship
     const [activityReportStats] = await db
       .select({
-        total: count(),
+        total: sql`count(*)`,
       })
       .from(activityReports)
       .innerJoin(activities, eq(activityReports.activity_id, activities.id))
       .where(activitiesQuery);
 
     const [activityReportsThisMonth] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(activityReports)
       .innerJoin(activities, eq(activityReports.activity_id, activities.id))
       .where(
@@ -603,7 +581,7 @@ export async function getKPIOverviewMetrics(): Promise<{
       );
 
     const [activityReportsLastMonth] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(activityReports)
       .innerJoin(activities, eq(activityReports.activity_id, activities.id))
       .where(
@@ -633,24 +611,20 @@ export async function getKPIOverviewMetrics(): Promise<{
 
     const [projectStats] = await db
       .select({
-        total: count(),
-        active: sum(
-          sql`CASE WHEN ${projects.status} = 'active' THEN 1 ELSE 0 END`
-        ).mapWith(Number),
-        completed: sum(
-          sql`CASE WHEN ${projects.status} = 'completed' THEN 1 ELSE 0 END`
-        ).mapWith(Number),
+        total: sql`count(*)`,
+        active: sql`sum(CASE WHEN ${projects.status} = 'active' THEN 1 ELSE 0 END)`,
+        completed: sql`sum(CASE WHEN ${projects.status} = 'completed' THEN 1 ELSE 0 END)`,
       })
       .from(projects)
       .where(projectsQuery);
 
     const [projectsThisMonth] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(projects)
       .where(and(projectsQuery, gte(projects.createdAt, thisMonthStart)));
 
     const [projectsLastMonth] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(projects)
       .where(
         and(
@@ -682,20 +656,20 @@ export async function getKPIOverviewMetrics(): Promise<{
 
     const [clusterStats] = await db
       .select({
-        total: count(),
-        active: count(), // All clusters are considered active since there's no status field
+        total: sql`count(*)`,
+        active: sql`count(*)`, // All clusters are considered active since there's no status field
         totalMembers: sql<number>`0`, // No member count field in clusters table
       })
       .from(clusters)
       .where(clustersQuery);
 
     const [clustersThisMonth] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(clusters)
       .where(and(clustersQuery, gte(clusters.createdAt, thisMonthStart)));
 
     const [clustersLastMonth] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(clusters)
       .where(
         and(
@@ -709,12 +683,12 @@ export async function getKPIOverviewMetrics(): Promise<{
     const clustersByDistrict = await db
       .select({
         district: sql<string>`${clusters.districts}[1]`,
-        count: count(),
+        count: sql`count(*)`,
       })
       .from(clusters)
       .where(clustersQuery)
       .groupBy(sql`${clusters.districts}[1]`)
-      .orderBy(desc(count()))
+      .orderBy(desc(sql`count(*)`))
       .limit(5);
 
     // Calculate growth percentages
@@ -725,22 +699,22 @@ export async function getKPIOverviewMetrics(): Promise<{
 
     const metrics: KPIOverviewMetrics = {
       participants: {
-        total: participantStats?.total || 0,
-        males: participantStats?.males || 0,
-        females: participantStats?.females || 0,
-        thisMonth: participantsThisMonth?.count || 0,
-        lastMonth: participantsLastMonth?.count || 0,
+        total: (participantStats?.total as number) || 0,
+        males: (participantStats?.males as number) || 0,
+        females: (participantStats?.females as number) || 0,
+        thisMonth: (participantsThisMonth?.count as number) || 0,
+        lastMonth: (participantsLastMonth?.count as number) || 0,
         growth: calculateGrowth(
-          participantsThisMonth?.count || 0,
-          participantsLastMonth?.count || 0
+          (participantsThisMonth?.count as number) || 0,
+          (participantsLastMonth?.count as number) || 0
         ),
         byDistrict: participantsByDistrict.map(p => ({
           district: p.district,
-          count: p.count,
+          count: p.count as number,
         })),
         byAge: participantsByAge.map(p => ({
           ageGroup: p.ageGroup,
-          count: p.count,
+          count: p.count as number,
         })),
         recentRegistrations: recentParticipants.map(p => ({
           id: p.id,
@@ -751,24 +725,24 @@ export async function getKPIOverviewMetrics(): Promise<{
         })),
       },
       activities: {
-        total: activityStats?.total || 0,
-        completed: activityStats?.completed || 0,
-        ongoing: activityStats?.ongoing || 0,
-        planned: activityStats?.planned || 0,
-        cancelled: activityStats?.cancelled || 0,
-        thisMonth: activitiesThisMonth?.count || 0,
-        lastMonth: activitiesLastMonth?.count || 0,
+        total: (activityStats?.total as number) || 0,
+        completed: (activityStats?.completed as number) || 0,
+        ongoing: (activityStats?.ongoing as number) || 0,
+        planned: (activityStats?.planned as number) || 0,
+        cancelled: (activityStats?.cancelled as number) || 0,
+        thisMonth: (activitiesThisMonth?.count as number) || 0,
+        lastMonth: (activitiesLastMonth?.count as number) || 0,
         growth: calculateGrowth(
-          activitiesThisMonth?.count || 0,
-          activitiesLastMonth?.count || 0
+          (activitiesThisMonth?.count as number) || 0,
+          (activitiesLastMonth?.count as number) || 0
         ),
         byStatus: activitiesByStatus.map(a => ({
           status: a.status,
-          count: a.count,
+          count: a.count as number,
         })),
         byType: activitiesByType.map(a => ({
           type: a.type,
-          count: a.count,
+          count: a.count as number,
         })),
         recent: recentActivities.map(a => ({
           id: a.id,
@@ -779,22 +753,22 @@ export async function getKPIOverviewMetrics(): Promise<{
         })),
       },
       vslas: {
-        total: vslaStats?.total || 0,
-        active: vslaStats?.active || 0,
-        inactive: vslaStats?.inactive || 0,
-        totalMembers: vslaMemberCount?.totalMembers || 0,
-        totalSavings: vslaStats?.totalSavings || 0,
-        totalLoans: vslaStats?.totalLoans || 0,
-        thisMonth: vslasThisMonth?.count || 0,
-        lastMonth: vslasLastMonth?.count || 0,
+        total: (vslaStats?.total as number) || 0,
+        active: (vslaStats?.active as number) || 0,
+        inactive: (vslaStats?.inactive as number) || 0,
+        totalMembers: (vslaMemberCount?.totalMembers as number) || 0,
+        totalSavings: (vslaStats?.totalSavings as number) || 0,
+        totalLoans: (vslaStats?.totalLoans as number) || 0,
+        thisMonth: (vslasThisMonth?.count as number) || 0,
+        lastMonth: (vslasLastMonth?.count as number) || 0,
         growth: calculateGrowth(
-          vslasThisMonth?.count || 0,
-          vslasLastMonth?.count || 0
+          (vslasThisMonth?.count as number) || 0,
+          (vslasLastMonth?.count as number) || 0
         ),
         byDistrict: vslasByDistrict.map(v => ({
           district: v.district,
-          count: v.count,
-          totalSavings: v.totalSavings || 0,
+          count: v.count as number,
+          totalSavings: (v.totalSavings as number) || 0,
         })),
         topPerformers: topVSLAs.map(v => ({
           id: v.id,
@@ -805,12 +779,12 @@ export async function getKPIOverviewMetrics(): Promise<{
         })),
       },
       conceptNotes: {
-        total: conceptNoteStats?.total || 0,
-        thisMonth: conceptNotesThisMonth?.count || 0,
-        lastMonth: conceptNotesLastMonth?.count || 0,
+        total: (conceptNoteStats?.total as number) || 0,
+        thisMonth: (conceptNotesThisMonth?.count as number) || 0,
+        lastMonth: (conceptNotesLastMonth?.count as number) || 0,
         growth: calculateGrowth(
-          conceptNotesThisMonth?.count || 0,
-          conceptNotesLastMonth?.count || 0
+          (conceptNotesThisMonth?.count as number) || 0,
+          (conceptNotesLastMonth?.count as number) || 0
         ),
         recent: recentConceptNotes.map(c => ({
           id: c.id,
@@ -820,17 +794,18 @@ export async function getKPIOverviewMetrics(): Promise<{
         })),
       },
       trainings: {
-        total: trainingStats?.total || 0,
-        thisMonth: trainingsThisMonth?.count || 0,
-        lastMonth: trainingsLastMonth?.count || 0,
+        total: (trainingStats?.total as number) || 0,
+        thisMonth: (trainingsThisMonth?.count as number) || 0,
+        lastMonth: (trainingsLastMonth?.count as number) || 0,
         growth: calculateGrowth(
-          trainingsThisMonth?.count || 0,
-          trainingsLastMonth?.count || 0
+          (trainingsThisMonth?.count as number) || 0,
+          (trainingsLastMonth?.count as number) || 0
         ),
-        totalParticipants: trainingParticipantCount?.totalParticipants || 0,
-        completed: trainingStats?.completed || 0,
-        ongoing: trainingStats?.ongoing || 0,
-        planned: trainingStats?.planned || 0,
+        totalParticipants:
+          (trainingParticipantCount?.totalParticipants as number) || 0,
+        completed: (trainingStats?.completed as number) || 0,
+        ongoing: (trainingStats?.ongoing as number) || 0,
+        planned: (trainingStats?.planned as number) || 0,
         recent: recentTrainings.map(t => ({
           id: t.id,
           title: t.title,
@@ -840,12 +815,12 @@ export async function getKPIOverviewMetrics(): Promise<{
         })),
       },
       activityReports: {
-        total: activityReportStats?.total || 0,
-        thisMonth: activityReportsThisMonth?.count || 0,
-        lastMonth: activityReportsLastMonth?.count || 0,
+        total: (activityReportStats?.total as number) || 0,
+        thisMonth: (activityReportsThisMonth?.count as number) || 0,
+        lastMonth: (activityReportsLastMonth?.count as number) || 0,
         growth: calculateGrowth(
-          activityReportsThisMonth?.count || 0,
-          activityReportsLastMonth?.count || 0
+          (activityReportsThisMonth?.count as number) || 0,
+          (activityReportsLastMonth?.count as number) || 0
         ),
         recent: recentActivityReports.map(r => ({
           id: r.id,
@@ -856,14 +831,14 @@ export async function getKPIOverviewMetrics(): Promise<{
         })),
       },
       projects: {
-        total: projectStats?.total || 0,
-        active: projectStats?.active || 0,
-        completed: projectStats?.completed || 0,
-        thisMonth: projectsThisMonth?.count || 0,
-        lastMonth: projectsLastMonth?.count || 0,
+        total: (projectStats?.total as number) || 0,
+        active: (projectStats?.active as number) || 0,
+        completed: (projectStats?.completed as number) || 0,
+        thisMonth: (projectsThisMonth?.count as number) || 0,
+        lastMonth: (projectsLastMonth?.count as number) || 0,
         growth: calculateGrowth(
-          projectsThisMonth?.count || 0,
-          projectsLastMonth?.count || 0
+          (projectsThisMonth?.count as number) || 0,
+          (projectsLastMonth?.count as number) || 0
         ),
         recent: recentProjects.map(p => ({
           id: p.id,
@@ -874,18 +849,18 @@ export async function getKPIOverviewMetrics(): Promise<{
         })),
       },
       clusters: {
-        total: clusterStats?.total || 0,
-        active: clusterStats?.active || 0,
-        totalMembers: clusterStats?.totalMembers || 0,
-        thisMonth: clustersThisMonth?.count || 0,
-        lastMonth: clustersLastMonth?.count || 0,
+        total: (clusterStats?.total as number) || 0,
+        active: (clusterStats?.active as number) || 0,
+        totalMembers: (clusterStats?.totalMembers as number) || 0,
+        thisMonth: (clustersThisMonth?.count as number) || 0,
+        lastMonth: (clustersLastMonth?.count as number) || 0,
         growth: calculateGrowth(
-          clustersThisMonth?.count || 0,
-          clustersLastMonth?.count || 0
+          (clustersThisMonth?.count as number) || 0,
+          (clustersLastMonth?.count as number) || 0
         ),
         byDistrict: clustersByDistrict.map(c => ({
           district: c.district,
-          count: c.count,
+          count: c.count as number,
         })),
       },
       reports: {
@@ -980,7 +955,7 @@ export async function getKPITrendData(): Promise<{
       const clustersQuery = undefined; // Clusters don't have organization filtering
 
       const [participantCount] = await db
-        .select({ count: count() })
+        .select({ count: sql`count(*)` })
         .from(participants)
         .where(
           and(
@@ -991,7 +966,7 @@ export async function getKPITrendData(): Promise<{
         );
 
       const [activityCount] = await db
-        .select({ count: count() })
+        .select({ count: sql`count(*)` })
         .from(activities)
         .where(
           and(
@@ -1002,7 +977,7 @@ export async function getKPITrendData(): Promise<{
         );
 
       const [vslaCount] = await db
-        .select({ count: count() })
+        .select({ count: sql`count(*)` })
         .from(vslas)
         .where(
           and(
@@ -1013,7 +988,7 @@ export async function getKPITrendData(): Promise<{
         );
 
       const [conceptNoteCount] = await db
-        .select({ count: count() })
+        .select({ count: sql`count(*)` })
         .from(conceptNotes)
         .where(
           and(
@@ -1024,7 +999,7 @@ export async function getKPITrendData(): Promise<{
         );
 
       const [trainingCount] = await db
-        .select({ count: count() })
+        .select({ count: sql`count(*)` })
         .from(trainings)
         .where(
           and(
@@ -1035,7 +1010,7 @@ export async function getKPITrendData(): Promise<{
         );
 
       const [activityReportCount] = await db
-        .select({ count: count() })
+        .select({ count: sql`count(*)` })
         .from(activityReports)
         .where(
           and(
@@ -1046,7 +1021,7 @@ export async function getKPITrendData(): Promise<{
         );
 
       const [projectCount] = await db
-        .select({ count: count() })
+        .select({ count: sql`count(*)` })
         .from(projects)
         .where(
           and(
@@ -1057,7 +1032,7 @@ export async function getKPITrendData(): Promise<{
         );
 
       const [clusterCount] = await db
-        .select({ count: count() })
+        .select({ count: sql`count(*)` })
         .from(clusters)
         .where(
           and(
@@ -1072,14 +1047,14 @@ export async function getKPITrendData(): Promise<{
           month: "short",
           year: "numeric",
         }),
-        participants: participantCount?.count || 0,
-        activities: activityCount?.count || 0,
-        vslas: vslaCount?.count || 0,
-        conceptNotes: conceptNoteCount?.count || 0,
-        trainings: trainingCount?.count || 0,
-        activityReports: activityReportCount?.count || 0,
-        projects: projectCount?.count || 0,
-        clusters: clusterCount?.count || 0,
+        participants: (participantCount?.count as number) || 0,
+        activities: (activityCount?.count as number) || 0,
+        vslas: (vslaCount?.count as number) || 0,
+        conceptNotes: (conceptNoteCount?.count as number) || 0,
+        trainings: (trainingCount?.count as number) || 0,
+        activityReports: (activityReportCount?.count as number) || 0,
+        projects: (projectCount?.count as number) || 0,
+        clusters: (clusterCount?.count as number) || 0,
       });
     }
 

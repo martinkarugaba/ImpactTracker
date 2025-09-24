@@ -4,7 +4,7 @@ import { z } from "zod";
 import { counties } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import { eq, and, count, ilike } from "drizzle-orm";
+import { eq, and, sql, ilike } from "drizzle-orm";
 import type { PaginationParams } from "../types/pagination";
 
 const createCountySchema = z.object({
@@ -80,11 +80,11 @@ export async function getCounties(
 
     // Get total count
     const [totalResult] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(counties)
       .where(finalWhereCondition);
 
-    const total = Number(totalResult.count);
+    const total = Number(totalResult.count as number);
     const totalPages = Math.ceil(total / limit);
 
     // Get paginated data

@@ -198,14 +198,21 @@ export async function getNonMemberOrganizations(
 ): Promise<ActionResponse<Array<typeof organizations.$inferSelect>>> {
   try {
     // Get organizations that are not in the clusterMembers table for this cluster
-    const nonMembers = (await db.execute(sql`
+    const result = await db.execute(sql`
       SELECT o.* FROM organizations o
       WHERE NOT EXISTS (
         SELECT 1 FROM cluster_members cm
         WHERE cm.organization_id = o.id
         AND cm.cluster_id = ${clusterId}
       )
-    `)) as Array<typeof organizations.$inferSelect>;
+    `);
+
+    // Safely type cast the result to an array
+    const nonMembers = result as unknown as Array<
+      typeof organizations.$inferSelect
+    >;
+
+    return { success: true, data: nonMembers };
 
     return { success: true, data: nonMembers };
   } catch (error) {

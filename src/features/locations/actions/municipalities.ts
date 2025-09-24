@@ -3,7 +3,8 @@
 import { db } from "@/lib/db";
 import { municipalities } from "@/lib/db/schema";
 import { revalidatePath } from "next/cache";
-import { eq } from "drizzle-orm";
+import { eq, and, sql, ilike } from "drizzle-orm";
+import type { PaginationParams } from "../types/pagination";
 
 export type CreateMunicipalityInput = {
   name: string;
@@ -89,9 +90,6 @@ export async function deleteMunicipality(id: string) {
   }
 }
 
-import { and, count, ilike } from "drizzle-orm";
-import type { PaginationParams } from "../types/pagination";
-
 interface GetMunicipalitiesParams {
   countryId?: string;
   districtId?: string;
@@ -146,11 +144,11 @@ export async function getMunicipalities(params: GetMunicipalitiesParams = {}) {
 
     // Get total count
     const [totalResult] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(municipalities)
       .where(finalWhereCondition);
 
-    const total = totalResult.count;
+    const total = totalResult.count as number;
 
     // Get paginated data
     const data = await db.query.municipalities.findMany({

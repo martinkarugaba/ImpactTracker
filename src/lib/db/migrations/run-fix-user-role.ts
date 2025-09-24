@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { sql } from "drizzle-orm";
 import { readFileSync } from "fs";
 import { join } from "path";
 import { fileURLToPath } from "url";
@@ -12,10 +13,10 @@ export async function runFixUserRoleMigration() {
 
     // Read the SQL file
     const sqlFilePath = join(__dirname, "fix_user_role.sql");
-    const sql = readFileSync(sqlFilePath, "utf8");
+    const sqlContent = readFileSync(sqlFilePath, "utf8");
 
-    // Execute the SQL
-    await db.execute(sql);
+    // Execute the SQL using sql template literal
+    await db.execute(sql.raw(sqlContent));
 
     console.log("Successfully fixed user_role enum in database");
     return { success: true };

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { participants, organizations, clusterMembers } from "@/lib/db/schema";
-import { eq, and, sql, asc, count } from "drizzle-orm";
+import { eq, and, sql, asc, inArray } from "drizzle-orm";
 import {
   type NewParticipant,
   type ParticipantResponse,
@@ -506,13 +506,13 @@ export async function getParticipants(
         },
       }),
       db
-        .select({ count: count() })
+        .select({ count: sql`count(*)` })
         .from(participants)
         .where(and(...whereConditions)),
     ]);
 
     const queryTime = Date.now() - startTime;
-    const totalCount = totalCountResult[0]?.count || 0;
+    const totalCount = (totalCountResult[0]?.count as number) || 0;
 
     console.log("✅ Database queries completed:", {
       queryTime: `${queryTime}ms`,
@@ -530,8 +530,7 @@ export async function getParticipants(
     let orgs: Array<{ id: string; name: string }> = [];
     if (organizationIds.length > 0) {
       orgs = await db.query.organizations.findMany({
-        where: (organizations, { inArray }) =>
-          inArray(organizations.id, organizationIds),
+        where: inArray(organizations.id, organizationIds),
         columns: {
           id: true,
           name: true,
@@ -1083,8 +1082,7 @@ export async function getAllFilteredParticipantsForExport(
     let orgs: Array<{ id: string; name: string }> = [];
     if (organizationIds.length > 0) {
       orgs = await db.query.organizations.findMany({
-        where: (organizations, { inArray }) =>
-          inArray(organizations.id, organizationIds),
+        where: inArray(organizations.id, organizationIds),
         columns: {
           id: true,
           name: true,

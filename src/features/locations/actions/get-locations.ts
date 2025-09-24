@@ -4,9 +4,9 @@ import { db } from "@/lib/db";
 import {
   countries,
   districts,
-  subCounties,
   parishes,
   villages,
+  subCounties,
 } from "@/lib/db/schema";
 import { sql } from "drizzle-orm";
 import { LocationData } from "../components/columns";
@@ -81,21 +81,25 @@ export async function getLocations() {
     `);
 
     // Convert the raw results to LocationData type
-    const locations: LocationData[] = results.map(
-      (row: Record<string, unknown>) => ({
-        id: String(row.id),
-        name: String(row.name),
-        code: String(row.code),
-        type: String(row.type) as LocationData["type"],
-        parentName: row.parent_name ? String(row.parent_name) : undefined,
-        created_at: row.created_at
-          ? new Date(String(row.created_at))
-          : new Date(),
-        updated_at: row.updated_at
-          ? new Date(String(row.updated_at))
-          : new Date(),
-      })
-    );
+    const rows = results as unknown as Array<{
+      id: string;
+      name: string;
+      code: string;
+      type: string;
+      parent_name: string | null;
+      created_at: string | null;
+      updated_at: string | null;
+    }>;
+
+    const locations: LocationData[] = rows.map(row => ({
+      id: String(row.id),
+      name: String(row.name),
+      code: String(row.code),
+      type: row.type as LocationData["type"],
+      parentName: row.parent_name ?? undefined,
+      created_at: row.created_at ? new Date(row.created_at) : new Date(),
+      updated_at: row.updated_at ? new Date(row.updated_at) : new Date(),
+    }));
     return { success: true, data: locations };
   } catch (error) {
     console.error("Error fetching locations:", error);
