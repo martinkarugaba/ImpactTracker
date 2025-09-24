@@ -4,7 +4,8 @@ import { z } from "zod";
 import { countries } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import { eq } from "drizzle-orm";
+import { eq, sql, ilike, asc, inArray, and } from "drizzle-orm";
+import type { PaginationParams } from "../types/pagination";
 
 const createCountrySchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -64,9 +65,6 @@ export async function deleteCountry(id: string) {
   }
 }
 
-import { count, ilike, asc, inArray, and } from "drizzle-orm";
-import type { PaginationParams } from "../types/pagination";
-
 export async function getCountries(params: PaginationParams = {}) {
   try {
     const { page = 1, limit = 10, search } = params;
@@ -87,11 +85,11 @@ export async function getCountries(params: PaginationParams = {}) {
 
     // Get total count
     const [totalResult] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(countries)
       .where(searchCondition);
 
-    const total = totalResult.count;
+    const total = totalResult.count as number;
 
     // Get paginated data
     const data = await db

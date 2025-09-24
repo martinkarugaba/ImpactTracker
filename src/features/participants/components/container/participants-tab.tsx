@@ -69,6 +69,7 @@ interface ParticipantsTabProps {
   searchValue: string;
   onSearchChange: (search: string) => void;
   isParticipantsLoading: boolean;
+  isFiltering: boolean;
   locationNamesLoading: boolean;
   onPaginationChange: (page: number, pageSize: number) => void;
   onPageChange: (page: number) => void;
@@ -95,6 +96,7 @@ export function ParticipantsTab({
   searchValue: _searchValue,
   onSearchChange: _onSearchChange,
   isParticipantsLoading,
+  isFiltering,
   locationNamesLoading,
   onAddParticipant,
   onEditParticipant,
@@ -370,12 +372,9 @@ export function ParticipantsTab({
         </div>
         {/* Filters Section - Below action buttons */}
         <SimpleParticipantFilters
-          projects={projects}
-          organizations={organizations}
-          districts={filterOptions.districts}
-          subCounties={filterOptions.subCounties}
           participants={participants}
           isLoading={isParticipantsLoading}
+          isFiltering={isFiltering}
         />
 
         {/* Pagination Controls - Right above table */}
@@ -452,7 +451,9 @@ export function ParticipantsTab({
               : null
           }
           selectedOrg={null}
-          isLoading={isParticipantsLoading || locationNamesLoading}
+          isLoading={
+            isParticipantsLoading || locationNamesLoading || isFiltering
+          }
           onPaginationChange={onPaginationChange}
           onPageChange={onPageChange}
           onAddParticipant={onAddParticipant}

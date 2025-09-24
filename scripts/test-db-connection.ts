@@ -12,7 +12,9 @@ async function testConnection() {
   console.log("Testing database connection...");
 
   const client = postgres(process.env.DATABASE_URL, {
-    ssl: true,
+    ssl: {
+      rejectUnauthorized: false, // Required for self-signed certificates
+    },
     connect_timeout: 10,
     idle_timeout: 0.5,
     max_lifetime: 60 * 30,

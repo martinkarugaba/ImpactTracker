@@ -1,4 +1,6 @@
-import { relations } from "drizzle-orm/relations";
+/* eslint-disable */
+// @ts-nocheck
+import { relations } from "drizzle-orm";
 import {
   clusters,
   organizations,

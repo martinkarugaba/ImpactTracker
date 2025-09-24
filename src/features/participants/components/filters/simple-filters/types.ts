@@ -20,10 +20,7 @@ export interface FilterGroups {
 }
 
 export interface SimpleParticipantFiltersProps {
-  projects: Array<{ id: string; name: string; acronym: string }>;
-  organizations: Array<{ id: string; name: string; acronym: string }>;
-  districts?: Array<{ id: string; name: string }>;
-  subCounties?: Array<{ id: string; name: string }>;
   participants?: Participant[];
   isLoading?: boolean;
+  isFiltering?: boolean;
 }

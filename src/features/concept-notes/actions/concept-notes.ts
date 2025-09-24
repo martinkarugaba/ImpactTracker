@@ -7,7 +7,7 @@ import {
   projects,
   organizations,
 } from "@/lib/db/schema";
-import { eq, desc, and, ilike, count, gte, lte } from "drizzle-orm";
+import { eq, desc, and, ilike, gte, lte, sql } from "drizzle-orm";
 import { getUserClusterId } from "@/features/auth/actions";
 
 export type ConceptNote = {
@@ -167,14 +167,14 @@ export async function getConceptNotes(
 
     // Get total count
     const [totalResult] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(conceptNotes)
       .leftJoin(activities, eq(conceptNotes.activity_id, activities.id))
       .leftJoin(projects, eq(activities.project_id, projects.id))
       .leftJoin(organizations, eq(activities.organization_id, organizations.id))
       .where(and(...whereConditions));
 
-    const total = totalResult.count;
+    const total = totalResult.count as number;
     const totalPages = Math.ceil(total / limit);
     const offset = (page - 1) * limit;
 
@@ -263,10 +263,10 @@ export async function getConceptNotesMetrics(): Promise<ConceptNotesMetricsRespo
     // Get current metrics
     const [currentMetrics] = await db
       .select({
-        total: count(),
-        pending: count(conceptNotes.id),
-        approved: count(conceptNotes.id),
-        thisMonth: count(conceptNotes.id),
+        total: sql`count(*)`,
+        pending: sql`count(${conceptNotes.id})`,
+        approved: sql`count(${conceptNotes.id})`,
+        thisMonth: sql`count(${conceptNotes.id})`,
       })
       .from(conceptNotes)
       .leftJoin(activities, eq(conceptNotes.activity_id, activities.id))
@@ -275,8 +275,8 @@ export async function getConceptNotesMetrics(): Promise<ConceptNotesMetricsRespo
     // Get last month metrics for trends
     const [lastMonthMetrics] = await db
       .select({
-        total: count(),
-        thisMonth: count(conceptNotes.id),
+        total: sql`count(*)`,
+        thisMonth: sql`count(${conceptNotes.id})`,
       })
       .from(conceptNotes)
       .leftJoin(activities, eq(conceptNotes.activity_id, activities.id))
@@ -290,7 +290,7 @@ export async function getConceptNotesMetrics(): Promise<ConceptNotesMetricsRespo
 
     // Get this month count
     const [thisMonthResult] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(conceptNotes)
       .leftJoin(activities, eq(conceptNotes.activity_id, activities.id))
       .where(
@@ -300,10 +300,10 @@ export async function getConceptNotesMetrics(): Promise<ConceptNotesMetricsRespo
         )
       );
 
-    const totalConceptNotes = currentMetrics.total;
-    const thisMonth = thisMonthResult.count;
-    const lastMonthTotal = lastMonthMetrics.total;
-    const lastMonthThisMonth = lastMonthMetrics.thisMonth;
+    const totalConceptNotes = currentMetrics.total as number;
+    const thisMonth = thisMonthResult.count as number;
+    const lastMonthTotal = lastMonthMetrics.total as number;
+    const lastMonthThisMonth = lastMonthMetrics.thisMonth as number;
 
     // Calculate trends (simplified for now)
     const totalChange =

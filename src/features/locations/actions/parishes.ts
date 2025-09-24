@@ -4,7 +4,7 @@ import { z } from "zod";
 import { parishes } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import { eq, and, count, ilike } from "drizzle-orm";
+import { eq, and, sql, ilike } from "drizzle-orm";
 import type { PaginationParams } from "../types/pagination";
 
 const createParishSchema = z.object({
@@ -103,11 +103,11 @@ export async function getParishes(
 
     // Get total count
     const [totalResult] = await db
-      .select({ count: count() })
+      .select({ count: sql`count(*)` })
       .from(parishes)
       .where(finalWhereCondition);
 
-    const total = totalResult.count;
+    const total = totalResult.count as number;
 
     // Get paginated data
     const data = await db.query.parishes.findMany({
