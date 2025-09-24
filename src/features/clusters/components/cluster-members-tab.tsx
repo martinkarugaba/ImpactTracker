@@ -45,15 +45,8 @@ interface ClusterMembersTabProps {
   clusterId: string;
 }
 
-interface ClusterMember {
-  id: string;
-  organization: {
-    id: string;
-    name: string;
-    acronym: string;
-  };
-  created_at: Date | null;
-}
+// Import the ClusterMember type from types.ts instead of redefining it
+import type { ClusterMember } from "../actions/types";
 
 interface Organization {
   id: string;

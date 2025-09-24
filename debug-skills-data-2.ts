@@ -4,13 +4,13 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { sql } from "drizzle-orm";
 
-async function checkSkillsData() {
+async function checkSkillsData(): Promise<void> {
   try {
     if (!process.env.DATABASE_URL) {
       throw new Error("DATABASE_URL is not set");
     }
 
-    const client = postgres(process.env.DATABASE_URL, {
+    const client = postgres(process.env.DATABASE_URL ?? "", {
       ssl: true,
       connect_timeout: 10,
       idle_timeout: 0.5,
@@ -22,10 +22,10 @@ async function checkSkillsData() {
     try {
       // First, let's check if we have any participants at all
       const participants = await db.execute(sql`
-        SELECT id, first_name, last_name, 
+        SELECT id, first_name, last_name,
                vocational_skills_participations,
-               soft_skills_participations 
-        FROM participants 
+               soft_skills_participations
+        FROM participants
         LIMIT 5
       `);
 
@@ -38,11 +38,11 @@ async function checkSkillsData() {
 
       // Now let's check specifically for participants with skills
       const participantsWithSkills = await db.execute(sql`
-        SELECT id, first_name, last_name, 
+        SELECT id, first_name, last_name,
                vocational_skills_participations,
-               soft_skills_participations 
-        FROM participants 
-        WHERE array_length(vocational_skills_participations, 1) > 0 
+               soft_skills_participations
+        FROM participants
+        WHERE array_length(vocational_skills_participations, 1) > 0
            OR array_length(soft_skills_participations, 1) > 0
       `);
 
@@ -63,37 +63,34 @@ async function checkSkillsData() {
       }
 
       // Get unique skills
-      const uniqueVocationalSkills = await db.execute(sql`
-        SELECT DISTINCT unnest(vocational_skills_participations) as skill 
-        FROM participants 
+      const uniqueVocationalSkills = (await db.execute(sql`
+        SELECT DISTINCT unnest(vocational_skills_participations) as skill
+        FROM participants
         WHERE array_length(vocational_skills_participations, 1) > 0
-      `);
+      `)) as Array<{ skill: string }>;
 
-      const uniqueSoftSkills = await db.execute(sql`
-        SELECT DISTINCT unnest(soft_skills_participations) as skill 
-        FROM participants 
+      const uniqueSoftSkills = (await db.execute(sql`
+        SELECT DISTINCT unnest(soft_skills_participations) as skill
+        FROM participants
         WHERE array_length(soft_skills_participations, 1) > 0
-      `);
+      `)) as Array<{ skill: string }>;
 
       console.log(
         "\n🔧 Unique vocational skills in database:",
-        uniqueVocationalSkills.rows.map(r => r.skill)
+        uniqueVocationalSkills.map((r: { skill: string }) => r.skill)
       );
       console.log(
         "\n🤝 Unique soft skills in database:",
-        uniqueSoftSkills.rows.map(r => r.skill)
+        uniqueSoftSkills.map((r: { skill: string }) => r.skill)
       );
 
       // Test a specific skill filter
       const testSkill = "Carpentry";
-      const skillFilterTest = await db.execute(
-        sql`
-        SELECT COUNT(*) 
-        FROM participants 
-        WHERE $1 = ANY(vocational_skills_participations)
-      `,
-        [testSkill]
-      );
+      const skillFilterTest = await db.execute(sql`
+        SELECT COUNT(*)
+        FROM participants
+        WHERE ${testSkill} = ANY(vocational_skills_participations)
+      `);
 
       console.log(
         `\n🧪 Testing filter for skill "${testSkill}":`,
@@ -104,7 +101,10 @@ async function checkSkillsData() {
       await client.end();
     }
   } catch (error) {
-    console.error("Error checking skills data:", error);
+    console.error(
+      "Error checking skills data:",
+      error instanceof Error ? error.message : String(error)
+    );
   }
 }
 

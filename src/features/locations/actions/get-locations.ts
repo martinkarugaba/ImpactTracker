@@ -81,20 +81,21 @@ export async function getLocations() {
     `);
 
     // Convert the raw results to LocationData type
-    const locations: LocationData[] = results.rows.map(row => ({
-      id: String(row.id),
-      name: String(row.name),
-      code: String(row.code),
-      type: String(row.type) as LocationData["type"],
-      parentName: row.parent_name ? String(row.parent_name) : undefined,
-      created_at: row.created_at
-        ? new Date(String(row.created_at))
-        : new Date(),
-      updated_at: row.updated_at
-        ? new Date(String(row.updated_at))
-        : new Date(),
-    }));
-
+    const locations: LocationData[] = results.map(
+      (row: Record<string, unknown>) => ({
+        id: String(row.id),
+        name: String(row.name),
+        code: String(row.code),
+        type: String(row.type) as LocationData["type"],
+        parentName: row.parent_name ? String(row.parent_name) : undefined,
+        created_at: row.created_at
+          ? new Date(String(row.created_at))
+          : new Date(),
+        updated_at: row.updated_at
+          ? new Date(String(row.updated_at))
+          : new Date(),
+      })
+    );
     return { success: true, data: locations };
   } catch (error) {
     console.error("Error fetching locations:", error);
