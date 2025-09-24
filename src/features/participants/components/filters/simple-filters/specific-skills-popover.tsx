@@ -64,12 +64,20 @@ export function SpecificSkillsPopover({
   ) => {
     console.log(`🔧 Skills filter update: ${key} = ${value}`);
     console.log("🔧 Current filters before update:", filters);
+
+    // Update the filter
     updateFilter({ key, value });
 
     // Debug: Check the updated state after a brief delay
     setTimeout(() => {
       console.log("🔧 Filters after update should include:", { [key]: value });
-    }, 100);
+      // Force console log to check if the filter was actually applied
+      console.log("🔧 Skills filters state check:", {
+        specificVocationalSkill: filters.specificVocationalSkill,
+        specificSoftSkill: filters.specificSoftSkill,
+        specificBusinessSkill: filters.specificBusinessSkill,
+      });
+    }, 200);
   };
 
   // Helper function to convert skills array to ComboboxOption format

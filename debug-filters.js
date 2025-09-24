@@ -1,17 +1,17 @@
-import { neon } from "@neondatabase/serverless";
 import dotenv from "dotenv";
+import postgres from "postgres";
 
 // Load environment variables
-dotenv.config({ path: ".env" });
+dotenv.config({ path: ".env.local" });
 
-// Create database connection using the same setup as the main app
-const sql = neon(process.env.DATABASE_URL, {
-  fetchOptions: {
-    cache: "no-store",
-    keepalive: false,
+const sql = postgres(process.env.DATABASE_URL, {
+  ssl: {
+    rejectUnauthorized: false,
   },
-  fullResults: true,
-  arrayMode: false,
+  max: 20,
+  idle_timeout: 20,
+  connect_timeout: 10,
+  prepare: false,
 });
 
 async function debugFilters() {
@@ -24,7 +24,7 @@ async function debugFilters() {
     console.log("📊 Sample of first 100 participants:");
     console.log("Result structure:", JSON.stringify(allParticipants, null, 2));
 
-    // For Neon, the result might be in .rows property
+    // Query result handling
     const participants = allParticipants.rows || allParticipants;
 
     if (Array.isArray(participants) && participants.length > 0) {

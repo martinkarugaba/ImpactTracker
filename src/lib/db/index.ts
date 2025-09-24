@@ -1,5 +1,5 @@
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
+import postgres from "postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
 import * as schema from "./schema";
 
 // Ensure this code only runs on the server
@@ -13,21 +13,21 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-let sql: ReturnType<typeof neon>;
+let sql: ReturnType<typeof postgres>;
 
 try {
-  // Configure the Neon client with optimized settings for serverless/Edge runtime
-  sql = neon(process.env.DATABASE_URL, {
-    fetchOptions: {
-      cache: "no-store",
-      keepalive: false, // Set to false for serverless environments
+  // Configure Postgres client with appropriate settings
+  sql = postgres(process.env.DATABASE_URL, {
+    ssl: {
+      rejectUnauthorized: false, // Required for self-signed certificates
     },
-    // Remove retry option as it can cause issues in Edge runtime
-    fullResults: true,
-    arrayMode: false,
+    max: 20, // Maximum number of connections
+    idle_timeout: 20, // Max idle time for connections
+    connect_timeout: 10, // Connection timeout in seconds
+    prepare: false, // Disable prepared statements for better Supabase compatibility
   });
 } catch (error) {
-  console.error("Failed to initialize Neon client:", error);
+  console.error("Failed to initialize Postgres client:", error);
   throw new Error(
     `Database initialization failed: ${error instanceof Error ? error.message : "Unknown error"}`
   );

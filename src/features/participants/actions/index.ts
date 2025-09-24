@@ -82,11 +82,13 @@ export async function getParticipants(
       whereConditions.push(eq(participants.cluster_id, clusterId));
     }
 
+    // Initialize filter tracking arrays
+    const appliedFilters: string[] = [];
+    const additionalFilters: string[] = [];
+
     // Add filter conditions
     if (params?.filters) {
       console.log("📝 Processing filters:", params.filters);
-
-      const appliedFilters: string[] = [];
 
       if (params.filters.project && params.filters.project !== "all") {
         console.log("Adding project filter:", params.filters.project);
@@ -161,7 +163,6 @@ export async function getParticipants(
       );
 
       // Additional filters for comprehensive participant filtering
-      const additionalFilters: string[] = [];
 
       if (
         params.filters.maritalStatus &&
@@ -290,8 +291,12 @@ export async function getParticipants(
         params.filters.specificVocationalSkill !== "all"
       ) {
         console.log(
-          "Adding specificVocationalSkill filter:",
+          "🎯 Adding specificVocationalSkill filter:",
           params.filters.specificVocationalSkill
+        );
+        console.log(
+          "🎯 SQL query will be:",
+          `${params.filters.specificVocationalSkill} = ANY(vocationalSkillsParticipations)`
         );
         additionalFilters.push("specificVocationalSkill");
         whereConditions.push(
@@ -307,8 +312,12 @@ export async function getParticipants(
         params.filters.specificSoftSkill !== "all"
       ) {
         console.log(
-          "Adding specificSoftSkill filter:",
+          "🎯 Adding specificSoftSkill filter:",
           params.filters.specificSoftSkill
+        );
+        console.log(
+          "🎯 SQL query will be:",
+          `${params.filters.specificSoftSkill} = ANY(softSkillsParticipations)`
         );
         additionalFilters.push("specificSoftSkill");
         whereConditions.push(
@@ -472,7 +481,18 @@ export async function getParticipants(
     }
 
     console.log("⏱️ Starting database queries...");
+    console.log("🔍 Final whereConditions count:", whereConditions.length);
+    console.log("📋 All applied filters:", [
+      ...appliedFilters,
+      ...additionalFilters,
+    ]);
     const startTime = Date.now();
+
+    // Debug: Log the total number of where conditions
+    console.log(`🔍 Total where conditions: ${whereConditions.length}`);
+    console.log(
+      `🔍 Applied filters: ${appliedFilters.length + additionalFilters.length}`
+    );
 
     const [participantsData, totalCountResult] = await Promise.all([
       db.query.participants.findMany({

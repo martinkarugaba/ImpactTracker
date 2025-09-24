@@ -57,6 +57,18 @@ export function useParticipants(
     };
   }
 ) {
+  // Create a stable serialized key for filters to ensure React Query detects changes
+  const filtersKey = params?.filters ? JSON.stringify(params.filters) : null;
+
+  // Additional key for specific skills to ensure they trigger refetch
+  const skillsKey = params?.filters
+    ? [
+        params.filters.specificVocationalSkill,
+        params.filters.specificSoftSkill,
+        params.filters.specificBusinessSkill,
+      ].join("|")
+    : null;
+
   return useQuery({
     queryKey: [
       "participants",
@@ -64,9 +76,19 @@ export function useParticipants(
       params?.page,
       params?.limit, // used as pageSize in the API call
       params?.search,
-      JSON.stringify(params?.filters), // stringify to ensure changes trigger refetch
+      filtersKey, // Use serialized filters
+      skillsKey, // Specific key for skills to ensure refetch
     ],
-    queryFn: () => getParticipants(clusterId, params),
+    queryFn: () => {
+      console.log("🚀 React Query executing getParticipants with params:", {
+        clusterId,
+        page: params?.page,
+        limit: params?.limit,
+        search: params?.search,
+        filters: params?.filters,
+      });
+      return getParticipants(clusterId, params);
+    },
     staleTime: 0, // Always fetch fresh data when parameters change
     placeholderData: prevData => prevData, // This will keep the previous data while loading new data
   });

@@ -211,12 +211,26 @@ export function useParticipantContainerJotai({
         activeFilters
       );
       console.log("🎯 Full filters object:", filters);
+      console.log("🎯 Query params being sent:", {
+        page: pagination.page,
+        limit: pagination.pageSize,
+        search: searchValue || undefined,
+        filters: {
+          // Show all filters that would be sent to backend
+          specificVocationalSkill: activeFilters.specificVocationalSkill,
+          specificSoftSkill: activeFilters.specificSoftSkill,
+          specificBusinessSkill: activeFilters.specificBusinessSkill,
+        },
+      });
     }
   }, [
     filters.specificVocationalSkill,
     filters.specificSoftSkill,
     filters.specificBusinessSkill,
     filters,
+    pagination.page,
+    pagination.pageSize,
+    searchValue,
   ]);
 
   const {
