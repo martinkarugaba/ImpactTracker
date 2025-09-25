@@ -58,6 +58,14 @@ export function useFilterState({
       locationSetting: "all",
       isRefugee: "all",
       isMother: "all",
+      // Phase 1 Enhanced Filters
+      monthlyIncomeRange: "all",
+      numberOfChildrenRange: "all",
+      noOfTrainingsRange: "all",
+      employmentType: "all",
+      accessedLoans: "all",
+      individualSaving: "all",
+      groupSaving: "all",
     });
   };
 

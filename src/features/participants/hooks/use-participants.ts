@@ -54,6 +54,14 @@ export function useParticipants(
       specificVocationalSkill?: string;
       specificSoftSkill?: string;
       specificBusinessSkill?: string;
+      // Phase 1 Enhanced Filters
+      monthlyIncomeRange?: string;
+      numberOfChildrenRange?: string;
+      noOfTrainingsRange?: string;
+      employmentType?: string;
+      accessedLoans?: string;
+      individualSaving?: string;
+      groupSaving?: string;
     };
   }
 ) {

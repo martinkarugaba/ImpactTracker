@@ -46,6 +46,14 @@ export interface GetParticipantsParams {
     locationSetting?: string;
     isRefugee?: string;
     isMother?: string;
+    // Phase 1 Enhanced Filters
+    monthlyIncomeRange?: string;
+    numberOfChildrenRange?: string;
+    noOfTrainingsRange?: string;
+    employmentType?: string;
+    accessedLoans?: string;
+    individualSaving?: string;
+    groupSaving?: string;
   };
 }
 
@@ -484,6 +492,131 @@ export async function getParticipants(
         additionalFilters.push("isMother");
         whereConditions.push(
           eq(participants.isMother, params.filters.isMother)
+        );
+      }
+
+      // Phase 1 Enhanced Filters
+      if (
+        params.filters.monthlyIncomeRange &&
+        params.filters.monthlyIncomeRange !== "all"
+      ) {
+        console.log(
+          "Adding monthlyIncomeRange filter:",
+          params.filters.monthlyIncomeRange
+        );
+        additionalFilters.push("monthlyIncomeRange");
+        if (params.filters.monthlyIncomeRange === "0-500000") {
+          whereConditions.push(
+            sql`${participants.monthlyIncome} >= 0 AND ${participants.monthlyIncome} <= 500000`
+          );
+        } else if (params.filters.monthlyIncomeRange === "500000-1000000") {
+          whereConditions.push(
+            sql`${participants.monthlyIncome} > 500000 AND ${participants.monthlyIncome} <= 1000000`
+          );
+        } else if (params.filters.monthlyIncomeRange === "1000000-2000000") {
+          whereConditions.push(
+            sql`${participants.monthlyIncome} > 1000000 AND ${participants.monthlyIncome} <= 2000000`
+          );
+        } else if (params.filters.monthlyIncomeRange === "2000000+") {
+          whereConditions.push(sql`${participants.monthlyIncome} > 2000000`);
+        }
+      }
+
+      if (
+        params.filters.numberOfChildrenRange &&
+        params.filters.numberOfChildrenRange !== "all"
+      ) {
+        console.log(
+          "Adding numberOfChildrenRange filter:",
+          params.filters.numberOfChildrenRange
+        );
+        additionalFilters.push("numberOfChildrenRange");
+        if (params.filters.numberOfChildrenRange === "0") {
+          whereConditions.push(eq(participants.numberOfChildren, 0));
+        } else if (params.filters.numberOfChildrenRange === "1-2") {
+          whereConditions.push(
+            sql`${participants.numberOfChildren} >= 1 AND ${participants.numberOfChildren} <= 2`
+          );
+        } else if (params.filters.numberOfChildrenRange === "3-5") {
+          whereConditions.push(
+            sql`${participants.numberOfChildren} >= 3 AND ${participants.numberOfChildren} <= 5`
+          );
+        } else if (params.filters.numberOfChildrenRange === "6+") {
+          whereConditions.push(sql`${participants.numberOfChildren} >= 6`);
+        }
+      }
+
+      if (
+        params.filters.noOfTrainingsRange &&
+        params.filters.noOfTrainingsRange !== "all"
+      ) {
+        console.log(
+          "Adding noOfTrainingsRange filter:",
+          params.filters.noOfTrainingsRange
+        );
+        additionalFilters.push("noOfTrainingsRange");
+        if (params.filters.noOfTrainingsRange === "0") {
+          whereConditions.push(eq(participants.noOfTrainings, 0));
+        } else if (params.filters.noOfTrainingsRange === "1-2") {
+          whereConditions.push(
+            sql`${participants.noOfTrainings} >= 1 AND ${participants.noOfTrainings} <= 2`
+          );
+        } else if (params.filters.noOfTrainingsRange === "3-5") {
+          whereConditions.push(
+            sql`${participants.noOfTrainings} >= 3 AND ${participants.noOfTrainings} <= 5`
+          );
+        } else if (params.filters.noOfTrainingsRange === "6+") {
+          whereConditions.push(sql`${participants.noOfTrainings} >= 6`);
+        }
+      }
+
+      if (
+        params.filters.employmentType &&
+        params.filters.employmentType !== "all"
+      ) {
+        console.log(
+          "Adding employmentType filter:",
+          params.filters.employmentType
+        );
+        additionalFilters.push("employmentType");
+        whereConditions.push(
+          eq(participants.employmentType, params.filters.employmentType)
+        );
+      }
+
+      if (
+        params.filters.accessedLoans &&
+        params.filters.accessedLoans !== "all"
+      ) {
+        console.log(
+          "Adding accessedLoans filter:",
+          params.filters.accessedLoans
+        );
+        additionalFilters.push("accessedLoans");
+        whereConditions.push(
+          eq(participants.accessedLoans, params.filters.accessedLoans)
+        );
+      }
+
+      if (
+        params.filters.individualSaving &&
+        params.filters.individualSaving !== "all"
+      ) {
+        console.log(
+          "Adding individualSaving filter:",
+          params.filters.individualSaving
+        );
+        additionalFilters.push("individualSaving");
+        whereConditions.push(
+          eq(participants.individualSaving, params.filters.individualSaving)
+        );
+      }
+
+      if (params.filters.groupSaving && params.filters.groupSaving !== "all") {
+        console.log("Adding groupSaving filter:", params.filters.groupSaving);
+        additionalFilters.push("groupSaving");
+        whereConditions.push(
+          eq(participants.groupSaving, params.filters.groupSaving)
         );
       }
 

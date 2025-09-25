@@ -38,6 +38,14 @@ export const participantFiltersAtom = atomWithStorage<ParticipantFilters>(
     locationSetting: "all",
     isRefugee: "all",
     isMother: "all",
+    // Phase 1 Enhanced Filters
+    monthlyIncomeRange: "all",
+    numberOfChildrenRange: "all",
+    noOfTrainingsRange: "all",
+    employmentType: "all",
+    accessedLoans: "all",
+    individualSaving: "all",
+    groupSaving: "all",
   }
 );
 
@@ -140,6 +148,14 @@ export const clearFiltersAtom = atom(null, (get, set) => {
     locationSetting: "all",
     isRefugee: "all",
     isMother: "all",
+    // Phase 1 Enhanced Filters
+    monthlyIncomeRange: "all",
+    numberOfChildrenRange: "all",
+    noOfTrainingsRange: "all",
+    employmentType: "all",
+    accessedLoans: "all",
+    individualSaving: "all",
+    groupSaving: "all",
   });
   set(participantPaginationAtom, prev => ({ ...prev, page: 1 }));
 });
