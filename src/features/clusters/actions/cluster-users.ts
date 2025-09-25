@@ -72,6 +72,7 @@ export async function getUserClusterOrganizations(userId: string) {
           country: organizations.country,
           district: organizations.district,
           sub_county_id: organizations.sub_county_id,
+          operation_sub_counties: organizations.operation_sub_counties,
           parish: organizations.parish,
           village: organizations.village,
           address: organizations.address,

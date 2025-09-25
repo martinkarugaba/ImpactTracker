@@ -65,12 +65,20 @@ export function useParticipantContainerJotai({
   const [, clearFiltering] = useAtom(clearFilteringAtom);
 
   const handleFiltersChange = (newFilters: ParticipantFilters) => {
-    // Update each filter individually using the updateFilterAtom
-    Object.entries(newFilters).forEach(([key, value]) => {
-      if (filters[key as keyof ParticipantFilters] !== value) {
-        updateFilter({ key: key as keyof ParticipantFilters, value });
-      }
-    });
+    // Check if any filters are actually changing
+    const hasChanges = Object.entries(newFilters).some(
+      ([key, value]) => filters[key as keyof ParticipantFilters] !== value
+    );
+
+    if (hasChanges) {
+      // Update each filter individually using the updateFilterAtom
+      // The updateFilterAtom will automatically set isFiltering to true
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (filters[key as keyof ParticipantFilters] !== value) {
+          updateFilter({ key: key as keyof ParticipantFilters, value });
+        }
+      });
+    }
   };
 
   // Event handlers
@@ -246,10 +254,18 @@ export function useParticipantContainerJotai({
     searchValue
   );
 
+  // Enhanced filtering state management
+  // The isFilteringAtom is automatically set to true by updateFilterAtom when filters change
+  // and cleared when data loading completes below
+
   // Clear filtering state when data finishes loading
   useEffect(() => {
     if (!isParticipantsLoading && (participantsData || participantsError)) {
-      clearFiltering();
+      // Add a small delay to ensure smooth UX
+      const timeoutId = setTimeout(() => {
+        clearFiltering();
+      }, 200);
+      return () => clearTimeout(timeoutId);
     }
   }, [
     isParticipantsLoading,

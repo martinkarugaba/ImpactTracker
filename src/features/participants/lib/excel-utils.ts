@@ -4,7 +4,8 @@ export function downloadTemplate() {
   // Sample data with expected format including all requested fields
   const sampleData = [
     {
-      Name: "John Doe", // Or use separate FirstName/LastName columns
+      "First Name": "John",
+      "Last Name": "Doe",
       Gender: "male", // Accepted values: male, female, other
       "Marital Status": "single", // single, married, divorced, widowed
       Phone: "+256700000000", // Phone number

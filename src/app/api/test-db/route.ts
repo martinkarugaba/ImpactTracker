@@ -1,6 +1,9 @@
 import { testDbConnection } from "@/lib/db";
 import { NextResponse } from "next/server";
 
+// Force Node.js runtime to support database connections
+export const runtime = "nodejs";
+
 export async function GET() {
   try {
     console.log("Testing database connection...");

@@ -1,12 +1,13 @@
 "use client";
 
 import { useAtomValue, useSetAtom } from "jotai";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   participantFiltersAtom,
   updateFilterAtom,
   clearFiltersAtom,
+  isFilteringAtom,
 } from "../../../atoms/participants-atoms";
 import { SearchFilter } from "./search-filter";
 import { QuickFilters } from "./quick-filters";
@@ -16,11 +17,12 @@ import { type SimpleParticipantFiltersProps } from "./types";
 export function SimpleParticipantFilters({
   participants: _participants = [],
   isLoading = false,
-  isFiltering = false,
+  isFiltering: propIsFiltering = false,
 }: SimpleParticipantFiltersProps) {
   const filters = useAtomValue(participantFiltersAtom);
   const updateFilter = useSetAtom(updateFilterAtom);
   const clearFilters = useSetAtom(clearFiltersAtom);
+  const isFiltering = useAtomValue(isFilteringAtom) || propIsFiltering;
 
   // Static quick filters - only the essential ones
   const quickFilters = [
@@ -97,22 +99,30 @@ export function SimpleParticipantFilters({
 
   return (
     <div className="space-y-3">
-      {/* Main Filter Bar */}
-      <div className="relative flex flex-wrap items-center gap-3">
-        {/* Ultra-minimalistic Loading Indicator */}
-        {isFiltering && (
-          <div className="absolute -top-0.5 -right-0.5 z-10">
-            <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-blue-500"></div>
-          </div>
-        )}
+      {/* Filtering Status Indicator */}
+      {isFiltering && (
+        <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-700">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span>Filtering participants...</span>
+        </div>
+      )}
 
-        <SearchFilter isLoading={isLoading} />
-        <QuickFilters quickFilters={quickFilters} isLoading={isLoading} />
+      {/* Main Filter Bar */}
+      <div
+        className={`relative flex flex-wrap items-center gap-3 transition-opacity ${
+          isFiltering ? "opacity-75" : "opacity-100"
+        }`}
+      >
+        <SearchFilter isLoading={isLoading || isFiltering} />
+        <QuickFilters
+          quickFilters={quickFilters}
+          isLoading={isLoading || isFiltering}
+        />
 
         {/* Specific Skills Filters Popover */}
         <SpecificSkillsPopover
           activeFiltersCount={specificSkillsCount}
-          isLoading={isLoading}
+          isLoading={isLoading || isFiltering}
         />
       </div>
 
@@ -124,9 +134,17 @@ export function SimpleParticipantFilters({
             variant="ghost"
             size="sm"
             onClick={() => clearFilters()}
-            className="h-6 px-2 text-xs text-gray-500 hover:text-gray-700"
+            disabled={isFiltering}
+            className="h-6 px-2 text-xs text-gray-500 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Clear all
+            {isFiltering ? (
+              <>
+                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                Clearing...
+              </>
+            ) : (
+              "Clear all"
+            )}
           </Button>
 
           {/* Search Badge */}

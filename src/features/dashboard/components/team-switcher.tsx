@@ -29,32 +29,7 @@ import {
   getOrganizationsByCluster,
 } from "@/features/organizations/actions/organizations";
 import { getCurrentUserClusterOrganizations } from "@/features/clusters/actions/cluster-users";
-
-interface Organization {
-  id: string;
-  name: string;
-  acronym: string;
-  cluster_id: string | null;
-  project_id: string | null;
-  country: string;
-  district: string;
-  sub_county_id: string; // Updated to match schema
-  operation_sub_counties?: string[]; // Areas of operation (multiple)
-  parish: string;
-  village: string;
-  address: string;
-  created_at: Date | null;
-  updated_at: Date | null;
-  cluster?: {
-    id: string;
-    name: string;
-  } | null;
-  project?: {
-    id: string;
-    name: string;
-    acronym: string;
-  } | null;
-}
+import type { Organization } from "@/features/organizations/types";
 
 interface OrganizationsData {
   currentOrg: Organization;

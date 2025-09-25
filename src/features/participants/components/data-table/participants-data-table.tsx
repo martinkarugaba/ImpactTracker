@@ -25,6 +25,7 @@ interface ParticipantsDataTableProps {
   selectedProject: Project | null;
   selectedOrg: Organization | null;
   isLoading: boolean;
+  isFiltering?: boolean;
   onPaginationChange: (page: number, pageSize: number) => void;
   onPageChange: (page: number) => void;
   onAddParticipant: () => void;
@@ -49,6 +50,7 @@ export const ParticipantsDataTable = React.forwardRef<
     selectedProject: _selectedProject,
     selectedOrg: _selectedOrg,
     isLoading,
+    isFiltering = false,
     onPaginationChange,
     onPageChange,
     onAddParticipant: _onAddParticipant,
@@ -93,6 +95,7 @@ export const ParticipantsDataTable = React.forwardRef<
         data={data}
         pagination={pagination}
         isLoading={isLoading}
+        isFiltering={isFiltering}
         searchValue=""
         onSearchChange={() => {}}
         onEditParticipant={onEditParticipant}

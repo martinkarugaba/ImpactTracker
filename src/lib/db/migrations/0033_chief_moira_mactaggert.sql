@@ -1,0 +1,1 @@
+ALTER TABLE "organizations" ALTER COLUMN "sub_county_id" DROP NOT NULL;

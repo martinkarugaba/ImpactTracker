@@ -19,7 +19,7 @@ export const organizations = pgTable("organizations", {
   project_id: uuid("project_id").references(() => projects.id),
   country: text("country").notNull(),
   district: text("district").notNull(),
-  sub_county_id: text("sub_county_id").notNull(),
+  sub_county_id: text("sub_county_id"),
   municipality_id: uuid("municipality_id").references(() => municipalities.id),
   city_id: uuid("city_id").references(() => cities.id),
   ward_id: uuid("ward_id").references(() => wards.id),
