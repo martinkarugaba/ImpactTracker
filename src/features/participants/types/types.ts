@@ -104,4 +104,12 @@ export type ParticipantFilters = {
   locationSetting: string;
   isRefugee: string;
   isMother: string;
+  // Phase 1 Enhanced Filters
+  monthlyIncomeRange: string;
+  numberOfChildrenRange: string;
+  noOfTrainingsRange: string;
+  employmentType: string;
+  accessedLoans: string;
+  individualSaving: string;
+  groupSaving: string;
 };

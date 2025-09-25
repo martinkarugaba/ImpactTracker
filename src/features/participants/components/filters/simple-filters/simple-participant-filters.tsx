@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import {
 import { SearchFilter } from "./search-filter";
 import { QuickFilters } from "./quick-filters";
 import { SkillsFilters } from "./skills-filters";
+// import { AdvancedFilters } from "./advanced-filters"; // Disabled for now
 import { type SimpleParticipantFiltersProps } from "./types";
 
 export function SimpleParticipantFilters({
@@ -23,6 +25,7 @@ export function SimpleParticipantFilters({
   const updateFilter = useSetAtom(updateFilterAtom);
   const clearFilters = useSetAtom(clearFiltersAtom);
   const isFiltering = useAtomValue(isFilteringAtom) || propIsFiltering;
+  const [_showAdvancedFilters, _setShowAdvancedFilters] = useState(false); // Disabled for now
 
   // Static quick filters - only the essential ones
   const quickFilters = [
@@ -121,6 +124,35 @@ export function SimpleParticipantFilters({
         </div>
       </div>
 
+      {/* Advanced Filters Toggle - Disabled for now */}
+      {/* <div className="flex items-center justify-between">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+          className="h-8 px-3 text-sm text-gray-600 hover:text-gray-800"
+        >
+          {showAdvancedFilters ? (
+            <>
+              <ChevronUp className="mr-2 h-4 w-4" />
+              Hide Advanced Filters
+            </>
+          ) : (
+            <>
+              <ChevronDown className="mr-2 h-4 w-4" />
+              Show Advanced Filters
+            </>
+          )}
+        </Button>
+      </div> */}
+
+      {/* Advanced Filters Section - Disabled for now */}
+      {/* {showAdvancedFilters && (
+        <div className="rounded-lg border border-gray-200 bg-gray-50/50 p-4">
+          <AdvancedFilters isLoading={isLoading || isFiltering} />
+        </div>
+      )} */}
+
       {/* Active Filter Badges */}
       {getActiveFiltersCount() > 0 && (
         <div className="flex flex-wrap items-center gap-2">
@@ -200,6 +232,36 @@ export function SimpleParticipantFilters({
                   <button
                     onClick={() => removeFilter(key)}
                     className="ml-1 inline-flex h-3 w-3 items-center justify-center rounded-full bg-green-200 text-green-600 hover:bg-green-300"
+                  >
+                    <X className="h-2 w-2" />
+                  </button>
+                </span>
+              );
+            }
+            return null;
+          })}
+
+          {/* Phase 1 Advanced Filter Badges */}
+          {[
+            { key: "monthlyIncomeRange", label: "Income" },
+            { key: "numberOfChildrenRange", label: "Children" },
+            { key: "noOfTrainingsRange", label: "Trainings" },
+            { key: "employmentType", label: "Employment Type" },
+            { key: "accessedLoans", label: "Loans" },
+            { key: "individualSaving", label: "Individual Saving" },
+            { key: "groupSaving", label: "Group Saving" },
+          ].map(({ key, label }) => {
+            const value = (filters as Record<string, string>)[key];
+            if (value && value !== "all") {
+              return (
+                <span
+                  key={key}
+                  className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700 ring-1 ring-purple-700/10 ring-inset"
+                >
+                  {label}: {value}
+                  <button
+                    onClick={() => removeFilter(key)}
+                    className="ml-1 inline-flex h-3 w-3 items-center justify-center rounded-full bg-purple-200 text-purple-600 hover:bg-purple-300"
                   >
                     <X className="h-2 w-2" />
                   </button>

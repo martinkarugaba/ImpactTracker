@@ -21,8 +21,6 @@ import {
   LayoutGrid,
   ChevronDown,
   Users,
-  FileSpreadsheet,
-  FileText,
   Trash2,
   Settings,
 } from "lucide-react";
@@ -124,7 +122,7 @@ export function ParticipantsTab({
 
   // Export dialog atoms for triggering the dialog
   const [, setIsExportDialogOpen] = useAtom(exportDialogAtom);
-  const [, setExportFormat] = useAtom(exportFormatAtom);
+  const [, _setExportFormat] = useAtom(exportFormatAtom);
 
   // Handle export with options
   const handleExportWithOptions = (
@@ -275,41 +273,15 @@ export function ParticipantsTab({
                   🔍 Debug Excel
                 </Button>
               )}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-purple-200 bg-purple-100 text-purple-800 hover:bg-purple-200 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400 dark:hover:bg-purple-900/30"
-                  >
-                    <Download className="mr-2 h-4 w-4" />
-                    Export
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setExportFormat("csv");
-                      setIsExportDialogOpen(true);
-                    }}
-                    className="flex items-center gap-2"
-                  >
-                    <FileText className="h-4 w-4" />
-                    Export as CSV
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setExportFormat("excel");
-                      setIsExportDialogOpen(true);
-                    }}
-                    className="flex items-center gap-2"
-                  >
-                    <FileSpreadsheet className="h-4 w-4" />
-                    Export as Excel
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button
+                onClick={() => setIsExportDialogOpen(true)}
+                variant="outline"
+                size="sm"
+                className="border-purple-200 bg-purple-100 text-purple-800 hover:bg-purple-200 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400 dark:hover:bg-purple-900/30"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Export
+              </Button>
               {selectedParticipants.length > 0 && (
                 <>
                   <Button
