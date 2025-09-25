@@ -2,6 +2,9 @@
 
 import { useState, useRef } from "react";
 import { useParticipantTable } from "../../state/use-participant-table";
+import { useAtom } from "jotai";
+import { exportDialogAtom, exportFormatAtom } from "../../atoms/export-atoms";
+import { ExportOptionsDialog } from "../export/export-options-dialog";
 import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
 import {
@@ -118,6 +121,20 @@ export function ParticipantsTab({
     Participant[]
   >([]);
   const dataTableRef = useRef<ParticipantsDataTableRef>(null);
+
+  // Export dialog atoms for triggering the dialog
+  const [, setIsExportDialogOpen] = useAtom(exportDialogAtom);
+  const [, setExportFormat] = useAtom(exportFormatAtom);
+
+  // Handle export with options
+  const handleExportWithOptions = (
+    format: "csv" | "excel",
+    _options: unknown
+  ) => {
+    // For now, just call the original export function
+    // TODO: In the future, we can pass the options to modify the export format
+    onExportData(format);
+  };
 
   const { data: session } = useSession();
 
@@ -272,14 +289,20 @@ export function ParticipantsTab({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem
-                    onClick={() => onExportData("csv")}
+                    onClick={() => {
+                      setExportFormat("csv");
+                      setIsExportDialogOpen(true);
+                    }}
                     className="flex items-center gap-2"
                   >
                     <FileText className="h-4 w-4" />
                     Export as CSV
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => onExportData("excel")}
+                    onClick={() => {
+                      setExportFormat("excel");
+                      setIsExportDialogOpen(true);
+                    }}
                     className="flex items-center gap-2"
                   >
                     <FileSpreadsheet className="h-4 w-4" />
@@ -519,6 +542,12 @@ export function ParticipantsTab({
             toast.success(`Deleted ${deletedCount} duplicate participants`);
             // Optionally trigger a refresh of the participants data
           }}
+        />
+
+        {/* Export Options Dialog */}
+        <ExportOptionsDialog
+          onExport={handleExportWithOptions}
+          participantCount={participants.length}
         />
       </div>
     </TabsContent>

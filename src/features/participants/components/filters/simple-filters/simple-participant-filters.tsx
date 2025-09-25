@@ -11,7 +11,7 @@ import {
 } from "../../../atoms/participants-atoms";
 import { SearchFilter } from "./search-filter";
 import { QuickFilters } from "./quick-filters";
-import { SpecificSkillsPopover } from "./specific-skills-popover";
+import { SkillsFilters } from "./skills-filters";
 import { type SimpleParticipantFiltersProps } from "./types";
 
 export function SimpleParticipantFilters({
@@ -73,20 +73,7 @@ export function SimpleParticipantFilters({
     }).length;
   };
 
-  // Count specific skills filters separately
-  const getSpecificSkillsFiltersCount = () => {
-    const skillsKeys = [
-      "specificVocationalSkill",
-      "specificSoftSkill",
-      "specificBusinessSkill",
-    ];
-    return skillsKeys.filter(key => {
-      const value = (filters as Record<string, string>)[key];
-      return value && value !== "all";
-    }).length;
-  };
-
-  const specificSkillsCount = getSpecificSkillsFiltersCount();
+  // Skills filter count is now handled by the badge display logic below
 
   // Function to remove individual filters
   const removeFilter = (key: string) => {
@@ -109,21 +96,29 @@ export function SimpleParticipantFilters({
 
       {/* Main Filter Bar */}
       <div
-        className={`relative flex flex-wrap items-center gap-3 transition-opacity ${
+        className={`relative space-y-4 transition-opacity ${
           isFiltering ? "opacity-75" : "opacity-100"
         }`}
       >
-        <SearchFilter isLoading={isLoading || isFiltering} />
-        <QuickFilters
-          quickFilters={quickFilters}
-          isLoading={isLoading || isFiltering}
-        />
+        {/* Top Row: Search */}
+        <div className="flex flex-wrap items-center gap-3">
+          <SearchFilter isLoading={isLoading || isFiltering} />
+        </div>
 
-        {/* Specific Skills Filters Popover */}
-        <SpecificSkillsPopover
-          activeFiltersCount={specificSkillsCount}
-          isLoading={isLoading || isFiltering}
-        />
+        {/* Bottom Row: All Other Filters */}
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Quick Filters */}
+          <QuickFilters
+            quickFilters={quickFilters}
+            isLoading={isLoading || isFiltering}
+          />
+
+          {/* Separator for visual grouping */}
+          <div className="hidden h-8 w-px bg-gray-200 md:block" />
+
+          {/* Inline Skills Filters */}
+          <SkillsFilters isLoading={isLoading || isFiltering} />
+        </div>
       </div>
 
       {/* Active Filter Badges */}
