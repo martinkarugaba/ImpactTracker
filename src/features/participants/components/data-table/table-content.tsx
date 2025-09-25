@@ -15,6 +15,7 @@ interface TableContentProps {
     totalPages: number;
   };
   isLoading: boolean;
+  isFiltering?: boolean;
   searchValue: string;
   onSearchChange: (value: string) => void;
   onEditParticipant: (data: ParticipantFormValues, id: string) => void;
@@ -30,6 +31,7 @@ export function TableContent({
   data,
   pagination,
   isLoading,
+  isFiltering = false,
   searchValue: _searchValue,
   onSearchChange: _onSearchChange,
   onEditParticipant,
@@ -78,6 +80,9 @@ export function TableContent({
     );
   }
 
+  // Show loading state for both initial loading and filtering
+  const showLoading = isLoading || isFiltering;
+
   return (
     <DataTable
       columns={visibleColumns}
@@ -89,7 +94,7 @@ export function TableContent({
       onRowSelectionStateChange={onRowSelectionStateChange}
       serverSideTotal={pagination.total}
       serverSideFiltered={pagination.total}
-      isLoading={isLoading} // Pass loading state to show overlay during pagination
+      isLoading={showLoading} // Show loading overlay during initial load or filtering
     />
   );
 }

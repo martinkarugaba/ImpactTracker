@@ -54,7 +54,9 @@ export async function createOrganization(data: CreateOrganizationInput) {
         // Use type assertion with Record<string, unknown> to handle the dynamic property manipulation
         const oldFormatData: Record<string, unknown> = {
           ...organizationData,
-          sub_county: [organizationData.sub_county_id],
+          sub_county: organizationData.sub_county_id
+            ? [organizationData.sub_county_id]
+            : [],
         };
 
         // Remove new schema fields that don't exist in the database

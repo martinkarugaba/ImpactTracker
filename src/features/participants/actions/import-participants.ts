@@ -378,62 +378,7 @@ export async function importParticipants(data: ParticipantFormValues[]) {
     console.log("Data to insert (first participant):", insertData[0]);
     console.log("Insert data length:", insertData.length);
 
-    // CRITICAL DEBUG: Let's test with absolutely minimal data first
-    console.log("=== TESTING MINIMAL INSERT FIRST ===");
-
-    // Use a date of birth that would calculate to age 25
-    const testDateOfBirth = new Date("1999-01-01");
-    const testCalculatedAge = calculateAge(testDateOfBirth);
-
-    const minimalTestData = {
-      firstName: "Debug",
-      lastName: "Test",
-      sex: "male",
-      age: testCalculatedAge,
-      dateOfBirth: testDateOfBirth,
-      contact: "0700000000",
-      isPWD: "no",
-      isMother: "no",
-      isRefugee: "no",
-      cluster_id: insertData[0].cluster_id,
-      project_id: insertData[0].project_id,
-      organization_id: insertData[0].organization_id,
-      country: "Uganda",
-      district: "Kampala",
-      subCounty: "Central",
-      parish: "Test",
-      village: "Test",
-      designation: "Test",
-      enterprise: "Test",
-      isPermanentResident: "no",
-      areParentsAlive: "yes",
-      numberOfChildren: 0,
-      employmentStatus: "employed",
-      monthlyIncome: 50000,
-      mainChallenge: null,
-      skillOfInterest: null,
-      expectedImpact: null,
-      isWillingToParticipate: "yes",
-    };
-
-    console.log(
-      `Using calculated age ${testCalculatedAge} from DOB ${testDateOfBirth.toISOString()}`
-    );
-
-    try {
-      console.log("Testing minimal insert...");
-      const minimalResult = await db
-        .insert(participants)
-        .values(minimalTestData)
-        .returning();
-      console.log("✅ Minimal insert successful:", minimalResult);
-    } catch (minimalError) {
-      console.error("❌ Minimal insert failed:", minimalError);
-      return {
-        success: false,
-        error: `Minimal test failed: ${minimalError instanceof Error ? minimalError.message : "Unknown error"}`,
-      };
-    }
+    // Skip the debug test insertion - no more Debug participants
 
     // Test with just the first participant to debug
     if (insertData.length > 0) {

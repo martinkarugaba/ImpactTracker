@@ -19,6 +19,7 @@ import { DuplicateGroupCard } from "./duplicate-group-card";
 import { SelectionSummary } from "./selection-summary";
 import { DialogHeader as CustomDialogHeader } from "./dialog-header";
 import { DialogFooter as CustomDialogFooter } from "./dialog-footer";
+import { DeletionProgress } from "./deletion-progress";
 
 interface FixDuplicatesDialogProps {
   open: boolean;
@@ -32,7 +33,13 @@ export function FixDuplicatesDialog({
   onDeleteCompleted,
 }: FixDuplicatesDialogProps) {
   const duplicateGroups = useAtomValue(duplicateGroupsAtom);
-  const { loadDuplicates, duplicatesData, isLoading } = useDuplicatesActions();
+  const {
+    loadDuplicates,
+    duplicatesData,
+    isLoading,
+    isProcessing,
+    selectedForDeletion,
+  } = useDuplicatesActions();
 
   // Load duplicates when dialog opens
   useEffect(() => {
@@ -99,6 +106,24 @@ export function FixDuplicatesDialog({
           />
         </UIDialogFooter>
       </DialogContent>
+
+      {/* Deletion Progress Overlay */}
+      <DeletionProgress
+        selectedCount={selectedForDeletion.length}
+        progress={
+          isProcessing
+            ? {
+                current: 0, // This would be updated by the actual deletion process
+                total: selectedForDeletion.length,
+                percentage: 0,
+              }
+            : undefined
+        }
+        onClose={() => {
+          // Refresh data after deletion
+          loadDuplicates();
+        }}
+      />
     </Dialog>
   );
 }

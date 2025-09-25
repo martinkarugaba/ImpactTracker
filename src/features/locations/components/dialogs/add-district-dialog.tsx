@@ -41,8 +41,13 @@ export function AddDistrictDialog({
         try {
           const result = await getAllCountries();
 
-          if (result && result.success && Array.isArray(result.data)) {
-            setCountryList(result.data);
+          if (
+            result &&
+            result.success &&
+            result.data &&
+            Array.isArray(result.data.data)
+          ) {
+            setCountryList(result.data.data);
           } else {
             console.error("Invalid response from getAllCountries:", result);
             // Use empty array as fallback

@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
 
   // External packages that should not be bundled by webpack
-  serverExternalPackages: ["@node-rs/argon2"],
+  serverExternalPackages: ["@node-rs/argon2", "postgres"],
 
   // Webpack configuration for client-side libraries
   webpack: (config, { isServer }) => {
@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
         fs: false,
         path: false,
         crypto: false,
+        os: false,
+        stream: false,
+        util: false,
+        buffer: false,
+        assert: false,
       };
     }
     return config;
@@ -22,7 +27,11 @@ const nextConfig: NextConfig = {
 
   // Experimental features configuration
   experimental: {
-    // Use empty object for now - no experimental features enabled
+    // Configure server actions
+    serverActions: {
+      // Increase body size limit for server actions to handle larger imports
+      bodySizeLimit: "3mb", // Increased from default 1MB
+    },
   },
 
   // Turbopack configuration to specify correct root directory

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAtom } from "jotai";
 import * as XLSX from "xlsx";
 import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
@@ -14,7 +15,15 @@ import { type ValidationError } from "@/features/participants/components/import/
 import { type ParticipantFormValues } from "@/features/participants/components/participant-form";
 import { getAgeFromDateOfBirth } from "../../../lib/age-calculator";
 import { detectDuplicatesBatched } from "@/features/participants/actions/detect-duplicates";
-import type { DuplicateAnalysisResult } from "../duplicate-detection";
+import type {
+  DuplicateAnalysisResult,
+  DuplicateMatch,
+} from "../duplicate-detection";
+import {
+  startImportAtom,
+  updateImportProgressAtom,
+  completeImportAtom,
+} from "../../../atoms/import-progress-atoms";
 // import { mapLocationNames } from "@/features/locations/actions/location-search";
 
 // Helper function to validate enum values
@@ -54,13 +63,10 @@ export function useExcelImport(clusterId: string) {
   });
   const [duplicateAnalysis, setDuplicateAnalysis] =
     useState<DuplicateAnalysisResult | null>(null);
-  const [importProgress, setImportProgress] = useState({
-    current: 0,
-    total: 0,
-    currentBatch: 0,
-    totalBatches: 0,
-    percentage: 0,
-  });
+  // Use global import progress atoms instead of local state
+  const [, startImport] = useAtom(startImportAtom);
+  const [, updateImportProgress] = useAtom(updateImportProgressAtom);
+  const [, completeImport] = useAtom(completeImportAtom);
   const [parsedData, setParsedData] = useState<ParticipantFormValues[] | null>(
     null
   );
@@ -136,31 +142,60 @@ export function useExcelImport(clusterId: string) {
   }> => {
     const errors: ValidationError[] = [];
 
-    // Extract and validate name - only require first name, last name is optional
+    // Extract and validate name - prioritize First Name and Last Name columns
     let firstName = "";
     let lastName = "";
-    const nameStr = (data.Name ||
-      data.name ||
-      data.FullName ||
-      data.full_name) as string;
-    if (nameStr) {
-      const nameParts = nameStr.trim().split(/\s+/);
-      firstName = nameParts[0] || "";
-      lastName = nameParts.slice(1).join(" ") || "";
-    } else {
-      firstName = (data.FirstName ||
-        data.first_name ||
-        data.firstName ||
-        "") as string;
-      lastName = (data.LastName ||
-        data.last_name ||
-        data.lastName ||
-        "") as string;
+
+    // First try to get from separate First Name and Last Name columns
+    firstName = (data["First Name"] ||
+      data["FirstName"] ||
+      data["first_name"] ||
+      data["firstName"] ||
+      data["FIRST NAME"] ||
+      data["First name"] ||
+      "") as string;
+
+    lastName = (data["Last Name"] ||
+      data["LastName"] ||
+      data["last_name"] ||
+      data["lastName"] ||
+      data["LAST NAME"] ||
+      data["Last name"] ||
+      "") as string;
+
+    // If separate columns not found, try single Name column
+    if (!firstName.trim() && !lastName.trim()) {
+      const nameStr = (data.Name ||
+        data.name ||
+        data.FullName ||
+        data.full_name ||
+        data["Full Name"] ||
+        data["FULL NAME"]) as string;
+      if (nameStr && nameStr.trim()) {
+        const nameParts = nameStr.trim().split(/\s+/);
+        firstName = nameParts[0] || "";
+        lastName = nameParts.slice(1).join(" ") || "";
+      }
     }
 
-    // Use default for missing first name
+    // Skip this row if no name is found at all - don't create Debug participants
+    if (!firstName.trim() && !lastName.trim()) {
+      return {
+        participant: null,
+        errors: [
+          {
+            row: _rowIndex + 1,
+            field: "name",
+            message: "No name found in First Name, Last Name, or Name columns",
+          },
+        ],
+      };
+    }
+
+    // Ensure we have at least a first name
     if (!firstName.trim()) {
-      firstName = "Unknown"; // Default value instead of error
+      firstName = lastName; // Use last name as first name if first name is empty
+      lastName = ""; // Clear last name
     }
 
     // Validate and normalize sex/gender - use default if missing
@@ -841,7 +876,10 @@ export function useExcelImport(clusterId: string) {
           continue; // Skip empty rows
         }
 
-        const { participant } = await validateParticipantData(row, index);
+        const { participant, errors } = await validateParticipantData(
+          row,
+          index
+        );
 
         // Debug: Log participant data for first few rows
         if (index < 3) {
@@ -858,8 +896,14 @@ export function useExcelImport(clusterId: string) {
           });
         }
 
-        if (participant) {
+        // Only add participant if validation succeeded and participant exists
+        if (participant && errors.length === 0) {
           validParticipants.push(participant);
+        } else if (errors.length > 0) {
+          console.log(
+            `Skipping row ${index + 1} due to validation errors:`,
+            errors
+          );
         }
       }
 
@@ -896,17 +940,89 @@ export function useExcelImport(clusterId: string) {
     });
 
     try {
-      // Use batched version for large datasets to avoid 1MB limit
-      const analysis = await detectDuplicatesBatched(
-        data,
-        clusterId,
-        progress => {
-          setDuplicateProgress(progress);
-        }
-      );
+      // For large datasets, use client-side batching to avoid 1MB limit
+      if (data.length > 100) {
+        console.log(
+          `Processing ${data.length} records in client-side batches to avoid 1MB limit`
+        );
 
-      setDuplicateAnalysis(analysis);
-      return analysis;
+        const BATCH_SIZE = 50; // Small batches to stay under 1MB
+        const totalBatches = Math.ceil(data.length / BATCH_SIZE);
+
+        const combinedExactDuplicates: DuplicateMatch[] = [];
+        const combinedPotentialDuplicates: DuplicateMatch[] = [];
+        const combinedUniqueRecords: ParticipantFormValues[] = [];
+        let totalSkipped = 0;
+
+        for (let i = 0; i < data.length; i += BATCH_SIZE) {
+          const batch = data.slice(i, i + BATCH_SIZE);
+          const currentBatch = Math.floor(i / BATCH_SIZE) + 1;
+
+          // Update progress
+          setDuplicateProgress({
+            current: i,
+            total: data.length,
+            percentage: Math.round((i / data.length) * 100),
+          });
+
+          console.log(
+            `Processing client batch ${currentBatch}/${totalBatches} (${batch.length} participants)`
+          );
+
+          try {
+            // Send smaller batch to server
+            const batchAnalysis = await detectDuplicatesBatched(
+              batch,
+              clusterId,
+              () => {} // No server-side progress needed since we handle it client-side
+            );
+
+            // Combine results
+            combinedExactDuplicates.push(...batchAnalysis.exactDuplicates);
+            combinedPotentialDuplicates.push(
+              ...batchAnalysis.potentialDuplicates
+            );
+            combinedUniqueRecords.push(...batchAnalysis.uniqueRecords);
+            totalSkipped += batchAnalysis.skippedCount;
+          } catch (batchError) {
+            console.error(`Client batch ${currentBatch} failed:`, batchError);
+            // Add batch as unique records if duplicate detection fails
+            combinedUniqueRecords.push(...batch);
+          }
+
+          // Small delay between batches
+          await new Promise(resolve => setTimeout(resolve, 200));
+        }
+
+        // Final progress
+        setDuplicateProgress({
+          current: data.length,
+          total: data.length,
+          percentage: 100,
+        });
+
+        const analysis = {
+          exactDuplicates: combinedExactDuplicates,
+          potentialDuplicates: combinedPotentialDuplicates,
+          uniqueRecords: combinedUniqueRecords,
+          skippedCount: totalSkipped,
+        };
+
+        setDuplicateAnalysis(analysis);
+        return analysis;
+      } else {
+        // For smaller datasets, use original approach
+        const analysis = await detectDuplicatesBatched(
+          data,
+          clusterId,
+          progress => {
+            setDuplicateProgress(progress);
+          }
+        );
+
+        setDuplicateAnalysis(analysis);
+        return analysis;
+      }
     } catch (error) {
       console.error("Duplicate detection error:", error);
       toast.error("Failed to check for duplicates");
@@ -933,37 +1049,28 @@ export function useExcelImport(clusterId: string) {
   ): Promise<{ success: boolean; imported?: number; error?: string }> => {
     setIsImporting(true);
 
-    // Reset progress
-    setImportProgress({
-      current: 0,
-      total: data.length,
-      currentBatch: 0,
-      totalBatches: 0,
-      percentage: 0,
-    });
+    // Start global import progress
+    startImport(data.length);
 
     try {
-      const BATCH_SIZE = 100; // Process 100 participants at a time
+      const BATCH_SIZE = 25; // Reduced batch size to stay under 1MB limit
       const totalBatches = Math.ceil(data.length / BATCH_SIZE);
       let totalImported = 0;
       const errors: string[] = [];
 
-      setImportProgress(prev => ({
-        ...prev,
-        totalBatches,
-      }));
+      updateImportProgress({ totalBatches });
 
       // Process data in batches
       for (let i = 0; i < data.length; i += BATCH_SIZE) {
         const batch = data.slice(i, i + BATCH_SIZE);
         const currentBatch = Math.floor(i / BATCH_SIZE) + 1;
 
-        setImportProgress(prev => ({
-          ...prev,
+        updateImportProgress({
           currentBatch,
           current: i,
           percentage: Math.round((i / data.length) * 100),
-        }));
+          message: `Processing batch ${currentBatch}/${totalBatches}...`,
+        });
 
         console.log(
           `Processing batch ${currentBatch}/${totalBatches} (${batch.length} participants)`
@@ -994,14 +1101,16 @@ export function useExcelImport(clusterId: string) {
         await new Promise(resolve => setTimeout(resolve, 500));
       }
 
-      // Final progress update
-      setImportProgress({
-        current: data.length,
-        total: data.length,
-        currentBatch: totalBatches,
-        totalBatches,
-        percentage: 100,
-      });
+      // Complete import with final result
+      const finalResult = {
+        success: errors.length === 0,
+        imported: totalImported,
+        error:
+          errors.length > 0
+            ? `Partial import completed. ${totalImported}/${data.length} participants imported. Errors: ${errors.join("; ")}`
+            : undefined,
+      };
+      completeImport(finalResult);
 
       if (errors.length > 0) {
         return {
@@ -1013,10 +1122,12 @@ export function useExcelImport(clusterId: string) {
       return { success: true, imported: totalImported };
     } catch (error) {
       console.error("Import error:", error);
-      return {
+      const errorResult = {
         success: false,
         error: error instanceof Error ? error.message : "Import failed",
       };
+      completeImport(errorResult);
+      return errorResult;
     } finally {
       setIsImporting(false);
     }
@@ -1036,13 +1147,7 @@ export function useExcelImport(clusterId: string) {
       total: 0,
       percentage: 0,
     });
-    setImportProgress({
-      current: 0,
-      total: 0,
-      currentBatch: 0,
-      totalBatches: 0,
-      percentage: 0,
-    });
+    // Note: Global import progress is managed separately and persists after dialog close
   };
 
   return {
@@ -1054,7 +1159,6 @@ export function useExcelImport(clusterId: string) {
     isImporting,
     isDuplicateDetection,
     duplicateProgress,
-    importProgress,
     parseFile,
     validateData,
     checkForDuplicates,
