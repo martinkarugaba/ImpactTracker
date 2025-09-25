@@ -153,6 +153,11 @@ export const updateFilterAtom = atom(
   ) => {
     const currentFilters = get(participantFiltersAtom);
 
+    // Only update if value actually changed
+    if (currentFilters[key] === value) {
+      return;
+    }
+
     // Set filtering state to true when filters change
     set(isFilteringAtom, true);
 
@@ -164,10 +169,11 @@ export const updateFilterAtom = atom(
     // Reset pagination when filters change
     set(participantPaginationAtom, prev => ({ ...prev, page: 1 }));
 
-    // Auto-clear filtering state after a short delay for batched operations
+    // Auto-clear filtering state after a shorter delay for more responsive UX
+    // This will be overridden by the container hook's clearFiltering call when data loads
     setTimeout(() => {
       set(isFilteringAtom, false);
-    }, 800);
+    }, 500);
   }
 );
 

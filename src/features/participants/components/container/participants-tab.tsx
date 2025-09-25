@@ -451,9 +451,8 @@ export function ParticipantsTab({
               : null
           }
           selectedOrg={null}
-          isLoading={
-            isParticipantsLoading || locationNamesLoading || isFiltering
-          }
+          isLoading={isParticipantsLoading || locationNamesLoading}
+          isFiltering={isFiltering}
           onPaginationChange={onPaginationChange}
           onPageChange={onPageChange}
           onAddParticipant={onAddParticipant}
