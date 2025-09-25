@@ -1,5 +1,11 @@
 import { type Participant } from "../types/types";
 
+// Export options for configuring name formats
+export interface ExportOptions {
+  nameFormat: "combined" | "separate";
+  includeFullName: boolean;
+}
+
 // Extended participant type for export that includes the additional fields
 type ParticipantForExport = Participant & {
   organizationName?: string;
@@ -10,10 +16,23 @@ type ParticipantForExport = Participant & {
 };
 
 // Convert participant data to CSV format
-export function participantsToCSV(participants: Participant[]): string {
+export function participantsToCSV(
+  participants: Participant[],
+  options: ExportOptions = { nameFormat: "combined", includeFullName: false }
+): string {
+  // Build headers based on name format preference
+  const nameHeaders = [];
+  if (options.nameFormat === "combined") {
+    nameHeaders.push("Name");
+  } else {
+    nameHeaders.push("First Name", "Last Name");
+    if (options.includeFullName) {
+      nameHeaders.push("Full Name");
+    }
+  }
+
   const headers = [
-    "First Name",
-    "Last Name",
+    ...nameHeaders,
     "Sex",
     "Age",
     "Date of Birth",
@@ -59,10 +78,31 @@ export function participantsToCSV(participants: Participant[]): string {
 
   const csvContent = [
     headers.join(","),
-    ...participants.map(participant =>
-      [
-        `"${participant.firstName || ""}"`,
-        `"${participant.lastName || ""}"`,
+    ...participants.map(participant => {
+      // Build name data based on format preference
+      const nameData = [];
+      if (options.nameFormat === "combined") {
+        const fullName = [participant.firstName, participant.lastName]
+          .filter(Boolean)
+          .join(" ")
+          .trim();
+        nameData.push(`"${fullName}"`);
+      } else {
+        nameData.push(
+          `"${participant.firstName || ""}"`,
+          `"${participant.lastName || ""}"`
+        );
+        if (options.includeFullName) {
+          const fullName = [participant.firstName, participant.lastName]
+            .filter(Boolean)
+            .join(" ")
+            .trim();
+          nameData.push(`"${fullName}"`);
+        }
+      }
+
+      return [
+        ...nameData,
         `"${participant.sex || ""}"`,
         `"${participant.age || ""}"`,
         `"${participant.dateOfBirth || ""}"`,
@@ -104,8 +144,8 @@ export function participantsToCSV(participants: Participant[]): string {
         `"${participant.designation || ""}"`,
         `"${participant.enterprise || ""}"`,
         `"${participant.created_at ? new Date(participant.created_at).toLocaleDateString() : ""}"`,
-      ].join(",")
-    ),
+      ].join(",");
+    }),
   ].join("\n");
 
   return csvContent;
@@ -130,7 +170,8 @@ export function downloadCSV(csvContent: string, filename: string): void {
 
 // Convert participant data to Excel format (using proper Excel format with SheetJS)
 export async function participantsToExcel(
-  participants: Participant[]
+  participants: Participant[],
+  options: ExportOptions = { nameFormat: "combined", includeFullName: false }
 ): Promise<ArrayBuffer> {
   // Ensure we're in a browser environment
   if (typeof window === "undefined") {
@@ -146,78 +187,99 @@ export async function participantsToExcel(
     }
 
     // Prepare data in the same structure as CSV but as an array of objects
-    const data = participants.map(participant => ({
-      "First Name": participant.firstName || "",
-      "Last Name": participant.lastName || "",
-      Sex: participant.sex || "",
-      Age: participant.age || "",
-      "Date of Birth": participant.dateOfBirth || "",
-      Contact: participant.contact || "",
-      "Is PWD": participant.isPWD || "",
-      "Marital Status": participant.maritalStatus || "",
-      "Education Level": participant.educationLevel || "",
-      "Employment Status": participant.employmentStatus || "",
-      "Employment Sector": participant.employmentSector || "",
-      "Monthly Income": participant.monthlyIncome || "",
-      "Number of Children": participant.numberOfChildren || "",
-      "Is Refugee": participant.isRefugee || "",
-      "Is Mother": participant.isMother || "",
-      "Is Teen Mother": participant.isTeenMother || "",
-      "Population Segment": participant.populationSegment || "",
-      "Source of Income": participant.sourceOfIncome || "",
-      "VSLA Member": participant.isSubscribedToVSLA || "",
-      "VSLA Name": participant.vslaName || "",
-      "Enterprise Owner": participant.ownsEnterprise || "",
-      "Enterprise Name": participant.enterpriseName || "",
-      "Enterprise Sector": participant.enterpriseSector || "",
-      "Business Scale": participant.businessScale || "",
-      "Has Vocational Skills": participant.hasVocationalSkills || "",
-      "Vocational Skills Participations": Array.isArray(
-        participant.vocationalSkillsParticipations
-      )
-        ? participant.vocationalSkillsParticipations.join("; ")
-        : "",
-      "Vocational Skills Completions": Array.isArray(
-        participant.vocationalSkillsCompletions
-      )
-        ? participant.vocationalSkillsCompletions.join("; ")
-        : "",
-      "Vocational Skills Certifications": Array.isArray(
-        participant.vocationalSkillsCertifications
-      )
-        ? participant.vocationalSkillsCertifications.join("; ")
-        : "",
-      "Has Soft Skills": participant.hasSoftSkills || "",
-      "Soft Skills Participations": Array.isArray(
-        participant.softSkillsParticipations
-      )
-        ? participant.softSkillsParticipations.join("; ")
-        : "",
-      "Soft Skills Completions": Array.isArray(
-        participant.softSkillsCompletions
-      )
-        ? participant.softSkillsCompletions.join("; ")
-        : "",
-      "Soft Skills Certifications": Array.isArray(
-        participant.softSkillsCertifications
-      )
-        ? participant.softSkillsCertifications.join("; ")
-        : "",
-      "Has Business Skills": participant.hasBusinessSkills || "",
-      Organization:
-        (participant as ParticipantForExport).organizationName || "",
-      Project: (participant as ParticipantForExport).projectName || "",
-      District: (participant as ParticipantForExport).districtName || "",
-      "Sub County": (participant as ParticipantForExport).subCountyName || "",
-      Parish: participant.parish || "",
-      Village: participant.village || "",
-      Country: (participant as ParticipantForExport).countyName || "",
-      Designation: participant.designation || "",
-      Enterprise: participant.enterprise || "",
-      "Created At": participant.created_at
-        ? new Date(participant.created_at).toLocaleDateString()
-        : "",
-    }));
+    const data = participants.map(participant => {
+      // Build name data based on format preference
+      const nameData: Record<string, string> = {};
+      if (options.nameFormat === "combined") {
+        const fullName = [participant.firstName, participant.lastName]
+          .filter(Boolean)
+          .join(" ")
+          .trim();
+        nameData["Name"] = fullName;
+      } else {
+        nameData["First Name"] = participant.firstName || "";
+        nameData["Last Name"] = participant.lastName || "";
+        if (options.includeFullName) {
+          const fullName = [participant.firstName, participant.lastName]
+            .filter(Boolean)
+            .join(" ")
+            .trim();
+          nameData["Full Name"] = fullName;
+        }
+      }
+
+      return {
+        ...nameData,
+        Sex: participant.sex || "",
+        Age: participant.age || "",
+        "Date of Birth": participant.dateOfBirth || "",
+        Contact: participant.contact || "",
+        "Is PWD": participant.isPWD || "",
+        "Marital Status": participant.maritalStatus || "",
+        "Education Level": participant.educationLevel || "",
+        "Employment Status": participant.employmentStatus || "",
+        "Employment Sector": participant.employmentSector || "",
+        "Monthly Income": participant.monthlyIncome || "",
+        "Number of Children": participant.numberOfChildren || "",
+        "Is Refugee": participant.isRefugee || "",
+        "Is Mother": participant.isMother || "",
+        "Is Teen Mother": participant.isTeenMother || "",
+        "Population Segment": participant.populationSegment || "",
+        "Source of Income": participant.sourceOfIncome || "",
+        "VSLA Member": participant.isSubscribedToVSLA || "",
+        "VSLA Name": participant.vslaName || "",
+        "Enterprise Owner": participant.ownsEnterprise || "",
+        "Enterprise Name": participant.enterpriseName || "",
+        "Enterprise Sector": participant.enterpriseSector || "",
+        "Business Scale": participant.businessScale || "",
+        "Has Vocational Skills": participant.hasVocationalSkills || "",
+        "Vocational Skills Participations": Array.isArray(
+          participant.vocationalSkillsParticipations
+        )
+          ? participant.vocationalSkillsParticipations.join("; ")
+          : "",
+        "Vocational Skills Completions": Array.isArray(
+          participant.vocationalSkillsCompletions
+        )
+          ? participant.vocationalSkillsCompletions.join("; ")
+          : "",
+        "Vocational Skills Certifications": Array.isArray(
+          participant.vocationalSkillsCertifications
+        )
+          ? participant.vocationalSkillsCertifications.join("; ")
+          : "",
+        "Has Soft Skills": participant.hasSoftSkills || "",
+        "Soft Skills Participations": Array.isArray(
+          participant.softSkillsParticipations
+        )
+          ? participant.softSkillsParticipations.join("; ")
+          : "",
+        "Soft Skills Completions": Array.isArray(
+          participant.softSkillsCompletions
+        )
+          ? participant.softSkillsCompletions.join("; ")
+          : "",
+        "Soft Skills Certifications": Array.isArray(
+          participant.softSkillsCertifications
+        )
+          ? participant.softSkillsCertifications.join("; ")
+          : "",
+        "Has Business Skills": participant.hasBusinessSkills || "",
+        Organization:
+          (participant as ParticipantForExport).organizationName || "",
+        Project: (participant as ParticipantForExport).projectName || "",
+        District: (participant as ParticipantForExport).districtName || "",
+        "Sub County": (participant as ParticipantForExport).subCountyName || "",
+        Parish: participant.parish || "",
+        Village: participant.village || "",
+        Country: (participant as ParticipantForExport).countyName || "",
+        Designation: participant.designation || "",
+        Enterprise: participant.enterprise || "",
+        "Created At": participant.created_at
+          ? new Date(participant.created_at).toLocaleDateString()
+          : "",
+      };
+    });
 
     if (data.length === 0) {
       throw new Error("No data to export");

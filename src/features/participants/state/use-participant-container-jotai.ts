@@ -189,6 +189,29 @@ export function useParticipantContainerJotai({
         filters.specificBusinessSkill !== "all"
           ? filters.specificBusinessSkill
           : undefined,
+      // Phase 1 Enhanced Filters
+      monthlyIncomeRange:
+        filters.monthlyIncomeRange !== "all"
+          ? filters.monthlyIncomeRange
+          : undefined,
+      numberOfChildrenRange:
+        filters.numberOfChildrenRange !== "all"
+          ? filters.numberOfChildrenRange
+          : undefined,
+      noOfTrainingsRange:
+        filters.noOfTrainingsRange !== "all"
+          ? filters.noOfTrainingsRange
+          : undefined,
+      employmentType:
+        filters.employmentType !== "all" ? filters.employmentType : undefined,
+      accessedLoans:
+        filters.accessedLoans !== "all" ? filters.accessedLoans : undefined,
+      individualSaving:
+        filters.individualSaving !== "all"
+          ? filters.individualSaving
+          : undefined,
+      groupSaving:
+        filters.groupSaving !== "all" ? filters.groupSaving : undefined,
     },
   });
 
@@ -397,6 +420,29 @@ export function useParticipantContainerJotai({
             : undefined,
         isRefugee: filters.isRefugee !== "all" ? filters.isRefugee : undefined,
         isMother: filters.isMother !== "all" ? filters.isMother : undefined,
+        // Phase 1 Enhanced Filters
+        monthlyIncomeRange:
+          filters.monthlyIncomeRange !== "all"
+            ? filters.monthlyIncomeRange
+            : undefined,
+        numberOfChildrenRange:
+          filters.numberOfChildrenRange !== "all"
+            ? filters.numberOfChildrenRange
+            : undefined,
+        noOfTrainingsRange:
+          filters.noOfTrainingsRange !== "all"
+            ? filters.noOfTrainingsRange
+            : undefined,
+        employmentType:
+          filters.employmentType !== "all" ? filters.employmentType : undefined,
+        accessedLoans:
+          filters.accessedLoans !== "all" ? filters.accessedLoans : undefined,
+        individualSaving:
+          filters.individualSaving !== "all"
+            ? filters.individualSaving
+            : undefined,
+        groupSaving:
+          filters.groupSaving !== "all" ? filters.groupSaving : undefined,
       };
 
       // Get all filtered participants for export

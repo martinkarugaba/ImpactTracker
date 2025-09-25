@@ -2,6 +2,9 @@
 
 import { useState, useRef } from "react";
 import { useParticipantTable } from "../../state/use-participant-table";
+import { useAtom } from "jotai";
+import { exportDialogAtom, exportFormatAtom } from "../../atoms/export-atoms";
+import { ExportOptionsDialog } from "../export/export-options-dialog";
 import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
 import {
@@ -18,8 +21,6 @@ import {
   LayoutGrid,
   ChevronDown,
   Users,
-  FileSpreadsheet,
-  FileText,
   Trash2,
   Settings,
 } from "lucide-react";
@@ -118,6 +119,20 @@ export function ParticipantsTab({
     Participant[]
   >([]);
   const dataTableRef = useRef<ParticipantsDataTableRef>(null);
+
+  // Export dialog atoms for triggering the dialog
+  const [, setIsExportDialogOpen] = useAtom(exportDialogAtom);
+  const [, _setExportFormat] = useAtom(exportFormatAtom);
+
+  // Handle export with options
+  const handleExportWithOptions = (
+    format: "csv" | "excel",
+    _options: unknown
+  ) => {
+    // For now, just call the original export function
+    // TODO: In the future, we can pass the options to modify the export format
+    onExportData(format);
+  };
 
   const { data: session } = useSession();
 
@@ -258,35 +273,15 @@ export function ParticipantsTab({
                   🔍 Debug Excel
                 </Button>
               )}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-purple-200 bg-purple-100 text-purple-800 hover:bg-purple-200 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400 dark:hover:bg-purple-900/30"
-                  >
-                    <Download className="mr-2 h-4 w-4" />
-                    Export
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={() => onExportData("csv")}
-                    className="flex items-center gap-2"
-                  >
-                    <FileText className="h-4 w-4" />
-                    Export as CSV
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => onExportData("excel")}
-                    className="flex items-center gap-2"
-                  >
-                    <FileSpreadsheet className="h-4 w-4" />
-                    Export as Excel
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button
+                onClick={() => setIsExportDialogOpen(true)}
+                variant="outline"
+                size="sm"
+                className="border-purple-200 bg-purple-100 text-purple-800 hover:bg-purple-200 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400 dark:hover:bg-purple-900/30"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Export
+              </Button>
               {selectedParticipants.length > 0 && (
                 <>
                   <Button
@@ -519,6 +514,12 @@ export function ParticipantsTab({
             toast.success(`Deleted ${deletedCount} duplicate participants`);
             // Optionally trigger a refresh of the participants data
           }}
+        />
+
+        {/* Export Options Dialog */}
+        <ExportOptionsDialog
+          onExport={handleExportWithOptions}
+          participantCount={participants.length}
         />
       </div>
     </TabsContent>
