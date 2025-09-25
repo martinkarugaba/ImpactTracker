@@ -60,7 +60,8 @@ export function FileUpload({
       <div className="text-xs text-gray-500">
         <h4 className="font-medium">Expected columns (Excel headers):</h4>
         <div className="mt-2 grid grid-cols-3 gap-1 text-xs">
-          <span>• Name</span>
+          <span>• First Name</span>
+          <span>• Last Name</span>
           <span>• Gender</span>
           <span>• Marital Status</span>
           <span>• Phone</span>

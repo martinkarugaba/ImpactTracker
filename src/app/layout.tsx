@@ -7,6 +7,7 @@ import { SessionProvider } from "next-auth/react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ActiveThemeProvider } from "@/features/themes/components/active-theme";
 import { QueryProvider } from "@/providers/query-provider";
+import { GlobalImportProgress } from "@/features/participants/components/import/global-import-progress";
 
 // Configure the Inter font with fallback options
 const inter = Inter({
@@ -67,6 +68,7 @@ export default function RootLayout({
               <ActiveThemeProvider>
                 <SidebarProvider defaultOpen={true}>
                   <div className="safe-area-padding w-full">{children}</div>
+                  <GlobalImportProgress />
                   <Toaster />
                 </SidebarProvider>
               </ActiveThemeProvider>

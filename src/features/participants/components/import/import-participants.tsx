@@ -24,7 +24,6 @@ import {
 import { Label } from "@/components/ui/label";
 
 import { useExcelImport } from "./hooks/use-excel-import";
-import { BatchProgress } from "./batch-progress";
 import { DataPreview } from "./data-preview";
 import { DuplicateDetection } from "./duplicate-detection";
 import { DuplicateDetectionProgress } from "./duplicate-detection-progress";
@@ -79,7 +78,6 @@ export function ImportParticipants({
     isImporting,
     isDuplicateDetection,
     duplicateProgress,
-    importProgress,
     parseFile,
     validateData,
     checkForDuplicates,
@@ -477,14 +475,13 @@ export function ImportParticipants({
             />
           )}
 
-          {/* Import Step */}
+          {/* Import Step - Progress is now shown globally */}
           {(currentStep === "import" || isImporting) && (
-            <div className="space-y-4">
-              <BatchProgress
-                progress={importProgress}
-                isImporting={isImporting}
-                isComplete={currentStep === "import" && !isImporting}
-              />
+            <div className="space-y-4 text-center">
+              <p className="text-sm text-gray-600">
+                Import is running in the background. You can close this dialog
+                and monitor progress in the top-right corner.
+              </p>
             </div>
           )}
 

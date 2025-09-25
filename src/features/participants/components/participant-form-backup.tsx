@@ -30,6 +30,7 @@ import { Progress } from "@/components/ui/progress";
 import { useQuery } from "@tanstack/react-query";
 import { getOrganizationId } from "@/features/auth/actions";
 import { getCurrentOrganizationWithCluster } from "@/features/organizations/actions/organizations";
+import type { Organization } from "@/features/organizations/types";
 import {
   useCountries,
   useDistricts,
@@ -215,33 +216,7 @@ export function ParticipantForm({
     queryFn: getOrganizationId,
   });
 
-  // Add a local Organization type for use in this file
-  interface Organization {
-    id: string;
-    name: string;
-    acronym: string;
-    cluster_id: string | null;
-    project_id: string | null;
-    country: string;
-    district: string;
-    sub_county_id: string;
-    operation_sub_counties?: string[];
-    parish: string;
-    village: string;
-    address: string;
-    created_at: Date | null;
-    updated_at: Date | null;
-    cluster: {
-      id: string;
-      name: string;
-    } | null;
-    project: {
-      id: string;
-      name: string;
-      acronym: string;
-    } | null;
-  }
-
+  // Get organization data with cluster info
   const { data: organizationData } = useQuery({
     queryKey: ["organization", organizationId],
     queryFn: async () => {

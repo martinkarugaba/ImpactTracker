@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,24 +18,59 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { db } from "@/lib/db";
-import {
-  districts,
-  counties,
-  subCounties,
-  municipalities,
-} from "@/lib/db/schema";
-import type { InferSelectModel } from "drizzle-orm";
 import { City } from "../data-table/cities-columns";
 import { createCity, updateCity } from "../../actions/cities";
+import {
+  getDistricts,
+  getCountiesByDistrict,
+  getSubCountiesByCounty,
+  getMunicipalitiesBySubCounty,
+} from "../../actions/dropdown-data";
 import { toast } from "sonner";
 import { useCallback, useEffect, useState } from "react";
-import { eq } from "drizzle-orm";
 
-type District = InferSelectModel<typeof districts>;
-type County = InferSelectModel<typeof counties>;
-type SubCounty = InferSelectModel<typeof subCounties>;
-type Municipality = InferSelectModel<typeof municipalities>;
+// Define types without database dependencies to avoid client-side bundling issues
+type District = {
+  id: string;
+  name: string;
+  code: string;
+  country_id: string;
+  region?: string | null;
+  created_at?: Date | null;
+  updated_at?: Date | null;
+};
+
+type County = {
+  id: string;
+  name: string;
+  code: string;
+  district_id: string;
+  country_id: string;
+  created_at?: Date | null;
+  updated_at?: Date | null;
+};
+
+type SubCounty = {
+  id: string;
+  name: string;
+  code: string;
+  county_id: string;
+  district_id: string;
+  country_id: string;
+  created_at?: Date | null;
+  updated_at?: Date | null;
+};
+
+type Municipality = {
+  id: string;
+  name: string;
+  code: string;
+  district_id: string;
+  sub_county_id?: string | null;
+  country_id: string;
+  created_at?: Date | null;
+  updated_at?: Date | null;
+};
 
 type Props = {
   editData?: City | null;
@@ -54,8 +91,10 @@ export function AddCityDialog({ editData }: Props) {
   useEffect(() => {
     // Fetch initial data
     async function fetchData() {
-      const districtsData = await db.select().from(districts);
-      setDistrictsList(districtsData);
+      const result = await getDistricts();
+      if (result.success) {
+        setDistrictsList(result.data);
+      }
     }
     fetchData();
   }, []);
@@ -83,15 +122,10 @@ export function AddCityDialog({ editData }: Props) {
     // Fetch counties when district changes
     async function fetchCounties() {
       if (selectedDistrict) {
-        const countiesData = await db
-          .select()
-          .from(counties)
-          .where(counties => {
-            return selectedDistrict
-              ? eq(counties.district_id, selectedDistrict)
-              : undefined;
-          });
-        setCountiesList(countiesData);
+        const result = await getCountiesByDistrict(selectedDistrict);
+        if (result.success) {
+          setCountiesList(result.data);
+        }
       } else {
         setCountiesList([]);
       }
@@ -103,15 +137,10 @@ export function AddCityDialog({ editData }: Props) {
     // Fetch subcounties when county changes
     async function fetchSubCounties() {
       if (selectedCounty) {
-        const subCountiesData = await db
-          .select()
-          .from(subCounties)
-          .where(subCounties => {
-            return selectedCounty
-              ? eq(subCounties.county_id, selectedCounty)
-              : undefined;
-          });
-        setSubCountiesList(subCountiesData);
+        const result = await getSubCountiesByCounty(selectedCounty);
+        if (result.success) {
+          setSubCountiesList(result.data);
+        }
       } else {
         setSubCountiesList([]);
       }
@@ -123,15 +152,10 @@ export function AddCityDialog({ editData }: Props) {
     // Fetch municipalities when subcounty changes
     async function fetchMunicipalities() {
       if (selectedSubCounty) {
-        const municipalitiesData = await db
-          .select()
-          .from(municipalities)
-          .where(municipalities => {
-            return selectedSubCounty
-              ? eq(municipalities.sub_county_id, selectedSubCounty)
-              : undefined;
-          });
-        setMunicipalitiesList(municipalitiesData);
+        const result = await getMunicipalitiesBySubCounty(selectedSubCounty);
+        if (result.success) {
+          setMunicipalitiesList(result.data);
+        }
       } else {
         setMunicipalitiesList([]);
       }

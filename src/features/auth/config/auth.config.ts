@@ -54,8 +54,14 @@ export const authConfig: NextAuthConfig = {
       session.user.role = token.role as string;
       session.accessToken = token.accessToken as string;
 
-      try {
-        // Check if user exists in database - wrap in try/catch to handle Edge runtime failures gracefully
+      // Only try database operations if we're not in Edge Runtime
+      // Edge Runtime detection: check if process.versions exists (Node.js specific)
+      const isNodeRuntime =
+        typeof process !== "undefined" &&
+        process.versions &&
+        process.versions.node;
+
+      if (isNodeRuntime) {
         try {
           const user = await db.query.users.findFirst({
             where: eq(users.id, session.user.id),
@@ -78,8 +84,8 @@ export const authConfig: NextAuthConfig = {
             dbError
           );
         }
-      } catch (error) {
-        console.error("Error in session callback:", error);
+      } else {
+        console.log("Skipping database check in Edge Runtime context");
       }
 
       return session;
