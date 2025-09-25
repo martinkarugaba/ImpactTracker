@@ -294,16 +294,25 @@ export async function getParticipants(
           "🎯 Adding specificVocationalSkill filter:",
           params.filters.specificVocationalSkill
         );
-        console.log(
-          "🎯 SQL query will be:",
-          `${params.filters.specificVocationalSkill} = ANY(vocationalSkillsParticipations)`
-        );
+        console.log("🎯 SQL query will use case-insensitive array matching");
         additionalFilters.push("specificVocationalSkill");
+
+        // Use case-insensitive comparison and handle potential array variations
+        const skillToMatch = params.filters.specificVocationalSkill.trim();
         whereConditions.push(
           sql`(
-            ${params.filters.specificVocationalSkill} = ANY(${participants.vocationalSkillsParticipations}) OR
-            ${params.filters.specificVocationalSkill} = ANY(${participants.vocationalSkillsCompletions}) OR
-            ${params.filters.specificVocationalSkill} = ANY(${participants.vocationalSkillsCertifications})
+            EXISTS (
+              SELECT 1 FROM unnest(${participants.vocationalSkillsParticipations}) AS skill
+              WHERE LOWER(skill) = LOWER(${skillToMatch})
+            ) OR
+            EXISTS (
+              SELECT 1 FROM unnest(${participants.vocationalSkillsCompletions}) AS skill
+              WHERE LOWER(skill) = LOWER(${skillToMatch})
+            ) OR
+            EXISTS (
+              SELECT 1 FROM unnest(${participants.vocationalSkillsCertifications}) AS skill
+              WHERE LOWER(skill) = LOWER(${skillToMatch})
+            )
           )`
         );
       }
@@ -315,16 +324,25 @@ export async function getParticipants(
           "🎯 Adding specificSoftSkill filter:",
           params.filters.specificSoftSkill
         );
-        console.log(
-          "🎯 SQL query will be:",
-          `${params.filters.specificSoftSkill} = ANY(softSkillsParticipations)`
-        );
+        console.log("🎯 SQL query will use case-insensitive array matching");
         additionalFilters.push("specificSoftSkill");
+
+        // Use case-insensitive comparison and handle potential array variations
+        const skillToMatch = params.filters.specificSoftSkill.trim();
         whereConditions.push(
           sql`(
-            ${params.filters.specificSoftSkill} = ANY(${participants.softSkillsParticipations}) OR
-            ${params.filters.specificSoftSkill} = ANY(${participants.softSkillsCompletions}) OR
-            ${params.filters.specificSoftSkill} = ANY(${participants.softSkillsCertifications})
+            EXISTS (
+              SELECT 1 FROM unnest(${participants.softSkillsParticipations}) AS skill
+              WHERE LOWER(skill) = LOWER(${skillToMatch})
+            ) OR
+            EXISTS (
+              SELECT 1 FROM unnest(${participants.softSkillsCompletions}) AS skill
+              WHERE LOWER(skill) = LOWER(${skillToMatch})
+            ) OR
+            EXISTS (
+              SELECT 1 FROM unnest(${participants.softSkillsCertifications}) AS skill
+              WHERE LOWER(skill) = LOWER(${skillToMatch})
+            )
           )`
         );
       }
@@ -333,17 +351,28 @@ export async function getParticipants(
         params.filters.specificBusinessSkill !== "all"
       ) {
         console.log(
-          "Adding specificBusinessSkill filter:",
+          "🎯 Adding specificBusinessSkill filter:",
           params.filters.specificBusinessSkill
         );
         additionalFilters.push("specificBusinessSkill");
-        // For business skills, we might need to check a different field or implement business skill tracking
-        // For now, let's check if it's mentioned in vocational skills as well
+
+        // For business skills, check if it's mentioned in vocational skills arrays
+        // Use case-insensitive comparison
+        const skillToMatch = params.filters.specificBusinessSkill.trim();
         whereConditions.push(
           sql`(
-            ${params.filters.specificBusinessSkill} = ANY(${participants.vocationalSkillsParticipations}) OR
-            ${params.filters.specificBusinessSkill} = ANY(${participants.vocationalSkillsCompletions}) OR
-            ${params.filters.specificBusinessSkill} = ANY(${participants.vocationalSkillsCertifications})
+            EXISTS (
+              SELECT 1 FROM unnest(${participants.vocationalSkillsParticipations}) AS skill
+              WHERE LOWER(skill) = LOWER(${skillToMatch})
+            ) OR
+            EXISTS (
+              SELECT 1 FROM unnest(${participants.vocationalSkillsCompletions}) AS skill
+              WHERE LOWER(skill) = LOWER(${skillToMatch})
+            ) OR
+            EXISTS (
+              SELECT 1 FROM unnest(${participants.vocationalSkillsCertifications}) AS skill
+              WHERE LOWER(skill) = LOWER(${skillToMatch})
+            )
           )`
         );
       }
@@ -950,27 +979,51 @@ export async function getAllFilteredParticipantsForExport(
         filters.specificVocationalSkill !== "all"
       ) {
         console.log(
-          "Adding specificVocationalSkill filter:",
+          "🎯 Adding specificVocationalSkill filter (export):",
           filters.specificVocationalSkill
         );
+
+        // Use case-insensitive comparison for export as well
+        const skillToMatch = filters.specificVocationalSkill.trim();
         whereConditions.push(
           sql`(
-            ${filters.specificVocationalSkill} = ANY(${participants.vocationalSkillsParticipations}) OR
-            ${filters.specificVocationalSkill} = ANY(${participants.vocationalSkillsCompletions}) OR
-            ${filters.specificVocationalSkill} = ANY(${participants.vocationalSkillsCertifications})
+            EXISTS (
+              SELECT 1 FROM unnest(${participants.vocationalSkillsParticipations}) AS skill
+              WHERE LOWER(skill) = LOWER(${skillToMatch})
+            ) OR
+            EXISTS (
+              SELECT 1 FROM unnest(${participants.vocationalSkillsCompletions}) AS skill
+              WHERE LOWER(skill) = LOWER(${skillToMatch})
+            ) OR
+            EXISTS (
+              SELECT 1 FROM unnest(${participants.vocationalSkillsCertifications}) AS skill
+              WHERE LOWER(skill) = LOWER(${skillToMatch})
+            )
           )`
         );
       }
       if (filters.specificSoftSkill && filters.specificSoftSkill !== "all") {
         console.log(
-          "Adding specificSoftSkill filter:",
+          "🎯 Adding specificSoftSkill filter (export):",
           filters.specificSoftSkill
         );
+
+        // Use case-insensitive comparison for export as well
+        const skillToMatch = filters.specificSoftSkill.trim();
         whereConditions.push(
           sql`(
-            ${filters.specificSoftSkill} = ANY(${participants.softSkillsParticipations}) OR
-            ${filters.specificSoftSkill} = ANY(${participants.softSkillsCompletions}) OR
-            ${filters.specificSoftSkill} = ANY(${participants.softSkillsCertifications})
+            EXISTS (
+              SELECT 1 FROM unnest(${participants.softSkillsParticipations}) AS skill
+              WHERE LOWER(skill) = LOWER(${skillToMatch})
+            ) OR
+            EXISTS (
+              SELECT 1 FROM unnest(${participants.softSkillsCompletions}) AS skill
+              WHERE LOWER(skill) = LOWER(${skillToMatch})
+            ) OR
+            EXISTS (
+              SELECT 1 FROM unnest(${participants.softSkillsCertifications}) AS skill
+              WHERE LOWER(skill) = LOWER(${skillToMatch})
+            )
           )`
         );
       }
@@ -979,14 +1032,26 @@ export async function getAllFilteredParticipantsForExport(
         filters.specificBusinessSkill !== "all"
       ) {
         console.log(
-          "Adding specificBusinessSkill filter:",
+          "🎯 Adding specificBusinessSkill filter (export):",
           filters.specificBusinessSkill
         );
+
+        // Use case-insensitive comparison for export as well
+        const skillToMatch = filters.specificBusinessSkill.trim();
         whereConditions.push(
           sql`(
-            ${filters.specificBusinessSkill} = ANY(${participants.vocationalSkillsParticipations}) OR
-            ${filters.specificBusinessSkill} = ANY(${participants.vocationalSkillsCompletions}) OR
-            ${filters.specificBusinessSkill} = ANY(${participants.vocationalSkillsCertifications})
+            EXISTS (
+              SELECT 1 FROM unnest(${participants.vocationalSkillsParticipations}) AS skill
+              WHERE LOWER(skill) = LOWER(${skillToMatch})
+            ) OR
+            EXISTS (
+              SELECT 1 FROM unnest(${participants.vocationalSkillsCompletions}) AS skill
+              WHERE LOWER(skill) = LOWER(${skillToMatch})
+            ) OR
+            EXISTS (
+              SELECT 1 FROM unnest(${participants.vocationalSkillsCertifications}) AS skill
+              WHERE LOWER(skill) = LOWER(${skillToMatch})
+            )
           )`
         );
       }
