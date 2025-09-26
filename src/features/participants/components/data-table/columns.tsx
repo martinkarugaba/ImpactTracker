@@ -93,7 +93,7 @@ export function getParticipantColumns({
           return (
             <Badge
               variant="outline"
-              className="border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+              className="border-blue-300 bg-blue-50/50 text-blue-700 hover:bg-blue-50 dark:border-blue-600 dark:bg-blue-950/20 dark:text-blue-400"
             >
               M
             </Badge>
@@ -104,14 +104,14 @@ export function getParticipantColumns({
           return (
             <Badge
               variant="outline"
-              className="border-pink-200 bg-pink-100 text-pink-800 dark:border-pink-800 dark:bg-pink-900/20 dark:text-pink-400"
+              className="border-pink-300 bg-pink-50/50 text-pink-700 hover:bg-pink-50 dark:border-pink-600 dark:bg-pink-950/20 dark:text-pink-400"
             >
               F
             </Badge>
           );
         }
 
-        return <Badge variant="outline">{sex.charAt(0).toUpperCase()}</Badge>;
+        return <Badge>{sex.charAt(0).toUpperCase()}</Badge>;
       },
     },
     {
@@ -155,15 +155,15 @@ export function getParticipantColumns({
         if (ageNum <= 35) {
           variant = "outline";
           className =
-            "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800";
+            "border-green-300 bg-green-50/50 text-green-700 hover:bg-green-50 dark:border-green-600 dark:bg-green-950/20 dark:text-green-400";
         } else if (ageNum <= 50) {
           variant = "outline";
           className =
-            "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800";
+            "border-yellow-300 bg-yellow-50/50 text-yellow-700 hover:bg-yellow-50 dark:border-yellow-600 dark:bg-yellow-950/20 dark:text-yellow-400";
         } else {
           variant = "outline";
           className =
-            "bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800";
+            "border-orange-300 bg-orange-50/50 text-orange-700 hover:bg-orange-50 dark:border-orange-600 dark:bg-orange-950/20 dark:text-orange-400";
         }
 
         return (
@@ -245,7 +245,7 @@ export function getParticipantColumns({
         return (
           <Badge
             variant="outline"
-            className="border-purple-200 bg-purple-100 font-mono text-purple-800 hover:bg-purple-200 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
+            className="border-purple-300 bg-purple-50/50 font-mono text-purple-700 hover:bg-purple-50 dark:border-purple-600 dark:bg-purple-950/20 dark:text-purple-400"
             title={name}
           >
             {acronym}
@@ -267,7 +267,7 @@ export function getParticipantColumns({
           <div className="flex items-center gap-2">
             <Badge
               variant="outline"
-              className="border-emerald-200 bg-emerald-100 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400"
+              className="border-emerald-300 bg-emerald-50/50 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400"
               title={name}
             >
               {acronym}
@@ -290,27 +290,27 @@ export function getParticipantColumns({
           employed: {
             label: "Employed",
             color:
-              "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800",
+              "bg-green-600/80 text-white hover:bg-green-700/80 dark:bg-green-700/80 dark:hover:bg-green-800/80",
           },
           unemployed: {
             label: "Unemployed",
             color:
-              "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800",
+              "bg-red-600/80 text-white hover:bg-red-700/80 dark:bg-red-700/80 dark:hover:bg-red-800/80",
           },
           "self-employed": {
             label: "Self-Employed",
             color:
-              "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800",
+              "bg-blue-600/80 text-white hover:bg-blue-700/80 dark:bg-blue-700/80 dark:hover:bg-blue-800/80",
           },
           student: {
             label: "Student",
             color:
-              "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800",
+              "bg-purple-600/80 text-white hover:bg-purple-700/80 dark:bg-purple-700/80 dark:hover:bg-purple-800/80",
           },
           retired: {
             label: "Retired",
             color:
-              "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-700",
+              "bg-gray-600/80 text-white hover:bg-gray-700/80 dark:bg-gray-700/80 dark:hover:bg-gray-800/80",
           },
         };
 
@@ -319,17 +319,14 @@ export function getParticipantColumns({
 
         if (!statusInfo) {
           return (
-            <Badge variant="outline" className="max-w-[150px] truncate">
+            <Badge className="max-w-[150px] truncate">
               {capitalizeWords(employmentStatus)}
             </Badge>
           );
         }
 
         return (
-          <Badge
-            variant="outline"
-            className={`${statusInfo.color} max-w-[150px] truncate`}
-          >
+          <Badge className={`${statusInfo.color} max-w-[150px] truncate`}>
             {statusInfo.label}
           </Badge>
         );
@@ -346,20 +343,14 @@ export function getParticipantColumns({
 
         if (isSubscribed) {
           return (
-            <Badge
-              variant="outline"
-              className="border-green-200 bg-green-100 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400"
-            >
+            <Badge className="bg-green-600/80 text-white hover:bg-green-700/80 dark:bg-green-700/80 dark:hover:bg-green-800/80">
               ✓ Member
             </Badge>
           );
         }
 
         return (
-          <Badge
-            variant="outline"
-            className="border-gray-200 bg-gray-100 text-gray-600 dark:border-gray-700 dark:bg-gray-900/20 dark:text-gray-400"
-          >
+          <Badge className="bg-gray-600/80 text-white hover:bg-gray-700/80 dark:bg-gray-700/80 dark:hover:bg-gray-800/80">
             Not Member
           </Badge>
         );
@@ -454,34 +445,32 @@ export function getParticipantColumns({
           single: {
             label: "Single",
             color:
-              "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800",
+              "bg-blue-600/80 text-white hover:bg-blue-700/80 dark:bg-blue-700/80 dark:hover:bg-blue-800/80",
           },
           married: {
             label: "Married",
             color:
-              "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800",
+              "bg-green-600/80 text-white hover:bg-green-700/80 dark:bg-green-700/80 dark:hover:bg-green-800/80",
           },
           divorced: {
             label: "Divorced",
             color:
-              "bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800",
+              "bg-orange-600/80 text-white hover:bg-orange-700/80 dark:bg-orange-700/80 dark:hover:bg-orange-800/80",
           },
           widowed: {
             label: "Widowed",
             color:
-              "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-700",
+              "bg-gray-600/80 text-white hover:bg-gray-700/80 dark:bg-gray-700/80 dark:hover:bg-gray-800/80",
           },
         };
 
         const statusInfo = statusMap[maritalStatus as keyof typeof statusMap];
         const displayText = statusInfo?.label || capitalizeWords(maritalStatus);
-        const colorClass = statusInfo?.color || "bg-gray-100 text-gray-800";
+        const colorClass =
+          statusInfo?.color ||
+          "bg-gray-600/80 text-white hover:bg-gray-700/80 dark:bg-gray-700/80 dark:hover:bg-gray-800/80";
 
-        return (
-          <Badge variant="secondary" className={colorClass}>
-            {displayText}
-          </Badge>
-        );
+        return <Badge className={colorClass}>{displayText}</Badge>;
       },
     },
     {
@@ -498,39 +487,37 @@ export function getParticipantColumns({
           none: {
             label: "None",
             color:
-              "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800",
+              "bg-red-600/80 text-white hover:bg-red-700/80 dark:bg-red-700/80 dark:hover:bg-red-800/80",
           },
           primary: {
             label: "Primary",
             color:
-              "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800",
+              "bg-yellow-600/80 text-white hover:bg-yellow-700/80 dark:bg-yellow-700/80 dark:hover:bg-yellow-800/80",
           },
           secondary: {
             label: "Secondary",
             color:
-              "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800",
+              "bg-blue-600/80 text-white hover:bg-blue-700/80 dark:bg-blue-700/80 dark:hover:bg-blue-800/80",
           },
           tertiary: {
             label: "Tertiary",
             color:
-              "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800",
+              "bg-purple-600/80 text-white hover:bg-purple-700/80 dark:bg-purple-700/80 dark:hover:bg-purple-800/80",
           },
           university: {
             label: "University",
             color:
-              "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800",
+              "bg-green-600/80 text-white hover:bg-green-700/80 dark:bg-green-700/80 dark:hover:bg-green-800/80",
           },
         };
 
         const levelInfo = levelMap[educationLevel as keyof typeof levelMap];
         const displayText = levelInfo?.label || capitalizeWords(educationLevel);
-        const colorClass = levelInfo?.color || "bg-gray-100 text-gray-800";
+        const colorClass =
+          levelInfo?.color ||
+          "bg-gray-600/80 text-white hover:bg-gray-700/80 dark:bg-gray-700/80 dark:hover:bg-gray-800/80";
 
-        return (
-          <Badge variant="secondary" className={colorClass}>
-            {displayText}
-          </Badge>
-        );
+        return <Badge className={colorClass}>{displayText}</Badge>;
       },
     },
     {
@@ -544,20 +531,14 @@ export function getParticipantColumns({
 
         if (ownsEnterprise) {
           return (
-            <Badge
-              variant="outline"
-              className="border-emerald-200 bg-emerald-100 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400"
-            >
+            <Badge className="bg-emerald-600/80 text-white hover:bg-emerald-700/80 dark:bg-emerald-700/80 dark:hover:bg-emerald-800/80">
               ✓ Owner
             </Badge>
           );
         }
 
         return (
-          <Badge
-            variant="outline"
-            className="border-gray-200 bg-gray-100 text-gray-600 dark:border-gray-700 dark:bg-gray-900/20 dark:text-gray-400"
-          >
+          <Badge className="border-gray-200 bg-gray-600/80 text-white hover:bg-gray-700/80 dark:bg-gray-700/80 dark:hover:bg-gray-800/80">
             No Enterprise
           </Badge>
         );
@@ -603,10 +584,7 @@ export function getParticipantColumns({
 
         return (
           <div className="space-y-1">
-            <Badge
-              variant="outline"
-              className="border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
-            >
+            <Badge className="bg-blue-600/80 text-white hover:bg-blue-700/80 dark:bg-blue-700/80 dark:hover:bg-blue-800/80">
               {participations.length} Skills
             </Badge>
             <div className="max-w-[150px] text-xs">
@@ -633,10 +611,7 @@ export function getParticipantColumns({
 
         return (
           <div className="space-y-1">
-            <Badge
-              variant="outline"
-              className="border-green-200 bg-green-100 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400"
-            >
+            <Badge className="bg-green-600/80 text-white hover:bg-green-700/80 dark:bg-green-700/80 dark:hover:bg-green-800/80">
               {completions.length} Completed
             </Badge>
             <div
@@ -671,10 +646,7 @@ export function getParticipantColumns({
 
         return (
           <div className="space-y-1">
-            <Badge
-              variant="outline"
-              className="border-amber-200 bg-amber-100 text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400"
-            >
+            <Badge className="bg-amber-600/80 text-white hover:bg-amber-700/80 dark:bg-amber-700/80 dark:hover:bg-amber-800/80">
               {certifications.length} Certified
             </Badge>
             <div
@@ -709,10 +681,7 @@ export function getParticipantColumns({
 
         return (
           <div className="space-y-1">
-            <Badge
-              variant="outline"
-              className="border-purple-200 bg-purple-100 text-purple-800 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
-            >
+            <Badge className="bg-purple-600/80 text-white hover:bg-purple-700/80 dark:bg-purple-700/80 dark:hover:bg-purple-800/80">
               {participations.length} Skills
             </Badge>
             <div
@@ -747,10 +716,7 @@ export function getParticipantColumns({
 
         return (
           <div className="space-y-1">
-            <Badge
-              variant="outline"
-              className="border-indigo-200 bg-indigo-100 text-indigo-800 dark:border-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400"
-            >
+            <Badge className="bg-indigo-600/80 text-white hover:bg-indigo-700/80 dark:bg-indigo-700/80 dark:hover:bg-indigo-800/80">
               {completions.length} Completed
             </Badge>
             <div
@@ -784,10 +750,7 @@ export function getParticipantColumns({
 
         return (
           <div className="space-y-1">
-            <Badge
-              variant="outline"
-              className="border-cyan-200 bg-cyan-100 text-cyan-800 dark:border-cyan-800 dark:bg-cyan-900/20 dark:text-cyan-400"
-            >
+            <Badge className="bg-cyan-600/80 text-white hover:bg-cyan-700/80 dark:bg-cyan-700/80 dark:hover:bg-cyan-800/80">
               {certifications.length} Certified
             </Badge>
             <div
@@ -820,8 +783,8 @@ export function getParticipantColumns({
             variant={hasSkills ? "outline" : "outline"}
             className={
               hasSkills
-                ? "border-emerald-200 bg-emerald-100 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400"
-                : "border-gray-200 bg-gray-100 text-gray-600 dark:border-gray-700 dark:bg-gray-900/20 dark:text-gray-400"
+                ? "bg-emerald-600/80 text-white hover:bg-emerald-700/80 dark:bg-emerald-700/80 dark:hover:bg-emerald-800/80"
+                : "border-gray-200 bg-gray-600/80 text-white hover:bg-gray-700/80 dark:bg-gray-700/80 dark:hover:bg-gray-800/80"
             }
           >
             {hasSkills ? "✓ Has Skills" : "No Skills"}
@@ -842,10 +805,7 @@ export function getParticipantColumns({
         if (isPWD) {
           return (
             <div className="space-y-1">
-              <Badge
-                variant="outline"
-                className="border-purple-200 bg-purple-100 text-purple-800 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
-              >
+              <Badge className="bg-purple-600/80 text-white hover:bg-purple-700/80 dark:bg-purple-700/80 dark:hover:bg-purple-800/80">
                 ✓ PWD
               </Badge>
               {disabilityType && (
@@ -861,10 +821,7 @@ export function getParticipantColumns({
         }
 
         return (
-          <Badge
-            variant="outline"
-            className="border-gray-200 bg-gray-100 text-gray-600 dark:border-gray-700 dark:bg-gray-900/20 dark:text-gray-400"
-          >
+          <Badge className="border-gray-200 bg-gray-600/80 text-white hover:bg-gray-700/80 dark:bg-gray-700/80 dark:hover:bg-gray-800/80">
             No
           </Badge>
         );
@@ -884,32 +841,32 @@ export function getParticipantColumns({
           youth: {
             label: "Youth",
             color:
-              "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800",
+              "bg-green-600/80 text-white hover:bg-green-700/80 dark:bg-green-700/80 dark:hover:bg-green-800/80",
           },
           women: {
             label: "Women",
             color:
-              "bg-pink-100 text-pink-800 border-pink-200 dark:bg-pink-900/20 dark:text-pink-400 dark:border-pink-800",
+              "bg-pink-600/80 text-white hover:bg-pink-700/80 dark:bg-pink-700/80 dark:hover:bg-pink-800/80",
           },
           pwd: {
             label: "PWD",
             color:
-              "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800",
+              "bg-purple-600/80 text-white hover:bg-purple-700/80 dark:bg-purple-700/80 dark:hover:bg-purple-800/80",
           },
           elderly: {
             label: "Elderly",
             color:
-              "bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800",
+              "bg-orange-600/80 text-white hover:bg-orange-700/80 dark:bg-orange-700/80 dark:hover:bg-orange-800/80",
           },
           refugee: {
             label: "Refugee",
             color:
-              "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800",
+              "bg-red-600/80 text-white hover:bg-red-700/80 dark:bg-red-700/80 dark:hover:bg-red-800/80",
           },
           host: {
             label: "Host",
             color:
-              "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800",
+              "bg-blue-600/80 text-white hover:bg-blue-700/80 dark:bg-blue-700/80 dark:hover:bg-blue-800/80",
           },
         };
 
@@ -917,11 +874,7 @@ export function getParticipantColumns({
         const displayText = segmentInfo?.label || capitalizeWords(segment);
         const colorClass = segmentInfo?.color || "bg-gray-100 text-gray-800";
 
-        return (
-          <Badge variant="secondary" className={colorClass}>
-            {displayText}
-          </Badge>
-        );
+        return <Badge className={colorClass}>{displayText}</Badge>;
       },
     },
     {
@@ -945,20 +898,16 @@ export function getParticipantColumns({
           "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-700";
         if (income < 100000) {
           colorClass =
-            "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800";
+            "bg-red-600/80 text-white hover:bg-red-700/80 dark:bg-red-700/80 dark:hover:bg-red-800/80";
         } else if (income < 500000) {
           colorClass =
-            "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800";
+            "bg-yellow-600/80 text-white hover:bg-yellow-700/80 dark:bg-yellow-700/80 dark:hover:bg-yellow-800/80";
         } else {
           colorClass =
-            "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800";
+            "bg-green-600/80 text-white hover:bg-green-700/80 dark:bg-green-700/80 dark:hover:bg-green-800/80";
         }
 
-        return (
-          <Badge variant="outline" className={colorClass}>
-            {formattedIncome}
-          </Badge>
-        );
+        return <Badge className={colorClass}>{formattedIncome}</Badge>;
       },
     },
     {
@@ -1005,23 +954,19 @@ export function getParticipantColumns({
           "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-700";
         if (children === 0) {
           colorClass =
-            "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800";
+            "bg-blue-600/80 text-white hover:bg-blue-700/80 dark:bg-blue-700/80 dark:hover:bg-blue-800/80";
         } else if (children <= 2) {
           colorClass =
-            "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800";
+            "bg-green-600/80 text-white hover:bg-green-700/80 dark:bg-green-700/80 dark:hover:bg-green-800/80";
         } else if (children <= 4) {
           colorClass =
-            "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800";
+            "bg-yellow-600/80 text-white hover:bg-yellow-700/80 dark:bg-yellow-700/80 dark:hover:bg-yellow-800/80";
         } else {
           colorClass =
-            "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800";
+            "bg-red-600/80 text-white hover:bg-red-700/80 dark:bg-red-700/80 dark:hover:bg-red-800/80";
         }
 
-        return (
-          <Badge variant="outline" className={colorClass}>
-            {children}
-          </Badge>
-        );
+        return <Badge className={colorClass}>{children}</Badge>;
       },
     },
     {
@@ -1034,11 +979,10 @@ export function getParticipantColumns({
         const isStudent = row.original.isActiveStudent === "yes";
         return (
           <Badge
-            variant="outline"
             className={
               isStudent
-                ? "border-indigo-200 bg-indigo-100 text-indigo-800 dark:border-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400"
-                : "border-gray-200 bg-gray-100 text-gray-600 dark:border-gray-700 dark:bg-gray-900/20 dark:text-gray-400"
+                ? "bg-indigo-600/80 text-white hover:bg-indigo-700/80 dark:bg-indigo-700/80 dark:hover:bg-indigo-800/80"
+                : "border-gray-200 bg-gray-600/80 text-white hover:bg-gray-700/80 dark:bg-gray-700/80 dark:hover:bg-gray-800/80"
             }
           >
             {isStudent ? "✓ Student" : "Not Student"}
@@ -1056,10 +1000,7 @@ export function getParticipantColumns({
         const isTeenMother = row.original.isTeenMother === "yes";
         if (!isTeenMother) return "—";
         return (
-          <Badge
-            variant="outline"
-            className="border-pink-200 bg-pink-100 text-pink-800 dark:border-pink-800 dark:bg-pink-900/20 dark:text-pink-400"
-          >
+          <Badge className="bg-pink-600/80 text-white hover:bg-pink-700/80 dark:bg-pink-700/80 dark:hover:bg-pink-800/80">
             ✓ Teen Mother
           </Badge>
         );

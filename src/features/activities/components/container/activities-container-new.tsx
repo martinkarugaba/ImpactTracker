@@ -107,7 +107,7 @@ export function ActivitiesContainerNew({
         setEditingActivity={state.setEditingActivity}
         deletingActivity={state.deletingActivity}
         setDeletingActivity={state.setDeletingActivity}
-        organizations={[]}
+        organizations={state.organizations}
         clusters={[]}
         projects={[]}
       />
