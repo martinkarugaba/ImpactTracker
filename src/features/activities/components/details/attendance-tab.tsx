@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MetricCard } from "@/components/ui/metric-card";
 import { DataTable } from "@/components/ui/data-table";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -272,335 +273,371 @@ export function AttendanceTab({
 
   return (
     <div className="space-y-6">
-      {/* Overview Metrics */}
-      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-4">
-        <MetricCard
-          title="Total Participants"
-          value={stats.total}
-          description="All registered participants for this activity"
-          icon={<Users className="h-4 w-4" />}
-        />
-        <MetricCard
-          title="Sessions Planned"
-          value={sessions.length}
-          description="Total activity sessions scheduled"
-          icon={<Calendar className="h-4 w-4" />}
-          footer={{
-            title: "Multi-Day Activity",
-            description: `${sessions.filter(s => s.status === "scheduled").length} upcoming`,
-          }}
-        />
-        <MetricCard
-          title="Sessions Completed"
-          value={sessions.filter(s => s.status === "completed").length}
-          description="Sessions that have been conducted"
-          icon={<CheckCircle className="h-4 w-4" />}
-          footer={{
-            title: "Progress",
-            description: `${Math.round((sessions.filter(s => s.status === "completed").length / Math.max(sessions.length, 1)) * 100)}% complete`,
-          }}
-        />
-        <MetricCard
-          title="Overall Attendance Rate"
-          value={`${attendanceRate}%`}
-          description="Average attendance across all sessions"
-          icon={<TrendingUp className="h-4 w-4" />}
-          footer={{
-            title: "Participation",
-            description: `${stats.attended}/${stats.total} participants`,
-          }}
-        />
-      </div>
+      {/* Sessions and Attendance Management Tabs */}
+      <Tabs defaultValue="sessions" className="w-full">
+        <TabsList className="w-fit">
+          <TabsTrigger value="sessions" className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            <span>Sessions Management</span>
+          </TabsTrigger>
+          <TabsTrigger value="attendance" className="flex items-center gap-2">
+            <UserCheck className="h-4 w-4" />
+            <span>Attendance Tracking</span>
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Sessions Management - TOP SECTION */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              Sessions Management
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-              {(!sessions || sessions.length === 0) && (
-                <div className="flex items-end gap-2">
-                  <div className="space-y-1">
-                    <Label
-                      htmlFor="sessionCount"
-                      className="text-sm font-medium"
-                    >
-                      Number of Sessions
-                    </Label>
-                    <Input
-                      id="sessionCount"
-                      type="number"
-                      min="1"
-                      max="50"
-                      value={sessionCount}
-                      onChange={e =>
-                        setSessionCount(parseInt(e.target.value) || 1)
+        <TabsContent value="sessions" className="mt-6">
+          {/* Sessions Overview Metrics */}
+          <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card mb-6 grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2">
+            <MetricCard
+              title="Sessions Planned"
+              value={sessions.length}
+              description="Total activity sessions scheduled"
+              icon={<Calendar className="h-4 w-4" />}
+              footer={{
+                title: "Multi-Day Activity",
+                description: `${sessions.filter(s => s.status === "scheduled").length} upcoming`,
+              }}
+            />
+            <MetricCard
+              title="Sessions Completed"
+              value={sessions.filter(s => s.status === "completed").length}
+              description="Sessions that have been conducted"
+              icon={<CheckCircle className="h-4 w-4" />}
+              footer={{
+                title: "Progress",
+                description: `${Math.round((sessions.filter(s => s.status === "completed").length / Math.max(sessions.length, 1)) * 100)}% complete`,
+              }}
+            />
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  Sessions Management
+                </div>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                  {(!sessions || sessions.length === 0) && (
+                    <div className="flex items-end gap-2">
+                      <div className="space-y-1">
+                        <Label
+                          htmlFor="sessionCount"
+                          className="text-sm font-medium"
+                        >
+                          Number of Sessions
+                        </Label>
+                        <Input
+                          id="sessionCount"
+                          type="number"
+                          min="1"
+                          max="50"
+                          value={sessionCount}
+                          onChange={e =>
+                            setSessionCount(parseInt(e.target.value) || 1)
+                          }
+                          className="w-24"
+                          placeholder="5"
+                        />
+                      </div>
+                      <Button
+                        onClick={handleGenerateSessions}
+                        disabled={
+                          generateSessions.isPending || sessionCount < 1
+                        }
+                        variant="outline"
+                      >
+                        {generateSessions.isPending ? (
+                          <LoadingSpinner className="mr-2 h-4 w-4" />
+                        ) : (
+                          <Play className="mr-2 h-4 w-4" />
+                        )}
+                        Generate {sessionCount} Sessions
+                      </Button>
+                    </div>
+                  )}
+                  <Button onClick={onCreateSession}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Session
+                  </Button>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {sessions && sessions.length > 0 ? (
+                <div className="space-y-6">
+                  {/* Session Metrics */}
+                  <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-4">
+                    <MetricCard
+                      title="Total Sessions"
+                      value={sessions.length}
+                      icon={<Calendar className="h-4 w-4" />}
+                      footer={{
+                        title: "Session count",
+                        description: "Total sessions planned",
+                      }}
+                    />
+                    <MetricCard
+                      title="Completed"
+                      value={
+                        sessions.filter(s => s.status === "completed").length
                       }
-                      className="w-24"
-                      placeholder="5"
+                      icon={<CheckCircle className="h-4 w-4 text-green-600" />}
+                      footer={{
+                        title: "Finished sessions",
+                        description: "Successfully completed",
+                      }}
+                    />
+                    <MetricCard
+                      title="Scheduled"
+                      value={
+                        sessions.filter(s => s.status === "scheduled").length
+                      }
+                      icon={<Clock className="h-4 w-4 text-blue-600" />}
+                      footer={{
+                        title: "Upcoming sessions",
+                        description: "Ready to conduct",
+                      }}
+                    />
+                    <MetricCard
+                      title="Cancelled"
+                      value={
+                        sessions.filter(s => s.status === "cancelled").length
+                      }
+                      icon={<XCircle className="h-4 w-4 text-red-600" />}
+                      footer={{
+                        title: "Cancelled sessions",
+                        description: "Not conducted",
+                      }}
                     />
                   </div>
-                  <Button
-                    onClick={handleGenerateSessions}
-                    disabled={generateSessions.isPending || sessionCount < 1}
-                    variant="outline"
-                  >
-                    {generateSessions.isPending ? (
-                      <LoadingSpinner className="mr-2 h-4 w-4" />
-                    ) : (
-                      <Play className="mr-2 h-4 w-4" />
-                    )}
-                    Generate {sessionCount} Sessions
-                  </Button>
-                </div>
-              )}
-              <Button onClick={onCreateSession}>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Session
-              </Button>
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {sessions && sessions.length > 0 ? (
-            <div className="space-y-6">
-              {/* Session Metrics */}
-              <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-4">
-                <MetricCard
-                  title="Total Sessions"
-                  value={sessions.length}
-                  icon={<Calendar className="h-4 w-4" />}
-                  footer={{
-                    title: "Session count",
-                    description: "Total sessions planned",
-                  }}
-                />
-                <MetricCard
-                  title="Completed"
-                  value={sessions.filter(s => s.status === "completed").length}
-                  icon={<CheckCircle className="h-4 w-4 text-green-600" />}
-                  footer={{
-                    title: "Finished sessions",
-                    description: "Successfully completed",
-                  }}
-                />
-                <MetricCard
-                  title="Scheduled"
-                  value={sessions.filter(s => s.status === "scheduled").length}
-                  icon={<Clock className="h-4 w-4 text-blue-600" />}
-                  footer={{
-                    title: "Upcoming sessions",
-                    description: "Ready to conduct",
-                  }}
-                />
-                <MetricCard
-                  title="Cancelled"
-                  value={sessions.filter(s => s.status === "cancelled").length}
-                  icon={<XCircle className="h-4 w-4 text-red-600" />}
-                  footer={{
-                    title: "Cancelled sessions",
-                    description: "Not conducted",
-                  }}
-                />
-              </div>
 
-              {/* Sessions Table */}
-              <DataTable
-                columns={getSessionsColumns()}
-                data={sessions as SessionData[]}
-                filterColumn="session_number"
-                filterPlaceholder="Search sessions..."
-                showColumnToggle={true}
-                showPagination={true}
-                showRowSelection={true}
-                pageSize={10}
-              />
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-12">
-              <Calendar className="text-muted-foreground/50 h-12 w-12" />
-              <h4 className="mt-4 text-lg font-semibold">No sessions found</h4>
-              <p className="text-muted-foreground mt-2 text-center text-sm">
-                This activity doesn&apos;t have any sessions yet. Create
-                sessions to track daily attendance for your multi-day activity.
-              </p>
-              <div className="mt-6 flex flex-col items-center gap-4 sm:flex-row">
-                <div className="flex items-center gap-2">
-                  <Label
-                    htmlFor="sessionCountEmpty"
-                    className="text-sm font-medium"
-                  >
-                    Sessions:
-                  </Label>
-                  <Input
-                    id="sessionCountEmpty"
-                    type="number"
-                    min="1"
-                    max="50"
-                    value={sessionCount}
-                    onChange={e =>
-                      setSessionCount(parseInt(e.target.value) || 1)
-                    }
-                    className="w-20"
-                    placeholder="5"
+                  {/* Sessions Table */}
+                  <DataTable
+                    columns={getSessionsColumns()}
+                    data={sessions as SessionData[]}
+                    filterColumn="session_number"
+                    filterPlaceholder="Search sessions..."
+                    showColumnToggle={true}
+                    showPagination={true}
+                    showRowSelection={true}
+                    pageSize={10}
                   />
-                  <Button
-                    onClick={handleGenerateSessions}
-                    disabled={generateSessions.isPending || sessionCount < 1}
-                    variant="outline"
-                  >
-                    {generateSessions.isPending ? (
-                      <LoadingSpinner className="mr-2 h-4 w-4" />
-                    ) : (
-                      <Play className="mr-2 h-4 w-4" />
-                    )}
-                    Generate
-                  </Button>
                 </div>
-                <Button onClick={onCreateSession}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Session
-                </Button>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Attendance Tracking - BOTTOM SECTION */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <UserCheck className="h-5 w-5" />
-              Attendance Tracking
-            </div>
-            <div className="flex items-center gap-3">
-              {/* Session Filter */}
-              <div className="flex items-center gap-2">
-                <Label htmlFor="session-filter" className="text-sm font-medium">
-                  Filter by Session:
-                </Label>
-                <Select
-                  value={selectedSessionId}
-                  onValueChange={setSelectedSessionId}
-                >
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="Select session..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Sessions</SelectItem>
-                    {sessions.map(session => (
-                      <SelectItem key={session.id} value={session.id}>
-                        Session {session.session_number} -{" "}
-                        {session.session_date
-                          ? format(new Date(session.session_date), "MMM dd")
-                          : "Not scheduled"}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Participant Management Actions */}
-              <div className="flex items-center gap-2">
-                <Button onClick={() => onManageAttendance()}>
-                  <Edit className="mr-2 h-4 w-4" />
-                  Manage Participants
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Import
-                </Button>
-              </div>
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {participantsError ? (
-            <div className="rounded-md border border-red-200 bg-red-50 p-4 text-center dark:border-red-800 dark:bg-red-950/20">
-              <p className="text-sm text-red-600 dark:text-red-400">
-                Failed to load participants. Please try again.
-              </p>
-            </div>
-          ) : participants.length === 0 ? (
-            <div className="rounded-md border border-dashed border-gray-300 p-8 text-center dark:border-gray-600">
-              <Users className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                No participants yet
-              </h3>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Add participants to this activity to track their attendance.
-              </p>
-              <div className="mt-6">
-                <Button onClick={() => onManageAttendance()}>
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  Add Participants
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {/* Attendance Summary for Selected Session */}
-              {selectedSessionId !== "all" && (
-                <div className="bg-muted/20 rounded-lg border p-4">
-                  <h4 className="mb-2 font-medium">
-                    Session{" "}
-                    {
-                      sessions.find(s => s.id === selectedSessionId)
-                        ?.session_number
-                    }{" "}
-                    Attendance Summary
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <Calendar className="text-muted-foreground/50 h-12 w-12" />
+                  <h4 className="mt-4 text-lg font-semibold">
+                    No sessions found
                   </h4>
-                  <div className="grid grid-cols-4 gap-4 text-sm">
-                    <div className="text-center">
-                      <div className="text-lg font-medium text-green-600">
-                        {/* This will be populated by attendance data */}
-                        {sessions.find(s => s.id === selectedSessionId)
-                          ? "Loading..."
-                          : "0"}
-                      </div>
-                      <div className="text-muted-foreground">Attended</div>
+                  <p className="text-muted-foreground mt-2 text-center text-sm">
+                    This activity doesn&apos;t have any sessions yet. Create
+                    sessions to track daily attendance for your multi-day
+                    activity.
+                  </p>
+                  <div className="mt-6 flex flex-col items-center gap-4 sm:flex-row">
+                    <div className="flex items-center gap-2">
+                      <Label
+                        htmlFor="sessionCountEmpty"
+                        className="text-sm font-medium"
+                      >
+                        Sessions:
+                      </Label>
+                      <Input
+                        id="sessionCountEmpty"
+                        type="number"
+                        min="1"
+                        max="50"
+                        value={sessionCount}
+                        onChange={e =>
+                          setSessionCount(parseInt(e.target.value) || 1)
+                        }
+                        className="w-20"
+                        placeholder="5"
+                      />
+                      <Button
+                        onClick={handleGenerateSessions}
+                        disabled={
+                          generateSessions.isPending || sessionCount < 1
+                        }
+                        variant="outline"
+                      >
+                        {generateSessions.isPending ? (
+                          <LoadingSpinner className="mr-2 h-4 w-4" />
+                        ) : (
+                          <Play className="mr-2 h-4 w-4" />
+                        )}
+                        Generate
+                      </Button>
                     </div>
-                    <div className="text-center">
-                      <div className="text-lg font-medium text-red-600">
-                        {/* This will be populated by attendance data */}0
-                      </div>
-                      <div className="text-muted-foreground">Absent</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-medium text-yellow-600">
-                        {/* This will be populated by attendance data */}0
-                      </div>
-                      <div className="text-muted-foreground">Late</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-medium text-blue-600">
-                        {participants.length}
-                      </div>
-                      <div className="text-muted-foreground">Total</div>
-                    </div>
+                    <Button onClick={onCreateSession}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Create Session
+                    </Button>
                   </div>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-              {/* Enhanced Participants/Attendance Table */}
-              <DataTable
-                columns={participantColumns}
-                data={participants}
-                filterColumn="participantName"
-                filterPlaceholder="Search participants..."
-                showColumnToggle={true}
-                showPagination={participants.length > 10}
-                pageSize={10}
-              />
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        <TabsContent value="attendance" className="mt-6">
+          {/* Attendance Overview Metrics */}
+          <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card mb-6 grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2">
+            <MetricCard
+              title="Total Participants"
+              value={stats.total}
+              description="All registered participants for this activity"
+              icon={<Users className="h-4 w-4" />}
+            />
+            <MetricCard
+              title="Overall Attendance Rate"
+              value={`${attendanceRate}%`}
+              description="Average attendance across all sessions"
+              icon={<TrendingUp className="h-4 w-4" />}
+              footer={{
+                title: "Participation",
+                description: `${stats.attended}/${stats.total} participants`,
+              }}
+            />
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <UserCheck className="h-5 w-5" />
+                  Attendance Tracking
+                </div>
+                <div className="flex items-center gap-3">
+                  {/* Session Filter */}
+                  <div className="flex items-center gap-2">
+                    <Label
+                      htmlFor="session-filter"
+                      className="text-sm font-medium"
+                    >
+                      Filter by Session:
+                    </Label>
+                    <Select
+                      value={selectedSessionId}
+                      onValueChange={setSelectedSessionId}
+                    >
+                      <SelectTrigger className="w-48">
+                        <SelectValue placeholder="Select session..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Sessions</SelectItem>
+                        {sessions.map(session => (
+                          <SelectItem key={session.id} value={session.id}>
+                            Session {session.session_number} -{" "}
+                            {session.session_date
+                              ? format(new Date(session.session_date), "MMM dd")
+                              : "Not scheduled"}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Participant Management Actions */}
+                  <div className="flex items-center gap-2">
+                    <Button onClick={() => onManageAttendance()}>
+                      <Edit className="mr-2 h-4 w-4" />
+                      Manage Participants
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Import
+                    </Button>
+                  </div>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {participantsError ? (
+                <div className="rounded-md border border-red-200 bg-red-50 p-4 text-center dark:border-red-800 dark:bg-red-950/20">
+                  <p className="text-sm text-red-600 dark:text-red-400">
+                    Failed to load participants. Please try again.
+                  </p>
+                </div>
+              ) : participants.length === 0 ? (
+                <div className="rounded-md border border-dashed border-gray-300 p-8 text-center dark:border-gray-600">
+                  <Users className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                    No participants yet
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Add participants to this activity to track their attendance.
+                  </p>
+                  <div className="mt-6">
+                    <Button onClick={() => onManageAttendance()}>
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Add Participants
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Attendance Summary for Selected Session */}
+                  {selectedSessionId !== "all" && (
+                    <div className="bg-muted/20 rounded-lg border p-4">
+                      <h4 className="mb-2 font-medium">
+                        Session{" "}
+                        {
+                          sessions.find(s => s.id === selectedSessionId)
+                            ?.session_number
+                        }{" "}
+                        Attendance Summary
+                      </h4>
+                      <div className="grid grid-cols-4 gap-4 text-sm">
+                        <div className="text-center">
+                          <div className="text-lg font-medium text-green-600">
+                            {/* This will be populated by attendance data */}
+                            {sessions.find(s => s.id === selectedSessionId)
+                              ? "Loading..."
+                              : "0"}
+                          </div>
+                          <div className="text-muted-foreground">Attended</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-medium text-red-600">
+                            {/* This will be populated by attendance data */}0
+                          </div>
+                          <div className="text-muted-foreground">Absent</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-medium text-yellow-600">
+                            {/* This will be populated by attendance data */}0
+                          </div>
+                          <div className="text-muted-foreground">Late</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-medium text-blue-600">
+                            {participants.length}
+                          </div>
+                          <div className="text-muted-foreground">Total</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Enhanced Participants/Attendance Table */}
+                  <DataTable
+                    columns={participantColumns}
+                    data={participants}
+                    filterColumn="participantName"
+                    filterPlaceholder="Search participants..."
+                    showColumnToggle={true}
+                    showPagination={participants.length > 10}
+                    pageSize={10}
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
