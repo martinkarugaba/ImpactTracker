@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useAtom } from "jotai";
 import {
   Dialog,
   DialogContent,
@@ -26,6 +27,13 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { getProjects } from "@/features/projects/actions/projects";
 import toast from "react-hot-toast";
+import {
+  selectedParticipantsAtom,
+  participantSearchTermAtom,
+  debouncedParticipantSearchTermAtom,
+  showCreateParticipantFormAtom,
+  isParticipantSubmittingAtom,
+} from "../../atoms/activities-atoms";
 
 import { ParticipantSearchForm } from "./participant-search-form";
 import { SelectedParticipantsSection } from "./selected-participants-section";
@@ -38,13 +46,17 @@ export function ParticipantSelectionDialog({
   onParticipantsSelected,
   activity,
 }: ParticipantSelectionDialogProps) {
-  const [selectedParticipants, setSelectedParticipants] = useState<
-    Participant[]
-  >([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedParticipants, setSelectedParticipants] = useAtom(
+    selectedParticipantsAtom
+  );
+  const [searchTerm, setSearchTerm] = useAtom(participantSearchTermAtom);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useAtom(
+    debouncedParticipantSearchTermAtom
+  );
+  const [showCreateForm, setShowCreateForm] = useAtom(
+    showCreateParticipantFormAtom
+  );
+  const [isSubmitting, setIsSubmitting] = useAtom(isParticipantSubmittingAtom);
 
   // Debounce search term to improve performance
   useEffect(() => {
@@ -53,7 +65,7 @@ export function ParticipantSelectionDialog({
     }, 300); // 300ms delay
 
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+  }, [searchTerm, setDebouncedSearchTerm]);
 
   // Fetch existing participants from the database with server-side search
   const {
@@ -98,8 +110,10 @@ export function ParticipantSelectionDialog({
     setIsSubmitting(true);
     try {
       await onParticipantsSelected(selectedParticipants);
+      // Clear atoms when dialog closes
       setSelectedParticipants([]);
       setSearchTerm("");
+      setDebouncedSearchTerm("");
       setShowCreateForm(false);
       onOpenChange(false);
     } finally {
@@ -224,6 +238,10 @@ export function ParticipantSelectionDialog({
       if (result.success && result.data) {
         toast.success("Participant created successfully");
         onParticipantsSelected([result.data]);
+        // Clear atoms when dialog closes
+        setSelectedParticipants([]);
+        setSearchTerm("");
+        setDebouncedSearchTerm("");
         setShowCreateForm(false);
         onOpenChange(false);
       } else {

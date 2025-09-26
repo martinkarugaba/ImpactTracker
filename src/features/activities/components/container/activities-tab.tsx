@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useAtom } from "jotai";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TabsContent } from "@/components/ui/tabs";
@@ -18,15 +18,15 @@ import {
   LayoutGrid,
   ChevronDown,
 } from "lucide-react";
-import { type ActivityFilters, type Activity } from "../../types/types";
+import { type Activity } from "../../types/types";
 import { ActivityFiltersComponent } from "../filters/activity-filters";
 import { ActivitiesDataTable } from "../data-table";
+import {
+  searchValueAtom,
+  columnVisibilityAtom,
+} from "../../atoms/activities-atoms";
 
 interface ActivitiesTabProps {
-  searchValue: string;
-  onSearchChange: (value: string) => void;
-  filters: ActivityFilters;
-  onFiltersChange: (filters: ActivityFilters) => void;
   activities: Activity[];
   pagination: {
     page: number;
@@ -46,10 +46,6 @@ interface ActivitiesTabProps {
 }
 
 export function ActivitiesTab({
-  searchValue,
-  onSearchChange,
-  filters,
-  onFiltersChange,
   activities,
   pagination,
   onPaginationChange,
@@ -62,17 +58,9 @@ export function ActivitiesTab({
   onExportData,
   onImport,
 }: ActivitiesTabProps) {
-  // Column visibility state
-  const [columnVisibility, setColumnVisibility] = useState({
-    title: true,
-    type: true,
-    status: true,
-    startDate: true,
-    venue: false,
-    participantCount: false,
-    organizationName: true,
-    budget: false,
-  });
+  // Use atoms for state management
+  const [searchValue, setSearchValue] = useAtom(searchValueAtom);
+  const [columnVisibility, setColumnVisibility] = useAtom(columnVisibilityAtom);
 
   // Available columns for toggle
   const availableColumns = [
@@ -97,7 +85,7 @@ export function ActivitiesTab({
             <Input
               placeholder="Search activities..."
               value={searchValue}
-              onChange={e => onSearchChange(e.target.value)}
+              onChange={e => setSearchValue(e.target.value)}
               className="w-80 pl-9"
             />
           </div>
@@ -152,10 +140,6 @@ export function ActivitiesTab({
 
         {/* Filters Section - Below action buttons */}
         <ActivityFiltersComponent
-          filters={filters}
-          onFiltersChange={onFiltersChange}
-          searchValue={searchValue}
-          onSearchChange={onSearchChange}
           organizations={[]}
           clusters={[]}
           projects={[]}
@@ -168,7 +152,7 @@ export function ActivitiesTab({
           isLoading={isLoading}
           onPaginationChange={onPaginationChange}
           onPageChange={onPageChange}
-          onSearchChange={onSearchChange}
+          onSearchChange={setSearchValue}
           searchTerm={searchValue}
           onAddActivity={onAddActivity}
           onEditActivity={onEditActivity}

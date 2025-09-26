@@ -71,10 +71,6 @@ export function ActivitiesContainerNew({
           <ActivitiesTab
             activities={state.activities}
             pagination={state.pagination}
-            filters={state.filters}
-            onFiltersChange={state.setFilters}
-            searchValue={state.searchValue}
-            onSearchChange={state.handleSearchChange}
             isLoading={state.isActivitiesLoading}
             onPaginationChange={state.handlePaginationChange}
             onPageChange={state.handlePageChange}

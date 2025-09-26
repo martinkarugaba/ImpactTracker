@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useAtom } from "jotai";
 import { format } from "date-fns";
+import { deletingSessionIdAtom } from "../../atoms/activities-atoms";
 import {
   Calendar,
   Clock,
@@ -53,8 +54,8 @@ export function SessionsTab({
   onCreateSession,
   onEditSession,
 }: SessionsTabProps) {
-  const [_deletingSessionId, _setDeletingSessionId] = useState<string | null>(
-    null
+  const [_deletingSessionId, _setDeletingSessionId] = useAtom(
+    deletingSessionIdAtom
   );
 
   const { data: sessions, isLoading } = useActivitySessions(activity.id);

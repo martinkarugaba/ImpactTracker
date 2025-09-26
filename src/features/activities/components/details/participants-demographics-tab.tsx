@@ -1,9 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useAtom } from "jotai";
 import { Activity } from "../../types/types";
 import { useActivityParticipants } from "../../hooks/use-activities";
 import { toast } from "sonner";
+import {
+  demographicsLoadingAtom,
+  demographicsDataAtom,
+} from "../../atoms/activities-atoms";
 import {
   DataAvailabilityNotice,
   DemographicsOverview,
@@ -14,7 +19,6 @@ import {
   SelfEmploymentSection,
   SecondaryEmploymentSection,
   generateMockDemographicsData,
-  type DemographicsData,
 } from "./demographics";
 
 interface ParticipantsDemographicsTabProps {
@@ -24,9 +28,8 @@ interface ParticipantsDemographicsTabProps {
 export function ParticipantsDemographicsTab({
   activity,
 }: ParticipantsDemographicsTabProps) {
-  const [demographicsData, setDemographicsData] =
-    useState<DemographicsData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [demographicsData, setDemographicsData] = useAtom(demographicsDataAtom);
+  const [isLoading, setIsLoading] = useAtom(demographicsLoadingAtom);
 
   const { data: participantsResponse } = useActivityParticipants(activity.id);
 
@@ -52,7 +55,7 @@ export function ParticipantsDemographicsTab({
     };
 
     loadDemographicsData();
-  }, [participantsResponse]);
+  }, [participantsResponse, setDemographicsData, setIsLoading]);
 
   if (isLoading) {
     return (
