@@ -2,13 +2,13 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { MetricCard } from "@/components/ui/metric-card";
 import {
   FileText,
   ClipboardList,
   Calendar,
   MapPin,
   DollarSign,
-  Files,
   Target,
   Building,
   Users,
@@ -17,8 +17,8 @@ import { format } from "date-fns";
 import { Activity } from "../../types/types";
 import { useActivitySessions } from "../../hooks/use-activities";
 import { ActivityNotesCard } from "../cards/activity-notes-card";
-import { ConceptNotesCards } from "../concept-notes/concept-notes-cards";
-import { ActivityReportsCards } from "../activity-reports/activity-reports-cards";
+import { ConceptNotesTable } from "../concept-notes/concept-notes-table";
+import { ActivityReportsTable } from "../activity-reports/activity-reports-table";
 
 interface ActivityOverviewTabProps {
   activity: Activity;
@@ -67,119 +67,62 @@ export function ActivityOverviewTab({
   return (
     <div className="space-y-8">
       {/* Key Metrics */}
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <Card className="group relative overflow-hidden border-l-4 border-l-blue-500 transition-all hover:shadow-lg hover:shadow-blue-100/50 dark:hover:shadow-blue-900/20">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <p className="text-muted-foreground text-sm font-medium">
-                  Duration
-                </p>
-                <div className="space-y-1">
-                  <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                    {formatDate(activity.startDate)}
-                  </p>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                    to {formatDate(activity.endDate)}
-                  </p>
-                </div>
-              </div>
-              <div className="rounded-full bg-blue-100 p-3 dark:bg-blue-900/30">
-                <Calendar className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs sm:grid-cols-2 lg:grid-cols-4">
+        <MetricCard
+          title="Start Date"
+          value={formatDate(activity.startDate)}
+          footer={{
+            title: "Event duration",
+            description: `to ${formatDate(activity.endDate)}`,
+          }}
+          icon={<Calendar className="h-4 w-4" />}
+        />
 
-        <Card className="group relative overflow-hidden border-l-4 border-l-green-500 transition-all hover:shadow-lg hover:shadow-green-100/50 dark:hover:shadow-green-900/20">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <p className="text-muted-foreground text-sm font-medium">
-                  Venue
-                </p>
-                <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                  {activity.venue || "TBD"}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Event location
-                </p>
-              </div>
-              <div className="rounded-full bg-green-100 p-3 dark:bg-green-900/30">
-                <MapPin className="h-6 w-6 text-green-600 dark:text-green-400" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <MetricCard
+          title="Venue"
+          value={activity.venue || "TBD"}
+          footer={{
+            title: "Event location",
+            description: "Activity venue",
+          }}
+          icon={<MapPin className="h-4 w-4" />}
+        />
 
-        <Card className="group relative overflow-hidden border-l-4 border-l-purple-500 transition-all hover:shadow-lg hover:shadow-purple-100/50 dark:hover:shadow-purple-900/20">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <p className="text-muted-foreground text-sm font-medium">
-                  Budget
-                </p>
-                <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                  {activity.budget
-                    ? `$${Number(activity.budget).toLocaleString()}`
-                    : "Not set"}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Total allocation
-                </p>
-              </div>
-              <div className="rounded-full bg-purple-100 p-3 dark:bg-purple-900/30">
-                <DollarSign className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <MetricCard
+          title="Budget"
+          value={
+            activity.budget
+              ? `$${Number(activity.budget).toLocaleString()}`
+              : "Not set"
+          }
+          footer={{
+            title: "Total allocation",
+            description: "Budget allocated",
+          }}
+          icon={<DollarSign className="h-4 w-4" />}
+        />
 
         {/* Session Metrics Card - Only show for multi-day activities */}
         {hasMultipleSessions ? (
-          <Card className="group relative overflow-hidden border-l-4 border-l-indigo-500 transition-all hover:shadow-lg hover:shadow-indigo-100/50 dark:hover:shadow-indigo-900/20">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                  <p className="text-muted-foreground text-sm font-medium">
-                    Sessions
-                  </p>
-                  <div className="space-y-1">
-                    <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                      {completedSessions}/{sessions.length}
-                    </p>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                      {sessionCompletionRate}% complete
-                    </p>
-                  </div>
-                </div>
-                <div className="rounded-full bg-indigo-100 p-3 dark:bg-indigo-900/30">
-                  <Calendar className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <MetricCard
+            title="Sessions"
+            value={`${completedSessions}/${sessions.length}`}
+            footer={{
+              title: `${sessionCompletionRate}% complete`,
+              description: "Session progress",
+            }}
+            icon={<Calendar className="h-4 w-4" />}
+          />
         ) : (
-          <Card className="group relative overflow-hidden border-l-4 border-l-orange-500 transition-all hover:shadow-lg hover:shadow-orange-100/50 dark:hover:shadow-orange-900/20">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                  <p className="text-muted-foreground text-sm font-medium">
-                    Project
-                  </p>
-                  <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                    {activity.projectName || "General"}
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Project context
-                  </p>
-                </div>
-                <div className="rounded-full bg-orange-100 p-3 dark:bg-orange-900/30">
-                  <Building className="h-6 w-6 text-orange-600 dark:text-orange-400" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <MetricCard
+            title="Project"
+            value={activity.projectName || "General"}
+            footer={{
+              title: "Project context",
+              description: "Activity project",
+            }}
+            icon={<Building className="h-4 w-4" />}
+          />
         )}
       </div>
 
@@ -281,14 +224,15 @@ export function ActivityOverviewTab({
       </div>
 
       {/* Documents Section */}
-      <Card className="overflow-hidden">
-        <CardHeader className="border-b bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-950/20 dark:to-green-950/20">
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Files className="h-5 w-5 text-emerald-600" />
-              Documents & Reports
-            </CardTitle>
-            <div className="flex gap-3">
+      <div className="grid gap-8 lg:grid-cols-1 xl:grid-cols-2">
+        {/* Concept Notes Table */}
+        <Card className="overflow-hidden">
+          <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <FileText className="h-5 w-5 text-blue-600" />
+                Concept Notes
+              </CardTitle>
               <Button
                 onClick={onCreateConceptNote}
                 variant="outline"
@@ -298,6 +242,28 @@ export function ActivityOverviewTab({
                 <FileText className="mr-2 h-4 w-4" />
                 Add Concept Note
               </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ConceptNotesTable
+              key={`concept-notes-${activity.id}-${refreshKey}`}
+              activityId={activity.id}
+              onCreateConceptNote={onCreateConceptNote}
+              onEditConceptNote={onEditConceptNote}
+              onDeleteConceptNote={onDeleteConceptNote}
+              refreshKey={refreshKey}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Activity Reports Table */}
+        <Card className="overflow-hidden">
+          <CardHeader className="border-b bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <ClipboardList className="h-5 w-5 text-purple-600" />
+                Activity Reports
+              </CardTitle>
               <Button
                 onClick={onCreateActivityReport}
                 variant="outline"
@@ -308,62 +274,19 @@ export function ActivityOverviewTab({
                 Add Report
               </Button>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-10 p-8">
-          <div className="space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-blue-100 p-2 dark:bg-blue-900/30">
-                <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Concept Notes
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Planning documents and initial ideas for the activity
-                </p>
-              </div>
-            </div>
-            <div className="rounded-lg border border-gray-200 bg-gray-50/30 dark:border-gray-700 dark:bg-gray-800/30">
-              <ConceptNotesCards
-                key={`concept-notes-${activity.id}-${refreshKey}`}
-                activityId={activity.id}
-                onCreateConceptNote={onCreateConceptNote}
-                onEditConceptNote={onEditConceptNote}
-                onDeleteConceptNote={onDeleteConceptNote}
-                refreshKey={refreshKey}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-purple-100 p-2 dark:bg-purple-900/30">
-                <ClipboardList className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Activity Reports
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Completed reports and outcome documentation
-                </p>
-              </div>
-            </div>
-            <div className="rounded-lg border border-gray-200 bg-gray-50/30 dark:border-gray-700 dark:bg-gray-800/30">
-              <ActivityReportsCards
-                key={`activity-reports-${activity.id}-${activityReportsRefreshKey}`}
-                activityId={activity.id}
-                onCreateActivityReport={onCreateActivityReport}
-                onEditActivityReport={onEditActivityReport}
-                onDeleteActivityReport={onDeleteActivityReport}
-                refreshKey={activityReportsRefreshKey}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ActivityReportsTable
+              key={`activity-reports-${activity.id}-${activityReportsRefreshKey}`}
+              activityId={activity.id}
+              onCreateActivityReport={onCreateActivityReport}
+              onEditActivityReport={onEditActivityReport}
+              onDeleteActivityReport={onDeleteActivityReport}
+              refreshKey={activityReportsRefreshKey}
+            />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

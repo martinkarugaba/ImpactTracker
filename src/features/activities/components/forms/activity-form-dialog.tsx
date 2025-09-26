@@ -78,7 +78,8 @@ interface ActivityFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   activity?: Activity;
-  organizations: Array<{ id: string; name: string }>;
+  clusterId?: string;
+  organizations: Array<{ id: string; name: string; acronym?: string }>;
   clusters?: Array<{ id: string; name: string }>;
   projects?: Array<{ id: string; name: string }>;
 }
@@ -87,6 +88,7 @@ export function ActivityFormDialog({
   open,
   onOpenChange,
   activity,
+  clusterId,
   organizations,
   clusters = [],
   projects = [],
@@ -103,6 +105,7 @@ export function ActivityFormDialog({
       type: "meeting" as ActivityType,
       status: "planned" as ActivityStatus,
       venue: "",
+      budget: undefined,
       objectives: "",
       organizationId: "",
       clusterId: "",
@@ -140,14 +143,15 @@ export function ActivityFormDialog({
           type: "training",
           status: "planned",
           venue: "",
+          budget: undefined,
           objectives: "",
           organizationId: "",
-          clusterId: "",
+          clusterId: clusterId || "",
           projectId: "",
         });
       }
     }
-  }, [open, activity, form]);
+  }, [open, activity, form, clusterId]);
 
   const onSubmit = async (data: ActivityFormValues) => {
     try {
@@ -171,7 +175,7 @@ export function ActivityFormDialog({
         });
         createdActivity = result.data;
       } else {
-        const result = await createActivity.mutateAsync({
+        const activityData = {
           ...data,
           description: data.description || null,
           objectives: data.objectives
@@ -179,7 +183,7 @@ export function ActivityFormDialog({
             : [],
           budget: data.budget || null,
           endDate: data.endDate || null,
-          cluster_id: data.clusterId || null,
+          cluster_id: data.clusterId || clusterId || null,
           project_id: data.projectId || null,
           organization_id: data.organizationId,
           // Provide default values for missing required fields
@@ -190,7 +194,10 @@ export function ActivityFormDialog({
           recommendations: null,
           attachments: [],
           created_by: "current-user", // TODO: Get from auth context
-        });
+        };
+
+        console.log("Creating activity with data:", activityData);
+        const result = await createActivity.mutateAsync(activityData);
         createdActivity = result.data;
       }
 
@@ -441,7 +448,7 @@ export function ActivityFormDialog({
                     <Input
                       type="number"
                       placeholder="0"
-                      {...field}
+                      value={field.value || ""}
                       onChange={e =>
                         field.onChange(
                           e.target.value ? Number(e.target.value) : undefined
@@ -473,7 +480,7 @@ export function ActivityFormDialog({
                     <SelectContent>
                       {organizations.map(org => (
                         <SelectItem key={org.id} value={org.id}>
-                          {org.name}
+                          {org.acronym || org.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
