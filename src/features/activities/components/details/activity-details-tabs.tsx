@@ -1,13 +1,12 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Info, Users, BarChart3, Calendar, UserCheck } from "lucide-react";
+import { Info, Users, BarChart3, UserCheck } from "lucide-react";
 import { Activity } from "../../types/types";
 import { ActivityOverviewTab } from "./activity-overview-tab";
-import { ParticipantsTab } from "./participants-tab";
+import { AttendanceTab } from "./attendance-tab";
 import { AttendanceAnalyticsTab } from "./attendance-analytics-tab";
 import { ParticipantsDemographicsTab } from "./participants-demographics-tab";
-import { SessionsTab } from "./sessions-tab";
 
 interface ActivityDetailsTabsProps {
   activity: Activity;
@@ -40,20 +39,15 @@ export function ActivityDetailsTabs({
 }: ActivityDetailsTabsProps) {
   return (
     <Tabs defaultValue="overview" className="w-full">
-      <TabsList className="grid w-full grid-cols-5">
+      <TabsList className="grid w-full grid-cols-4">
         <TabsTrigger value="overview">
           <Info className="h-4 w-4" />
           <span className="hidden sm:inline">Overview</span>
           <span className="sm:hidden">Info</span>
         </TabsTrigger>
-        <TabsTrigger value="sessions">
-          <Calendar className="h-4 w-4" />
-          <span className="hidden sm:inline">Sessions</span>
-          <span className="sm:hidden">Days</span>
-        </TabsTrigger>
-        <TabsTrigger value="participants">
+        <TabsTrigger value="attendance">
           <Users className="h-4 w-4" />
-          <span className="hidden sm:inline">Participants</span>
+          <span className="hidden sm:inline">Attendance</span>
           <span className="sm:hidden">People</span>
         </TabsTrigger>
         <TabsTrigger value="demographics">
@@ -82,19 +76,12 @@ export function ActivityDetailsTabs({
         />
       </TabsContent>
 
-      <TabsContent value="sessions" className="mt-6">
-        <SessionsTab
+      <TabsContent value="attendance" className="mt-6">
+        <AttendanceTab
           activity={activity}
           onManageAttendance={onManageAttendance}
           onCreateSession={onCreateSession}
           onEditSession={onEditSession}
-        />
-      </TabsContent>
-
-      <TabsContent value="participants" className="mt-6">
-        <ParticipantsTab
-          activity={activity}
-          onManageAttendance={onManageAttendance}
         />
       </TabsContent>
 
