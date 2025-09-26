@@ -182,12 +182,11 @@ export async function deleteActivitySession(
 }
 
 /**
- * Auto-generate sessions for a multi-day activity
+ * Auto-generate sessions for an activity
  */
 export async function generateActivitySessions(
   activityId: string,
-  startDate: Date,
-  endDate: Date,
+  sessionCount: number,
   sessionData?: {
     start_time?: string;
     end_time?: string;
@@ -195,6 +194,14 @@ export async function generateActivitySessions(
   }
 ): Promise<ActivitySessionsResponse> {
   try {
+    // Validate session count
+    if (sessionCount < 1 || sessionCount > 50) {
+      return {
+        success: false,
+        error: "Session count must be between 1 and 50",
+      };
+    }
+
     // Check if activity exists
     const activity = await db.query.activities.findFirst({
       where: eq(activities.id, activityId),
@@ -207,28 +214,27 @@ export async function generateActivitySessions(
       };
     }
 
-    // Calculate the date range
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+    // Generate placeholder sessions with dates starting from activity start date or today
     const sessions: NewActivitySession[] = [];
+    const baseDate = activity.startDate
+      ? new Date(activity.startDate)
+      : new Date();
 
-    let sessionNumber = 1;
-    const currentDate = new Date(start);
+    for (let i = 1; i <= sessionCount; i++) {
+      // Create a date for each session (spaced 1 day apart as placeholder)
+      const sessionDate = new Date(baseDate);
+      sessionDate.setDate(baseDate.getDate() + (i - 1));
 
-    while (currentDate <= end) {
       sessions.push({
         activity_id: activityId,
-        session_date: currentDate.toISOString().split("T")[0], // Format as YYYY-MM-DD
-        session_number: sessionNumber,
+        session_date: sessionDate.toISOString().split("T")[0], // Format as YYYY-MM-DD
+        session_number: i,
         start_time: sessionData?.start_time || null,
         end_time: sessionData?.end_time || null,
         venue: sessionData?.venue || activity.venue,
         status: "scheduled",
         notes: null,
       });
-
-      sessionNumber++;
-      currentDate.setDate(currentDate.getDate() + 1);
     }
 
     // Insert all sessions

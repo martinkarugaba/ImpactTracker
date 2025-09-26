@@ -66,10 +66,12 @@ const activityFormSchema = z.object({
   organizationId: z.string().min(1, "Lead partner is required"),
   clusterId: z.string().optional(),
   projectId: z.string().optional(),
-  // Multi-day session fields
-  generateSessions: z.boolean().default(false),
-  sessionStartTime: z.string().optional(),
-  sessionEndTime: z.string().optional(),
+  // Expected number of sessions
+  sessionCount: z
+    .number()
+    .min(1, "At least 1 session is required")
+    .max(50, "Maximum 50 sessions allowed")
+    .optional(),
 });
 
 type ActivityFormValues = z.infer<typeof activityFormSchema>;
@@ -110,9 +112,7 @@ export function ActivityFormDialog({
       organizationId: "",
       clusterId: "",
       projectId: "",
-      generateSessions: false,
-      sessionStartTime: "",
-      sessionEndTime: "",
+      sessionCount: undefined,
     },
   }) as ReturnType<typeof useForm<ActivityFormValues>>;
 
@@ -135,6 +135,7 @@ export function ActivityFormDialog({
           organizationId: activity.organization_id || "",
           clusterId: activity.cluster_id || "",
           projectId: activity.project_id || "",
+          sessionCount: activity.expectedSessions || undefined,
         });
       } else {
         form.reset({
@@ -148,6 +149,7 @@ export function ActivityFormDialog({
           organizationId: "",
           clusterId: clusterId || "",
           projectId: "",
+          sessionCount: undefined,
         });
       }
     }
@@ -171,6 +173,7 @@ export function ActivityFormDialog({
             cluster_id: data.clusterId || undefined,
             project_id: data.projectId || undefined,
             organization_id: data.organizationId,
+            expectedSessions: data.sessionCount || null,
           },
         });
         createdActivity = result.data;
@@ -186,6 +189,7 @@ export function ActivityFormDialog({
           cluster_id: data.clusterId || clusterId || null,
           project_id: data.projectId || null,
           organization_id: data.organizationId,
+          expectedSessions: data.sessionCount || null,
           // Provide default values for missing required fields
           actualCost: null,
           numberOfParticipants: 0,
@@ -201,22 +205,17 @@ export function ActivityFormDialog({
         createdActivity = result.data;
       }
 
-      // Generate sessions for multi-day activities
+      // Generate sessions if session count is specified
       if (
         !activity && // Only for new activities
         createdActivity &&
-        data.generateSessions &&
-        data.startDate &&
-        data.endDate &&
-        data.startDate < data.endDate
+        data.sessionCount &&
+        data.sessionCount > 0
       ) {
         await generateSessions.mutateAsync({
           activityId: createdActivity.id,
-          startDate: data.startDate,
-          endDate: data.endDate,
+          sessionCount: data.sessionCount,
           sessionData: {
-            start_time: data.sessionStartTime || undefined,
-            end_time: data.sessionEndTime || undefined,
             venue: data.venue,
           },
         });
@@ -433,6 +432,34 @@ export function ActivityFormDialog({
                   <FormControl>
                     <Input placeholder="Activity venue" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="sessionCount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Expected Number of Sessions (Optional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="50"
+                      placeholder="Enter number of sessions (e.g., 5)"
+                      {...field}
+                      value={field.value || ""}
+                      onChange={e =>
+                        field.onChange(parseInt(e.target.value) || undefined)
+                      }
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    If this activity will have multiple sessions, specify how
+                    many you expect
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

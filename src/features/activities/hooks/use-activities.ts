@@ -271,19 +271,17 @@ export function useGenerateActivitySessions() {
   return useMutation({
     mutationFn: ({
       activityId,
-      startDate,
-      endDate,
+      sessionCount,
       sessionData,
     }: {
       activityId: string;
-      startDate: Date;
-      endDate: Date;
+      sessionCount: number;
       sessionData?: {
         start_time?: string;
         end_time?: string;
         venue?: string;
       };
-    }) => generateActivitySessions(activityId, startDate, endDate, sessionData),
+    }) => generateActivitySessions(activityId, sessionCount, sessionData),
     onSuccess: (result, variables) => {
       if (result.success) {
         queryClient.invalidateQueries({

@@ -851,6 +851,7 @@ export const activities = pgTable("activities", {
   budget: integer("budget"),
   actualCost: integer("actual_cost"),
   numberOfParticipants: integer("number_of_participants").default(0),
+  expectedSessions: integer("expected_sessions"),
   objectives: text("objectives").array().default([]),
   outcomes: text("outcomes"),
   challenges: text("challenges"),
