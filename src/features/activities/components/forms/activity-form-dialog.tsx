@@ -63,7 +63,7 @@ const activityFormSchema = z.object({
   venue: z.string().min(1, "Venue is required"),
   budget: z.number().optional(),
   objectives: z.string().optional(),
-  organizationId: z.string().min(1, "Organization is required"),
+  organizationId: z.string().min(1, "Lead partner is required"),
   clusterId: z.string().optional(),
   projectId: z.string().optional(),
   // Multi-day session fields
@@ -367,9 +367,6 @@ export function ActivityFormDialog({
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          disabled={date =>
-                            date < new Date(new Date().setHours(0, 0, 0, 0))
-                          }
                           initialFocus
                         />
                       </PopoverContent>
@@ -409,10 +406,7 @@ export function ActivityFormDialog({
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          disabled={date =>
-                            date < form.watch("startDate") ||
-                            date < new Date(new Date().setHours(0, 0, 0, 0))
-                          }
+                          disabled={date => date < form.watch("startDate")}
                           initialFocus
                         />
                       </PopoverContent>
@@ -466,14 +460,14 @@ export function ActivityFormDialog({
               name="organizationId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Organization</FormLabel>
+                  <FormLabel>Lead Partner</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select organization" />
+                        <SelectValue placeholder="Select lead partner" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>

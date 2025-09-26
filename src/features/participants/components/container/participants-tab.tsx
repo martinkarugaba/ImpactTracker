@@ -222,9 +222,8 @@ export function ParticipantsTab({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant="outline"
                     size="sm"
-                    className="border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                    className="bg-slate-600 text-white hover:bg-slate-700 focus:ring-2 focus:ring-slate-500 focus:ring-offset-1 dark:bg-slate-700 dark:hover:bg-slate-800"
                   >
                     <Settings className="h-4 w-4" />
                     <ChevronDown className="ml-2 h-4 w-4" />
@@ -252,9 +251,8 @@ export function ParticipantsTab({
 
               <Button
                 onClick={() => setIsImportDialogOpen(true)}
-                variant="outline"
                 size="sm"
-                className="border-blue-200 bg-blue-100 text-blue-800 hover:bg-blue-200 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                className="bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:bg-blue-700 dark:hover:bg-blue-800"
               >
                 <Upload className="mr-2 h-4 w-4" />
                 Import from Excel
@@ -266,18 +264,16 @@ export function ParticipantsTab({
                     debugExcelExport();
                     toast.success("Debug info logged to console");
                   }}
-                  variant="outline"
                   size="sm"
-                  className="border-yellow-200 bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:border-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400 dark:hover:bg-yellow-900/30"
+                  className="bg-amber-600 text-white hover:bg-amber-700 focus:ring-2 focus:ring-amber-500 focus:ring-offset-1 dark:bg-amber-700 dark:hover:bg-amber-800"
                 >
                   🔍 Debug Excel
                 </Button>
               )}
               <Button
                 onClick={() => setIsExportDialogOpen(true)}
-                variant="outline"
                 size="sm"
-                className="border-purple-200 bg-purple-100 text-purple-800 hover:bg-purple-200 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400 dark:hover:bg-purple-900/30"
+                className="bg-purple-600 text-white hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-1 dark:bg-purple-700 dark:hover:bg-purple-800"
               >
                 <Download className="mr-2 h-4 w-4" />
                 Export
@@ -293,9 +289,8 @@ export function ParticipantsTab({
                       dataTableRef.current?.clearSelection();
                       setSelectedParticipants([]);
                     }}
-                    variant="outline"
                     size="sm"
-                    className="border-red-200 bg-red-100 text-red-800 hover:bg-red-200 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
+                    className="bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-1 dark:bg-red-700 dark:hover:bg-red-800"
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete Selected ({selectedParticipants.length})
@@ -305,9 +300,8 @@ export function ParticipantsTab({
                       dataTableRef.current?.clearSelection();
                       setSelectedParticipants([]);
                     }}
-                    variant="outline"
                     size="sm"
-                    className="border-gray-200 bg-gray-100 text-gray-800 hover:bg-gray-200 dark:border-gray-800 dark:bg-gray-900/20 dark:text-gray-400 dark:hover:bg-gray-900/30"
+                    className="bg-gray-600 text-white hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 focus:ring-offset-1 dark:bg-gray-700 dark:hover:bg-gray-800"
                   >
                     Clear Selection
                   </Button>
@@ -320,9 +314,8 @@ export function ParticipantsTab({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant="outline"
                     size="sm"
-                    className="border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                    className="bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 dark:bg-indigo-700 dark:hover:bg-indigo-800"
                   >
                     <LayoutGrid className="mr-2 h-4 w-4" />
                     <span className="hidden lg:inline">Columns</span>

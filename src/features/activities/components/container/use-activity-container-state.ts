@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useActivities, useActivityMetrics } from "../../hooks/use-activities";
+import { useOrganizationsByCluster } from "../../hooks/use-organizations";
 import { type Activity, type ActivityFilters } from "../../types/types";
 
 interface UseActivityContainerStateProps {
@@ -66,8 +67,16 @@ export function useActivityContainerState({
     error: metricsError,
   } = useActivityMetrics(clusterId);
 
+  // Fetch organizations for the cluster
+  const {
+    data: organizationsData,
+    isLoading: _isOrganizationsLoading,
+    error: _organizationsError,
+  } = useOrganizationsByCluster(clusterId);
+
   const activities = activitiesData?.data?.data || [];
   const metricsActivities = activities; // Use the same data for now
+  const organizations = organizationsData?.data || [];
 
   // Build pagination object from API response
   const paginationData = {
@@ -112,6 +121,7 @@ export function useActivityContainerState({
     activitiesData,
     metricsActivities,
     metricsData,
+    organizations,
 
     // Loading states
     isActivitiesLoading,
