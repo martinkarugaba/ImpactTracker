@@ -2,12 +2,13 @@
 
 import { useAtom } from "jotai";
 import { useState } from "react";
+import type { ActivityParticipant } from "../../types/types";
+import type { Participant } from "@/features/participants/types/types";
 import { deletingSessionIdAtom } from "../../atoms/activities-atoms";
 import {
   Users,
   Calendar,
   CheckCircle,
-  TrendingUp,
   Clock,
   Plus,
   Play,
@@ -55,6 +56,8 @@ import {
   useUpdateActivitySession,
 } from "../../hooks/use-activities";
 import { createParticipantsTableColumns } from "./participants-table-columns";
+import { EditParticipantDialog } from "@/features/participants/components/edit-participant-dialog";
+import { ParticipantFeedbackDialog } from "../dialogs/participant-feedback-dialog";
 
 interface AttendanceTabProps {
   activity: Activity;
@@ -113,6 +116,12 @@ export function AttendanceTab({
 
   // Hook for updating session status
   const updateSession = useUpdateActivitySession();
+
+  // Dialog state management
+  const [editingParticipant, setEditingParticipant] =
+    useState<ActivityParticipant | null>(null);
+  const [feedbackParticipant, setFeedbackParticipant] =
+    useState<ActivityParticipant | null>(null);
 
   // Fetch activity participants and sessions
   const {
@@ -354,8 +363,39 @@ export function AttendanceTab({
     ];
   };
 
-  // Create columns for participants table
-  const participantColumns = createParticipantsTableColumns();
+  // Create columns for participants table with action handlers
+  const participantColumns = createParticipantsTableColumns({
+    onEditParticipant: participant => {
+      setEditingParticipant(participant);
+    },
+    onAddFeedback: participant => {
+      setFeedbackParticipant(participant);
+    },
+  });
+
+  // Handle feedback submission
+  const handleFeedbackSubmit = async (
+    participantId: string,
+    feedbackData: {
+      relevance: string;
+      usefulness: string;
+      comments?: string;
+      wouldRecommend: string;
+    }
+  ) => {
+    try {
+      // TODO: Implement feedback submission API
+      console.log(
+        "Submitting feedback for participant:",
+        participantId,
+        feedbackData
+      );
+      toast.success("Feedback submitted successfully");
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+      throw error;
+    }
+  };
 
   const handleGenerateSessions = async () => {
     if (sessionCount < 1 || sessionCount > 50) {
@@ -576,22 +616,46 @@ export function AttendanceTab({
         </TabsContent>
 
         <TabsContent value="attendance" className="mt-6">
-          {/* Attendance Overview Metrics */}
-          <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card mb-6 grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2">
+          {/* Comprehensive Attendance Metrics */}
+          <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card mb-6 grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
             <MetricCard
               title="Total Participants"
               value={stats.total}
-              description="All registered participants for this activity"
+              description="All registered participants"
               icon={<Users className="h-4 w-4" />}
+              footer={{
+                title: "Activity Registration",
+                description: "Overall participation",
+              }}
             />
             <MetricCard
-              title="Overall Attendance Rate"
-              value={`${attendanceRate}%`}
-              description="Average attendance across all sessions"
-              icon={<TrendingUp className="h-4 w-4" />}
+              title="Attended"
+              value={stats.attended}
+              description="Present participants"
+              icon={<CheckCircle className="h-4 w-4 text-green-600" />}
               footer={{
-                title: "Participation",
-                description: `${stats.attended}/${stats.total} participants`,
+                title: `${attendanceRate}% attendance rate`,
+                description: "Active participation",
+              }}
+            />
+            <MetricCard
+              title="Absent"
+              value={stats.absent}
+              description="Missing participants"
+              icon={<XCircle className="h-4 w-4 text-red-600" />}
+              footer={{
+                title: `${Math.round((stats.absent / Math.max(stats.total, 1)) * 100)}% absence rate`,
+                description: "Missed sessions",
+              }}
+            />
+            <MetricCard
+              title="Pending"
+              value={stats.pending}
+              description="Unrecorded attendance"
+              icon={<Clock className="h-4 w-4 text-yellow-600" />}
+              footer={{
+                title: `${Math.round((stats.pending / Math.max(stats.total, 1)) * 100)}% pending`,
+                description: "Awaiting update",
               }}
             />
           </div>
@@ -643,13 +707,34 @@ export function AttendanceTab({
                             : undefined
                         )
                       }
+                      disabled={
+                        sessions.length > 1 && selectedSessionId === "all"
+                      }
+                      title={
+                        sessions.length > 1 && selectedSessionId === "all"
+                          ? "Please select a specific session to add participants"
+                          : undefined
+                      }
                     >
                       <Edit className="mr-2 h-4 w-4" />
                       {selectedSessionId !== "all"
                         ? "Add to Session"
-                        : "Manage Participants"}
+                        : sessions.length > 1
+                          ? "Select Session First"
+                          : "Manage Participants"}
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={
+                        sessions.length > 1 && selectedSessionId === "all"
+                      }
+                      title={
+                        sessions.length > 1 && selectedSessionId === "all"
+                          ? "Please select a specific session to import participants"
+                          : "Import participants"
+                      }
+                    >
                       <Plus className="mr-2 h-4 w-4" />
                       Import
                     </Button>
@@ -682,12 +767,22 @@ export function AttendanceTab({
                             : undefined
                         )
                       }
+                      disabled={
+                        sessions.length > 1 && selectedSessionId === "all"
+                      }
                     >
                       <UserPlus className="mr-2 h-4 w-4" />
                       {selectedSessionId !== "all"
                         ? "Add to Session"
-                        : "Add Participants"}
+                        : sessions.length > 1
+                          ? "Select Session First"
+                          : "Add Participants"}
                     </Button>
+                    {sessions.length > 1 && selectedSessionId === "all" && (
+                      <p className="text-muted-foreground mt-2 text-sm">
+                        Please select a specific session to add participants.
+                      </p>
+                    )}
                   </div>
                 </div>
               ) : (
@@ -765,6 +860,35 @@ export function AttendanceTab({
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Edit Participant Dialog */}
+      {editingParticipant && editingParticipant.participant && (
+        <EditParticipantDialog
+          participant={editingParticipant.participant as Participant}
+          open={!!editingParticipant}
+          onOpenChange={open => {
+            if (!open) setEditingParticipant(null);
+          }}
+          onSuccess={() => {
+            setEditingParticipant(null);
+            // TODO: Refresh participant data
+            toast.success("Participant updated successfully");
+          }}
+        />
+      )}
+
+      {/* Feedback Dialog */}
+      {feedbackParticipant && (
+        <ParticipantFeedbackDialog
+          open={!!feedbackParticipant}
+          onOpenChange={open => {
+            if (!open) setFeedbackParticipant(null);
+          }}
+          participant={feedbackParticipant}
+          activityTitle={activity.title}
+          onSubmit={handleFeedbackSubmit}
+        />
+      )}
     </div>
   );
 }

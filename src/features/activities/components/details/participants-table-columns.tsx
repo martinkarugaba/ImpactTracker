@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, User, Phone, Edit } from "lucide-react";
+import { MoreHorizontal, User, Phone, Edit, MessageSquare } from "lucide-react";
 import { ActivityParticipant } from "../../types/types";
 
 // Helper function to format phone numbers with leading zero
@@ -125,10 +125,12 @@ type ExtendedParticipant = {
 
 interface ParticipantsTableColumnsProps {
   onEditParticipant?: (participant: ActivityParticipant) => void;
+  onAddFeedback?: (participant: ActivityParticipant) => void;
 }
 
 export const createParticipantsTableColumns = ({
   onEditParticipant,
+  onAddFeedback,
 }: ParticipantsTableColumnsProps = {}): ColumnDef<ActivityParticipant>[] => [
   {
     accessorKey: "participantName",
@@ -321,7 +323,15 @@ export const createParticipantsTableColumns = ({
               </DropdownMenuItem>
             )}
             <DropdownMenuItem>Update status</DropdownMenuItem>
-            <DropdownMenuItem>Add feedback</DropdownMenuItem>
+            {onAddFeedback && (
+              <DropdownMenuItem
+                onClick={() => onAddFeedback(participant)}
+                className="flex items-center gap-2"
+              >
+                <MessageSquare className="h-4 w-4" />
+                Add feedback
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-red-600">
               Remove participant
