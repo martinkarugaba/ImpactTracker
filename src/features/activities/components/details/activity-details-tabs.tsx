@@ -1,12 +1,12 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Info, Users, BarChart3, UserCheck } from "lucide-react";
+import { Info, Users, UserCheck, TrendingUp } from "lucide-react";
 import { Activity } from "../../types/types";
 import { ActivityOverviewTab } from "./activity-overview-tab";
 import { AttendanceTab } from "./attendance-tab";
 import { AttendanceAnalyticsTab } from "./attendance-analytics-tab";
-import { ParticipantsDemographicsTab } from "./participants-demographics-tab";
+import { AttendanceDemographicsTab } from "./attendance-demographics-tab";
 
 interface ActivityDetailsTabsProps {
   activity: Activity;
@@ -39,7 +39,7 @@ export function ActivityDetailsTabs({
 }: ActivityDetailsTabsProps) {
   return (
     <Tabs defaultValue="overview" className="w-full">
-      <TabsList className="grid w-full grid-cols-4">
+      <TabsList className="grid w-full grid-cols-5">
         <TabsTrigger value="overview">
           <Info className="h-4 w-4" />
           <span className="hidden sm:inline">Overview</span>
@@ -56,7 +56,7 @@ export function ActivityDetailsTabs({
           <span className="sm:hidden">Demo</span>
         </TabsTrigger>
         <TabsTrigger value="analytics">
-          <BarChart3 className="h-4 w-4" />
+          <TrendingUp className="h-4 w-4" />
           <span className="hidden sm:inline">Analytics</span>
           <span className="sm:hidden">Stats</span>
         </TabsTrigger>
@@ -86,7 +86,7 @@ export function ActivityDetailsTabs({
       </TabsContent>
 
       <TabsContent value="demographics" className="mt-6">
-        <ParticipantsDemographicsTab activity={activity} />
+        <AttendanceDemographicsTab activity={activity} />
       </TabsContent>
 
       <TabsContent value="analytics" className="mt-6">
