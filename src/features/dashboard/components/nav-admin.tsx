@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { type Icon } from "@tabler/icons-react";
 
 import {
@@ -19,6 +19,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function NavMain({
   items,
@@ -31,6 +32,30 @@ export function NavMain({
 }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <SidebarGroup className="">
+        <SidebarGroupLabel className="text-primary font-semibold">
+          Admin
+        </SidebarGroupLabel>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            {items.map(item => (
+              <SidebarMenuItem key={item.title}>
+                <Skeleton className="h-8 w-full" />
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    );
+  }
 
   return (
     <Collapsible
