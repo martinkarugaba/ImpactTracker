@@ -23,14 +23,20 @@ interface EditParticipantDialogProps {
   participant: Participant;
   onSuccess?: () => void;
   trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function EditParticipantDialog({
   participant,
   onSuccess,
   trigger,
+  open: controlledOpen,
+  onOpenChange,
 }: EditParticipantDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
   const updateParticipant = useUpdateParticipant();
 
   // Fetch projects for the form

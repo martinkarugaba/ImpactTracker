@@ -1,17 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
+import { useAtom, useSetAtom } from "jotai";
+import {
+  tableSearchAtom,
+  selectedRowsAtom,
+  setSelectedRowsAtom,
+} from "../../atoms/activities-atoms";
 
 export function useTableState(initialSearch?: string) {
-  const [search, setSearch] = useState(initialSearch || "");
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [search, setSearch] = useAtom(tableSearchAtom);
+  const [selectedRows] = useAtom(selectedRowsAtom);
+  const setSelectedRowsAction = useSetAtom(setSelectedRowsAtom);
+
+  // Initialize search value if provided
+  useEffect(() => {
+    if (initialSearch && search !== initialSearch) {
+      setSearch(initialSearch);
+    }
+  }, [initialSearch, search, setSearch]);
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
   };
 
   const handleRowSelectionChange = (rows: string[]) => {
-    setSelectedRows(rows);
+    setSelectedRowsAction(rows);
   };
 
   return {

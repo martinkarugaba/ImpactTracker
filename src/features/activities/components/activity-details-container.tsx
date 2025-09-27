@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Activity } from "../types/types";
 import type {
   ConceptNote,
@@ -58,6 +59,7 @@ export function ActivityDetailsContainer({
   clusters = [],
   projects = [],
 }: ActivityDetailsContainerProps) {
+  const queryClient = useQueryClient();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isConceptNoteDialogOpen, setIsConceptNoteDialogOpen] = useState(false);
@@ -97,6 +99,7 @@ export function ActivityDetailsContainer({
   // Attendance dialog state
   const [isAttendanceListDialogOpen, setIsAttendanceListDialogOpen] =
     useState(false);
+  const [selectedSessionId, setSelectedSessionId] = useState<string>();
 
   // Dialog states
   const [refreshKey, setRefreshKey] = useState(0);
@@ -188,6 +191,7 @@ export function ActivityDetailsContainer({
 
   const handleManageAttendance = (sessionId?: string) => {
     console.log("Managing attendance for session:", sessionId);
+    setSelectedSessionId(sessionId);
     setIsAttendanceListDialogOpen(true);
   };
 
@@ -232,17 +236,48 @@ export function ActivityDetailsContainer({
   };
 
   const handleAttendanceListSubmit = async (
-    participants: Partial<ActivityParticipant>[]
+    participants: Partial<ActivityParticipant>[],
+    sessionId?: string
   ) => {
     try {
-      await addActivityParticipants.mutateAsync({
-        activityId: activity.id,
-        participants: participants as Parameters<
-          typeof addActivityParticipants.mutateAsync
-        >[0]["participants"],
-      });
-      toast.success("Participants added successfully.");
+      if (sessionId) {
+        // If sessionId is provided, use the new function that adds to both activity and session
+        const { addActivityParticipantsToSession } = await import(
+          "../actions/participants"
+        );
+        await addActivityParticipantsToSession(
+          activity.id,
+          sessionId,
+          participants as Parameters<typeof addActivityParticipantsToSession>[2]
+        );
+
+        // Invalidate relevant React Query caches
+        await queryClient.invalidateQueries({
+          queryKey: ["session-attendance", sessionId],
+        });
+        await queryClient.invalidateQueries({
+          queryKey: ["activity-participants", activity.id],
+        });
+
+        toast.success("Participants added to session successfully.");
+      } else {
+        // Use the existing function for general activity participant addition
+        await addActivityParticipants.mutateAsync({
+          activityId: activity.id,
+          participants: participants as Parameters<
+            typeof addActivityParticipants.mutateAsync
+          >[0]["participants"],
+        });
+
+        // Invalidate activity participants cache
+        await queryClient.invalidateQueries({
+          queryKey: ["activity-participants", activity.id],
+        });
+
+        toast.success("Participants added successfully.");
+      }
       setIsAttendanceListDialogOpen(false); // Close the dialog
+      setSelectedSessionId(undefined); // Reset session selection
     } catch (_error) {
       toast.error("Failed to add participants. Please try again.");
     }
@@ -362,8 +397,14 @@ export function ActivityDetailsContainer({
       {/* Attendance List Dialog */}
       <AttendanceListDialog
         open={isAttendanceListDialogOpen}
-        onOpenChange={setIsAttendanceListDialogOpen}
+        onOpenChange={open => {
+          setIsAttendanceListDialogOpen(open);
+          if (!open) {
+            setSelectedSessionId(undefined);
+          }
+        }}
         activityId={activity.id}
+        sessionId={selectedSessionId}
         activity={
           activity.cluster_id && activity.project_id && activity.organization_id
             ? {

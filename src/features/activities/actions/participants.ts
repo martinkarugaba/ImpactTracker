@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { activityParticipants } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { activityParticipants, activities } from "@/lib/db/schema";
+import { eq, and, inArray } from "drizzle-orm";
 import { type ActivityParticipant } from "../types/types";
 
 export type ActivityParticipantResponse = {
@@ -268,6 +268,206 @@ export async function bulkUpdateActivityParticipants(
     return {
       success: false,
       error: "Failed to update participants",
+    };
+  }
+}
+
+/**
+ * Add specific participants to an activity and optionally to a specific session
+ * This function only adds the participants you specify, not all activity participants
+ */
+export async function addActivityParticipantsToSession(
+  activityId: string,
+  sessionId: string | undefined,
+  participants: Array<{
+    participant_id: string;
+    participantName: string;
+    role: string;
+    attendance_status: string;
+    feedback?: string;
+  }>
+): Promise<ActivityParticipantsResponse> {
+  try {
+    const newParticipants = [];
+
+    for (const participant of participants) {
+      // Check if participant is already added to this activity
+      const existingParticipant = await db.query.activityParticipants.findFirst(
+        {
+          where: (activityParticipants, { and, eq }) =>
+            and(
+              eq(activityParticipants.activity_id, activityId),
+              eq(
+                activityParticipants.participant_id,
+                participant.participant_id
+              )
+            ),
+        }
+      );
+
+      if (!existingParticipant) {
+        // Add participant to activity if not already added
+        const [newParticipant] = await db
+          .insert(activityParticipants)
+          .values({
+            activity_id: activityId,
+            participant_id: participant.participant_id,
+            attendance_status: participant.attendance_status,
+            role: participant.role,
+            feedback: participant.feedback || null,
+          })
+          .returning();
+
+        newParticipants.push({
+          ...newParticipant,
+          participantName: participant.participantName,
+          participantEmail: "",
+        });
+      } else {
+        // If participant already exists, add to newParticipants for consistency
+        newParticipants.push({
+          ...existingParticipant,
+          participantName: participant.participantName,
+          participantEmail: "",
+        });
+      }
+
+      // If sessionId is provided, add participant to that specific session
+      if (sessionId) {
+        const { markAttendance } = await import("./attendance");
+        await markAttendance(sessionId, participant.participant_id, {
+          attendance_status: "invited",
+          recorded_by: "system",
+        });
+      }
+    }
+
+    // Note: We don't call initializeSessionAttendance here because we only want to add
+    // the specific participants that were selected, not all activity participants
+
+    // Revalidate paths to refresh the UI
+    revalidatePath(`/dashboard/activities/${activityId}`);
+    revalidatePath(`/dashboard/activities/${activityId}/attendance`);
+    revalidatePath("/dashboard/activities");
+
+    return {
+      success: true,
+      data: newParticipants,
+    };
+  } catch (error) {
+    console.error("Error adding activity participants to session:", error);
+    return {
+      success: false,
+      error: "Failed to add participants to session",
+    };
+  }
+}
+
+/**
+ * Initialize all activity participants in a session (bulk operation)
+ * This adds ALL activity participants to a session, not just selected ones
+ */
+export async function initializeAllActivityParticipantsInSession(
+  activityId: string,
+  sessionId: string
+): Promise<{ success: boolean; error?: string; message?: string }> {
+  try {
+    const { initializeSessionAttendance } = await import("./attendance");
+
+    // Initialize attendance for all activity participants in this session
+    const result = await initializeSessionAttendance(sessionId, activityId);
+
+    if (!result.success) {
+      return {
+        success: false,
+        error: result.error || "Failed to initialize session attendance",
+      };
+    }
+
+    // Revalidate paths to refresh the UI
+    revalidatePath(`/dashboard/activities/${activityId}`);
+    revalidatePath(`/dashboard/activities/${activityId}/attendance`);
+    revalidatePath("/dashboard/activities");
+
+    return {
+      success: true,
+      message: `Initialized ${result.data?.length || 0} participants in session`,
+    };
+  } catch (error) {
+    console.error(
+      "Error initializing all activity participants in session:",
+      error
+    );
+    return {
+      success: false,
+      error: "Failed to initialize all participants in session",
+    };
+  }
+}
+
+export async function getAllActivityParticipants(clusterId?: string) {
+  try {
+    // Get all unique participants from activities
+    // If clusterId is provided, filter activities by cluster
+    const whereConditions = [];
+    if (clusterId) {
+      // Need to join with activities table to filter by cluster
+      const activitiesInCluster = await db.query.activities.findMany({
+        where: eq(activities.cluster_id, clusterId),
+        columns: { id: true },
+      });
+
+      if (activitiesInCluster.length === 0) {
+        return {
+          success: true,
+          data: [],
+        };
+      }
+
+      const activityIds = activitiesInCluster.map(a => a.id);
+      whereConditions.push(
+        inArray(activityParticipants.activity_id, activityIds)
+      );
+    }
+
+    // Get activity participants with basic participant info
+    const activityParticipantsData =
+      await db.query.activityParticipants.findMany({
+        where: whereConditions.length > 0 ? and(...whereConditions) : undefined,
+        with: {
+          participant: true,
+        },
+      });
+
+    // Extract unique participants directly (since participant: true gives us the basic data)
+    const uniqueParticipantsMap = new Map();
+    activityParticipantsData.forEach(ap => {
+      if (ap.participant && !uniqueParticipantsMap.has(ap.participant.id)) {
+        // Add basic enhancement properties to match expected type
+        const participant = {
+          ...ap.participant,
+          organizationName: "Unknown",
+          projectName: "Unknown",
+          clusterName: "Unknown",
+          districtName: "Unknown",
+          subCountyName: "Unknown",
+          countyName: "Unknown",
+        };
+        uniqueParticipantsMap.set(ap.participant.id, participant);
+      }
+    });
+
+    const uniqueParticipants = Array.from(uniqueParticipantsMap.values());
+
+    return {
+      success: true,
+      data: uniqueParticipants,
+    };
+  } catch (error) {
+    console.error("Error getting all activity participants:", error);
+    return {
+      success: false,
+      error: "Failed to get activity participants",
     };
   }
 }

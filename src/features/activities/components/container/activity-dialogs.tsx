@@ -25,13 +25,13 @@ interface ActivityDialogsProps {
   setEditingActivity: (activity: Activity | null) => void;
   deletingActivity: Activity | null;
   setDeletingActivity: (activity: Activity | null) => void;
-  organizations: Array<{ id: string; name: string }>;
+  organizations: Array<{ id: string; name: string; acronym?: string }>;
   clusters: Array<{ id: string; name: string }>;
   projects: Array<{ id: string; name: string; acronym?: string }>;
 }
 
 export function ActivityDialogs({
-  clusterId: _clusterId,
+  clusterId,
   isCreateDialogOpen,
   setIsCreateDialogOpen,
   isImportDialogOpen,
@@ -70,6 +70,7 @@ export function ActivityDialogs({
           }
         }}
         activity={editingActivity || undefined}
+        clusterId={clusterId}
         organizations={organizations}
         clusters={clusters}
         projects={projects}

@@ -27,6 +27,7 @@ import {
   getActivityParticipants,
   addActivityParticipants,
   bulkUpdateActivityParticipants,
+  getAllActivityParticipants,
 } from "../actions/participants";
 import {
   type NewActivity,
@@ -83,6 +84,13 @@ export function useActivityParticipants(activityId: string) {
     queryKey: ["activity-participants", activityId],
     queryFn: () => getActivityParticipants(activityId),
     enabled: !!activityId,
+  });
+}
+
+export function useAllActivityParticipants(clusterId?: string) {
+  return useQuery({
+    queryKey: ["all-activity-participants", clusterId],
+    queryFn: () => getAllActivityParticipants(clusterId),
   });
 }
 
@@ -271,19 +279,17 @@ export function useGenerateActivitySessions() {
   return useMutation({
     mutationFn: ({
       activityId,
-      startDate,
-      endDate,
+      sessionCount,
       sessionData,
     }: {
       activityId: string;
-      startDate: Date;
-      endDate: Date;
+      sessionCount: number;
       sessionData?: {
         start_time?: string;
         end_time?: string;
         venue?: string;
       };
-    }) => generateActivitySessions(activityId, startDate, endDate, sessionData),
+    }) => generateActivitySessions(activityId, sessionCount, sessionData),
     onSuccess: (result, variables) => {
       if (result.success) {
         queryClient.invalidateQueries({

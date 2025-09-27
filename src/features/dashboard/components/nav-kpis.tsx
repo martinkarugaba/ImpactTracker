@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { type Icon } from "@tabler/icons-react";
 import {
   SidebarGroup,
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function NavDocuments({
   items,
@@ -29,6 +31,12 @@ export function NavDocuments({
   }[];
 }) {
   const { data: session } = useSession();
+  const [isOpen, setIsOpen] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Filter out success stories for non-super admin users
   const isSuperAdmin = session?.user?.role === "super_admin";
@@ -39,8 +47,31 @@ export function NavDocuments({
     return true;
   });
 
+  if (!mounted) {
+    return (
+      <SidebarGroup>
+        <SidebarGroupLabel className="font-semibold text-emerald-600 dark:text-emerald-400">
+          My KPIs
+        </SidebarGroupLabel>
+        <SidebarGroupContent className="ml-2 space-y-1 border-l-2 border-emerald-300/30 pl-4 dark:border-emerald-600/30">
+          <SidebarMenu>
+            {filteredItems.map(item => (
+              <SidebarMenuItem key={item.name}>
+                <Skeleton className="h-8 w-full" />
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    );
+  }
+
   return (
-    <Collapsible defaultOpen className="group/collapsible">
+    <Collapsible
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      className="group/collapsible"
+    >
       <SidebarGroup>
         <SidebarGroupLabel asChild>
           <CollapsibleTrigger className="font-semibold text-emerald-600 transition-colors hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">

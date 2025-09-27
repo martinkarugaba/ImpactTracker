@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import { useAtom } from "jotai";
 import {
   Dialog,
   DialogContent,
@@ -8,6 +9,10 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  editParticipantLoadingAtom,
+  editParticipantFormDataAtom,
+} from "../../atoms/activities-atoms";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -51,24 +56,8 @@ export function EditParticipantDialog({
   onOpenChange,
   onSave,
 }: EditParticipantDialogProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    participantName: participant?.participantName || "",
-    participantContact: participant?.participant?.contact || "",
-    sex: (participant?.participant as ExtendedParticipant)?.sex || "",
-    age:
-      (participant?.participant as ExtendedParticipant)?.age?.toString() || "",
-    enterprise:
-      (participant?.participant as ExtendedParticipant)?.enterprise || "",
-    employment:
-      (participant?.participant as ExtendedParticipant)?.employmentStatus || "",
-    incomeLevel:
-      (
-        participant?.participant as ExtendedParticipant
-      )?.monthlyIncome?.toString() || "",
-    attendance_status: participant?.attendance_status || "pending",
-    role: participant?.role || "participant",
-  });
+  const [isLoading, setIsLoading] = useAtom(editParticipantLoadingAtom);
+  const [formData, setFormData] = useAtom(editParticipantFormDataAtom);
 
   // Reset form when participant changes
   React.useEffect(() => {
@@ -89,11 +78,14 @@ export function EditParticipantDialog({
           (
             participant.participant as ExtendedParticipant
           )?.monthlyIncome?.toString() || "",
-        attendance_status: participant.attendance_status || "pending",
-        role: participant.role || "participant",
+        attendance_status: (participant.attendance_status || "pending") as
+          | "attended"
+          | "absent"
+          | "pending",
+        role: "participant" as const,
       });
     }
-  }, [participant]);
+  }, [participant, setFormData]);
 
   const handleSave = async () => {
     if (!participant) return;

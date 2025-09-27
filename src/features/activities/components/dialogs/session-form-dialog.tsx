@@ -53,6 +53,7 @@ import {
 const sessionFormSchema = z.object({
   session_date: z.date({ required_error: "Session date is required" }),
   session_number: z.number().min(1, "Session number must be at least 1"),
+  title: z.string().optional(),
   start_time: z.string().optional(),
   end_time: z.string().optional(),
   venue: z.string().optional(),
@@ -85,6 +86,7 @@ export function SessionFormDialog({
     defaultValues: {
       session_date: new Date(),
       session_number: 1,
+      title: "",
       start_time: "",
       end_time: "",
       venue: "",
@@ -99,6 +101,7 @@ export function SessionFormDialog({
         form.reset({
           session_date: new Date(session.data.session_date),
           session_number: session.data.session_number,
+          title: session.data.title || "",
           start_time: session.data.start_time || "",
           end_time: session.data.end_time || "",
           venue: session.data.venue || "",
@@ -108,6 +111,7 @@ export function SessionFormDialog({
         form.reset({
           session_date: new Date(),
           session_number: 1,
+          title: "",
           start_time: "",
           end_time: "",
           venue: "",
@@ -123,6 +127,7 @@ export function SessionFormDialog({
         activity_id: activityId,
         session_date: format(data.session_date, "yyyy-MM-dd"),
         session_number: data.session_number,
+        title: data.title || null,
         start_time: data.start_time || null,
         end_time: data.end_time || null,
         venue: data.venue || null,
@@ -175,6 +180,23 @@ export function SessionFormDialog({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Session Title (Optional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="e.g., Introduction to Business Skills..."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
