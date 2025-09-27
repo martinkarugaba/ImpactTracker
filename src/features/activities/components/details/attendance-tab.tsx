@@ -110,13 +110,69 @@ export function AttendanceTab({
   const { data: sessionsResponse, isLoading: isLoadingSessions } =
     useActivitySessions(activity.id);
 
+  // Fetch session-specific attendance when a session is selected
+  const {
+    data: sessionAttendanceResponse,
+    isLoading: isLoadingSessionAttendance,
+  } = useSessionAttendance(
+    selectedSessionId !== "all" ? selectedSessionId : ""
+  );
+
   const generateSessions = useGenerateActivitySessions();
 
-  const participants = participantsResponse?.success
+  const allParticipants = participantsResponse?.success
     ? participantsResponse.data || []
     : [];
 
   const sessions = sessionsResponse?.data || [];
+
+  // Determine which participants to show based on selected session
+  const participants =
+    selectedSessionId === "all"
+      ? allParticipants
+      : sessionAttendanceResponse?.success && sessionAttendanceResponse.data
+        ? sessionAttendanceResponse.data
+            .map(attendance => {
+              const baseParticipant = allParticipants.find(
+                p => p.participant_id === attendance.participant_id
+              );
+
+              // If we have a base participant, use it with session-specific data
+              if (baseParticipant) {
+                return {
+                  ...baseParticipant,
+                  // Override attendance status with session-specific data
+                  attendance_status: attendance.attendance_status,
+                  // Add session-specific metadata
+                  session_attendance: attendance,
+                };
+              }
+
+              // If no base participant found, create a minimal participant record from attendance data
+              // This handles participants added directly to sessions
+              return {
+                id: `session-${attendance.id}`, // Unique ID for session-specific participant
+                activity_id: activity.id,
+                participant_id: attendance.participant_id,
+                participantName:
+                  attendance.participant?.firstName &&
+                  attendance.participant?.lastName
+                    ? `${attendance.participant.firstName} ${attendance.participant.lastName}`
+                    : "Unknown Participant",
+                participantEmail: attendance.participant?.contact || "",
+                role: "participant",
+                attendance_status: attendance.attendance_status,
+                feedback: null,
+                created_at: attendance.created_at,
+                updated_at: attendance.updated_at,
+                // Add session-specific metadata
+                session_attendance: attendance,
+                // Add participant details if available
+                participant: attendance.participant,
+              };
+            })
+            .filter((p): p is NonNullable<typeof p> => p !== null) // Type-safe filter
+        : allParticipants;
 
   // Basic attendance stats
   const stats = {
@@ -542,9 +598,19 @@ export function AttendanceTab({
 
                   {/* Participant Management Actions */}
                   <div className="flex items-center gap-2">
-                    <Button onClick={() => onManageAttendance()}>
+                    <Button
+                      onClick={() =>
+                        onManageAttendance(
+                          selectedSessionId !== "all"
+                            ? selectedSessionId
+                            : undefined
+                        )
+                      }
+                    >
                       <Edit className="mr-2 h-4 w-4" />
-                      Manage Participants
+                      {selectedSessionId !== "all"
+                        ? "Add to Session"
+                        : "Manage Participants"}
                     </Button>
                     <Button variant="outline" size="sm">
                       <Plus className="mr-2 h-4 w-4" />
@@ -571,9 +637,19 @@ export function AttendanceTab({
                     Add participants to this activity to track their attendance.
                   </p>
                   <div className="mt-6">
-                    <Button onClick={() => onManageAttendance()}>
+                    <Button
+                      onClick={() =>
+                        onManageAttendance(
+                          selectedSessionId !== "all"
+                            ? selectedSessionId
+                            : undefined
+                        )
+                      }
+                    >
                       <UserPlus className="mr-2 h-4 w-4" />
-                      Add Participants
+                      {selectedSessionId !== "all"
+                        ? "Add to Session"
+                        : "Add Participants"}
                     </Button>
                   </div>
                 </div>
@@ -589,32 +665,46 @@ export function AttendanceTab({
                             ?.session_number
                         }{" "}
                         Attendance Summary
+                        {isLoadingSessionAttendance && (
+                          <LoadingSpinner className="ml-2 inline-block h-4 w-4" />
+                        )}
                       </h4>
                       <div className="grid grid-cols-4 gap-4 text-sm">
                         <div className="text-center">
                           <div className="text-lg font-medium text-green-600">
-                            {/* This will be populated by attendance data */}
-                            {sessions.find(s => s.id === selectedSessionId)
-                              ? "Loading..."
-                              : "0"}
+                            {isLoadingSessionAttendance
+                              ? "..."
+                              : sessionAttendanceResponse?.data?.filter(
+                                  a => a.attendance_status === "attended"
+                                ).length || 0}
                           </div>
                           <div className="text-muted-foreground">Attended</div>
                         </div>
                         <div className="text-center">
                           <div className="text-lg font-medium text-red-600">
-                            {/* This will be populated by attendance data */}0
+                            {isLoadingSessionAttendance
+                              ? "..."
+                              : sessionAttendanceResponse?.data?.filter(
+                                  a => a.attendance_status === "absent"
+                                ).length || 0}
                           </div>
                           <div className="text-muted-foreground">Absent</div>
                         </div>
                         <div className="text-center">
                           <div className="text-lg font-medium text-yellow-600">
-                            {/* This will be populated by attendance data */}0
+                            {isLoadingSessionAttendance
+                              ? "..."
+                              : sessionAttendanceResponse?.data?.filter(
+                                  a => a.attendance_status === "late"
+                                ).length || 0}
                           </div>
                           <div className="text-muted-foreground">Late</div>
                         </div>
                         <div className="text-center">
                           <div className="text-lg font-medium text-blue-600">
-                            {participants.length}
+                            {isLoadingSessionAttendance
+                              ? "..."
+                              : sessionAttendanceResponse?.data?.length || 0}
                           </div>
                           <div className="text-muted-foreground">Total</div>
                         </div>

@@ -271,3 +271,96 @@ export async function bulkUpdateActivityParticipants(
     };
   }
 }
+
+/**
+ * Add participants to an activity and optionally to a specific session
+ */
+export async function addActivityParticipantsToSession(
+  activityId: string,
+  sessionId: string | undefined,
+  participants: Array<{
+    participant_id: string;
+    participantName: string;
+    role: string;
+    attendance_status: string;
+    feedback?: string;
+  }>
+): Promise<ActivityParticipantsResponse> {
+  try {
+    const { initializeSessionAttendance } = await import("./attendance");
+    const newParticipants = [];
+
+    for (const participant of participants) {
+      // Check if participant is already added to this activity
+      const existingParticipant = await db.query.activityParticipants.findFirst(
+        {
+          where: (activityParticipants, { and, eq }) =>
+            and(
+              eq(activityParticipants.activity_id, activityId),
+              eq(
+                activityParticipants.participant_id,
+                participant.participant_id
+              )
+            ),
+        }
+      );
+
+      if (!existingParticipant) {
+        // Add participant to activity if not already added
+        const [newParticipant] = await db
+          .insert(activityParticipants)
+          .values({
+            activity_id: activityId,
+            participant_id: participant.participant_id,
+            attendance_status: participant.attendance_status,
+            role: participant.role,
+            feedback: participant.feedback || null,
+          })
+          .returning();
+
+        newParticipants.push({
+          ...newParticipant,
+          participantName: participant.participantName,
+          participantEmail: "",
+        });
+      } else {
+        // If participant already exists, add to newParticipants for consistency
+        newParticipants.push({
+          ...existingParticipant,
+          participantName: participant.participantName,
+          participantEmail: "",
+        });
+      }
+
+      // If sessionId is provided, add participant to that specific session
+      if (sessionId) {
+        const { markAttendance } = await import("./attendance");
+        await markAttendance(sessionId, participant.participant_id, {
+          attendance_status: "invited",
+          recorded_by: "system",
+        });
+      }
+    }
+
+    // If sessionId is provided, initialize session attendance for all activity participants
+    if (sessionId) {
+      await initializeSessionAttendance(sessionId, activityId);
+    }
+
+    // Revalidate paths to refresh the UI
+    revalidatePath(`/dashboard/activities/${activityId}`);
+    revalidatePath(`/dashboard/activities/${activityId}/attendance`);
+    revalidatePath("/dashboard/activities");
+
+    return {
+      success: true,
+      data: newParticipants,
+    };
+  } catch (error) {
+    console.error("Error adding activity participants to session:", error);
+    return {
+      success: false,
+      error: "Failed to add participants to session",
+    };
+  }
+}
