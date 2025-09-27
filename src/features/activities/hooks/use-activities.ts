@@ -27,6 +27,7 @@ import {
   getActivityParticipants,
   addActivityParticipants,
   bulkUpdateActivityParticipants,
+  getAllActivityParticipants,
 } from "../actions/participants";
 import {
   type NewActivity,
@@ -83,6 +84,13 @@ export function useActivityParticipants(activityId: string) {
     queryKey: ["activity-participants", activityId],
     queryFn: () => getActivityParticipants(activityId),
     enabled: !!activityId,
+  });
+}
+
+export function useAllActivityParticipants(clusterId?: string) {
+  return useQuery({
+    queryKey: ["all-activity-participants", clusterId],
+    queryFn: () => getAllActivityParticipants(clusterId),
   });
 }
 

@@ -13,6 +13,9 @@ import {
   UserCheck,
   Users,
   Trash2,
+  Edit,
+  MoreHorizontal,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -27,9 +30,17 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   useActivitySessions,
   useGenerateActivitySessions,
   useSessionAttendance,
+  useUpdateActivitySession,
 } from "../../hooks/use-activities";
 import type { Activity, SessionStatus } from "../../types/types";
 
@@ -80,7 +91,7 @@ export function SessionsTab({
   activity,
   onManageAttendance,
   onCreateSession,
-  onEditSession: _onEditSession,
+  onEditSession,
 }: SessionsTabProps) {
   const [_deletingSessionId, _setDeletingSessionId] = useAtom(
     deletingSessionIdAtom
@@ -89,6 +100,8 @@ export function SessionsTab({
 
   const { data: sessions, isLoading } = useActivitySessions(activity.id);
   const generateSessions = useGenerateActivitySessions();
+  // Hook for updating session status
+  const updateSession = useUpdateActivitySession();
 
   const sessionsData = sessions?.data || [];
 
@@ -189,25 +202,56 @@ export function SessionsTab({
         header: "Actions",
         cell: ({ row }) => {
           const session = row.original;
+
+          const handleMarkComplete = async () => {
+            try {
+              await updateSession.mutateAsync({
+                id: session.id,
+                data: { status: "completed" },
+              });
+              toast.success("Session marked as completed");
+            } catch (_error) {
+              toast.error("Failed to update session status");
+            }
+          };
+
           return (
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onManageAttendance(session.id)}
-              >
-                <UserCheck className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  // TODO: Implement session deletion
-                }}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onEditSession(session.id)}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit Session
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => onManageAttendance(session.id)}
+                >
+                  <UserCheck className="mr-2 h-4 w-4" />
+                  Manage Attendance
+                </DropdownMenuItem>
+                {session.status !== "completed" && (
+                  <DropdownMenuItem onClick={handleMarkComplete}>
+                    <Check className="mr-2 h-4 w-4" />
+                    Mark Complete
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => {
+                    // TODO: Implement session deletion
+                  }}
+                  className="text-red-600"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete Session
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           );
         },
         enableSorting: false,

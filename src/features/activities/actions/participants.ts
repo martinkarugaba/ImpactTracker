@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { activityParticipants } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { activityParticipants, activities } from "@/lib/db/schema";
+import { eq, and, inArray } from "drizzle-orm";
 import { type ActivityParticipant } from "../types/types";
 
 export type ActivityParticipantResponse = {
@@ -401,6 +401,73 @@ export async function initializeAllActivityParticipantsInSession(
     return {
       success: false,
       error: "Failed to initialize all participants in session",
+    };
+  }
+}
+
+export async function getAllActivityParticipants(clusterId?: string) {
+  try {
+    // Get all unique participants from activities
+    // If clusterId is provided, filter activities by cluster
+    const whereConditions = [];
+    if (clusterId) {
+      // Need to join with activities table to filter by cluster
+      const activitiesInCluster = await db.query.activities.findMany({
+        where: eq(activities.cluster_id, clusterId),
+        columns: { id: true },
+      });
+
+      if (activitiesInCluster.length === 0) {
+        return {
+          success: true,
+          data: [],
+        };
+      }
+
+      const activityIds = activitiesInCluster.map(a => a.id);
+      whereConditions.push(
+        inArray(activityParticipants.activity_id, activityIds)
+      );
+    }
+
+    // Get activity participants with basic participant info
+    const activityParticipantsData =
+      await db.query.activityParticipants.findMany({
+        where: whereConditions.length > 0 ? and(...whereConditions) : undefined,
+        with: {
+          participant: true,
+        },
+      });
+
+    // Extract unique participants directly (since participant: true gives us the basic data)
+    const uniqueParticipantsMap = new Map();
+    activityParticipantsData.forEach(ap => {
+      if (ap.participant && !uniqueParticipantsMap.has(ap.participant.id)) {
+        // Add basic enhancement properties to match expected type
+        const participant = {
+          ...ap.participant,
+          organizationName: "Unknown",
+          projectName: "Unknown",
+          clusterName: "Unknown",
+          districtName: "Unknown",
+          subCountyName: "Unknown",
+          countyName: "Unknown",
+        };
+        uniqueParticipantsMap.set(ap.participant.id, participant);
+      }
+    });
+
+    const uniqueParticipants = Array.from(uniqueParticipantsMap.values());
+
+    return {
+      success: true,
+      data: uniqueParticipants,
+    };
+  } catch (error) {
+    console.error("Error getting all activity participants:", error);
+    return {
+      success: false,
+      error: "Failed to get activity participants",
     };
   }
 }

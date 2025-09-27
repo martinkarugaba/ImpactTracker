@@ -16,6 +16,8 @@ import {
   Trash2,
   Edit,
   UserPlus,
+  MoreHorizontal,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +32,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MetricCard } from "@/components/ui/metric-card";
 import { DataTable } from "@/components/ui/data-table";
@@ -43,6 +52,7 @@ import {
   useActivitySessions,
   useGenerateActivitySessions,
   useSessionAttendance,
+  useUpdateActivitySession,
 } from "../../hooks/use-activities";
 import { createParticipantsTableColumns } from "./participants-table-columns";
 
@@ -56,6 +66,7 @@ interface AttendanceTabProps {
 interface SessionData {
   id: string;
   session_number: number;
+  title: string | null;
   session_date: string;
   start_time: string | null;
   end_time: string | null;
@@ -92,13 +103,16 @@ export function AttendanceTab({
   activity,
   onManageAttendance,
   onCreateSession,
-  onEditSession: _onEditSession,
+  onEditSession,
 }: AttendanceTabProps) {
   const [_deletingSessionId, _setDeletingSessionId] = useAtom(
     deletingSessionIdAtom
   );
   const [sessionCount, setSessionCount] = useState<number>(5);
   const [selectedSessionId, setSelectedSessionId] = useState<string>("all");
+
+  // Hook for updating session status
+  const updateSession = useUpdateActivitySession();
 
   // Fetch activity participants and sessions
   const {
@@ -222,6 +236,24 @@ export function AttendanceTab({
         },
       },
       {
+        accessorKey: "title",
+        header: "Title",
+        cell: ({ row }) => {
+          const session = row.original;
+          return (
+            <div className="max-w-xs">
+              {session.title ? (
+                <span className="font-medium">{session.title}</span>
+              ) : (
+                <span className="text-muted-foreground italic">
+                  Session {session.session_number}
+                </span>
+              )}
+            </div>
+          );
+        },
+      },
+      {
         accessorKey: "session_date",
         header: "Session Date",
         cell: ({ row }) => {
@@ -265,25 +297,56 @@ export function AttendanceTab({
         header: "Actions",
         cell: ({ row }) => {
           const session = row.original;
+
+          const handleMarkComplete = async () => {
+            try {
+              await updateSession.mutateAsync({
+                id: session.id,
+                data: { status: "completed" },
+              });
+              toast.success("Session marked as completed");
+            } catch (_error) {
+              toast.error("Failed to update session status");
+            }
+          };
+
           return (
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onManageAttendance(session.id)}
-              >
-                <UserCheck className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  // TODO: Implement session deletion
-                }}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onEditSession(session.id)}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit Session
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => onManageAttendance(session.id)}
+                >
+                  <UserCheck className="mr-2 h-4 w-4" />
+                  Manage Attendance
+                </DropdownMenuItem>
+                {session.status !== "completed" && (
+                  <DropdownMenuItem onClick={handleMarkComplete}>
+                    <Check className="mr-2 h-4 w-4" />
+                    Mark Complete
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => {
+                    // TODO: Implement session deletion
+                  }}
+                  className="text-red-600"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete Session
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           );
         },
         enableSorting: false,
