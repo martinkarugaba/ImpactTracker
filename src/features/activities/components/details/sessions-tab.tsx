@@ -43,6 +43,7 @@ interface SessionsTabProps {
 interface SessionData {
   id: string;
   session_number: number;
+  title: string | null;
   session_date: string;
   start_time: string | null;
   end_time: string | null;
@@ -124,6 +125,24 @@ export function SessionsTab({
         cell: ({ row }) => {
           const session = row.original;
           return <div className="text-center">{session.session_number}</div>;
+        },
+      },
+      {
+        accessorKey: "title",
+        header: "Title",
+        cell: ({ row }) => {
+          const session = row.original;
+          return (
+            <div className="max-w-xs">
+              {session.title ? (
+                <span className="font-medium">{session.title}</span>
+              ) : (
+                <span className="text-muted-foreground italic">
+                  Session {session.session_number}
+                </span>
+              )}
+            </div>
+          );
         },
       },
       {

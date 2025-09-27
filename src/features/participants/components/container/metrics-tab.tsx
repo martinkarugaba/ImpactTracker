@@ -46,7 +46,10 @@ function DetailedParticipantMetrics({
   }
 
   return (
-    <Tabs defaultValue="demographics" className="w-full">
+    <Tabs
+      defaultValue="demographics"
+      className="border-orange5000 w-full border-2"
+    >
       <TabsList className="grid w-full grid-cols-5">
         <TabsTrigger value="demographics">Demographics</TabsTrigger>
         <TabsTrigger value="youth-employment">Youth in Work</TabsTrigger>

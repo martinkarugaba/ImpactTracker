@@ -229,6 +229,7 @@ export async function generateActivitySessions(
         activity_id: activityId,
         session_date: sessionDate.toISOString().split("T")[0], // Format as YYYY-MM-DD
         session_number: i,
+        title: `Session ${i}`, // Default title based on session number
         start_time: sessionData?.start_time || null,
         end_time: sessionData?.end_time || null,
         venue: sessionData?.venue || activity.venue,

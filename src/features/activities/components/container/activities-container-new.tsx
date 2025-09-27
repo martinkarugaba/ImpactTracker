@@ -1,10 +1,11 @@
 "use client";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Calendar } from "lucide-react";
+import { BarChart3, Calendar, UserCheck } from "lucide-react";
 import { useActivityContainerState } from "./use-activity-container-state";
 import { MetricsTab } from "./metrics-tab";
 import { ActivitiesTab } from "./activities-tab";
+import { ActivitiesDemographicsTab } from "./activities-demographics-tab";
 import { ActivityDialogs } from "./activity-dialogs";
 
 interface ActivitiesContainerProps {
@@ -38,11 +39,13 @@ export function ActivitiesContainerNew({
         <Tabs
           value={state.activeTab}
           onValueChange={value =>
-            state.setActiveTab(value as "activities" | "metrics")
+            state.setActiveTab(
+              value as "activities" | "metrics" | "demographics"
+            )
           }
           className="mb-4 w-full"
         >
-          <TabsList className="grid h-10 w-full grid-cols-2 rounded-md bg-gray-100 p-1 dark:bg-gray-900">
+          <TabsList className="grid h-10 w-full grid-cols-3 rounded-md bg-gray-100 p-1 dark:bg-gray-900">
             <TabsTrigger
               value="activities"
               className="flex cursor-pointer items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-green-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-green-400"
@@ -59,6 +62,14 @@ export function ActivitiesContainerNew({
               <span className="hidden sm:inline">Analytics</span>
               <span className="sm:hidden">Stats</span>
             </TabsTrigger>
+            <TabsTrigger
+              value="demographics"
+              className="flex cursor-pointer items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-purple-600 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-purple-400"
+            >
+              <UserCheck className="h-4 w-4" />
+              <span className="hidden sm:inline">Demographics</span>
+              <span className="sm:hidden">Demo</span>
+            </TabsTrigger>
           </TabsList>
 
           <MetricsTab
@@ -66,6 +77,12 @@ export function ActivitiesContainerNew({
             metricsData={state.metricsData}
             isMetricsLoading={state.isMetricsLoading}
             filters={state.filters}
+          />
+
+          <ActivitiesDemographicsTab
+            activities={state.activities}
+            isLoading={state.isActivitiesLoading}
+            clusterId={clusterId}
           />
 
           <ActivitiesTab

@@ -9,6 +9,7 @@ import {
   date,
   time,
   unique,
+  varchar,
 } from "drizzle-orm/pg-core";
 
 export const organizations = pgTable("organizations", {
@@ -1075,6 +1076,7 @@ export const activitySessions = pgTable(
       .notNull(),
     session_date: date("session_date").notNull(),
     session_number: integer("session_number").notNull(),
+    title: varchar("title", { length: 255 }),
     start_time: time("start_time"),
     end_time: time("end_time"),
     venue: text("venue"),
