@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { type Icon } from "@tabler/icons-react";
 import {
   SidebarGroup,
@@ -29,6 +30,7 @@ export function NavDocuments({
   }[];
 }) {
   const { data: session } = useSession();
+  const [isOpen, setIsOpen] = useState(true);
 
   // Filter out success stories for non-super admin users
   const isSuperAdmin = session?.user?.role === "super_admin";
@@ -40,7 +42,11 @@ export function NavDocuments({
   });
 
   return (
-    <Collapsible defaultOpen className="group/collapsible">
+    <Collapsible
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      className="group/collapsible"
+    >
       <SidebarGroup>
         <SidebarGroupLabel asChild>
           <CollapsibleTrigger className="font-semibold text-emerald-600 transition-colors hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { type Icon } from "@tabler/icons-react";
 
 import {
@@ -29,8 +30,14 @@ export function NavMain({
   }[];
 }) {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(true);
+
   return (
-    <Collapsible defaultOpen className="group/collapsible">
+    <Collapsible
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      className="group/collapsible"
+    >
       <SidebarGroup className="">
         <SidebarGroupLabel asChild>
           <CollapsibleTrigger className="text-primary hover:text-primary/80 font-semibold transition-colors">

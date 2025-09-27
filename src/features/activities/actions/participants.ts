@@ -273,7 +273,8 @@ export async function bulkUpdateActivityParticipants(
 }
 
 /**
- * Add participants to an activity and optionally to a specific session
+ * Add specific participants to an activity and optionally to a specific session
+ * This function only adds the participants you specify, not all activity participants
  */
 export async function addActivityParticipantsToSession(
   activityId: string,
@@ -287,7 +288,6 @@ export async function addActivityParticipantsToSession(
   }>
 ): Promise<ActivityParticipantsResponse> {
   try {
-    const { initializeSessionAttendance } = await import("./attendance");
     const newParticipants = [];
 
     for (const participant of participants) {
@@ -342,10 +342,8 @@ export async function addActivityParticipantsToSession(
       }
     }
 
-    // If sessionId is provided, initialize session attendance for all activity participants
-    if (sessionId) {
-      await initializeSessionAttendance(sessionId, activityId);
-    }
+    // Note: We don't call initializeSessionAttendance here because we only want to add
+    // the specific participants that were selected, not all activity participants
 
     // Revalidate paths to refresh the UI
     revalidatePath(`/dashboard/activities/${activityId}`);
@@ -361,6 +359,48 @@ export async function addActivityParticipantsToSession(
     return {
       success: false,
       error: "Failed to add participants to session",
+    };
+  }
+}
+
+/**
+ * Initialize all activity participants in a session (bulk operation)
+ * This adds ALL activity participants to a session, not just selected ones
+ */
+export async function initializeAllActivityParticipantsInSession(
+  activityId: string,
+  sessionId: string
+): Promise<{ success: boolean; error?: string; message?: string }> {
+  try {
+    const { initializeSessionAttendance } = await import("./attendance");
+
+    // Initialize attendance for all activity participants in this session
+    const result = await initializeSessionAttendance(sessionId, activityId);
+
+    if (!result.success) {
+      return {
+        success: false,
+        error: result.error || "Failed to initialize session attendance",
+      };
+    }
+
+    // Revalidate paths to refresh the UI
+    revalidatePath(`/dashboard/activities/${activityId}`);
+    revalidatePath(`/dashboard/activities/${activityId}/attendance`);
+    revalidatePath("/dashboard/activities");
+
+    return {
+      success: true,
+      message: `Initialized ${result.data?.length || 0} participants in session`,
+    };
+  } catch (error) {
+    console.error(
+      "Error initializing all activity participants in session:",
+      error
+    );
+    return {
+      success: false,
+      error: "Failed to initialize all participants in session",
     };
   }
 }

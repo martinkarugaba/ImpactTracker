@@ -380,16 +380,22 @@ export function ParticipantSelectionDialog({
             <div className="flex h-full flex-col space-y-4">
               <div className="flex-shrink-0 space-y-4">
                 <div className="relative">
-                  <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                  <Search
+                    className={`absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transition-colors ${
+                      searchTerm !== debouncedSearchTerm
+                        ? "text-blue-600"
+                        : "text-muted-foreground"
+                    }`}
+                  />
                   <Input
                     placeholder="Search participants by name or contact..."
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="pr-10 pl-10"
                   />
                   {searchTerm !== debouncedSearchTerm && (
                     <div className="absolute top-1/2 right-3 -translate-y-1/2">
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600" />
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600" />
                     </div>
                   )}
                 </div>
@@ -427,9 +433,22 @@ export function ParticipantSelectionDialog({
                 )}
               </div>
 
-              <div className="flex-1 overflow-hidden rounded-md border">
+              <div className="flex flex-1 flex-col overflow-hidden rounded-md border">
+                {/* Search Status Bar */}
+                {(searchTerm !== debouncedSearchTerm ||
+                  fetchingParticipants) && (
+                  <div className="flex items-center justify-center gap-2 border-b bg-blue-50/50 px-4 py-2 dark:bg-blue-950/20">
+                    <div className="h-3 w-3 animate-spin rounded-full border border-blue-200 border-t-blue-600" />
+                    <span className="text-xs text-blue-700 dark:text-blue-300">
+                      {searchTerm !== debouncedSearchTerm
+                        ? "Searching..."
+                        : "Loading more results..."}
+                    </span>
+                  </div>
+                )}
+
                 {noResultsFound ? (
-                  <div className="flex flex-col items-center justify-center space-y-4 py-12">
+                  <div className="flex flex-1 flex-col items-center justify-center space-y-4 p-8">
                     <div className="text-center">
                       <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
                         <UserPlus className="text-muted-foreground h-6 w-6" />
@@ -453,91 +472,93 @@ export function ParticipantSelectionDialog({
                     )}
                   </div>
                 ) : (
-                  <div className="h-full overflow-y-auto p-4">
-                    {loadingParticipants ? (
-                      <div className="flex items-center justify-center py-12">
-                        <div className="text-center">
-                          <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600" />
-                          <p className="text-muted-foreground text-sm">
-                            Loading participants...
-                          </p>
+                  <div className="flex-1 overflow-y-auto">
+                    <div className="p-4">
+                      {loadingParticipants ? (
+                        <div className="flex items-center justify-center py-12">
+                          <div className="text-center">
+                            <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600" />
+                            <p className="text-muted-foreground text-sm">
+                              Loading participants...
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ) : availableParticipants.length === 0 ? (
-                      <div className="flex items-center justify-center py-12">
-                        <div className="text-center">
-                          <Users className="text-muted-foreground mx-auto mb-3 h-12 w-12" />
-                          <p className="text-muted-foreground text-sm">
-                            {debouncedSearchTerm
-                              ? "No participants found"
-                              : "No participants available"}
-                          </p>
+                      ) : availableParticipants.length === 0 ? (
+                        <div className="flex items-center justify-center py-12">
+                          <div className="text-center">
+                            <Users className="text-muted-foreground mx-auto mb-3 h-12 w-12" />
+                            <p className="text-muted-foreground text-sm">
+                              {debouncedSearchTerm
+                                ? "No participants found"
+                                : "No participants available"}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        {availableParticipants.map(participant => (
-                          <div
-                            key={participant.id}
-                            className="hover:bg-muted/50 flex items-center space-x-3 rounded-lg border p-3"
-                          >
-                            <Checkbox
-                              checked={selectedParticipants.some(
-                                p => p.id === participant.id
-                              )}
-                              onCheckedChange={checked =>
-                                handleParticipantToggle(participant, !!checked)
-                              }
-                              disabled={
-                                !!maxSelection &&
-                                selectedParticipants.length >= maxSelection &&
-                                !selectedParticipants.some(
+                      ) : (
+                        <div className="space-y-2">
+                          {availableParticipants.map(participant => (
+                            <div
+                              key={participant.id}
+                              className="hover:bg-muted/50 flex items-center space-x-3 rounded-lg border p-3 transition-colors"
+                            >
+                              <Checkbox
+                                checked={selectedParticipants.some(
                                   p => p.id === participant.id
-                                )
-                              }
-                            />
-                            <div className="flex-1 space-y-1">
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium">
-                                  {participant.firstName} {participant.lastName}
-                                </span>
-                                <Badge
-                                  variant={
-                                    participant.isActive === "yes"
-                                      ? "default"
-                                      : "secondary"
-                                  }
-                                  className="capitalize"
-                                >
-                                  {participant.isActive === "yes"
-                                    ? "active"
-                                    : "inactive"}
-                                </Badge>
-                              </div>
-                              <div className="text-muted-foreground flex items-center gap-4 text-sm">
-                                <span>{participant.contact}</span>
-                                <span>{participant.sex}</span>
-                                {participant.age && (
-                                  <span>{participant.age} years old</span>
                                 )}
+                                onCheckedChange={checked =>
+                                  handleParticipantToggle(
+                                    participant,
+                                    !!checked
+                                  )
+                                }
+                                disabled={
+                                  !!maxSelection &&
+                                  selectedParticipants.length >= maxSelection &&
+                                  !selectedParticipants.some(
+                                    p => p.id === participant.id
+                                  )
+                                }
+                              />
+                              <div className="flex-1 space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium">
+                                    {participant.firstName}{" "}
+                                    {participant.lastName}
+                                  </span>
+                                  <Badge
+                                    variant={
+                                      participant.isActive === "yes"
+                                        ? "default"
+                                        : "secondary"
+                                    }
+                                    className="capitalize"
+                                  >
+                                    {participant.isActive === "yes"
+                                      ? "active"
+                                      : "inactive"}
+                                  </Badge>
+                                </div>
+                                <div className="text-muted-foreground flex items-center gap-4 text-sm">
+                                  <span>{participant.contact}</span>
+                                  <span>{participant.sex}</span>
+                                  {participant.age && (
+                                    <span>{participant.age} years old</span>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {fetchingParticipants && !loadingParticipants && (
-                      <div className="flex justify-center py-2">
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600" />
-                      </div>
-                    )}
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
 
+                {/* Create New Participant Button - Fixed at bottom */}
                 {!showCreateForm &&
                   availableParticipants.length > 0 &&
                   allowCreateNew && (
-                    <div className="flex justify-center pt-2">
+                    <div className="flex justify-center border-t bg-gray-50/50 p-3 dark:bg-gray-900/50">
                       <Button
                         variant="outline"
                         onClick={() => setShowCreateForm(true)}
