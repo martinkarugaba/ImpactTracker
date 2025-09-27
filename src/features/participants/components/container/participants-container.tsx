@@ -64,7 +64,7 @@ export function JotaiParticipantsContainer({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 border-green-500">
       {/* Modern Tabs Design */}
       <div className="bg-transparent">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

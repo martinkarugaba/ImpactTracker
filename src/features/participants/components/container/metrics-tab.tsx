@@ -2,7 +2,6 @@
 
 import { TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCalculatedParticipantMetrics } from "../../hooks/use-calculated-participant-metrics";
 import {
@@ -46,10 +45,7 @@ function DetailedParticipantMetrics({
   }
 
   return (
-    <Tabs
-      defaultValue="demographics"
-      className="border-orange5000 w-full border-2"
-    >
+    <Tabs defaultValue="demographics" className="w-full border-orange-500">
       <TabsList className="grid w-full grid-cols-5">
         <TabsTrigger value="demographics">Demographics</TabsTrigger>
         <TabsTrigger value="youth-employment">Youth in Work</TabsTrigger>
@@ -93,26 +89,12 @@ export function AnalyticsTab({
   isMetricsLoading,
 }: AnalyticsTabProps) {
   return (
-    <TabsContent value="analytics" className="mt-6">
+    <TabsContent value="analytics" className="mt-4">
       {/* Analytics Container */}
-      <div className="space-y-6 rounded-xl p-6">
+      <div className="space-y-0">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 pb-4 dark:border-gray-700">
-          <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 p-2 shadow-lg">
-              <BarChart3 className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                Participant Metrics
-              </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Comprehensive metrics across all participant categories
-              </p>
-            </div>
-          </div>
-
-          <Badge variant="secondary" className="text-xs">
+        <div className="flex items-center justify-end pb-4">
+          <Badge variant="outline" className="text-xs">
             {metricsParticipants.length} participants
           </Badge>
         </div>
