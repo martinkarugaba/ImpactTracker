@@ -85,23 +85,53 @@ export function ParticipantsDemographicsTab({
       {/* Basic Demographics Overview */}
       <DemographicsOverview data={demographicsData} />
 
-      {/* Gender Demographics */}
-      <GenderDemographicsSection data={demographicsData} />
+      {/* Basic Demographics Group */}
+      <div className="space-y-6">
+        <div className="border-l-4 border-l-blue-500 pl-4">
+          <h2 className="mb-1 text-xl font-semibold text-blue-600 dark:text-blue-400">
+            Basic Demographics
+          </h2>
+          <p className="text-muted-foreground mb-6 text-sm">
+            Core participant demographics including gender and disability status
+          </p>
+        </div>
 
-      {/* PWD Demographics */}
-      <PWDDemographicsSection data={demographicsData} />
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Gender Demographics */}
+          <GenderDemographicsSection data={demographicsData} />
 
-      {/* Youth Employment */}
-      <YouthEmploymentSection data={demographicsData} />
+          {/* PWD Demographics */}
+          <PWDDemographicsSection data={demographicsData} />
+        </div>
+      </div>
 
-      {/* Wage Employment */}
-      <WageEmploymentSection data={demographicsData} />
+      {/* Employment Analytics Group */}
+      <div className="space-y-6">
+        <div className="border-l-4 border-l-green-500 pl-4">
+          <h2 className="mb-1 text-xl font-semibold text-green-600 dark:text-green-400">
+            Employment Analytics
+          </h2>
+          <p className="text-muted-foreground mb-6 text-sm">
+            Employment patterns and opportunities across different categories
+          </p>
+        </div>
 
-      {/* Self Employment */}
-      <SelfEmploymentSection data={demographicsData} />
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Youth Employment */}
+          <YouthEmploymentSection data={demographicsData} />
 
-      {/* Secondary Employment */}
-      <SecondaryEmploymentSection data={demographicsData} />
+          {/* Wage Employment */}
+          <WageEmploymentSection data={demographicsData} />
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Self Employment */}
+          <SelfEmploymentSection data={demographicsData} />
+
+          {/* Secondary Employment */}
+          <SecondaryEmploymentSection data={demographicsData} />
+        </div>
+      </div>
     </div>
   );
 }

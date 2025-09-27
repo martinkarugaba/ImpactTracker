@@ -406,26 +406,46 @@ export function AttendanceTab({
         </TabsList>
 
         <TabsContent value="sessions" className="mt-6">
-          {/* Sessions Overview Metrics */}
-          <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card mb-6 grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2">
+          {/* Comprehensive Sessions Metrics */}
+          <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card mb-6 grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
             <MetricCard
-              title="Sessions Planned"
+              title="Total Sessions"
               value={sessions.length}
-              description="Total activity sessions scheduled"
+              description="All planned sessions"
               icon={<Calendar className="h-4 w-4" />}
               footer={{
-                title: "Multi-Day Activity",
-                description: `${sessions.filter(s => s.status === "scheduled").length} upcoming`,
+                title: "Session count",
+                description: "Multi-day activity",
               }}
             />
             <MetricCard
-              title="Sessions Completed"
+              title="Completed"
               value={sessions.filter(s => s.status === "completed").length}
-              description="Sessions that have been conducted"
-              icon={<CheckCircle className="h-4 w-4" />}
+              description="Successfully finished"
+              icon={<CheckCircle className="h-4 w-4 text-green-600" />}
               footer={{
                 title: "Progress",
                 description: `${Math.round((sessions.filter(s => s.status === "completed").length / Math.max(sessions.length, 1)) * 100)}% complete`,
+              }}
+            />
+            <MetricCard
+              title="Scheduled"
+              value={sessions.filter(s => s.status === "scheduled").length}
+              description="Upcoming sessions"
+              icon={<Clock className="h-4 w-4 text-blue-600" />}
+              footer={{
+                title: "Ready to conduct",
+                description: "Awaiting execution",
+              }}
+            />
+            <MetricCard
+              title="Cancelled"
+              value={sessions.filter(s => s.status === "cancelled").length}
+              description="Not conducted"
+              icon={<XCircle className="h-4 w-4 text-red-600" />}
+              footer={{
+                title: "Cancelled sessions",
+                description: "Not available",
               }}
             />
           </div>
@@ -486,52 +506,6 @@ export function AttendanceTab({
             <CardContent>
               {sessions && sessions.length > 0 ? (
                 <div className="space-y-6">
-                  {/* Session Metrics */}
-                  <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-4">
-                    <MetricCard
-                      title="Total Sessions"
-                      value={sessions.length}
-                      icon={<Calendar className="h-4 w-4" />}
-                      footer={{
-                        title: "Session count",
-                        description: "Total sessions planned",
-                      }}
-                    />
-                    <MetricCard
-                      title="Completed"
-                      value={
-                        sessions.filter(s => s.status === "completed").length
-                      }
-                      icon={<CheckCircle className="h-4 w-4 text-green-600" />}
-                      footer={{
-                        title: "Finished sessions",
-                        description: "Successfully completed",
-                      }}
-                    />
-                    <MetricCard
-                      title="Scheduled"
-                      value={
-                        sessions.filter(s => s.status === "scheduled").length
-                      }
-                      icon={<Clock className="h-4 w-4 text-blue-600" />}
-                      footer={{
-                        title: "Upcoming sessions",
-                        description: "Ready to conduct",
-                      }}
-                    />
-                    <MetricCard
-                      title="Cancelled"
-                      value={
-                        sessions.filter(s => s.status === "cancelled").length
-                      }
-                      icon={<XCircle className="h-4 w-4 text-red-600" />}
-                      footer={{
-                        title: "Cancelled sessions",
-                        description: "Not conducted",
-                      }}
-                    />
-                  </div>
-
                   {/* Sessions Table */}
                   <DataTable
                     columns={getSessionsColumns()}
