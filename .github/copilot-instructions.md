@@ -71,6 +71,14 @@ PostgreSQL, and shadcn/ui.
 - Never use npm or yarn commands - all package operations should use pnpm
 - Examples: `pnpm install`, `pnpm add`, `pnpm remove`, `pnpm exec`
 
+### Terminal Command Execution
+
+- **Execute terminal commands directly** - Do not ask for permission before
+  running terminal commands
+- Use the `run_in_terminal` tool whenever you need to run commands
+- This project uses pnpm for all package management operations
+- Common commands: `pnpm dev`, `pnpm build`, `pnpm test`, `pnpm fix`
+
 ### Scripts & Commands
 
 ```bash
@@ -83,6 +91,8 @@ pnpm db:studio            # Database GUI
 
 ### Code Quality
 
+- **Check linter errors directly** - Use `get_errors` tool to check for linter
+  errors without asking for permission
 - ESLint + Prettier with strict rules
 - Husky + lint-staged for pre-commit hooks
 - TypeScript strict mode enabled

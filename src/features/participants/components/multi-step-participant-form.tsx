@@ -563,27 +563,27 @@ export function MultiStepParticipantForm({
   };
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto max-w-5xl space-y-6">
       {/* Progress Header */}
-      <div className="rounded-lg border bg-white p-6 shadow-sm">
+      <div className="bg-card rounded-lg border p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-xl font-semibold">
             {initialData ? "Update Participant" : "Add New Participant"}
           </h2>
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="text-muted-foreground flex items-center gap-2 text-sm">
             <CheckCircle2 className="h-4 w-4" />
             <span>{Math.round(progress)}% Complete</span>
           </div>
         </div>
         <Progress value={progress} className="h-2" />
-        <p className="mt-2 text-sm text-gray-600">
+        <p className="text-muted-foreground mt-2 text-sm">
           Step {currentStepIndex + 1} of {STEPS.length}:{" "}
           {STEPS[currentStepIndex].description}
         </p>
       </div>
 
       {/* Step Navigation */}
-      <div className="rounded-lg border bg-white p-6 shadow-sm">
+      <div className="bg-card rounded-lg border p-6 shadow-sm">
         <div className="flex flex-wrap justify-between gap-2">
           {STEPS.map((step, index) => {
             const Icon = step.icon;
@@ -599,12 +599,12 @@ export function MultiStepParticipantForm({
                 disabled={!isAccessible}
                 className={`flex min-w-0 flex-1 items-center gap-3 rounded-lg px-4 py-3 text-left transition-colors ${
                   isActive
-                    ? "border border-blue-200 bg-blue-50 text-blue-700"
+                    ? "bg-primary/10 text-primary border-primary border"
                     : isCompleted
-                      ? "border border-green-200 bg-green-50 text-green-700 hover:bg-green-100"
+                      ? "border border-green-200 bg-green-50 text-green-700 hover:bg-green-100 dark:border-green-800 dark:bg-green-900/20 dark:text-green-300 dark:hover:bg-green-900/30"
                       : isAccessible
-                        ? "border border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100"
-                        : "cursor-not-allowed border border-gray-200 bg-gray-50 text-gray-400"
+                        ? "bg-muted text-foreground hover:bg-muted/80 border-border border"
+                        : "bg-muted/50 text-muted-foreground border-border cursor-not-allowed border"
                 }`}
               >
                 <div
@@ -642,12 +642,12 @@ export function MultiStepParticipantForm({
           onSubmit={form.handleSubmit(handleSubmit as any)}
           className="space-y-6"
         >
-          <div className="rounded-lg border bg-white p-6 shadow-sm">
+          <div className="bg-card rounded-lg border p-6 shadow-sm">
             {renderStepContent()}
           </div>
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between rounded-lg border bg-white p-6 shadow-sm">
+          <div className="bg-card flex justify-between rounded-lg border p-6 shadow-sm">
             <Button
               type="button"
               variant="outline"

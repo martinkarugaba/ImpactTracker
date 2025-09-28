@@ -16,6 +16,7 @@ import {
   Edit,
   MoreHorizontal,
   Check,
+  MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -71,18 +72,20 @@ function AttendanceCell({ sessionId }: { sessionId: string }) {
 
   if (!attendance?.data || attendance.data.length === 0) {
     return (
-      <div className="text-muted-foreground flex items-center">
-        <Users className="mr-1 h-4 w-4" />
-        <span>0 attended</span>
+      <div className="text-muted-foreground flex items-center gap-2">
+        <Users className="h-4 w-4 text-gray-400" />
+        <span className="text-sm">0 attended</span>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center">
-      <Users className="mr-1 h-4 w-4" />
-      <span className="font-medium">{attendance.data.length}</span>
-      <span className="text-muted-foreground ml-1">attended</span>
+    <div className="flex items-center gap-2">
+      <Users className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+      <span className="font-medium text-purple-700 dark:text-purple-300">
+        {attendance.data.length}
+      </span>
+      <span className="text-muted-foreground text-sm">attended</span>
     </div>
   );
 }
@@ -137,7 +140,16 @@ export function SessionsTab({
         header: "Session #",
         cell: ({ row }) => {
           const session = row.original;
-          return <div className="text-center">{session.session_number}</div>;
+          return (
+            <div className="flex items-center justify-center">
+              <Badge
+                variant="outline"
+                className="border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-300"
+              >
+                #{session.session_number}
+              </Badge>
+            </div>
+          );
         },
       },
       {
@@ -148,7 +160,9 @@ export function SessionsTab({
           return (
             <div className="max-w-xs">
               {session.title ? (
-                <span className="font-medium">{session.title}</span>
+                <span className="font-medium text-gray-900 dark:text-gray-100">
+                  {session.title}
+                </span>
               ) : (
                 <span className="text-muted-foreground italic">
                   Session {session.session_number}
@@ -164,10 +178,37 @@ export function SessionsTab({
         cell: ({ row }) => {
           const session = row.original;
           return (
-            <div>
-              {session.session_date
-                ? format(new Date(session.session_date), "MMM dd, yyyy")
-                : "Not scheduled"}
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-green-600 dark:text-green-400" />
+              <span className="text-sm font-medium">
+                {session.session_date
+                  ? format(new Date(session.session_date), "MMM dd, yyyy")
+                  : "Not scheduled"}
+              </span>
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: "venue",
+        header: "Venue",
+        cell: ({ row }) => {
+          const session = row.original;
+          return (
+            <div className="max-w-xs">
+              {session.venue ? (
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                  <span className="text-sm font-medium">{session.venue}</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-gray-400" />
+                  <span className="text-muted-foreground text-sm italic">
+                    No venue set
+                  </span>
+                </div>
+              )}
             </div>
           );
         },
@@ -179,14 +220,34 @@ export function SessionsTab({
           const session = row.original;
           const status = session.status || "scheduled";
           const statusConfig = {
-            scheduled: { label: "Scheduled", variant: "secondary" as const },
-            completed: { label: "Completed", variant: "default" as const },
-            cancelled: { label: "Cancelled", variant: "destructive" as const },
-            postponed: { label: "Postponed", variant: "outline" as const },
+            scheduled: {
+              label: "Scheduled",
+              className:
+                "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800",
+            },
+            completed: {
+              label: "Completed",
+              className:
+                "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800",
+            },
+            cancelled: {
+              label: "Cancelled",
+              className:
+                "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800",
+            },
+            postponed: {
+              label: "Postponed",
+              className:
+                "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800",
+            },
           };
           const config = statusConfig[status] || statusConfig.scheduled;
 
-          return <Badge variant={config.variant}>{config.label}</Badge>;
+          return (
+            <Badge variant="outline" className={config.className}>
+              {config.label}
+            </Badge>
+          );
         },
       },
       {
