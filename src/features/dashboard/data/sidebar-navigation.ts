@@ -73,6 +73,11 @@ export const navigationData = {
       icon: IconActivity,
     },
     {
+      name: "VSLAs",
+      url: "/dashboard/vslas",
+      icon: IconCashBanknote,
+    },
+    {
       name: "Reports",
       url: "/dashboard/reports",
       icon: IconReport,
@@ -81,11 +86,6 @@ export const navigationData = {
       name: "Concept notes",
       url: "/dashboard/concept-notes",
       icon: IconNote,
-    },
-    {
-      name: "VSLAs",
-      url: "/dashboard/vslas",
-      icon: IconCashBanknote,
     },
   ],
 };
