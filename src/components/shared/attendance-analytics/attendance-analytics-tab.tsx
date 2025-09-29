@@ -160,8 +160,6 @@ export function AttendanceAnalyticsTab({
 export function AttendanceAnalyticsStandalone({
   attendanceRecords,
   isLoading,
-  title = "Attendance Analytics",
-  description = "Attendance patterns and demographic breakdowns",
   showHeader = true,
 }: Omit<AttendanceAnalyticsTabProps, "tabValue">) {
   return (
@@ -169,8 +167,6 @@ export function AttendanceAnalyticsStandalone({
       attendanceRecords={attendanceRecords}
       isLoading={isLoading}
       tabValue="" // Empty string means no TabsContent wrapper
-      title={title}
-      description={description}
       showHeader={showHeader}
     />
   );

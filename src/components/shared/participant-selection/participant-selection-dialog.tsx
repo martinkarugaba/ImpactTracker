@@ -264,7 +264,7 @@ export function ParticipantSelectionDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[90vh] max-w-4xl flex-col">
+      <DialogContent className="flex h-[90vh] max-w-4xl flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <UserPlus className="h-5 w-5" />
@@ -279,101 +279,94 @@ export function ParticipantSelectionDialog({
 
         <div className="flex-1 overflow-hidden">
           {showCreateForm ? (
-            <div className="h-full overflow-y-auto">
-              <ParticipantForm
-                onSubmit={handleCreateParticipant}
-                isLoading={createParticipant.isPending}
-                projects={projects}
-                clusterId={context.cluster_id}
-                initialData={{
-                  firstName: "",
-                  lastName: "",
-                  country: "Uganda",
-                  district: "",
-                  subCounty: "",
-                  parish: "",
-                  village: "",
-                  sex: "female",
-                  age: "",
-                  dateOfBirth: "",
-                  isPWD: "no",
-                  disabilityType: "",
-                  isMother: "no",
-                  isRefugee: "no",
-                  designation: "",
-                  enterprise: "",
-                  contact: "",
-                  project_id: context.project_id || "",
-                  cluster_id: context.cluster_id,
-                  organization_id: context.organization_id || "",
-                  noOfTrainings: "0",
-                  isActive: "yes",
-                  isPermanentResident: "yes",
-                  areParentsAlive: "yes",
-                  numberOfChildren: "0",
-                  employmentStatus: "",
-                  monthlyIncome: "",
-                  wageEmploymentStatus: "",
-                  wageEmploymentSector: "",
-                  wageEmploymentScale: "",
-                  selfEmploymentStatus: "",
-                  selfEmploymentSector: "",
-                  businessScale: "",
-                  secondaryEmploymentStatus: "",
-                  secondaryEmploymentSector: "",
-                  secondaryBusinessScale: "",
-                  accessedLoans: "no",
-                  individualSaving: "no",
-                  groupSaving: "no",
-                  locationSetting: "rural",
-                  mainChallenge: "",
-                  skillOfInterest: "",
-                  expectedImpact: "",
-                  isWillingToParticipate: "yes",
-                  // New demographic fields
-                  maritalStatus: "single",
-                  educationLevel: "primary",
-                  sourceOfIncome: "agriculture",
-                  nationality: "Ugandan",
-                  populationSegment: "youth",
-                  refugeeLocation: "",
-                  isActiveStudent: "no",
-                  // VSLA fields
-                  isSubscribedToVSLA: "no",
-                  vslaName: "",
-                  // Teen mother
-                  isTeenMother: "no",
-                  // Enterprise fields
-                  ownsEnterprise: "no",
-                  enterpriseName: "",
-                  enterpriseSector: "agriculture",
-                  enterpriseSize: "micro",
-                  enterpriseYouthMale: "0",
-                  enterpriseYouthFemale: "0",
-                  enterpriseAdults: "0",
-                  // Skills fields
-                  hasVocationalSkills: "no",
-                  vocationalSkillsParticipations: [],
-                  vocationalSkillsCompletions: [],
-                  vocationalSkillsCertifications: [],
-                  hasSoftSkills: "no",
-                  softSkillsParticipations: [],
-                  softSkillsCompletions: [],
-                  softSkillsCertifications: [],
-                  hasBusinessSkills: "no",
-                  // Employment details
-                  employmentType: "unemployed",
-                  employmentSector: "agriculture",
-                }}
-              />
-              <div className="mt-4 flex justify-end gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowCreateForm(false)}
-                >
-                  Back to Search
-                </Button>
+            <div className="h-full max-h-[calc(90vh-8rem)] overflow-y-auto px-1">
+              <div className="pb-6">
+                <ParticipantForm
+                  onSubmit={handleCreateParticipant}
+                  isLoading={createParticipant.isPending}
+                  projects={projects}
+                  clusterId={context.cluster_id}
+                  initialData={{
+                    firstName: "",
+                    lastName: "",
+                    country: "Uganda",
+                    district: "",
+                    subCounty: "",
+                    parish: "",
+                    village: "",
+                    sex: "female",
+                    age: "",
+                    dateOfBirth: "",
+                    isPWD: "no",
+                    disabilityType: "",
+                    isMother: "no",
+                    isRefugee: "no",
+                    designation: "",
+                    enterprise: "",
+                    contact: "",
+                    project_id: context.project_id || "",
+                    cluster_id: context.cluster_id,
+                    organization_id: context.organization_id || "",
+                    noOfTrainings: "0",
+                    isActive: "yes",
+                    isPermanentResident: "yes",
+                    areParentsAlive: "yes",
+                    numberOfChildren: "0",
+                    employmentStatus: "",
+                    monthlyIncome: "",
+                    wageEmploymentStatus: "",
+                    wageEmploymentSector: "",
+                    wageEmploymentScale: "",
+                    selfEmploymentStatus: "",
+                    selfEmploymentSector: "",
+                    businessScale: "",
+                    secondaryEmploymentStatus: "",
+                    secondaryEmploymentSector: "",
+                    secondaryBusinessScale: "",
+                    accessedLoans: "no",
+                    individualSaving: "no",
+                    groupSaving: "no",
+                    locationSetting: "rural",
+                    mainChallenge: "",
+                    skillOfInterest: "",
+                    expectedImpact: "",
+                    isWillingToParticipate: "yes",
+                    // New demographic fields
+                    maritalStatus: "single",
+                    educationLevel: "primary",
+                    sourceOfIncome: "agriculture",
+                    nationality: "Ugandan",
+                    populationSegment: "youth",
+                    refugeeLocation: "",
+                    isActiveStudent: "no",
+                    // VSLA fields
+                    isSubscribedToVSLA: "no",
+                    vslaName: "",
+                    // Teen mother
+                    isTeenMother: "no",
+                    // Enterprise fields
+                    ownsEnterprise: "no",
+                    enterpriseName: "",
+                    enterpriseSector: "agriculture",
+                    enterpriseSize: "micro",
+                    enterpriseYouthMale: "0",
+                    enterpriseYouthFemale: "0",
+                    enterpriseAdults: "0",
+                    // Skills fields
+                    hasVocationalSkills: "no",
+                    vocationalSkillsParticipations: [],
+                    vocationalSkillsCompletions: [],
+                    vocationalSkillsCertifications: [],
+                    hasSoftSkills: "no",
+                    softSkillsParticipations: [],
+                    softSkillsCompletions: [],
+                    softSkillsCertifications: [],
+                    hasBusinessSkills: "no",
+                    // Employment details
+                    employmentType: "unemployed",
+                    employmentSector: "agriculture",
+                  }}
+                />
               </div>
             </div>
           ) : (
@@ -588,6 +581,17 @@ export function ParticipantSelectionDialog({
             >
               Add {selectedParticipants.length} Participant
               {selectedParticipants.length !== 1 ? "s" : ""}
+            </Button>
+          </DialogFooter>
+        )}
+        {showCreateForm && (
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowCreateForm(false)}
+            >
+              Back to Search
             </Button>
           </DialogFooter>
         )}
