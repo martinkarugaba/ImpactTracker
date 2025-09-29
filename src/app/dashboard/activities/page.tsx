@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PageTitle } from "@/features/dashboard/components/page-title";
 import { ActivitiesTableSkeleton } from "@/features/activities/components/table/activities-table-skeleton";
 import { IconActivity } from "@tabler/icons-react";
+import { getUserClusterId } from "@/features/auth/actions";
 
 // Loading component for the page
 function ActivitiesPageSkeleton() {
@@ -73,7 +74,38 @@ function ActivitiesPageSkeleton() {
 
 // Main activities page content
 async function ActivitiesPageContent() {
-  return <ActivitiesContainerNew />;
+  try {
+    // Get user's cluster ID first
+    const clusterId = await getUserClusterId();
+
+    if (!clusterId) {
+      return (
+        <div className="flex h-96 items-center justify-center">
+          <div className="text-center">
+            <h3 className="text-lg font-semibold">No cluster assigned</h3>
+            <p className="text-muted-foreground mt-2">
+              Please contact an administrator to assign you to a cluster.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    return <ActivitiesContainerNew clusterId={clusterId} />;
+  } catch (error) {
+    console.error("Error loading activities page data:", error);
+
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold">Error loading activities</h3>
+          <p className="text-muted-foreground mt-2">
+            Failed to load page data. Please try refreshing the page.
+          </p>
+        </div>
+      </div>
+    );
+  }
 }
 
 // Main page component with proper metadata

@@ -1,8 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
+import { useAtom, useSetAtom } from "jotai";
 import { useActivities, useActivityMetrics } from "../../hooks/use-activities";
-import { type Activity, type ActivityFilters } from "../../types/types";
+import { useOrganizationsByCluster } from "../../hooks/use-organizations";
+import {
+  activeTabAtom,
+  searchValueAtom,
+  activityFiltersAtom,
+  paginationAtom,
+  isCreateDialogOpenAtom,
+  isImportDialogOpenAtom,
+  editingActivityAtom,
+  deletingActivityAtom,
+  handleSearchChangeAtom,
+  updatePaginationAtom,
+} from "../../atoms/activities-atoms";
 
 interface UseActivityContainerStateProps {
   clusterId?: string;
@@ -11,34 +24,35 @@ interface UseActivityContainerStateProps {
 export function useActivityContainerState({
   clusterId,
 }: UseActivityContainerStateProps) {
-  const [activeTab, setActiveTab] = useState<"metrics" | "activities">(
-    "metrics"
-  );
-  const [searchValue, setSearchValue] = useState("");
-  const [filters, setFilters] = useState<ActivityFilters>({
-    search: "",
-    type: "",
-    status: "",
-    organizationId: "",
-    clusterId: clusterId || "",
-    projectId: "",
-    startDate: undefined,
-    endDate: undefined,
-  });
+  // Jotai atoms for state management
+  const [activeTab, setActiveTab] = useAtom(activeTabAtom);
+  const [searchValue, setSearchValue] = useAtom(searchValueAtom);
+  const [filters, setFilters] = useAtom(activityFiltersAtom);
+  const [pagination] = useAtom(paginationAtom);
 
   // Dialog states
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
-  const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
-  const [deletingActivity, setDeletingActivity] = useState<Activity | null>(
-    null
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useAtom(
+    isCreateDialogOpenAtom
   );
+  const [isImportDialogOpen, setIsImportDialogOpen] = useAtom(
+    isImportDialogOpenAtom
+  );
+  const [editingActivity, setEditingActivity] = useAtom(editingActivityAtom);
+  const [deletingActivity, setDeletingActivity] = useAtom(deletingActivityAtom);
 
-  // Pagination state
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 50,
-  });
+  // Action atoms
+  const handleSearchChangeAction = useSetAtom(handleSearchChangeAtom);
+  const updatePaginationAction = useSetAtom(updatePaginationAtom);
+
+  // Initialize clusterId in filters if provided
+  useEffect(() => {
+    if (clusterId && filters.clusterId !== clusterId) {
+      setFilters(prev => ({
+        ...prev,
+        clusterId: clusterId,
+      }));
+    }
+  }, [clusterId, filters.clusterId, setFilters]);
 
   // Fetch activities with filters for the table
   const {
@@ -66,8 +80,16 @@ export function useActivityContainerState({
     error: metricsError,
   } = useActivityMetrics(clusterId);
 
+  // Fetch organizations for the cluster
+  const {
+    data: organizationsData,
+    isLoading: _isOrganizationsLoading,
+    error: _organizationsError,
+  } = useOrganizationsByCluster(clusterId);
+
   const activities = activitiesData?.data?.data || [];
   const metricsActivities = activities; // Use the same data for now
+  const organizations = organizationsData?.data || [];
 
   // Build pagination object from API response
   const paginationData = {
@@ -81,18 +103,17 @@ export function useActivityContainerState({
       ),
   };
 
+  // Handler functions using Jotai actions
   const handleSearchChange = (search: string) => {
-    setSearchValue(search);
-    // Reset pagination when search changes
-    setPagination(prev => ({ ...prev, page: 1 }));
+    handleSearchChangeAction(search);
   };
 
   const handlePaginationChange = (page: number, limit: number) => {
-    setPagination({ page, limit });
+    updatePaginationAction({ page, limit });
   };
 
   const handlePageChange = (page: number) => {
-    setPagination(prev => ({ ...prev, page }));
+    updatePaginationAction({ page });
   };
 
   return {
@@ -112,6 +133,7 @@ export function useActivityContainerState({
     activitiesData,
     metricsActivities,
     metricsData,
+    organizations,
 
     // Loading states
     isActivitiesLoading,

@@ -146,39 +146,23 @@ export function ActivityReportsTable({
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <ClipboardList className="text-muted-foreground h-6 w-6" />
-            <CardTitle className="text-xl">
-              Activity Reports ({activityReports.length})
-            </CardTitle>
-          </div>
-          {onCreateActivityReport && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onCreateActivityReport}
-            >
-              <Plus className="mr-2 h-5 w-5" />
-              Add Activity Report
-            </Button>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent>
-        <DataTable
-          columns={activityReportsColumns}
-          data={activityReports}
-          filterColumn="title"
-          filterPlaceholder="Filter activity reports..."
-          showColumnToggle={true}
-          showPagination={activityReports.length > 5}
-          showRowSelection={false}
-          pageSize={5}
-        />
-      </CardContent>
-    </Card>
+    <DataTable
+      columns={activityReportsColumns}
+      data={activityReports}
+      filterColumn="title"
+      filterPlaceholder="Filter activity reports..."
+      showColumnToggle={true}
+      showPagination={activityReports.length > 5}
+      showRowSelection={false}
+      pageSize={5}
+      actionButtons={
+        onCreateActivityReport && (
+          <Button variant="outline" size="sm" onClick={onCreateActivityReport}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Activity Report
+          </Button>
+        )
+      }
+    />
   );
 }

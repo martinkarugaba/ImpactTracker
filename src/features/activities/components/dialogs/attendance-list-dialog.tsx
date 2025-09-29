@@ -3,25 +3,30 @@
 import { ActivityParticipant } from "../../types/types";
 import { type Participant } from "@/features/participants/types/types";
 import toast from "react-hot-toast";
-import { ParticipantSelectionDialog } from "../participant-selection";
+import { ParticipantSelectionDialog } from "@/components/shared/participant-selection/participant-selection-dialog";
 
 interface AttendanceListDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   activityId: string;
+  sessionId?: string;
   activity?: {
     cluster_id: string;
     project_id: string;
     organization_id: string;
   };
   participants?: ActivityParticipant[];
-  onSubmit: (participants: Partial<ActivityParticipant>[]) => Promise<void>;
+  onSubmit: (
+    participants: Partial<ActivityParticipant>[],
+    sessionId?: string
+  ) => Promise<void>;
 }
 
 export function AttendanceListDialog({
   open,
   onOpenChange,
   activityId,
+  sessionId,
   activity,
   participants: _existingParticipants = [],
   onSubmit,
@@ -39,9 +44,9 @@ export function AttendanceListDialog({
         feedback: undefined,
       }));
 
-      await onSubmit(participantData);
+      await onSubmit(participantData, sessionId);
       toast.success(
-        `${selectedParticipants.length} participant${selectedParticipants.length !== 1 ? "s" : ""} added successfully`
+        `${selectedParticipants.length} participant${selectedParticipants.length !== 1 ? "s" : ""} ${sessionId ? "added to session" : "added to activity"} successfully`
       );
       onOpenChange(false);
     } catch (error) {
@@ -55,7 +60,21 @@ export function AttendanceListDialog({
       open={open}
       onOpenChange={onOpenChange}
       onParticipantsSelected={handleAddExistingParticipants}
-      activity={activity}
+      context={{
+        cluster_id: activity?.cluster_id || "",
+        project_id: activity?.project_id,
+        organization_id: activity?.organization_id,
+      }}
+      title={
+        sessionId
+          ? "Add Participants to Session"
+          : "Add Participants to Activity"
+      }
+      description={
+        sessionId
+          ? "Select participants to add to this specific session. They will be marked as invited to attend."
+          : "Select participants to add to this activity. They will be available for all sessions."
+      }
     />
   );
 }

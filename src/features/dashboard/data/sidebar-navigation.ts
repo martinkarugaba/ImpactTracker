@@ -1,19 +1,12 @@
 import {
   IconActivity,
   IconBuildings,
-  IconCamera,
   IconCashBanknote,
-  IconChartBar,
   IconDashboard,
-  IconDatabase,
-  // IconFileAi,
-  // IconFileDescription,
-  IconFolder,
   IconHelp,
   IconLocation,
   IconNote,
   IconReport,
-  IconSearch,
   IconUsers,
   IconUsersGroup,
 } from "@tabler/icons-react";
@@ -38,12 +31,12 @@ export const navigationData = {
     {
       title: "Organisations",
       url: "/dashboard/organizations",
-      icon: IconChartBar,
+      icon: IconBuildings,
     },
     {
       title: "Projects",
       url: "/dashboard/projects",
-      icon: IconFolder,
+      icon: IconNote,
     },
     {
       title: "Users",
@@ -62,17 +55,12 @@ export const navigationData = {
       url: "#",
       icon: IconHelp,
     },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
   ],
   kpis: [
     {
       name: "Overview",
       url: "/dashboard/user-overview",
-      icon: IconDatabase,
+      icon: IconDashboard,
     },
     {
       name: "Participants",
@@ -85,6 +73,11 @@ export const navigationData = {
       icon: IconActivity,
     },
     {
+      name: "VSLAs",
+      url: "/dashboard/vslas",
+      icon: IconCashBanknote,
+    },
+    {
       name: "Reports",
       url: "/dashboard/reports",
       icon: IconReport,
@@ -93,16 +86,6 @@ export const navigationData = {
       name: "Concept notes",
       url: "/dashboard/concept-notes",
       icon: IconNote,
-    },
-    {
-      name: "Success stories",
-      url: "/dashboard/success-stories",
-      icon: IconCamera,
-    },
-    {
-      name: "VSLAs",
-      url: "/dashboard/vslas",
-      icon: IconCashBanknote,
     },
   ],
 };

@@ -63,13 +63,15 @@ const activityFormSchema = z.object({
   venue: z.string().min(1, "Venue is required"),
   budget: z.number().optional(),
   objectives: z.string().optional(),
-  organizationId: z.string().min(1, "Organization is required"),
+  organizationId: z.string().min(1, "Lead partner is required"),
   clusterId: z.string().optional(),
   projectId: z.string().optional(),
-  // Multi-day session fields
-  generateSessions: z.boolean().default(false),
-  sessionStartTime: z.string().optional(),
-  sessionEndTime: z.string().optional(),
+  // Expected number of sessions
+  sessionCount: z
+    .number()
+    .min(1, "At least 1 session is required")
+    .max(50, "Maximum 50 sessions allowed")
+    .optional(),
 });
 
 type ActivityFormValues = z.infer<typeof activityFormSchema>;
@@ -78,7 +80,8 @@ interface ActivityFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   activity?: Activity;
-  organizations: Array<{ id: string; name: string }>;
+  clusterId?: string;
+  organizations: Array<{ id: string; name: string; acronym?: string }>;
   clusters?: Array<{ id: string; name: string }>;
   projects?: Array<{ id: string; name: string }>;
 }
@@ -87,6 +90,7 @@ export function ActivityFormDialog({
   open,
   onOpenChange,
   activity,
+  clusterId,
   organizations,
   clusters = [],
   projects = [],
@@ -103,13 +107,12 @@ export function ActivityFormDialog({
       type: "meeting" as ActivityType,
       status: "planned" as ActivityStatus,
       venue: "",
+      budget: undefined,
       objectives: "",
       organizationId: "",
       clusterId: "",
       projectId: "",
-      generateSessions: false,
-      sessionStartTime: "",
-      sessionEndTime: "",
+      sessionCount: undefined,
     },
   }) as ReturnType<typeof useForm<ActivityFormValues>>;
 
@@ -132,6 +135,7 @@ export function ActivityFormDialog({
           organizationId: activity.organization_id || "",
           clusterId: activity.cluster_id || "",
           projectId: activity.project_id || "",
+          sessionCount: activity.expectedSessions || undefined,
         });
       } else {
         form.reset({
@@ -140,14 +144,16 @@ export function ActivityFormDialog({
           type: "training",
           status: "planned",
           venue: "",
+          budget: undefined,
           objectives: "",
           organizationId: "",
-          clusterId: "",
+          clusterId: clusterId || "",
           projectId: "",
+          sessionCount: undefined,
         });
       }
     }
-  }, [open, activity, form]);
+  }, [open, activity, form, clusterId]);
 
   const onSubmit = async (data: ActivityFormValues) => {
     try {
@@ -167,11 +173,12 @@ export function ActivityFormDialog({
             cluster_id: data.clusterId || undefined,
             project_id: data.projectId || undefined,
             organization_id: data.organizationId,
+            expectedSessions: data.sessionCount || null,
           },
         });
         createdActivity = result.data;
       } else {
-        const result = await createActivity.mutateAsync({
+        const activityData = {
           ...data,
           description: data.description || null,
           objectives: data.objectives
@@ -179,9 +186,10 @@ export function ActivityFormDialog({
             : [],
           budget: data.budget || null,
           endDate: data.endDate || null,
-          cluster_id: data.clusterId || null,
+          cluster_id: data.clusterId || clusterId || null,
           project_id: data.projectId || null,
           organization_id: data.organizationId,
+          expectedSessions: data.sessionCount || null,
           // Provide default values for missing required fields
           actualCost: null,
           numberOfParticipants: 0,
@@ -190,26 +198,24 @@ export function ActivityFormDialog({
           recommendations: null,
           attachments: [],
           created_by: "current-user", // TODO: Get from auth context
-        });
+        };
+
+        console.log("Creating activity with data:", activityData);
+        const result = await createActivity.mutateAsync(activityData);
         createdActivity = result.data;
       }
 
-      // Generate sessions for multi-day activities
+      // Generate sessions if session count is specified
       if (
         !activity && // Only for new activities
         createdActivity &&
-        data.generateSessions &&
-        data.startDate &&
-        data.endDate &&
-        data.startDate < data.endDate
+        data.sessionCount &&
+        data.sessionCount > 0
       ) {
         await generateSessions.mutateAsync({
           activityId: createdActivity.id,
-          startDate: data.startDate,
-          endDate: data.endDate,
+          sessionCount: data.sessionCount,
           sessionData: {
-            start_time: data.sessionStartTime || undefined,
-            end_time: data.sessionEndTime || undefined,
             venue: data.venue,
           },
         });
@@ -367,9 +373,6 @@ export function ActivityFormDialog({
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          disabled={date =>
-                            date < new Date(new Date().setHours(0, 0, 0, 0))
-                          }
                           initialFocus
                         />
                       </PopoverContent>
@@ -409,10 +412,7 @@ export function ActivityFormDialog({
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          disabled={date =>
-                            date < form.watch("startDate") ||
-                            date < new Date(new Date().setHours(0, 0, 0, 0))
-                          }
+                          disabled={date => date < form.watch("startDate")}
                           initialFocus
                         />
                       </PopoverContent>
@@ -439,6 +439,34 @@ export function ActivityFormDialog({
 
             <FormField
               control={form.control}
+              name="sessionCount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Expected Number of Sessions (Optional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="50"
+                      placeholder="Enter number of sessions (e.g., 5)"
+                      {...field}
+                      value={field.value || ""}
+                      onChange={e =>
+                        field.onChange(parseInt(e.target.value) || undefined)
+                      }
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    If this activity will have multiple sessions, specify how
+                    many you expect
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="budget"
               render={({ field }) => (
                 <FormItem>
@@ -447,7 +475,7 @@ export function ActivityFormDialog({
                     <Input
                       type="number"
                       placeholder="0"
-                      {...field}
+                      value={field.value || ""}
                       onChange={e =>
                         field.onChange(
                           e.target.value ? Number(e.target.value) : undefined
@@ -466,20 +494,20 @@ export function ActivityFormDialog({
               name="organizationId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Organization</FormLabel>
+                  <FormLabel>Lead Partner</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select organization" />
+                        <SelectValue placeholder="Select lead partner" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {organizations.map(org => (
                         <SelectItem key={org.id} value={org.id}>
-                          {org.name}
+                          {org.acronym || org.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
