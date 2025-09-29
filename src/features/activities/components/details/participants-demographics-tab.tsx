@@ -1,9 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useAtom } from "jotai";
 import { Activity } from "../../types/types";
 import { useActivityParticipants } from "../../hooks/use-activities";
 import { toast } from "sonner";
+import {
+  demographicsLoadingAtom,
+  demographicsDataAtom,
+} from "../../atoms/activities-atoms";
 import {
   DataAvailabilityNotice,
   DemographicsOverview,
@@ -14,7 +19,6 @@ import {
   SelfEmploymentSection,
   SecondaryEmploymentSection,
   generateMockDemographicsData,
-  type DemographicsData,
 } from "./demographics";
 
 interface ParticipantsDemographicsTabProps {
@@ -24,9 +28,8 @@ interface ParticipantsDemographicsTabProps {
 export function ParticipantsDemographicsTab({
   activity,
 }: ParticipantsDemographicsTabProps) {
-  const [demographicsData, setDemographicsData] =
-    useState<DemographicsData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [demographicsData, setDemographicsData] = useAtom(demographicsDataAtom);
+  const [isLoading, setIsLoading] = useAtom(demographicsLoadingAtom);
 
   const { data: participantsResponse } = useActivityParticipants(activity.id);
 
@@ -52,7 +55,7 @@ export function ParticipantsDemographicsTab({
     };
 
     loadDemographicsData();
-  }, [participantsResponse]);
+  }, [participantsResponse, setDemographicsData, setIsLoading]);
 
   if (isLoading) {
     return (
@@ -82,23 +85,53 @@ export function ParticipantsDemographicsTab({
       {/* Basic Demographics Overview */}
       <DemographicsOverview data={demographicsData} />
 
-      {/* Gender Demographics */}
-      <GenderDemographicsSection data={demographicsData} />
+      {/* Basic Demographics Group */}
+      <div className="space-y-6">
+        <div className="border-l-4 border-l-blue-500 pl-4">
+          <h2 className="mb-1 text-xl font-semibold text-blue-600 dark:text-blue-400">
+            Basic Demographics
+          </h2>
+          <p className="text-muted-foreground mb-6 text-sm">
+            Core participant demographics including gender and disability status
+          </p>
+        </div>
 
-      {/* PWD Demographics */}
-      <PWDDemographicsSection data={demographicsData} />
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Gender Demographics */}
+          <GenderDemographicsSection data={demographicsData} />
 
-      {/* Youth Employment */}
-      <YouthEmploymentSection data={demographicsData} />
+          {/* PWD Demographics */}
+          <PWDDemographicsSection data={demographicsData} />
+        </div>
+      </div>
 
-      {/* Wage Employment */}
-      <WageEmploymentSection data={demographicsData} />
+      {/* Employment Analytics Group */}
+      <div className="space-y-6">
+        <div className="border-l-4 border-l-green-500 pl-4">
+          <h2 className="mb-1 text-xl font-semibold text-green-600 dark:text-green-400">
+            Employment Analytics
+          </h2>
+          <p className="text-muted-foreground mb-6 text-sm">
+            Employment patterns and opportunities across different categories
+          </p>
+        </div>
 
-      {/* Self Employment */}
-      <SelfEmploymentSection data={demographicsData} />
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Youth Employment */}
+          <YouthEmploymentSection data={demographicsData} />
 
-      {/* Secondary Employment */}
-      <SecondaryEmploymentSection data={demographicsData} />
+          {/* Wage Employment */}
+          <WageEmploymentSection data={demographicsData} />
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Self Employment */}
+          <SelfEmploymentSection data={demographicsData} />
+
+          {/* Secondary Employment */}
+          <SecondaryEmploymentSection data={demographicsData} />
+        </div>
+      </div>
     </div>
   );
 }

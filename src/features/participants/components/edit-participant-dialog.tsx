@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Edit } from "lucide-react";
-import { ParticipantForm } from "./participant-form";
+import { MultiStepParticipantForm } from "./multi-step-participant-form";
 import { useUpdateParticipant } from "../hooks/use-participants";
 import { useQuery } from "@tanstack/react-query";
 import { getProjects } from "@/features/projects/actions/projects";
@@ -23,14 +23,20 @@ interface EditParticipantDialogProps {
   participant: Participant;
   onSuccess?: () => void;
   trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function EditParticipantDialog({
   participant,
   onSuccess,
   trigger,
+  open: controlledOpen,
+  onOpenChange,
 }: EditParticipantDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
   const updateParticipant = useUpdateParticipant();
 
   // Fetch projects for the form
@@ -251,22 +257,26 @@ export function EditParticipantDialog({
         </Button>
       )}
 
-      <DialogContent className="max-h-[90vh] w-[95vw] max-w-4xl overflow-y-auto">
+      <DialogContent className="max-h-[95vh] w-[98vw] max-w-6xl overflow-hidden">
         <DialogHeader>
-          <DialogTitle>Edit Participant</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-xl font-semibold">
+            Edit Participant
+          </DialogTitle>
+          <DialogDescription className="text-base">
             Update {participant.firstName} {participant.lastName}&apos;s
-            information below.
+            information using the step-by-step form below.
           </DialogDescription>
         </DialogHeader>
 
-        <ParticipantForm
-          initialData={initialData}
-          onSubmit={handleSubmit}
-          isLoading={updateParticipant.isPending}
-          projects={projects}
-          clusterId={participant.cluster_id}
-        />
+        <div className="max-h-[calc(95vh-120px)] overflow-y-auto">
+          <MultiStepParticipantForm
+            initialData={initialData}
+            onSubmit={handleSubmit}
+            isLoading={updateParticipant.isPending}
+            projects={projects}
+            clusterId={participant.cluster_id}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );

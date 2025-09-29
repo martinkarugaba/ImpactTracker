@@ -1031,7 +1031,7 @@ export function ParticipantForm({
                 >
                   Employment Tracking
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Track employment status and business activities
                 </p>
               </div>
@@ -1226,7 +1226,7 @@ export function ParticipantForm({
 
           {/* Financial Inclusion Section */}
           <div
-            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
+            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6 dark:border-gray-700 dark:bg-gray-800"
             style={{
               borderLeftColor: "oklch(var(--chart-3))",
               borderLeftWidth: "4px",
@@ -1252,7 +1252,7 @@ export function ParticipantForm({
                 >
                   Financial Inclusion
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Banking, savings, and loan access information
                 </p>
               </div>
@@ -1335,7 +1335,7 @@ export function ParticipantForm({
 
           {/* Additional Information Section */}
           <div
-            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
+            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6 dark:border-gray-700 dark:bg-gray-800"
             style={{
               borderLeftColor: "oklch(var(--chart-4))",
               borderLeftWidth: "4px",
@@ -1361,7 +1361,7 @@ export function ParticipantForm({
                 >
                   Additional Information
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Optional details and preferences
                 </p>
               </div>
@@ -1500,7 +1500,7 @@ export function ParticipantForm({
 
           {/* Personal Information Section */}
           <div
-            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
+            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6 dark:border-gray-700 dark:bg-gray-800"
             style={{
               borderLeftColor: "oklch(var(--chart-3))",
               borderLeftWidth: "4px",
@@ -1517,10 +1517,10 @@ export function ParticipantForm({
                 />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   Personal Information
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Additional personal details and background information
                 </p>
               </div>
@@ -1798,7 +1798,7 @@ export function ParticipantForm({
 
           {/* Enterprise Information Section */}
           <div
-            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
+            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6 dark:border-gray-700 dark:bg-gray-800"
             style={{
               borderLeftColor: "oklch(var(--chart-1))",
               borderLeftWidth: "4px",
@@ -1973,7 +1973,7 @@ export function ParticipantForm({
 
           {/* Skills Information Section */}
           <div
-            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
+            className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6 dark:border-gray-700 dark:bg-gray-800"
             style={{
               borderLeftColor: "oklch(var(--chart-2))",
               borderLeftWidth: "4px",
@@ -1990,10 +1990,10 @@ export function ParticipantForm({
                 />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   Skills Information
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Vocational, soft skills, and business skills training
                 </p>
               </div>

@@ -2,7 +2,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Users,
   Plus,
@@ -21,7 +20,6 @@ import {
 import { DataTable } from "@/components/ui/data-table";
 import { createParticipantsTableColumns } from "./participants-table-columns";
 import { MetricCard } from "@/components/ui/metric-card";
-import { format } from "date-fns";
 
 interface ParticipantsTabProps {
   activity: Activity;
@@ -106,7 +104,7 @@ export function ParticipantsTab({
       </div>
 
       {/* Session Overview */}
-      {sessions.length > 0 && (
+      {/* {sessions.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -165,7 +163,7 @@ export function ParticipantsTab({
             </div>
           </CardContent>
         </Card>
-      )}
+      )} */}
 
       {/* Participant Management */}
       <Card>

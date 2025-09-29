@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -20,70 +20,41 @@ import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon, Filter, X, Search } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { ACTIVITY_TYPES, ACTIVITY_STATUSES } from "../../types/types";
 import {
-  type ActivityFilters,
-  ACTIVITY_TYPES,
-  ACTIVITY_STATUSES,
-} from "../../types/types";
+  isFilterOpenAtom,
+  activityFiltersAtom,
+  searchValueAtom,
+  clearFiltersAtom,
+  updateActivityFilterAtom,
+  activeFiltersCountAtom,
+} from "../../atoms/activities-atoms";
 
 interface ActivityFiltersComponentProps {
-  filters: ActivityFilters;
-  onFiltersChange: (filters: ActivityFilters) => void;
   organizations: Array<{ id: string; name: string }>;
   clusters?: Array<{ id: string; name: string }>;
   projects?: Array<{ id: string; name: string }>;
-  searchValue?: string;
-  onSearchChange?: (search: string) => void;
 }
 
 export function ActivityFiltersComponent({
-  filters,
-  onFiltersChange,
   organizations,
   clusters = [],
   projects = [],
-  searchValue,
-  onSearchChange,
 }: ActivityFiltersComponentProps) {
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  // Jotai atoms
+  const [isFilterOpen, setIsFilterOpen] = useAtom(isFilterOpenAtom);
+  const filters = useAtomValue(activityFiltersAtom);
+  const [searchValue, _setSearchValue] = useAtom(searchValueAtom);
+  const clearFilters = useSetAtom(clearFiltersAtom);
+  const updateFilter = useSetAtom(updateActivityFilterAtom);
+  const activeFiltersCount = useAtomValue(activeFiltersCountAtom);
 
   const updateFilters = (
-    key: keyof ActivityFilters,
-    value: ActivityFilters[keyof ActivityFilters]
+    key: keyof typeof filters,
+    value: string | Date | undefined
   ) => {
-    onFiltersChange({
-      ...filters,
-      [key]: value,
-    });
+    updateFilter({ key, value });
   };
-
-  const clearFilters = () => {
-    onFiltersChange({
-      search: "",
-      type: "",
-      status: "",
-      organizationId: "",
-      clusterId: "",
-      projectId: "",
-      startDate: undefined,
-      endDate: undefined,
-    });
-  };
-
-  const getActiveFiltersCount = () => {
-    let count = 0;
-    if (filters.search) count++;
-    if (filters.type) count++;
-    if (filters.status) count++;
-    if (filters.organizationId) count++;
-    if (filters.clusterId) count++;
-    if (filters.projectId) count++;
-    if (filters.startDate) count++;
-    if (filters.endDate) count++;
-    return count;
-  };
-
-  const activeFiltersCount = getActiveFiltersCount();
 
   return (
     <div className="space-y-4">
@@ -95,11 +66,7 @@ export function ActivityFiltersComponent({
             placeholder="Search activities..."
             value={searchValue || filters.search || ""}
             onChange={e => {
-              if (onSearchChange) {
-                onSearchChange(e.target.value);
-              } else {
-                updateFilters("search", e.target.value);
-              }
+              updateFilters("search", e.target.value);
             }}
             className="pl-8"
           />
@@ -334,11 +301,7 @@ export function ActivityFiltersComponent({
               <X
                 className="h-3 w-3 cursor-pointer"
                 onClick={() => {
-                  if (onSearchChange) {
-                    onSearchChange("");
-                  } else {
-                    updateFilters("search", "");
-                  }
+                  updateFilters("search", "");
                 }}
               />
             </Badge>

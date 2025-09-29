@@ -72,7 +72,7 @@ export function ConceptNotesTable({
         <CardHeader>
           <div className="flex items-center gap-2">
             <FileText className="text-muted-foreground h-6 w-6" />
-            <CardTitle className="text-xl">Concept Notes</CardTitle>
+            {/* <CardTitle className="text-xl">Concept Notes</CardTitle> */}
           </div>
         </CardHeader>
         <CardContent>
@@ -142,35 +142,23 @@ export function ConceptNotesTable({
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <FileText className="text-muted-foreground h-6 w-6" />
-            <CardTitle className="text-xl">
-              Concept Notes ({conceptNotes.length})
-            </CardTitle>
-          </div>
-          {onCreateConceptNote && (
-            <Button variant="outline" size="sm" onClick={onCreateConceptNote}>
-              <Plus className="mr-2 h-5 w-5" />
-              Add Concept Note
-            </Button>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent>
-        <DataTable
-          columns={conceptNoteColumns}
-          data={conceptNotes}
-          filterColumn="title"
-          filterPlaceholder="Filter concept notes..."
-          showColumnToggle={true}
-          showPagination={conceptNotes.length > 5}
-          showRowSelection={false}
-          pageSize={5}
-        />
-      </CardContent>
-    </Card>
+    <DataTable
+      columns={conceptNoteColumns}
+      data={conceptNotes}
+      filterColumn="title"
+      filterPlaceholder="Filter concept notes..."
+      showColumnToggle={true}
+      showPagination={conceptNotes.length > 5}
+      showRowSelection={false}
+      pageSize={5}
+      actionButtons={
+        onCreateConceptNote && (
+          <Button variant="outline" size="sm" onClick={onCreateConceptNote}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Concept Note
+          </Button>
+        )
+      }
+    />
   );
 }

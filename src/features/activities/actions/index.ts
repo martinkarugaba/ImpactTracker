@@ -179,10 +179,10 @@ export async function createActivity(
   data: NewActivity
 ): Promise<ActivityResponse> {
   try {
-    if (!data.cluster_id || !data.project_id || !data.organization_id) {
+    if (!data.cluster_id || !data.organization_id) {
       return {
         success: false,
-        error: "cluster_id, project_id, and organization_id are required",
+        error: "cluster_id and organization_id are required",
       };
     }
 

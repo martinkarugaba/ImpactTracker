@@ -1,13 +1,12 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Info, Users, BarChart3, Calendar, UserCheck } from "lucide-react";
+import { Info, Users, UserCheck, TrendingUp } from "lucide-react";
 import { Activity } from "../../types/types";
 import { ActivityOverviewTab } from "./activity-overview-tab";
-import { ParticipantsTab } from "./participants-tab";
+import { AttendanceTab } from "./attendance-tab";
 import { AttendanceAnalyticsTab } from "./attendance-analytics-tab";
-import { ParticipantsDemographicsTab } from "./participants-demographics-tab";
-import { SessionsTab } from "./sessions-tab";
+import { AttendanceDemographicsTab } from "./attendance-demographics-tab";
 
 interface ActivityDetailsTabsProps {
   activity: Activity;
@@ -46,14 +45,9 @@ export function ActivityDetailsTabs({
           <span className="hidden sm:inline">Overview</span>
           <span className="sm:hidden">Info</span>
         </TabsTrigger>
-        <TabsTrigger value="sessions">
-          <Calendar className="h-4 w-4" />
-          <span className="hidden sm:inline">Sessions</span>
-          <span className="sm:hidden">Days</span>
-        </TabsTrigger>
-        <TabsTrigger value="participants">
+        <TabsTrigger value="attendance">
           <Users className="h-4 w-4" />
-          <span className="hidden sm:inline">Participants</span>
+          <span className="hidden sm:inline">Attendance</span>
           <span className="sm:hidden">People</span>
         </TabsTrigger>
         <TabsTrigger value="demographics">
@@ -62,7 +56,7 @@ export function ActivityDetailsTabs({
           <span className="sm:hidden">Demo</span>
         </TabsTrigger>
         <TabsTrigger value="analytics">
-          <BarChart3 className="h-4 w-4" />
+          <TrendingUp className="h-4 w-4" />
           <span className="hidden sm:inline">Analytics</span>
           <span className="sm:hidden">Stats</span>
         </TabsTrigger>
@@ -82,8 +76,8 @@ export function ActivityDetailsTabs({
         />
       </TabsContent>
 
-      <TabsContent value="sessions" className="mt-6">
-        <SessionsTab
+      <TabsContent value="attendance" className="mt-6">
+        <AttendanceTab
           activity={activity}
           onManageAttendance={onManageAttendance}
           onCreateSession={onCreateSession}
@@ -91,15 +85,8 @@ export function ActivityDetailsTabs({
         />
       </TabsContent>
 
-      <TabsContent value="participants" className="mt-6">
-        <ParticipantsTab
-          activity={activity}
-          onManageAttendance={onManageAttendance}
-        />
-      </TabsContent>
-
       <TabsContent value="demographics" className="mt-6">
-        <ParticipantsDemographicsTab activity={activity} />
+        <AttendanceDemographicsTab activity={activity} />
       </TabsContent>
 
       <TabsContent value="analytics" className="mt-6">
