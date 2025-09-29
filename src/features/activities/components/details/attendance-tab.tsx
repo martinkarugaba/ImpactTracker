@@ -54,6 +54,7 @@ import {
   useGenerateActivitySessions,
   useSessionAttendance,
   useUpdateActivitySession,
+  useDeleteActivitySession,
 } from "../../hooks/use-activities";
 import { createParticipantsTableColumns } from "./participants-table-columns";
 import { EditParticipantDialog } from "@/features/participants/components/edit-participant-dialog";
@@ -116,6 +117,27 @@ export function AttendanceTab({
 
   // Hook for updating session status
   const updateSession = useUpdateActivitySession();
+  const deleteSession = useDeleteActivitySession();
+
+  const handleDeleteSession = async (sessionId: string) => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this session? This action cannot be undone and will also delete all attendance records for this session."
+      )
+    ) {
+      try {
+        const result = await deleteSession.mutateAsync({ sessionId });
+        if (result.success) {
+          toast.success("Session deleted successfully");
+        } else {
+          toast.error(result.error || "Failed to delete session");
+        }
+      } catch (error) {
+        console.error("Error deleting session:", error);
+        toast.error("Failed to delete session");
+      }
+    }
+  };
 
   // Dialog state management
   const [editingParticipant, setEditingParticipant] =
@@ -346,9 +368,7 @@ export function AttendanceTab({
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onClick={() => {
-                    // TODO: Implement session deletion
-                  }}
+                  onClick={() => handleDeleteSession(session.id)}
                   className="text-red-600"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
