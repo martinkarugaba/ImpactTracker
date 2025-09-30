@@ -4,11 +4,11 @@ import { useState, useMemo } from "react";
 import { addDays, setHours, setMinutes, getDay } from "date-fns";
 import { useCalendarContext } from "@/components/event-calendar/calendar-context";
 
+import { EventCalendar } from "@/components/event-calendar/event-calendar";
 import {
-  EventCalendar,
   type CalendarEvent,
   type EventColor,
-} from "@/components/event-calendar/event-calendar";
+} from "@/components/event-calendar";
 
 // Etiquettes data for calendar filtering
 export const etiquettes = [
