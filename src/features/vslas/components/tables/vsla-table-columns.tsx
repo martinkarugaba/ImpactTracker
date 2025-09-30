@@ -22,7 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { VSLA } from "../../types";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "../../utils";
 
 export const columns: ColumnDef<VSLA>[] = [
   {

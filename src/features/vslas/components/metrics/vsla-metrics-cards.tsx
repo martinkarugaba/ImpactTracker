@@ -9,7 +9,7 @@ import {
   IconMapPin,
   IconPercentage,
 } from "@tabler/icons-react";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "../../utils";
 import { VSLA } from "../../types";
 
 interface VSLAMetricsCardsProps {

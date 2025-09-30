@@ -117,10 +117,12 @@ export function SiteHeader({
       )}
       {...props}
     >
-      <div className="container flex h-14 items-center">
+      <div className="container flex h-12 items-center">
         {/* Mobile: Show sidebar trigger and back button */}
         <div className="flex items-center gap-2 md:hidden">
           <SidebarTrigger />
+          <Separator orientation="vertical" className="mx-3 h-4" />
+
           {showBackButton && (
             <Button
               variant="ghost"
@@ -149,8 +151,6 @@ export function SiteHeader({
             </Button>
           )}
         </div>
-
-        <Separator orientation="vertical" className="mx-3 h-4" />
 
         <div className="flex flex-1 items-center justify-between">
           {/* Navigation section */}

@@ -7,7 +7,7 @@ import {
   IconCurrencyDollar,
 } from "@tabler/icons-react";
 import { VSLAMember } from "../../../actions/vsla-members";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "../../../utils";
 
 interface VSLAMembersStatsProps {
   members: VSLAMember[];

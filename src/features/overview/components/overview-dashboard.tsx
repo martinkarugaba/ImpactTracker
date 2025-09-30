@@ -73,16 +73,16 @@ export function OverviewDashboard() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6">
             {/* Add Participant */}
             <Button
               asChild
               variant="outline"
               size="sm"
-              className="to-card hover:to-card h-20 flex-col gap-1.5 border-blue-200 bg-gradient-to-t from-blue-50 hover:from-blue-100 dark:border-blue-800 dark:from-blue-950 dark:hover:from-blue-900"
+              className="h-20 flex-col gap-1.5 border-blue-200/50 bg-gradient-to-br from-blue-50/80 to-blue-100/60 text-blue-700 shadow-sm transition-all duration-200 hover:border-blue-300 hover:bg-gradient-to-br hover:from-blue-100 hover:to-blue-200 hover:text-blue-800 hover:shadow-md dark:border-blue-800/30 dark:from-blue-950/50 dark:to-blue-900/40 dark:text-blue-300 dark:hover:from-blue-900/60 dark:hover:to-blue-800/50 dark:hover:text-blue-200"
             >
               <Link href="/dashboard/participants">
-                <IconUsersGroup className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <IconUsersGroup className="h-5 w-5" />
                 <span className="text-xs font-medium">Add Participant</span>
               </Link>
             </Button>
@@ -92,10 +92,10 @@ export function OverviewDashboard() {
               asChild
               variant="outline"
               size="sm"
-              className="to-card hover:to-card h-20 flex-col gap-1.5 border-green-200 bg-gradient-to-t from-green-50 hover:from-green-100 dark:border-green-800 dark:from-green-950 dark:hover:from-green-900"
+              className="h-20 flex-col gap-1.5 border-green-200/50 bg-gradient-to-br from-green-50/80 to-green-100/60 text-green-700 shadow-sm transition-all duration-200 hover:border-green-300 hover:bg-gradient-to-br hover:from-green-100 hover:to-green-200 hover:text-green-800 hover:shadow-md dark:border-green-800/30 dark:from-green-950/50 dark:to-green-900/40 dark:text-green-300 dark:hover:from-green-900/60 dark:hover:to-green-800/50 dark:hover:text-green-200"
             >
               <Link href="/dashboard/activities">
-                <IconActivity className="h-5 w-5 text-green-600 dark:text-green-400" />
+                <IconActivity className="h-5 w-5" />
                 <span className="text-xs font-medium">Schedule Activity</span>
               </Link>
             </Button>
@@ -105,10 +105,10 @@ export function OverviewDashboard() {
               asChild
               variant="outline"
               size="sm"
-              className="to-card hover:to-card h-20 flex-col gap-1.5 border-amber-200 bg-gradient-to-t from-amber-50 hover:from-amber-100 dark:border-amber-800 dark:from-amber-950 dark:hover:from-amber-900"
+              className="h-20 flex-col gap-1.5 border-amber-200/50 bg-gradient-to-br from-amber-50/80 to-amber-100/60 text-amber-700 shadow-sm transition-all duration-200 hover:border-amber-300 hover:bg-gradient-to-br hover:from-amber-100 hover:to-amber-200 hover:text-amber-800 hover:shadow-md dark:border-amber-800/30 dark:from-amber-950/50 dark:to-amber-900/40 dark:text-amber-300 dark:hover:from-amber-900/60 dark:hover:to-amber-800/50 dark:hover:text-amber-200"
             >
               <Link href="/dashboard/vslas">
-                <IconCashBanknote className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                <IconCashBanknote className="h-5 w-5" />
                 <span className="text-xs font-medium">Create VSLA</span>
               </Link>
             </Button>
@@ -118,10 +118,10 @@ export function OverviewDashboard() {
               asChild
               variant="outline"
               size="sm"
-              className="to-card hover:to-card h-20 flex-col gap-1.5 border-purple-200 bg-gradient-to-t from-purple-50 hover:from-purple-100 dark:border-purple-800 dark:from-purple-950 dark:hover:from-purple-900"
+              className="h-20 flex-col gap-1.5 border-purple-200/50 bg-gradient-to-br from-purple-50/80 to-purple-100/60 text-purple-700 shadow-sm transition-all duration-200 hover:border-purple-300 hover:bg-gradient-to-br hover:from-purple-100 hover:to-purple-200 hover:text-purple-800 hover:shadow-md dark:border-purple-800/30 dark:from-purple-950/50 dark:to-purple-900/40 dark:text-purple-300 dark:hover:from-purple-900/60 dark:hover:to-purple-800/50 dark:hover:text-purple-200"
             >
               <Link href="/dashboard/concept-notes">
-                <IconNote className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                <IconNote className="h-5 w-5" />
                 <span className="text-xs font-medium">Concept Note</span>
               </Link>
             </Button>
@@ -131,10 +131,10 @@ export function OverviewDashboard() {
               asChild
               variant="outline"
               size="sm"
-              className="to-card hover:to-card h-20 flex-col gap-1.5 border-pink-200 bg-gradient-to-t from-pink-50 hover:from-pink-100 dark:border-pink-800 dark:from-pink-950 dark:hover:from-pink-900"
+              className="h-20 flex-col gap-1.5 border-pink-200/50 bg-gradient-to-br from-pink-50/80 to-pink-100/60 text-pink-700 shadow-sm transition-all duration-200 hover:border-pink-300 hover:bg-gradient-to-br hover:from-pink-100 hover:to-pink-200 hover:text-pink-800 hover:shadow-md dark:border-pink-800/30 dark:from-pink-950/50 dark:to-pink-900/40 dark:text-pink-300 dark:hover:from-pink-900/60 dark:hover:to-pink-800/50 dark:hover:text-pink-200"
             >
               <Link href="/dashboard/success-stories">
-                <IconCamera className="h-5 w-5 text-pink-600 dark:text-pink-400" />
+                <IconCamera className="h-5 w-5" />
                 <span className="text-xs font-medium">Success Story</span>
               </Link>
             </Button>
@@ -144,10 +144,10 @@ export function OverviewDashboard() {
               asChild
               variant="outline"
               size="sm"
-              className="to-card hover:to-card h-20 flex-col gap-1.5 border-indigo-200 bg-gradient-to-t from-indigo-50 hover:from-indigo-100 dark:border-indigo-800 dark:from-indigo-950 dark:hover:from-indigo-900"
+              className="h-20 flex-col gap-1.5 border-indigo-200/50 bg-gradient-to-br from-indigo-50/80 to-indigo-100/60 text-indigo-700 shadow-sm transition-all duration-200 hover:border-indigo-300 hover:bg-gradient-to-br hover:from-indigo-100 hover:to-indigo-200 hover:text-indigo-800 hover:shadow-md dark:border-indigo-800/30 dark:from-indigo-950/50 dark:to-indigo-900/40 dark:text-indigo-300 dark:hover:from-indigo-900/60 dark:hover:to-indigo-800/50 dark:hover:text-indigo-200"
             >
               <Link href="/dashboard/reports">
-                <IconReport className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                <IconReport className="h-5 w-5" />
                 <span className="text-xs font-medium">Generate Report</span>
               </Link>
             </Button>
@@ -157,10 +157,10 @@ export function OverviewDashboard() {
               asChild
               variant="outline"
               size="sm"
-              className="to-card hover:to-card h-20 flex-col gap-1.5 border-teal-200 bg-gradient-to-t from-teal-50 hover:from-teal-100 dark:border-teal-800 dark:from-teal-950 dark:hover:from-teal-900"
+              className="h-20 flex-col gap-1.5 border-teal-200/50 bg-gradient-to-br from-teal-50/80 to-teal-100/60 text-teal-700 shadow-sm transition-all duration-200 hover:border-teal-300 hover:bg-gradient-to-br hover:from-teal-100 hover:to-teal-200 hover:text-teal-800 hover:shadow-md dark:border-teal-800/30 dark:from-teal-950/50 dark:to-teal-900/40 dark:text-teal-300 dark:hover:from-teal-900/60 dark:hover:to-teal-800/50 dark:hover:text-teal-200"
             >
               <Link href="/dashboard/trainings">
-                <IconTarget className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                <IconTarget className="h-5 w-5" />
                 <span className="text-xs font-medium">Schedule Training</span>
               </Link>
             </Button>
@@ -170,10 +170,10 @@ export function OverviewDashboard() {
               asChild
               variant="outline"
               size="sm"
-              className="to-card hover:to-card h-20 flex-col gap-1.5 border-rose-200 bg-gradient-to-t from-rose-50 hover:from-rose-100 dark:border-rose-800 dark:from-rose-950 dark:hover:from-rose-900"
+              className="h-20 flex-col gap-1.5 border-rose-200/50 bg-gradient-to-br from-rose-50/80 to-rose-100/60 text-rose-700 shadow-sm transition-all duration-200 hover:border-rose-300 hover:bg-gradient-to-br hover:from-rose-100 hover:to-rose-200 hover:text-rose-800 hover:shadow-md dark:border-rose-800/30 dark:from-rose-950/50 dark:to-rose-900/40 dark:text-rose-300 dark:hover:from-rose-900/60 dark:hover:to-rose-800/50 dark:hover:text-rose-200"
             >
               <Link href="/dashboard/activities">
-                <IconCalendarEvent className="h-5 w-5 text-rose-600 dark:text-rose-400" />
+                <IconCalendarEvent className="h-5 w-5" />
                 <span className="text-xs font-medium">View Calendar</span>
               </Link>
             </Button>
@@ -183,10 +183,10 @@ export function OverviewDashboard() {
               asChild
               variant="outline"
               size="sm"
-              className="to-card hover:to-card h-20 flex-col gap-1.5 border-slate-200 bg-gradient-to-t from-slate-50 hover:from-slate-100 dark:border-slate-800 dark:from-slate-950 dark:hover:from-slate-900"
+              className="h-20 flex-col gap-1.5 border-slate-200/50 bg-gradient-to-br from-slate-50/80 to-slate-100/60 text-slate-700 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-gradient-to-br hover:from-slate-100 hover:to-slate-200 hover:text-slate-800 hover:shadow-md dark:border-slate-800/30 dark:from-slate-950/50 dark:to-slate-900/40 dark:text-slate-300 dark:hover:from-slate-900/60 dark:hover:to-slate-800/50 dark:hover:text-slate-200"
             >
               <Link href="/dashboard/concept-notes">
-                <IconFileText className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                <IconFileText className="h-5 w-5" />
                 <span className="text-xs font-medium">All Documents</span>
               </Link>
             </Button>

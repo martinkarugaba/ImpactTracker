@@ -23,7 +23,7 @@ import {
   ArrowUpDown,
 } from "lucide-react";
 import { VSLAMember } from "../../../actions/vsla-members";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "../../../utils";
 
 interface CreateVSLAMembersColumnsProps {
   onMemberUpdated?: () => void;
