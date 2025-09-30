@@ -54,6 +54,7 @@ export interface EventCalendarProps {
   onEventDelete?: (eventId: string) => void;
   className?: string;
   initialView?: CalendarView;
+  hideSidebarTrigger?: boolean;
 }
 
 export function EventCalendar({
@@ -63,6 +64,7 @@ export function EventCalendar({
   onEventDelete,
   className,
   initialView = "month",
+  hideSidebarTrigger = false,
 }: EventCalendarProps) {
   // Use the shared calendar context instead of local state
   const { currentDate, setCurrentDate } = useCalendarContext();
@@ -302,15 +304,18 @@ export function EventCalendar({
         >
           <div className="flex justify-between gap-1.5 max-sm:items-center sm:flex-col">
             <div className="flex items-center gap-1.5">
-              <SidebarTrigger
-                data-state={sidebarOpen ? "invisible" : "visible"}
-                className="peer text-muted-foreground/80 hover:text-foreground/80 size-7 transition-opacity duration-200 ease-in-out hover:bg-transparent! sm:-ms-1.5 lg:data-[state=invisible]:pointer-events-none lg:data-[state=invisible]:opacity-0"
-                isOutsideSidebar
-              />
+              {!hideSidebarTrigger && (
+                <SidebarTrigger
+                  data-state={sidebarOpen ? "invisible" : "visible"}
+                  className="peer text-muted-foreground/80 hover:text-foreground/80 size-7 transition-opacity duration-200 ease-in-out hover:bg-transparent! sm:-ms-1.5 lg:data-[state=invisible]:pointer-events-none lg:data-[state=invisible]:opacity-0"
+                  isOutsideSidebar
+                />
+              )}
               <h2
                 className={cn(
                   "text-xl font-semibold transition-transform duration-300 ease-in-out",
-                  "lg:peer-data-[state=invisible]:-translate-x-7.5"
+                  !hideSidebarTrigger &&
+                    "lg:peer-data-[state=invisible]:-translate-x-7.5"
                 )}
               >
                 {viewTitle}

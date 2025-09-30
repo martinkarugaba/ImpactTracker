@@ -31,7 +31,7 @@ import {
   getSpanningEventsForDay,
   sortEvents,
 } from "./utils";
-import { DefaultStartHour } from "@/components/event-calendar/constants";
+import { DefaultStartHour } from "@/features/event-calendar/constants";
 
 interface MonthViewProps {
   currentDate: Date;

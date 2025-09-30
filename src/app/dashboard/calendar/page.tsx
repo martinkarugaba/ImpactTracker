@@ -1,6 +1,7 @@
 import { Metadata } from "next";
-import { CalendarProvider } from "@/components/event-calendar/calendar-context";
-import { EventCalendar } from "@/components/event-calendar/event-calendar";
+import { PageTitle } from "@/features/dashboard/components/page-title";
+import { CalendarProvider } from "@/features/event-calendar/calendar-context";
+import { EventCalendar } from "@/features/event-calendar/event-calendar";
 
 export const metadata: Metadata = {
   title: "Calendar - KPI Edge",
@@ -9,19 +10,24 @@ export const metadata: Metadata = {
 
 export default function CalendarPage() {
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold tracking-tight">Calendar</h1>
-        <p className="text-muted-foreground">
-          Manage your activities, sessions, and events in a calendar view.
-        </p>
-      </div>
-
-      <CalendarProvider>
-        <div className="h-[calc(100vh-12rem)]">
-          <EventCalendar />
+    <>
+      <PageTitle title="Calendar" />
+      <div className="flex flex-1 flex-col px-2 sm:px-4 md:px-6">
+        <div className="@container/main flex flex-1 flex-col gap-2">
+          <div className="flex flex-col gap-3 py-3 sm:gap-4 sm:py-4 md:gap-6 md:py-6">
+            <div className="mb-4">
+              <p className="text-muted-foreground">
+                Manage your activities, sessions, and events in a calendar view.
+              </p>
+            </div>
+            <CalendarProvider>
+              <div className="min-h-[600px] w-full">
+                <EventCalendar />
+              </div>
+            </CalendarProvider>
+          </div>
         </div>
-      </CalendarProvider>
-    </div>
+      </div>
+    </>
   );
 }

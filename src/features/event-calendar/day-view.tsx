@@ -20,7 +20,7 @@ import { EventItem } from "./event-item";
 import { useCurrentTimeIndicator } from "./hooks/use-current-time-indicator";
 import { type CalendarEvent } from "./types";
 import { isMultiDayEvent } from "./utils";
-import { StartHour, EndHour } from "@/components/event-calendar/constants";
+import { StartHour, EndHour } from "@/features/event-calendar/constants";
 import { cn } from "@/lib/utils";
 
 interface DayViewProps {

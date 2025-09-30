@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { AuthProvider } from "@/providers/session-provider";
 import { QueryProvider } from "@/providers/query-provider";
-import { CalendarProvider } from "@/components/event-calendar/calendar-context";
+import { CalendarProvider } from "@/features/event-calendar/calendar-context";
 import { ActiveThemeProvider } from "@/features/themes/components/active-theme";
 import "./globals.css";
 

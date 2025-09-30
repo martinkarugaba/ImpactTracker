@@ -3,7 +3,7 @@ import { isSameDay } from "date-fns";
 import type {
   CalendarEvent,
   EventColor,
-} from "@/components/event-calendar/types";
+} from "@/features/event-calendar/types";
 
 /**
  * Get CSS classes for event colors
