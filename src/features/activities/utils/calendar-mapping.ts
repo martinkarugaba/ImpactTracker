@@ -1,12 +1,15 @@
-import { type CalendarEvent } from "@/components/event-calendar/types";
-import { type Activity } from "../../types/types";
+import {
+  type CalendarEvent,
+  type EventColor,
+} from "@/components/event-calendar/types";
+import { type Activity } from "../types/types";
 
 /**
  * Maps activity data to calendar event format
  */
 export function mapActivityToCalendarEvent(activity: Activity): CalendarEvent {
   // Map activity type to color
-  const getColorFromType = (type: string): string => {
+  const getColorFromType = (type: string): EventColor => {
     switch (type.toLowerCase()) {
       case "training":
         return "blue";
@@ -28,8 +31,8 @@ export function mapActivityToCalendarEvent(activity: Activity): CalendarEvent {
     id: activity.id,
     title: activity.title,
     description: activity.description || "",
-    start: new Date(activity.startDate),
-    end: new Date(activity.endDate),
+    start: new Date(activity.startDate || new Date()),
+    end: new Date(activity.endDate || new Date()),
     color: getColorFromType(activity.type || ""),
     location: activity.venue || "",
     allDay: false, // You might want to determine this based on time

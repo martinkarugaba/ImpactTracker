@@ -21,10 +21,7 @@ export function ActivitiesCalendarSidebar() {
   const { isColorVisible, toggleColorVisibility } = useCalendarContext();
 
   return (
-    <div
-      className="dark scheme-only-dark max-lg:p-3 lg:pe-1"
-      style={{ width: "280px" }}
-    >
+    <div className="bg-background border-l" style={{ width: "280px" }}>
       <SidebarContent className="mt-3 gap-0 border-t pt-3">
         <SidebarGroup className="px-1">
           <SidebarCalendar />
