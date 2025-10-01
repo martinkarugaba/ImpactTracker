@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useId,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { useId, useRef, type ReactNode } from "react";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 import {
   DndContext,
   DragOverlay,
@@ -23,42 +17,47 @@ import {
 } from "@dnd-kit/core";
 import { addMinutes, differenceInMinutes } from "date-fns";
 
-import { EventItem } from "./event-item";
-import { type CalendarEvent } from "./types";
+import { EventItem, type CalendarEvent } from "@/components/event-calendar";
 
-// Define the context type
-type CalendarDndContextType = {
-  activeEvent: CalendarEvent | null;
-  activeId: UniqueIdentifier | null;
-  activeView: "month" | "week" | "day" | null;
-  currentTime: Date | null;
-  eventHeight: number | null;
-  isMultiDay: boolean;
-  multiDayWidth: number | null;
-  dragHandlePosition: {
-    x?: number;
-    y?: number;
-    data?: {
-      isFirstDay?: boolean;
-      isLastDay?: boolean;
-    };
-  } | null;
+// Jotai atoms for DnD state
+export const activeEventAtom = atom<CalendarEvent | null>(null);
+export const activeIdAtom = atom<UniqueIdentifier | null>(null);
+export const activeViewAtom = atom<"month" | "week" | "day" | null>(null);
+export const currentTimeAtom = atom<Date | null>(null);
+export const eventHeightAtom = atom<number | null>(null);
+export const isMultiDayAtom = atom(false);
+export const multiDayWidthAtom = atom<number | null>(null);
+export const dragHandlePositionAtom = atom<{
+  x?: number;
+  y?: number;
+  data?: {
+    isFirstDay?: boolean;
+    isLastDay?: boolean;
+  };
+} | null>(null);
+
+// Hook to use the DnD state
+export const useCalendarDnd = () => {
+  const activeEvent = useAtomValue(activeEventAtom);
+  const activeId = useAtomValue(activeIdAtom);
+  const activeView = useAtomValue(activeViewAtom);
+  const currentTime = useAtomValue(currentTimeAtom);
+  const eventHeight = useAtomValue(eventHeightAtom);
+  const isMultiDay = useAtomValue(isMultiDayAtom);
+  const multiDayWidth = useAtomValue(multiDayWidthAtom);
+  const dragHandlePosition = useAtomValue(dragHandlePositionAtom);
+
+  return {
+    activeEvent,
+    activeId,
+    activeView,
+    currentTime,
+    eventHeight,
+    isMultiDay,
+    multiDayWidth,
+    dragHandlePosition,
+  };
 };
-
-// Create the context
-const CalendarDndContext = createContext<CalendarDndContextType>({
-  activeEvent: null,
-  activeId: null,
-  activeView: null,
-  currentTime: null,
-  eventHeight: null,
-  isMultiDay: false,
-  multiDayWidth: null,
-  dragHandlePosition: null,
-});
-
-// Hook to use the context
-export const useCalendarDnd = () => useContext(CalendarDndContext);
 
 // Props for the provider
 interface CalendarDndProviderProps {
@@ -70,23 +69,24 @@ export function CalendarDndProvider({
   children,
   onEventUpdate,
 }: CalendarDndProviderProps) {
-  const [activeEvent, setActiveEvent] = useState<CalendarEvent | null>(null);
-  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
-  const [activeView, setActiveView] = useState<"month" | "week" | "day" | null>(
-    null
-  );
-  const [currentTime, setCurrentTime] = useState<Date | null>(null);
-  const [eventHeight, setEventHeight] = useState<number | null>(null);
-  const [isMultiDay, setIsMultiDay] = useState(false);
-  const [multiDayWidth, setMultiDayWidth] = useState<number | null>(null);
-  const [dragHandlePosition, setDragHandlePosition] = useState<{
-    x?: number;
-    y?: number;
-    data?: {
-      isFirstDay?: boolean;
-      isLastDay?: boolean;
-    };
-  } | null>(null);
+  // Use setters for atoms
+  const setActiveEvent = useSetAtom(activeEventAtom);
+  const setActiveId = useSetAtom(activeIdAtom);
+  const setActiveView = useSetAtom(activeViewAtom);
+  const setCurrentTime = useSetAtom(currentTimeAtom);
+  const setEventHeight = useSetAtom(eventHeightAtom);
+  const setIsMultiDay = useSetAtom(isMultiDayAtom);
+  const setMultiDayWidth = useSetAtom(multiDayWidthAtom);
+  const setDragHandlePosition = useSetAtom(dragHandlePositionAtom);
+
+  // Get current values for reading
+  const activeEvent = useAtomValue(activeEventAtom);
+  const activeView = useAtomValue(activeViewAtom);
+  const currentTime = useAtomValue(currentTimeAtom);
+  const eventHeight = useAtomValue(eventHeightAtom);
+  const isMultiDay = useAtomValue(isMultiDayAtom);
+  const multiDayWidth = useAtomValue(multiDayWidthAtom);
+  const dragHandlePosition = useAtomValue(dragHandlePositionAtom);
 
   // Store original event dimensions
   const eventDimensions = useRef<{ height: number }>({ height: 0 });
@@ -332,43 +332,29 @@ export function CalendarDndProvider({
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <CalendarDndContext.Provider
-        value={{
-          activeEvent,
-          activeId,
-          activeView,
-          currentTime,
-          eventHeight,
-          isMultiDay,
-          multiDayWidth,
-          dragHandlePosition,
-        }}
-      >
-        {children}
+      {children}
 
-        <DragOverlay adjustScale={false} dropAnimation={null}>
-          {activeEvent && activeView && (
-            <div
-              style={{
-                height: eventHeight ? `${eventHeight}px` : "auto",
-                width:
-                  isMultiDay && multiDayWidth ? `${multiDayWidth}%` : "100%",
-                // Remove the transform that was causing the shift
-              }}
-            >
-              <EventItem
-                event={activeEvent}
-                view={activeView}
-                isDragging={true}
-                showTime={activeView !== "month"}
-                currentTime={currentTime || undefined}
-                isFirstDay={dragHandlePosition?.data?.isFirstDay !== false}
-                isLastDay={dragHandlePosition?.data?.isLastDay !== false}
-              />
-            </div>
-          )}
-        </DragOverlay>
-      </CalendarDndContext.Provider>
+      <DragOverlay adjustScale={false} dropAnimation={null}>
+        {activeEvent && activeView && (
+          <div
+            style={{
+              height: eventHeight ? `${eventHeight}px` : "auto",
+              width: isMultiDay && multiDayWidth ? `${multiDayWidth}%` : "100%",
+              // Remove the transform that was causing the shift
+            }}
+          >
+            <EventItem
+              event={activeEvent}
+              view={activeView}
+              isDragging={true}
+              showTime={activeView !== "month"}
+              currentTime={currentTime || undefined}
+              isFirstDay={dragHandlePosition?.data?.isFirstDay !== false}
+              isLastDay={dragHandlePosition?.data?.isLastDay !== false}
+            />
+          </div>
+        )}
+      </DragOverlay>
     </DndContext>
   );
 }

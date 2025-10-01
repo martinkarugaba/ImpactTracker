@@ -20,20 +20,25 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { AgendaView } from "./agenda-view";
-import { CalendarDndProvider } from "./calendar-dnd-context";
+import { addHoursToDate } from "@/components/event-calendar/utils";
+import {
+  AgendaView,
+  DayView,
+  MonthView,
+  WeekView,
+} from "@/components/event-calendar";
+import { CalendarDndProvider } from "@/components/event-calendar/calendar-dnd-context";
+import { EventDialog } from "@/components/event-calendar/event-dialog";
 import {
   AgendaDaysToShow,
   EventGap,
   EventHeight,
   WeekCellsHeight,
-} from "./constants";
-import { DayView } from "./day-view";
-import { EventDialog } from "./event-dialog";
-import { MonthView } from "./month-view";
-import { type CalendarEvent, type CalendarView } from "./types";
-import { addHoursToDate } from "./utils";
-import { WeekView } from "./week-view";
+} from "@/components/event-calendar/constants";
+import type {
+  CalendarEvent,
+  CalendarView,
+} from "@/components/event-calendar/types";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -54,7 +59,6 @@ export interface EventCalendarProps {
   onEventDelete?: (eventId: string) => void;
   className?: string;
   initialView?: CalendarView;
-  hideSidebarTrigger?: boolean;
 }
 
 export function EventCalendar({
@@ -64,7 +68,6 @@ export function EventCalendar({
   onEventDelete,
   className,
   initialView = "month",
-  hideSidebarTrigger = false,
 }: EventCalendarProps) {
   // Use the shared calendar context instead of local state
   const { currentDate, setCurrentDate } = useCalendarContext();
@@ -73,26 +76,7 @@ export function EventCalendar({
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
     null
   );
-
-  // Safe sidebar hook that works both inside and outside SidebarProvider
-  const useSafeSidebar = () => {
-    try {
-      return useSidebar();
-    } catch {
-      // Return default values when not in SidebarProvider context
-      return {
-        open: false,
-        setOpen: () => {},
-        toggleSidebar: () => {},
-        state: "collapsed" as const,
-        isMobile: false,
-        openMobile: false,
-        setOpenMobile: () => {},
-      };
-    }
-  };
-
-  const { open: sidebarOpen } = useSafeSidebar();
+  const { open } = useSidebar();
 
   // Add keyboard shortcuts for view switching
   useEffect(() => {
@@ -304,20 +288,12 @@ export function EventCalendar({
         >
           <div className="flex justify-between gap-1.5 max-sm:items-center sm:flex-col">
             <div className="flex items-center gap-1.5">
-              {!hideSidebarTrigger && (
-                <SidebarTrigger
-                  data-state={sidebarOpen ? "invisible" : "visible"}
-                  className="peer text-muted-foreground/80 hover:text-foreground/80 size-7 transition-opacity duration-200 ease-in-out hover:bg-transparent! sm:-ms-1.5 lg:data-[state=invisible]:pointer-events-none lg:data-[state=invisible]:opacity-0"
-                  isOutsideSidebar
-                />
-              )}
-              <h2
-                className={cn(
-                  "text-xl font-semibold transition-transform duration-300 ease-in-out",
-                  !hideSidebarTrigger &&
-                    "lg:peer-data-[state=invisible]:-translate-x-7.5"
-                )}
-              >
+              <SidebarTrigger
+                data-state={open ? "invisible" : "visible"}
+                className="peer text-muted-foreground/80 hover:text-foreground/80 size-7 transition-opacity duration-200 ease-in-out hover:bg-transparent! sm:-ms-1.5 lg:data-[state=invisible]:pointer-events-none lg:data-[state=invisible]:opacity-0"
+                isOutsideSidebar
+              />
+              <h2 className="text-xl font-semibold transition-transform duration-300 ease-in-out lg:peer-data-[state=invisible]:-translate-x-7.5">
                 {viewTitle}
               </h2>
             </div>

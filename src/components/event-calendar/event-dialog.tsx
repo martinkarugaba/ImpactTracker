@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { RiCalendarLine, RiDeleteBinLine } from "@remixicon/react";
 import { format, isBefore } from "date-fns";
 
-import type { CalendarEvent, EventColor } from "@/features/event-calendar";
+import type { CalendarEvent, EventColor } from "@/components/event-calendar";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -38,7 +38,7 @@ import {
   EndHour,
   DefaultStartHour,
   DefaultEndHour,
-} from "@/features/event-calendar/constants";
+} from "@/components/event-calendar/constants";
 
 interface EventDialogProps {
   event: CalendarEvent | null;

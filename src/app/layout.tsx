@@ -1,10 +1,10 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/providers/theme-provider";
-import { AuthProvider } from "@/providers/session-provider";
 import { QueryProvider } from "@/providers/query-provider";
-import { CalendarProvider } from "@/features/event-calendar/calendar-context";
+import { AuthProvider } from "@/providers/session-provider";
 import { ActiveThemeProvider } from "@/features/themes/components/active-theme";
+import { CalendarProvider } from "@/components/event-calendar/calendar-context";
 import "./globals.css";
 
 const fontSans = Geist({
@@ -34,13 +34,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ActiveThemeProvider>
-            <QueryProvider>
-              <AuthProvider>
+            <AuthProvider>
+              <QueryProvider>
                 <CalendarProvider>{children}</CalendarProvider>
-                <Toaster />
-              </AuthProvider>
-            </QueryProvider>
+              </QueryProvider>
+            </AuthProvider>
           </ActiveThemeProvider>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

@@ -4,10 +4,10 @@ import { useMemo } from "react";
 import { RiCalendarEventLine } from "@remixicon/react";
 import { addDays, format, isToday } from "date-fns";
 
-import { AgendaDaysToShow } from "./constants";
-import { EventItem } from "./event-item";
-import { type CalendarEvent } from "./types";
-import { getAgendaEventsForDay } from "./utils";
+import { EventItem } from "@/components/event-calendar/event-item";
+import { type CalendarEvent } from "@/components/event-calendar/types";
+import { getAgendaEventsForDay } from "@/components/event-calendar/utils";
+import { AgendaDaysToShow } from "@/components/event-calendar/constants";
 
 interface AgendaViewProps {
   currentDate: Date;
@@ -75,6 +75,7 @@ export function AgendaView({
                     key={event.id}
                     event={event}
                     view="agenda"
+                    isDragging={false}
                     onClick={(e: React.MouseEvent) =>
                       handleEventClick(event, e)
                     }

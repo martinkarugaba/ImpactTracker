@@ -19,19 +19,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { EventGap, EventHeight } from "./constants";
-import { DraggableEvent } from "./draggable-event";
-import { DroppableCell } from "./droppable-cell";
-import { EventItem } from "./event-item";
-import { useEventVisibility } from "./hooks/use-event-visibility";
-import { type CalendarEvent } from "./types";
 import {
+  DraggableEvent,
+  DroppableCell,
+  EventGap,
+  EventHeight,
+  EventItem,
   getAllEventsForDay,
   getEventsForDay,
   getSpanningEventsForDay,
   sortEvents,
-} from "./utils";
-import { DefaultStartHour } from "@/features/event-calendar/constants";
+  useEventVisibility,
+  type CalendarEvent,
+} from "@/components/event-calendar";
+import { DefaultStartHour } from "@/components/event-calendar/constants";
 
 interface MonthViewProps {
   currentDate: Date;
@@ -207,7 +208,9 @@ export function MonthView({
                               <DraggableEvent
                                 event={event}
                                 view="month"
-                                onClick={e => handleEventClick(event, e)}
+                                onClick={(e: React.MouseEvent) =>
+                                  handleEventClick(event, e)
+                                }
                                 isFirstDay={isFirstDay}
                                 isLastDay={isLastDay}
                               />

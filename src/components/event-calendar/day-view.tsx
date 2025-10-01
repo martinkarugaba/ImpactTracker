@@ -13,15 +13,26 @@ import {
   startOfDay,
 } from "date-fns";
 
-import { WeekCellsHeight } from "./constants";
-import { DraggableEvent } from "./draggable-event";
-import { DroppableCell } from "./droppable-cell";
-import { EventItem } from "./event-item";
-import { useCurrentTimeIndicator } from "./hooks/use-current-time-indicator";
-import { type CalendarEvent } from "./types";
-import { isMultiDayEvent } from "./utils";
-import { StartHour, EndHour } from "@/features/event-calendar/constants";
+import { DraggableEvent } from "@/components/event-calendar/draggable-event";
+import { DroppableCell } from "@/components/event-calendar/droppable-cell";
+import { EventItem } from "@/components/event-calendar/event-item";
+import { isMultiDayEvent } from "@/components/event-calendar/utils";
+import { useCurrentTimeIndicator } from "@/components/event-calendar/hooks/use-current-time-indicator";
+import {
+  WeekCellsHeight,
+  StartHour,
+  EndHour,
+} from "@/components/event-calendar/constants";
+import { type CalendarEvent } from "@/components/event-calendar/types";
 import { cn } from "@/lib/utils";
+
+// Helper function to check if two events overlap
+function doEventsOverlap(
+  event1: { start: Date; end: Date },
+  event2: { start: Date; end: Date }
+): boolean {
+  return areIntervalsOverlapping(event1, event2);
+}
 
 interface DayViewProps {
   currentDate: Date;
@@ -140,7 +151,7 @@ export function DayView({
           placed = true;
         } else {
           const overlaps = col.some(c =>
-            areIntervalsOverlapping(
+            doEventsOverlap(
               { start: new Date(event.start), end: new Date(event.end) },
               { start: new Date(c.event.start), end: new Date(c.event.end) }
             )
@@ -197,26 +208,17 @@ export function DayView({
               </span>
             </div>
             <div className="border-border/70 relative border-r p-1 last:border-r-0">
-              {allDayEvents.map((event: CalendarEvent) => {
-                const eventStart = new Date(event.start);
-                const eventEnd = new Date(event.end);
-                const isFirstDay = isSameDay(currentDate, eventStart);
-                const isLastDay = isSameDay(currentDate, eventEnd);
-
+              {allDayEvents.map(event => {
                 return (
                   <EventItem
-                    key={`spanning-${event.id}`}
+                    key={event.id}
+                    event={event}
+                    view="day"
+                    isDragging={false}
                     onClick={(e: React.MouseEvent) =>
                       handleEventClick(event, e)
                     }
-                    event={event}
-                    view="month"
-                    isFirstDay={isFirstDay}
-                    isLastDay={isLastDay}
-                  >
-                    {/* Always show the title in day view for better usability */}
-                    <div>{event.title}</div>
-                  </EventItem>
+                  />
                 );
               })}
             </div>
@@ -226,7 +228,7 @@ export function DayView({
 
       <div className="border-border/70 grid flex-1 grid-cols-[3rem_1fr] overflow-hidden border-t sm:grid-cols-[4rem_1fr]">
         <div>
-          {hours.map((hour, index) => (
+          {hours.map((hour: Date, index: number) => (
             <div
               key={hour.toString()}
               className="border-border/70 relative h-[var(--week-cells-height)] border-b last:border-b-0"
@@ -258,9 +260,7 @@ export function DayView({
                 <DraggableEvent
                   event={positionedEvent.event}
                   view="day"
-                  onClick={(e: React.MouseEvent) =>
-                    handleEventClick(positionedEvent.event, e)
-                  }
+                  onClick={e => handleEventClick(positionedEvent.event, e)}
                   showTime
                   height={positionedEvent.height}
                 />
@@ -282,7 +282,7 @@ export function DayView({
           )}
 
           {/* Time grid */}
-          {hours.map(hour => {
+          {hours.map((hour: Date) => {
             const hourValue = getHours(hour);
             return (
               <div

@@ -18,14 +18,16 @@ import {
   startOfWeek,
 } from "date-fns";
 
-import { WeekCellsHeight } from "./constants";
-import { DraggableEvent } from "./draggable-event";
-import { DroppableCell } from "./droppable-cell";
-import { EventItem } from "./event-item";
-import { useCurrentTimeIndicator } from "./hooks/use-current-time-indicator";
-import { type CalendarEvent } from "./types";
-import { isMultiDayEvent } from "./utils";
-import { StartHour, EndHour } from "@/features/event-calendar/constants";
+import {
+  DraggableEvent,
+  DroppableCell,
+  EventItem,
+  useCurrentTimeIndicator,
+  type CalendarEvent,
+} from "@/components/event-calendar";
+import { WeekCellsHeight } from "@/components/event-calendar/constants";
+import { isMultiDayEvent } from "@/components/event-calendar/utils";
+import { StartHour, EndHour } from "@/components/event-calendar/constants";
 import { cn } from "@/lib/utils";
 
 interface WeekViewProps {
@@ -274,7 +276,9 @@ export function WeekView({
                     return (
                       <EventItem
                         key={`spanning-${event.id}`}
-                        onClick={e => handleEventClick(event, e)}
+                        onClick={(e: React.MouseEvent) =>
+                          handleEventClick(event, e)
+                        }
                         event={event}
                         view="month"
                         isFirstDay={isFirstDay}
@@ -340,7 +344,9 @@ export function WeekView({
                   <DraggableEvent
                     event={positionedEvent.event}
                     view="week"
-                    onClick={e => handleEventClick(positionedEvent.event, e)}
+                    onClick={(e: React.MouseEvent) =>
+                      handleEventClick(positionedEvent.event, e)
+                    }
                     showTime
                     height={positionedEvent.height}
                   />

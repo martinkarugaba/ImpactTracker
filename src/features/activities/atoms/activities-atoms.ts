@@ -11,9 +11,9 @@ import type { Participant } from "../../participants/types/types";
 // ========================================
 
 // Tab navigation state
-export const activeTabAtom = atom<"activities" | "metrics" | "demographics">(
-  "activities"
-);
+export const activeTabAtom = atom<
+  "activities" | "metrics" | "demographics" | "calendar"
+>("activities");
 
 // Search state
 export const searchValueAtom = atom("");

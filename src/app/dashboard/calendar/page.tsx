@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { PageTitle } from "@/features/dashboard/components/page-title";
-import { EventCalendar } from "@/features/event-calendar/event-calendar";
+import { EventCalendar } from "@/components/event-calendar";
 
 export const metadata: Metadata = {
   title: "Calendar - KPI Edge",

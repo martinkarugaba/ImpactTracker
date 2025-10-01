@@ -4,7 +4,8 @@ import { AppSidebar } from "@/features/dashboard/components/app-sidebar";
 import { SiteHeader } from "@/features/dashboard/components/site-header";
 import { NavigationProvider } from "@/features/dashboard/contexts/navigation-context";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { CalendarProvider } from "@/features/event-calendar/calendar-context";
+import { CalendarProvider } from "@/components/event-calendar/calendar-context";
+// import { CalendarProvider } from "@/features/event-calendar/calendar-context";
 
 export default async function DashboardLayout({
   children,
