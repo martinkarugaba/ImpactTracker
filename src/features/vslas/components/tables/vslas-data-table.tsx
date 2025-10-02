@@ -62,7 +62,7 @@ export function VSLAsDataTable({
   isLoading = false,
   rowSelection: externalRowSelection,
   onRowSelectionStateChange,
-  onRowClick,
+  onRowClick: _onRowClick,
 }: VSLAsDataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -228,11 +228,7 @@ export function VSLAsDataTable({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className={cn(
-                      "hover:bg-muted/50 cursor-pointer",
-                      onRowClick && "cursor-pointer"
-                    )}
-                    onClick={() => onRowClick?.(row.original)}
+                    className="hover:bg-muted/50"
                   >
                     {row.getVisibleCells().map(cell => (
                       <TableCell key={cell.id}>

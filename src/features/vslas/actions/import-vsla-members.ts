@@ -15,6 +15,16 @@ interface VSLAMemberImportData {
   total_savings: number;
   total_loans: number;
   notes?: string;
+  // Additional participant fields from Excel
+  parish?: string;
+  village?: string;
+  age?: number;
+  sex?: string;
+  pwd?: string;
+  mother?: string;
+  refugee?: string;
+  enterprise?: string;
+  title?: string;
 }
 
 /**
@@ -82,6 +92,25 @@ export async function importVSLAMembers(
         if (!participant) {
           console.log(`Participant not found, creating new participant...`);
 
+          // Map sex from Excel data
+          let sexValue: "male" | "female" | "prefer_not_to_say" =
+            "prefer_not_to_say";
+          if (row.sex) {
+            const sexLower = row.sex.toLowerCase();
+            if (sexLower === "male" || sexLower === "m") sexValue = "male";
+            else if (sexLower === "female" || sexLower === "f")
+              sexValue = "female";
+          }
+
+          // Map yes/no fields from Excel
+          const isPWD = row.pwd?.toLowerCase().includes("yes") ? "yes" : "no";
+          const isMother = row.mother?.toLowerCase().includes("yes")
+            ? "yes"
+            : "no";
+          const isRefugee = row.refugee?.toLowerCase().includes("yes")
+            ? "yes"
+            : "no";
+
           const [newParticipant] = await db
             .insert(participants)
             .values({
@@ -92,19 +121,20 @@ export async function importVSLAMembers(
               organization_id: vsla.organization_id,
               cluster_id: vsla.cluster_id,
               project_id: vsla.project_id,
-              // Copy location from VSLA
+              // Use location from Excel if available, otherwise from VSLA
               country: vsla.country || "Uganda",
               district: vsla.district || "Not Specified",
               subCounty: vsla.sub_county || "Not Specified",
-              parish: vsla.parish || "Not Specified",
-              village: vsla.village || "Not Specified",
-              // Required fields with sensible defaults
-              sex: "prefer_not_to_say", // Will need to be updated later
-              designation: "VSLA Member",
-              enterprise: "VSLA Participation",
-              isPWD: "no",
-              isMother: "no",
-              isRefugee: "no",
+              parish: row.parish || vsla.parish || "Not Specified",
+              village: row.village || vsla.village || "Not Specified",
+              // Use Excel data fields
+              sex: sexValue,
+              age: row.age || undefined,
+              designation: row.title || "VSLA Member",
+              enterprise: row.enterprise || "VSLA Participation",
+              isPWD,
+              isMother,
+              isRefugee,
               isPermanentResident: "yes",
               areParentsAlive: "unknown",
               numberOfChildren: 0,

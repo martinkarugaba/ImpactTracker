@@ -25,6 +25,16 @@ export interface VSLAMemberImportData {
   total_savings: number;
   total_loans: number;
   notes?: string;
+  // Additional participant fields from Excel
+  parish?: string;
+  village?: string;
+  age?: number;
+  sex?: string;
+  pwd?: string;
+  mother?: string;
+  refugee?: string;
+  enterprise?: string;
+  title?: string;
 }
 
 /**
@@ -39,6 +49,7 @@ export const createVSLAMemberImportConfig = (
   mapColumns: (row: Record<string, unknown>) => {
     const participantName = toString(
       getColumnValue(row, [
+        "NAME",
         "Name",
         "Participant Name",
         "Member Name",
@@ -46,11 +57,23 @@ export const createVSLAMemberImportConfig = (
       ])
     );
     const phone = toString(
-      getColumnValue(row, ["Phone", "Contact", "Phone Number", "Mobile"])
+      getColumnValue(row, [
+        "CONTACT",
+        "Contact",
+        "Phone",
+        "Phone Number",
+        "Mobile",
+      ])
     );
     const vslaName = toString(
       getColumnValue(row, ["VSLA Name", "VSLA", "Group Name", "Group"])
     );
+
+    // Provide defaults for empty required fields
+    const defaultName = participantName || "Member";
+    const defaultPhone = phone || "N/A";
+    const defaultVslaName =
+      vslaName || (vslas.length > 0 ? vslas[0].name : "Unknown VSLA");
     const role = toString(getColumnValue(row, ["Role", "Position"]));
     const joinedDate = toDate(
       getColumnValue(row, [
@@ -62,11 +85,11 @@ export const createVSLAMemberImportConfig = (
     );
 
     return {
-      participant_name: participantName,
-      participant_phone: phone,
+      participant_name: defaultName,
+      participant_phone: defaultPhone,
       participant_email:
         toString(getColumnValue(row, ["Email", "Email Address"])) || undefined,
-      vsla_name: vslaName,
+      vsla_name: defaultVslaName,
       role: role || "member",
       joined_date: joinedDate ? joinedDate.toISOString() : "",
       total_savings:
@@ -78,34 +101,36 @@ export const createVSLAMemberImportConfig = (
           getColumnValue(row, ["Loans", "Total Loans", "Initial Loans"])
         ) || 0,
       notes: toString(getColumnValue(row, ["Notes", "Remarks"])) || undefined,
+      // Additional participant fields
+      parish: toString(getColumnValue(row, ["Parish", "PARISH"])) || undefined,
+      village:
+        toString(getColumnValue(row, ["Village", "VILLAGE"])) || undefined,
+      age: toNumber(getColumnValue(row, ["Age", "AGE"])) || undefined,
+      sex:
+        toString(getColumnValue(row, ["Sex", "SEX", "Gender", "GENDER"])) ||
+        undefined,
+      pwd:
+        toString(getColumnValue(row, ["PWD", "Pwd", "Disability"])) ||
+        undefined,
+      mother:
+        toString(getColumnValue(row, ["Mother", "MOTHER", "Is Mother"])) ||
+        undefined,
+      refugee:
+        toString(getColumnValue(row, ["Refugee", "REFUGEE", "Is Refugee"])) ||
+        undefined,
+      enterprise:
+        toString(
+          getColumnValue(row, ["Enterprise", "ENTERPRISE", "Business"])
+        ) || undefined,
+      title: toString(getColumnValue(row, ["Title", "TITLE"])) || undefined,
     };
   },
 
   validateRow: (row: Partial<VSLAMemberImportData>, rowNum: number) => {
     const errors: string[] = [];
 
-    // Required fields
-    if (!row.participant_name || row.participant_name.trim() === "") {
-      errors.push(
-        validationError(
-          rowNum,
-          "Participant Name",
-          "is required and cannot be empty"
-        )
-      );
-    }
-
-    if (!row.participant_phone || row.participant_phone.trim() === "") {
-      errors.push(
-        validationError(rowNum, "Phone", "is required and cannot be empty")
-      );
-    }
-
-    if (!row.vsla_name || row.vsla_name.trim() === "") {
-      errors.push(
-        validationError(rowNum, "VSLA Name", "is required and cannot be empty")
-      );
-    }
+    // Note: Required fields now have defaults, so we skip empty field validation
+    // The mapColumns function provides defaults for empty participant_name, participant_phone, and vsla_name
 
     // Validate role if provided
     if (row.role) {
@@ -138,6 +163,15 @@ export const createVSLAMemberImportConfig = (
       }
     }
 
+    // Validate age if provided
+    if (row.age !== null && row.age !== undefined) {
+      if (row.age < 0 || row.age > 150) {
+        errors.push(
+          validationError(rowNum, "Age", "must be between 0 and 150")
+        );
+      }
+    }
+
     return errors;
   },
 
@@ -157,6 +191,15 @@ export const createVSLAMemberImportConfig = (
         "Joined Date",
         "Savings",
         "Loans",
+        "Parish",
+        "Village",
+        "Age",
+        "Sex",
+        "PWD",
+        "Mother",
+        "Refugee",
+        "Enterprise",
+        "Title",
         "Notes",
       ],
       // Sample rows
@@ -169,6 +212,15 @@ export const createVSLAMemberImportConfig = (
         "2024-01-15",
         "500000",
         "0",
+        "Central Parish",
+        "Kampala Village",
+        "30",
+        "Male",
+        "No",
+        "No",
+        "No",
+        "Tailoring",
+        "Member",
         "Active member",
       ],
       [
@@ -180,6 +232,15 @@ export const createVSLAMemberImportConfig = (
         "2024-01-15",
         "1000000",
         "200000",
+        "Central Parish",
+        "Nakasero Village",
+        "35",
+        "Female",
+        "No",
+        "Yes",
+        "No",
+        "Retail Shop",
+        "Chairperson",
         "Group chairperson",
       ],
       [
@@ -191,6 +252,15 @@ export const createVSLAMemberImportConfig = (
         "2024-02-01",
         "750000",
         "100000",
+        "West Parish",
+        "Mengo Village",
+        "28",
+        "Male",
+        "No",
+        "No",
+        "No",
+        "Agriculture",
+        "Treasurer",
         "",
       ],
     ];

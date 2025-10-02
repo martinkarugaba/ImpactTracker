@@ -3,6 +3,8 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 import {
   ArrowUpDown,
   MoreHorizontal,
@@ -85,7 +87,24 @@ export const createColumns = (
     },
     cell: ({ row }) => {
       const name = row.getValue("name") as string;
-      return <div className="font-medium">{name}</div>;
+      const subCounty = row.original.sub_county;
+      const vslaId = row.original.id;
+      return (
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/dashboard/vslas/${vslaId}`}
+            className="font-medium hover:underline"
+            onClick={e => e.stopPropagation()}
+          >
+            {name}
+          </Link>
+          {subCounty && (
+            <Badge variant="secondary" className="text-xs">
+              {subCounty}
+            </Badge>
+          )}
+        </div>
+      );
     },
   },
   // {
