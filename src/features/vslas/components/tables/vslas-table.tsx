@@ -1,9 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { type Row } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Plus, Download, Search, LayoutGrid, ChevronDown } from "lucide-react";
+import {
+  Plus,
+  Download,
+  Search,
+  LayoutGrid,
+  ChevronDown,
+  Trash2,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
@@ -11,7 +17,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { columns } from "./vsla-table-columns";
+import { createColumns } from "./vsla-table-columns";
 import { VSLAsDataTable } from "./vslas-data-table";
 import { VSLA } from "../../types";
 import { CreateVSLADialog } from "../dialogs";
@@ -26,6 +32,7 @@ interface VSLAsTableProps {
   onRowClick?: (vsla: VSLA) => void;
   onEdit?: (vsla: VSLA) => void;
   onDelete?: (vsla: VSLA) => void;
+  onBulkDelete?: (vslas: VSLA[]) => void;
   onExport?: () => void;
   isLoading?: boolean;
   pageSize?: number;
@@ -40,6 +47,7 @@ export function VSLAsTable({
   onRowClick,
   onEdit,
   onDelete,
+  onBulkDelete,
   onExport,
   isLoading = false,
   pageSize = 10,
@@ -49,6 +57,7 @@ export function VSLAsTable({
   onSuccess,
 }: VSLAsTableProps) {
   const [searchValue, setSearchValue] = useState("");
+  const [selectedRows, setSelectedRows] = useState<VSLA[]>([]);
   const [columnVisibility, setColumnVisibility] = useState({
     name: true,
     code: true,
@@ -60,48 +69,15 @@ export function VSLAsTable({
     status: true,
   });
 
-  // Enhanced columns with action handlers
-  const enhancedColumns = columns.map(column => {
-    if (column.id === "actions") {
-      return {
-        ...column,
-        cell: ({ row }: { row: Row<VSLA> }) => {
-          const vsla = row.original;
-          return (
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={e => {
-                  e.stopPropagation();
-                  onEdit?.(vsla);
-                }}
-              >
-                Edit
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-red-600 hover:text-red-700"
-                onClick={e => {
-                  e.stopPropagation();
-                  onDelete?.(vsla);
-                }}
-              >
-                Delete
-              </Button>
-            </div>
-          );
-        },
-      };
-    }
-    return column;
-  });
+  // Create columns with action handlers
+  const columns = createColumns(onRowClick, onEdit, onDelete, onRowClick);
 
   // Available columns for toggle
   const availableColumns = [
     { id: "name", label: "Name" },
     { id: "code", label: "Code" },
+    { id: "district", label: "District" },
+    { id: "sub_county", label: "Sub County" },
     { id: "organization", label: "Organization" },
     { id: "cluster", label: "Cluster" },
     { id: "total_members", label: "Members" },
@@ -110,19 +86,34 @@ export function VSLAsTable({
     { id: "status", label: "Status" },
   ];
 
+  const handleBulkDelete = () => {
+    if (selectedRows.length > 0 && onBulkDelete) {
+      onBulkDelete(selectedRows);
+      setSelectedRows([]);
+    }
+  };
+
   return (
     <div className="w-full space-y-4">
       {/* Action Buttons Section - At the very top */}
       <div className="flex items-center justify-between gap-4">
-        {/* Left side - Search */}
-        <div className="relative max-w-sm">
-          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-          <Input
-            placeholder="Search VSLAs..."
-            value={searchValue}
-            onChange={e => setSearchValue(e.target.value)}
-            className="w-80 pl-9"
-          />
+        {/* Left side - Search and Bulk Actions */}
+        <div className="flex items-center gap-2">
+          {selectedRows.length > 0 && onBulkDelete && (
+            <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete {selectedRows.length} selected
+            </Button>
+          )}
+          <div className="relative">
+            <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+            <Input
+              placeholder="Search VSLAs..."
+              value={searchValue}
+              onChange={e => setSearchValue(e.target.value)}
+              className="w-80 pl-9"
+            />
+          </div>
         </div>
 
         {/* Right side - Action buttons */}
@@ -182,14 +173,15 @@ export function VSLAsTable({
 
       {/* VSLAs Table */}
       <VSLAsDataTable
-        columns={enhancedColumns}
+        columns={columns}
         data={data}
         searchValue={searchValue}
         showPagination={true}
-        showRowSelection={false}
+        showRowSelection={true}
         pageSize={pageSize}
         isLoading={isLoading}
         onRowClick={onRowClick}
+        onRowSelectionChange={setSelectedRows}
       />
     </div>
   );

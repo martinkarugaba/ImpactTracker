@@ -34,7 +34,12 @@ const getMemberByRole = (
   );
 };
 
-export const columns: ColumnDef<VSLA>[] = [
+export const createColumns = (
+  onView?: (vsla: VSLA) => void,
+  onEdit?: (vsla: VSLA) => void,
+  onDelete?: (vsla: VSLA) => void,
+  onManageMembers?: (vsla: VSLA) => void
+): ColumnDef<VSLA>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -80,13 +85,47 @@ export const columns: ColumnDef<VSLA>[] = [
     },
     cell: ({ row }) => {
       const name = row.getValue("name") as string;
-      const code = row.original.code;
+      return <div className="font-medium">{name}</div>;
+    },
+  },
+  {
+    accessorKey: "code",
+    header: ({ column }) => {
       return (
-        <div className="space-y-1">
-          <div className="font-medium">{name}</div>
-          <div className="text-muted-foreground text-sm">{code}</div>
-        </div>
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="h-auto p-0 font-medium hover:bg-transparent"
+        >
+          Code
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
       );
+    },
+    cell: ({ row }) => {
+      const code = row.getValue("code") as string;
+      return (
+        <div className="text-muted-foreground font-mono text-sm">{code}</div>
+      );
+    },
+  },
+  {
+    accessorKey: "district",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="h-auto p-0 font-medium hover:bg-transparent"
+        >
+          District
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const district = row.getValue("district") as string;
+      return <div className="font-medium">{district}</div>;
     },
   },
   {
@@ -105,13 +144,7 @@ export const columns: ColumnDef<VSLA>[] = [
     },
     cell: ({ row }) => {
       const subCounty = row.getValue("sub_county") as string;
-      const district = row.original.district;
-      return (
-        <div className="space-y-1">
-          <div className="font-medium">{subCounty}</div>
-          <div className="text-muted-foreground text-sm">{district}</div>
-        </div>
-      );
+      return <div className="font-medium">{subCounty}</div>;
     },
   },
   {
@@ -247,20 +280,44 @@ export const columns: ColumnDef<VSLA>[] = [
               Copy VSLA ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer">
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={e => {
+                e.stopPropagation();
+                onView?.(vsla);
+              }}
+            >
               <Eye className="mr-2 h-4 w-4" />
               View Details
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={e => {
+                e.stopPropagation();
+                onEdit?.(vsla);
+              }}
+            >
               <Edit className="mr-2 h-4 w-4" />
               Edit VSLA
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={e => {
+                e.stopPropagation();
+                onManageMembers?.(vsla);
+              }}
+            >
               <Users className="mr-2 h-4 w-4" />
               Manage Members
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600">
+            <DropdownMenuItem
+              className="cursor-pointer text-red-600 focus:text-red-600"
+              onClick={e => {
+                e.stopPropagation();
+                onDelete?.(vsla);
+              }}
+            >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete VSLA
             </DropdownMenuItem>

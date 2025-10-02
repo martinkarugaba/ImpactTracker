@@ -103,28 +103,28 @@ export const createVSLAImportConfig = (
       name,
       code:
         toString(getColumnValue(row, ["Code", "code"])) || generateCode(name),
-      organization_name:
-        toString(
-          getColumnValue(row, [
-            "Organization",
-            "organization_name",
-            "Organization Name",
-          ])
-        ) || "",
-      cluster_name:
-        toString(
-          getColumnValue(row, ["Cluster", "cluster_name", "Cluster Name"])
-        ) || "",
+      organization_name: toString(
+        getColumnValue(row, [
+          "Organization",
+          "organization_name",
+          "Organization Name",
+        ])
+      ),
+      cluster_name: toString(
+        getColumnValue(row, ["Cluster", "cluster_name", "Cluster Name"])
+      ),
       project_name: toString(
         getColumnValue(row, ["Project", "project_name", "Project Name"])
       ),
       country:
         toString(getColumnValue(row, ["Country", "country"])) || "Uganda",
-      district: toString(getColumnValue(row, ["District", "district"])) || "",
+      district: toString(getColumnValue(row, ["District", "district"])),
       sub_county: subCounty || "",
       parish: parish || "",
       village: village || "",
-      formation_date: formationDate ? formationDate.toISOString() : "",
+      formation_date: formationDate
+        ? formationDate.toISOString()
+        : new Date().toISOString(),
       total_members: totalMembers || 0,
       total_savings:
         toNumber(
@@ -150,10 +150,10 @@ export const createVSLAImportConfig = (
             "Frequency",
           ])
         ) || "Weekly",
-      has_constitution: "No",
-      has_signed_constitution: "No",
-      sacco_member: "No",
-      status: "Active",
+      has_constitution: "no",
+      has_signed_constitution: "no",
+      sacco_member: "no",
+      status: "active",
       notes: notes || toString(getColumnValue(row, ["Notes", "notes"])),
     };
   },
@@ -162,9 +162,16 @@ export const createVSLAImportConfig = (
     const errors: string[] = [];
 
     // Required fields
-    if (!row.name) {
-      errors.push(validationError(rowNum, "Name", "is required"));
+    if (!row.name || row.name.trim() === "") {
+      errors.push(
+        validationError(rowNum, "Name", "is required and cannot be empty")
+      );
     }
+
+    // Organization, Cluster, and location fields are now optional
+    // - Organization/Cluster will use user's defaults if not provided
+    // - Location fields (district, sub_county, etc.) are optional as not all VSLAs may have complete location data
+    // - Formation date will default to current date if not provided
 
     // Optional validations
     if (row.total_members !== null && row.total_members !== undefined) {

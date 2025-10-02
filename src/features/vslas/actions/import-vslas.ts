@@ -48,18 +48,40 @@ export async function importVSLAs(
   clusters: Cluster[],
   projects: Project[]
 ) {
+  console.log("=== Starting VSLA Import ===");
+  console.log("Data to import:", data.length, "VSLAs");
+  console.log("Available organizations:", organizations.length);
+  console.log("Available clusters:", clusters.length);
+  console.log("Available projects:", projects.length);
+
+  // Log first row for debugging
+  if (data.length > 0) {
+    console.log("Sample data (first row):", JSON.stringify(data[0], null, 2));
+  }
+
   try {
     let imported = 0;
     const errors: string[] = [];
 
     for (const row of data) {
       try {
-        // Find organization by name
-        const organization = organizations.find(
+        console.log(`Processing VSLA: ${row.name}`);
+
+        // Find organization by name, or use first available (user's organization) as default
+        let organization = organizations.find(
           org =>
             org.name.toLowerCase() === row.organization_name.toLowerCase() ||
             org.acronym?.toLowerCase() === row.organization_name.toLowerCase()
         );
+
+        // If no organization found and organization_name is empty, use first available (user's org)
+        if (
+          !organization &&
+          (!row.organization_name || row.organization_name.trim() === "")
+        ) {
+          organization = organizations[0];
+          console.log(`Using default organization: ${organization?.name}`);
+        }
 
         if (!organization) {
           errors.push(
@@ -68,10 +90,16 @@ export async function importVSLAs(
           continue;
         }
 
-        // Find cluster by name
-        const cluster = clusters.find(
+        // Find cluster by name, or use first available (user's cluster) as default
+        let cluster = clusters.find(
           c => c.name.toLowerCase() === row.cluster_name.toLowerCase()
         );
+
+        // If no cluster found and cluster_name is empty, use first available (user's cluster)
+        if (!cluster && (!row.cluster_name || row.cluster_name.trim() === "")) {
+          cluster = clusters[0];
+          console.log(`Using default cluster: ${cluster?.name}`);
+        }
 
         if (!cluster) {
           errors.push(
@@ -126,13 +154,13 @@ export async function importVSLAs(
           organization_id: organization.id,
           cluster_id: cluster.id,
           project_id: projectId,
-          country: row.country,
+          country: row.country || "Uganda",
           region: null,
-          district: row.district,
+          district: row.district || "Not Specified",
           county: null,
-          sub_county: row.sub_county,
-          parish: row.parish || "",
-          village: row.village || "",
+          sub_county: row.sub_county || "Not Specified",
+          parish: row.parish || "Not Specified",
+          village: row.village || "Not Specified",
           address: row.address || null,
           total_members: Number(row.total_members) || 0,
           total_savings: Number(row.total_savings) || 0,
@@ -160,12 +188,20 @@ export async function importVSLAs(
         });
 
         imported++;
+        console.log(`✓ Successfully imported VSLA: ${row.name}`);
       } catch (error) {
         console.error(`Error importing VSLA "${row.name}":`, error);
         errors.push(
           `Failed to import VSLA "${row.name}": ${error instanceof Error ? error.message : "Unknown error"}`
         );
       }
+    }
+
+    console.log("=== VSLA Import Complete ===");
+    console.log(`Successfully imported: ${imported} VSLAs`);
+    console.log(`Errors: ${errors.length}`);
+    if (errors.length > 0) {
+      console.log("Error details:", errors);
     }
 
     return {
