@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import { getVSLAs } from "../../actions/vslas";
+import { getVSLAs, deleteVSLAs } from "../../actions/vslas";
 import { VSLAsTable, VSLAsTableSkeleton } from "../tables";
 import { CreateVSLADialog, EditVSLADialog, DeleteVSLADialog } from "../dialogs";
 import { VSLAMetricsCards } from "../metrics/vsla-metrics-cards";
@@ -44,6 +44,38 @@ export function VSLAsPageContent({
 
   const handleDelete = (vsla: VSLA) => {
     setDeletingVSLA(vsla);
+  };
+
+  const handleBulkDelete = async (vslasToDelete: VSLA[]) => {
+    if (vslasToDelete.length === 0) return;
+
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${vslasToDelete.length} VSLA(s)? This action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    setIsLoading(true);
+    try {
+      const ids = vslasToDelete.map(v => v.id);
+      const result = await deleteVSLAs(ids);
+
+      if (result.success) {
+        toast.success(
+          result.message ||
+            `Successfully deleted ${vslasToDelete.length} VSLA(s)`
+        );
+        // Refresh the list
+        await refreshData();
+      } else {
+        toast.error(result.error || "Failed to delete VSLAs");
+      }
+    } catch (error) {
+      console.error("Error in bulk delete:", error);
+      toast.error("An error occurred while deleting VSLAs");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleExport = () => {
@@ -146,6 +178,7 @@ export function VSLAsPageContent({
           onRowClick={handleRowClick}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onBulkDelete={handleBulkDelete}
           onExport={handleExport}
           isLoading={isLoading}
           pageSize={20}
