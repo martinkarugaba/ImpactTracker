@@ -77,6 +77,7 @@ export interface VSLA {
     name: string;
     acronym: string;
   } | null;
+  members?: VSLAMember[];
 }
 
 // Primary business options
@@ -105,6 +106,20 @@ export interface VSLAMember {
   total_savings: number;
   total_loans: number;
   status: string; // active, inactive, suspended
+  created_at: Date | null;
+  updated_at: Date | null;
+}
+
+export interface VSLAMonthlyData {
+  id: string;
+  vsla_id: string;
+  month: string; // January, February, etc.
+  year: string; // 2024, 2025, etc.
+  total_loans: number; // Number of loans disbursed in the month
+  total_savings: number; // Total savings amount for the month
+  total_meetings: number; // Number of meetings held in the month
+  notes?: string | null;
+  created_by?: string | null;
   created_at: Date | null;
   updated_at: Date | null;
 }

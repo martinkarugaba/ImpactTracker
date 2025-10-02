@@ -1,7 +1,6 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -12,6 +11,8 @@ import {
   Trash2,
   Users,
   Copy,
+  Phone,
+  User,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -21,8 +22,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { VSLA } from "../../types";
-import { formatCurrency } from "../../utils";
+import { VSLA, VSLAMember } from "../../types";
+
+// Helper function to get member by role
+const getMemberByRole = (
+  members: VSLAMember[] | undefined,
+  role: string
+): VSLAMember | undefined => {
+  return members?.find(
+    member => member.role.toLowerCase() === role.toLowerCase()
+  );
+};
 
 export const columns: ColumnDef<VSLA>[] = [
   {
@@ -52,7 +62,7 @@ export const columns: ColumnDef<VSLA>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
-    size: 40, // Fixed column width
+    size: 40,
   },
   {
     accessorKey: "name",
@@ -80,27 +90,28 @@ export const columns: ColumnDef<VSLA>[] = [
     },
   },
   {
-    accessorKey: "organization.name",
-    header: "Organization",
-    cell: ({ row }) => {
-      const orgName = row.original.organization?.name || "No Organization";
-      const orgAcronym = row.original.organization?.acronym;
+    accessorKey: "sub_county",
+    header: ({ column }) => {
       return (
-        <div className="space-y-1">
-          <div className="font-medium">{orgAcronym || orgName}</div>
-          {orgAcronym && (
-            <div className="text-muted-foreground text-sm">{orgName}</div>
-          )}
-        </div>
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="h-auto p-0 font-medium hover:bg-transparent"
+        >
+          Sub County
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
       );
     },
-  },
-  {
-    accessorKey: "cluster.name",
-    header: "Cluster",
     cell: ({ row }) => {
-      const clusterName = row.original.cluster?.name || "No Cluster";
-      return <div className="font-medium">{clusterName}</div>;
+      const subCounty = row.getValue("sub_county") as string;
+      const district = row.original.district;
+      return (
+        <div className="space-y-1">
+          <div className="font-medium">{subCounty}</div>
+          <div className="text-muted-foreground text-sm">{district}</div>
+        </div>
+      );
     },
   },
   {
@@ -128,102 +139,86 @@ export const columns: ColumnDef<VSLA>[] = [
     },
   },
   {
-    accessorKey: "total_savings",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-medium hover:bg-transparent"
-        >
-          Total Savings
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    id: "chairperson",
+    header: "Chairperson",
     cell: ({ row }) => {
-      const savings = row.getValue("total_savings") as number;
+      const chairperson = getMemberByRole(row.original.members, "chairperson");
+      if (!chairperson) {
+        return (
+          <div className="text-muted-foreground text-sm">Not assigned</div>
+        );
+      }
       return (
-        <div className="text-right font-medium text-green-600">
-          {formatCurrency(savings)}
+        <div className="space-y-1">
+          <div className="flex items-center gap-1.5">
+            <User className="text-muted-foreground h-3.5 w-3.5" />
+            <span className="text-sm font-medium">
+              {chairperson.first_name} {chairperson.last_name}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Phone className="text-muted-foreground h-3.5 w-3.5" />
+            <span className="text-muted-foreground text-sm">
+              {chairperson.phone}
+            </span>
+          </div>
         </div>
       );
     },
   },
   {
-    accessorKey: "total_loans",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-medium hover:bg-transparent"
-        >
-          Total Loans
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    id: "secretary",
+    header: "Secretary",
     cell: ({ row }) => {
-      const loans = row.getValue("total_loans") as number;
+      const secretary = getMemberByRole(row.original.members, "secretary");
+      if (!secretary) {
+        return (
+          <div className="text-muted-foreground text-sm">Not assigned</div>
+        );
+      }
       return (
-        <div className="text-right font-medium text-blue-600">
-          {formatCurrency(loans)}
+        <div className="space-y-1">
+          <div className="flex items-center gap-1.5">
+            <User className="text-muted-foreground h-3.5 w-3.5" />
+            <span className="text-sm font-medium">
+              {secretary.first_name} {secretary.last_name}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Phone className="text-muted-foreground h-3.5 w-3.5" />
+            <span className="text-muted-foreground text-sm">
+              {secretary.phone}
+            </span>
+          </div>
         </div>
       );
     },
   },
   {
-    accessorKey: "meeting_frequency",
-    header: "Meeting Frequency",
+    id: "treasurer",
+    header: "Treasurer",
     cell: ({ row }) => {
-      const frequency = row.getValue("meeting_frequency") as string;
+      const treasurer = getMemberByRole(row.original.members, "treasurer");
+      if (!treasurer) {
+        return (
+          <div className="text-muted-foreground text-sm">Not assigned</div>
+        );
+      }
       return (
-        <Badge variant="outline" className="capitalize">
-          {frequency}
-        </Badge>
-      );
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status") as string;
-      return (
-        <Badge
-          variant={
-            status === "active"
-              ? "default"
-              : status === "inactive"
-                ? "secondary"
-                : "destructive"
-          }
-          className="capitalize"
-        >
-          {status}
-        </Badge>
-      );
-    },
-  },
-  {
-    accessorKey: "formed_date",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-medium hover:bg-transparent"
-        >
-          Formed Date
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const date = row.getValue("formed_date") as Date;
-      return (
-        <div className="text-sm">{new Date(date).toLocaleDateString()}</div>
+        <div className="space-y-1">
+          <div className="flex items-center gap-1.5">
+            <User className="text-muted-foreground h-3.5 w-3.5" />
+            <span className="text-sm font-medium">
+              {treasurer.first_name} {treasurer.last_name}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Phone className="text-muted-foreground h-3.5 w-3.5" />
+            <span className="text-muted-foreground text-sm">
+              {treasurer.phone}
+            </span>
+          </div>
+        </div>
       );
     },
   },

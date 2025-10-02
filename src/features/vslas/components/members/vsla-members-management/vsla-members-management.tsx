@@ -73,6 +73,8 @@ export function VSLAMembersManagement({ vsla }: VSLAMembersManagementProps) {
             <AddParticipantToVSLADialog
               vslaId={vsla.id}
               clusterId={vsla.cluster_id}
+              organizationId={vsla.organization_id || undefined}
+              projectId={vsla.project_id || undefined}
               onSuccess={handleSuccess}
             />
           )}

@@ -1056,6 +1056,41 @@ export const vslaMembers = pgTable("vsla_members", {
   updated_at: timestamp("updated_at").defaultNow(),
 });
 
+export const vslaMonthlyData = pgTable(
+  "vsla_monthly_data",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    vsla_id: uuid("vsla_id")
+      .references(() => vslas.id, { onDelete: "cascade" })
+      .notNull(),
+
+    // Period Information
+    month: varchar("month", { length: 20 }).notNull(), // January, February, etc.
+    year: varchar("year", { length: 4 }).notNull(), // 2024, 2025, etc.
+
+    // Monthly Metrics
+    total_loans: integer("total_loans").notNull().default(0), // Number of loans disbursed in the month
+    total_savings: integer("total_savings").notNull().default(0), // Total savings amount for the month
+    total_meetings: integer("total_meetings").notNull().default(0), // Number of meetings held in the month
+
+    // Optional detailed information
+    notes: text("notes"),
+
+    // System fields
+    created_by: text("created_by"),
+    created_at: timestamp("created_at").defaultNow(),
+    updated_at: timestamp("updated_at").defaultNow(),
+  },
+  table => ({
+    // Ensure unique month/year per VSLA
+    uniqueVslaMonthYear: unique("unique_vsla_month_year").on(
+      table.vsla_id,
+      table.month,
+      table.year
+    ),
+  })
+);
+
 export const activityReportsRelations = relations(
   activityReports,
   ({ one }) => ({
@@ -1165,6 +1200,7 @@ export const vslasRelations = relations(vslas, ({ one, many }) => ({
     references: [projects.id],
   }),
   members: many(vslaMembers),
+  monthlyData: many(vslaMonthlyData),
 }));
 
 export const vslaMembersRelations = relations(vslaMembers, ({ one }) => ({
@@ -1173,3 +1209,13 @@ export const vslaMembersRelations = relations(vslaMembers, ({ one }) => ({
     references: [vslas.id],
   }),
 }));
+
+export const vslaMonthlyDataRelations = relations(
+  vslaMonthlyData,
+  ({ one }) => ({
+    vsla: one(vslas, {
+      fields: [vslaMonthlyData.vsla_id],
+      references: [vslas.id],
+    }),
+  })
+);
