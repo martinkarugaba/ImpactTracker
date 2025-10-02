@@ -96,7 +96,7 @@ export const organizationMembers = pgTable("organization_members", {
   organization_id: uuid("organization_id")
     .references(() => organizations.id)
     .notNull(),
-  user_id: text("user_id").notNull(), // Clerk user ID
+  user_id: text("user_id").notNull(), // User ID from auth system
   role: userRole("role").notNull().default("organization_member"),
   last_accessed: timestamp("last_accessed"),
   created_at: timestamp("created_at").defaultNow(),

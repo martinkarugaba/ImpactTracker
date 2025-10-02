@@ -69,8 +69,11 @@ export async function batchGetDistrictNamesByCodes(
 
     if (!actualCodes.length) return nameMap;
 
+    // Remove duplicates before querying
+    const uniqueCodes = [...new Set(actualCodes)];
+
     const districtsData = await db.query.districts.findMany({
-      where: inArray(districts.code, actualCodes),
+      where: inArray(districts.code, uniqueCodes),
       columns: {
         code: true,
         name: true,
@@ -119,8 +122,11 @@ export async function batchGetSubCountyNamesByCodes(
 
     if (!actualCodes.length) return nameMap;
 
+    // Remove duplicates before querying
+    const uniqueCodes = [...new Set(actualCodes)];
+
     const subCountiesData = await db.query.subCounties.findMany({
-      where: inArray(subCounties.code, actualCodes),
+      where: inArray(subCounties.code, uniqueCodes),
       columns: {
         code: true,
         name: true,

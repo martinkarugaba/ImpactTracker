@@ -56,10 +56,17 @@ export const authConfig: NextAuthConfig = {
 
       // Only try database operations if we're not in Edge Runtime
       // Edge Runtime detection: check if process.versions exists (Node.js specific)
-      const isNodeRuntime =
-        typeof process !== "undefined" &&
-        process.versions &&
-        process.versions.node;
+      // We need to safely check for Node.js APIs that don't exist in Edge Runtime
+      let isNodeRuntime = false;
+      try {
+        isNodeRuntime =
+          typeof process !== "undefined" &&
+          typeof process.versions !== "undefined" &&
+          typeof process.versions.node !== "undefined";
+      } catch {
+        // If accessing process.versions throws, we're in Edge Runtime
+        isNodeRuntime = false;
+      }
 
       if (isNodeRuntime) {
         try {

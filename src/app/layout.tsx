@@ -26,6 +26,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${fontSans.variable} ${fontMono.variable} bg-sidebar font-sans antialiased`}
+        suppressHydrationWarning
       >
         <ThemeProvider
           attribute="class"

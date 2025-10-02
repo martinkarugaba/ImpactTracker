@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { vslaMonthlyData } from "@/lib/db/schema";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/features/auth/auth";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -18,9 +18,9 @@ interface SaveMonthlyDataInput {
 
 export async function saveVSLAMonthlyData(input: SaveMonthlyDataInput) {
   try {
-    const { userId } = await auth();
+    const session = await auth();
 
-    if (!userId) {
+    if (!session?.user?.id) {
       return {
         success: false,
         error: "Unauthorized",
@@ -73,7 +73,7 @@ export async function saveVSLAMonthlyData(input: SaveMonthlyDataInput) {
           total_savings: input.totalSavings,
           total_meetings: input.totalMeetings,
           notes: input.notes,
-          created_by: userId,
+          created_by: session.user.id,
         })
         .returning();
 
@@ -118,9 +118,9 @@ export async function getVSLAMonthlyData(vslaId: string) {
 
 export async function deleteVSLAMonthlyData(id: string, vslaId: string) {
   try {
-    const { userId } = await auth();
+    const session = await auth();
 
-    if (!userId) {
+    if (!session?.user?.id) {
       return {
         success: false,
         error: "Unauthorized",

@@ -105,7 +105,7 @@ export function ActivitiesContainerNew({
           >
             {state.activeTab === "calendar" && (
               <CalendarProvider>
-                <ActivitiesCalendar className="w-full" />
+                <ActivitiesCalendar className="w-full" clusterId={clusterId} />
               </CalendarProvider>
             )}
           </div>
