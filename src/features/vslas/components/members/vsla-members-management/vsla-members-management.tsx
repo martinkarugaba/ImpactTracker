@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import { Plus, Filter, Download, Upload } from "lucide-react";
+import { Plus, Filter, Download } from "lucide-react";
 import { VSLA } from "../../../types";
 import { VSLAMember, getVSLAMembers } from "../../../actions/vsla-members";
 import {
@@ -14,6 +14,8 @@ import {
 } from "../../dialogs";
 import { createVSLAMembersColumns } from "./vsla-members-columns";
 import { VSLAMembersStats } from "./vsla-members-stats";
+import { ExcelImportDialog } from "@/components/shared/excel-import-dialog";
+import { createVSLAMemberImportConfig } from "../../../config/vsla-members-import-config";
 import { toast } from "sonner";
 
 interface VSLAMembersManagementProps {
@@ -102,10 +104,10 @@ export function VSLAMembersManagement({ vsla }: VSLAMembersManagementProps) {
                 <Download className="mr-2 h-4 w-4" />
                 Export
               </Button>
-              <Button variant="outline" size="sm">
-                <Upload className="mr-2 h-4 w-4" />
-                Import
-              </Button>
+              <ExcelImportDialog
+                config={createVSLAMemberImportConfig([vsla])}
+                onImportComplete={handleSuccess}
+              />
               <Button variant="outline" size="sm">
                 <Filter className="mr-2 h-4 w-4" />
                 Filter

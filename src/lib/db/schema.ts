@@ -1043,6 +1043,9 @@ export const vslaMembers = pgTable("vsla_members", {
   vsla_id: uuid("vsla_id")
     .references(() => vslas.id)
     .notNull(),
+  participant_id: uuid("participant_id").references(() => participants.id, {
+    onDelete: "cascade",
+  }), // Link to participant table - nullable for backwards compatibility
   first_name: text("first_name").notNull(),
   last_name: text("last_name").notNull(),
   phone: text("phone").notNull(),
@@ -1207,6 +1210,10 @@ export const vslaMembersRelations = relations(vslaMembers, ({ one }) => ({
   vsla: one(vslas, {
     fields: [vslaMembers.vsla_id],
     references: [vslas.id],
+  }),
+  participant: one(participants, {
+    fields: [vslaMembers.participant_id],
+    references: [participants.id],
   }),
 }));
 

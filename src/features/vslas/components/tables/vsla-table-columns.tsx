@@ -88,27 +88,27 @@ export const createColumns = (
       return <div className="font-medium">{name}</div>;
     },
   },
-  {
-    accessorKey: "code",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-medium hover:bg-transparent"
-        >
-          Code
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const code = row.getValue("code") as string;
-      return (
-        <div className="text-muted-foreground font-mono text-sm">{code}</div>
-      );
-    },
-  },
+  // {
+  //   accessorKey: "code",
+  //   header: ({ column }) => {
+  //     return (
+  //       <Button
+  //         variant="ghost"
+  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+  //         className="h-auto p-0 font-medium hover:bg-transparent"
+  //       >
+  //         Code
+  //         <ArrowUpDown className="ml-2 h-4 w-4" />
+  //       </Button>
+  //     );
+  //   },
+  //   cell: ({ row }) => {
+  //     const code = row.getValue("code") as string;
+  //     return (
+  //       <div className="text-muted-foreground font-mono text-sm">{code}</div>
+  //     );
+  //   },
+  // },
   {
     accessorKey: "district",
     header: ({ column }) => {
