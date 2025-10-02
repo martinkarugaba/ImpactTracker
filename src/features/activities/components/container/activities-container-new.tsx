@@ -1,6 +1,6 @@
 "use client";
 
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart3, Calendar, CalendarDays, UserCheck } from "lucide-react";
 import { useActivityContainerState } from "./use-activity-container-state";
 import { MetricsTab } from "./metrics-tab";
@@ -50,7 +50,7 @@ export function ActivitiesContainerNew({
           <TabsList className="grid h-10 w-full grid-cols-4 rounded-md bg-gray-100 p-1 dark:bg-gray-900">
             <TabsTrigger
               value="activities"
-              className="flex cursor-pointer items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-950"
+              className="flex cursor-pointer items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium text-gray-600 transition-all data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm dark:text-gray-400 dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-gray-100"
             >
               <Calendar className="h-4 w-4" />
               <span className="hidden sm:inline">Activities</span>
@@ -58,7 +58,7 @@ export function ActivitiesContainerNew({
             </TabsTrigger>
             <TabsTrigger
               value="metrics"
-              className="flex cursor-pointer items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-950"
+              className="flex cursor-pointer items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium text-gray-600 transition-all data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm dark:text-gray-400 dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-gray-100"
             >
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">Analytics</span>
@@ -66,7 +66,7 @@ export function ActivitiesContainerNew({
             </TabsTrigger>
             <TabsTrigger
               value="demographics"
-              className="flex cursor-pointer items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-950"
+              className="flex cursor-pointer items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium text-gray-600 transition-all data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm dark:text-gray-400 dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-gray-100"
             >
               <UserCheck className="h-4 w-4" />
               <span className="hidden sm:inline">Demographics</span>
@@ -74,7 +74,7 @@ export function ActivitiesContainerNew({
             </TabsTrigger>
             <TabsTrigger
               value="calendar"
-              className="flex cursor-pointer items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-950"
+              className="flex cursor-pointer items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium text-gray-600 transition-all data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm dark:text-gray-400 dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-gray-100"
             >
               <CalendarDays className="h-4 w-4" />
               <span className="hidden sm:inline">Calendar</span>
@@ -95,20 +95,14 @@ export function ActivitiesContainerNew({
             clusterId={clusterId}
           />
 
-          <div
-            className="flex h-full min-h-[800px]"
-            data-state={state.activeTab === "calendar" ? "active" : "inactive"}
-            data-orientation="horizontal"
-            role="tabpanel"
-            tabIndex={0}
-            id="calendar"
+          <TabsContent
+            value="calendar"
+            className="mt-0 flex h-full min-h-[800px]"
           >
-            {state.activeTab === "calendar" && (
-              <CalendarProvider>
-                <ActivitiesCalendar className="w-full" clusterId={clusterId} />
-              </CalendarProvider>
-            )}
-          </div>
+            <CalendarProvider>
+              <ActivitiesCalendar className="w-full" clusterId={clusterId} />
+            </CalendarProvider>
+          </TabsContent>
 
           <ActivitiesTab
             activities={state.activities}

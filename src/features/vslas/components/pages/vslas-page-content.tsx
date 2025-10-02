@@ -46,10 +46,6 @@ export function VSLAsPageContent({
     setDeletingVSLA(vsla);
   };
 
-  const handleAdd = () => {
-    // This will be handled by the CreateVSLADialog component
-  };
-
   const handleImport = () => {
     // Implement CSV/Excel import functionality
     toast.success("Import functionality coming soon!");
@@ -118,28 +114,15 @@ export function VSLAsPageContent({
       {/* Metrics Cards */}
       <VSLAMetricsCards vslas={vslas} isLoading={isLoading} />
 
-      {/* Header with Action Buttons */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">
-            Village Savings and Loans Associations
-          </h2>
-          <p className="text-muted-foreground">
-            Manage and track all VSLAs across your organization ({vslas.length}{" "}
-            total)
-          </p>
-        </div>
-        <CreateVSLADialog
-          organizations={organizations}
-          clusters={clusters}
-          projects={projects}
-          onSuccess={refreshData}
-        >
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            New VSLA
-          </Button>
-        </CreateVSLADialog>
+      {/* Header */}
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight">
+          Village Savings and Loans Associations
+        </h2>
+        <p className="text-muted-foreground">
+          Manage and track all VSLAs across your organization ({vslas.length}{" "}
+          total)
+        </p>
       </div>
 
       {vslas.length === 0 ? (
@@ -168,11 +151,14 @@ export function VSLAsPageContent({
           onRowClick={handleRowClick}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          onAdd={handleAdd}
           onImport={handleImport}
           onExport={handleExport}
           isLoading={isLoading}
           pageSize={20}
+          organizations={organizations}
+          clusters={clusters}
+          projects={projects}
+          onSuccess={refreshData}
         />
       )}
 
