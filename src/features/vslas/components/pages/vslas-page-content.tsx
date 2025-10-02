@@ -46,11 +46,6 @@ export function VSLAsPageContent({
     setDeletingVSLA(vsla);
   };
 
-  const handleImport = () => {
-    // Implement CSV/Excel import functionality
-    toast.success("Import functionality coming soon!");
-  };
-
   const handleExport = () => {
     // Implement CSV/Excel export functionality
     const csvContent = [
@@ -151,7 +146,6 @@ export function VSLAsPageContent({
           onRowClick={handleRowClick}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          onImport={handleImport}
           onExport={handleExport}
           isLoading={isLoading}
           pageSize={20}

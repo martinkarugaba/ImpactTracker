@@ -3,14 +3,7 @@
 import { useState } from "react";
 import { type Row } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import {
-  Plus,
-  Download,
-  Search,
-  LayoutGrid,
-  ChevronDown,
-  FileUp,
-} from "lucide-react";
+import { Plus, Download, Search, LayoutGrid, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
@@ -22,6 +15,8 @@ import { columns } from "./vsla-table-columns";
 import { VSLAsDataTable } from "./vslas-data-table";
 import { VSLA } from "../../types";
 import { CreateVSLADialog } from "../dialogs";
+import { ExcelImportDialog } from "@/components/shared/excel-import-dialog";
+import { createVSLAImportConfig } from "../../config/vsla-import-config";
 import type { Organization } from "@/features/organizations/types";
 import type { Cluster } from "@/features/clusters/components/clusters-table";
 import type { Project } from "@/features/projects/types";
@@ -31,7 +26,6 @@ interface VSLAsTableProps {
   onRowClick?: (vsla: VSLA) => void;
   onEdit?: (vsla: VSLA) => void;
   onDelete?: (vsla: VSLA) => void;
-  onImport?: () => void;
   onExport?: () => void;
   isLoading?: boolean;
   pageSize?: number;
@@ -46,7 +40,6 @@ export function VSLAsTable({
   onRowClick,
   onEdit,
   onDelete,
-  onImport,
   onExport,
   isLoading = false,
   pageSize = 10,
@@ -169,12 +162,10 @@ export function VSLAsTable({
               Export
             </Button>
           )}
-          {onImport && (
-            <Button variant="outline" onClick={onImport}>
-              <FileUp className="mr-2 h-4 w-4" />
-              Import
-            </Button>
-          )}
+          <ExcelImportDialog
+            config={createVSLAImportConfig(organizations, clusters, projects)}
+            onImportComplete={onSuccess}
+          />
           <CreateVSLADialog
             organizations={organizations}
             clusters={clusters}
