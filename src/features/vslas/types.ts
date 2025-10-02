@@ -100,7 +100,7 @@ export interface VSLAMember {
   first_name: string;
   last_name: string;
   phone: string;
-  email?: string;
+  email: string | null;
   role: string; // chairperson, secretary, treasurer, member
   joined_date: Date;
   total_savings: number;
