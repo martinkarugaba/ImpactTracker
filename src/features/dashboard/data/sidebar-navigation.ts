@@ -2,7 +2,6 @@ import {
   IconActivity,
   IconBuildings,
   IconCashBanknote,
-  IconCalendar,
   IconDashboard,
   IconHelp,
   IconLocation,
@@ -73,11 +72,7 @@ export const navigationData = {
       url: "/dashboard/activities",
       icon: IconActivity,
     },
-    {
-      name: "Calendar",
-      url: "/dashboard/calendar",
-      icon: IconCalendar,
-    },
+
     {
       name: "VSLAs",
       url: "/dashboard/vslas",

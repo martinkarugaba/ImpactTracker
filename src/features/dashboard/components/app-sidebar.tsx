@@ -14,7 +14,7 @@ import { SidebarMainNav } from "./sidebar-main-nav";
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar
-      className="bg-background/95 supports-[backdrop-filter]:bg-background/60 backdrop-blur"
+      className="bg-background/95 supports-[backdrop-filter]:bg-background/60 border-none backdrop-blur"
       collapsible="offcanvas"
       side="left"
       {...props}
@@ -29,7 +29,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent className="flex-1 overflow-y-auto">
         <SidebarMainNav />
       </SidebarContent>
-      <SidebarFooter className="border-border/50 flex-shrink-0 border-t">
+      <SidebarFooter className="border-border/50 flex-shrink-0 border-none">
         <NavUser />
       </SidebarFooter>
     </Sidebar>

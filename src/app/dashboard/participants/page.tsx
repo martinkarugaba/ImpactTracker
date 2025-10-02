@@ -28,7 +28,7 @@ function ParticipantsPageSkeleton() {
         </div>
       </div>
 
-      {/* Tab Content - Metrics View */}
+      {/* Tab Content - Both Metrics and Participants Views */}
       <div className="space-y-6">
         {/* Metrics Status Indicator */}
         <div className="flex items-center gap-2 text-sm">
@@ -60,12 +60,50 @@ function ParticipantsPageSkeleton() {
           ))}
         </div>
 
+        {/* Action Buttons Header (for Participants Tab) */}
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            {/* Left side - Secondary Actions */}
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-9 w-[140px]" />{" "}
+              {/* Organization Assignment */}
+              <Skeleton className="h-9 w-[130px]" /> {/* Import from Excel */}
+              <Skeleton className="h-9 w-[120px]" /> {/* Find Duplicates */}
+              <Skeleton className="h-9 w-[100px]" /> {/* Export dropdown */}
+              <Skeleton className="h-9 w-[110px]" /> {/* Delete selected */}
+            </div>
+
+            {/* Right side - Primary Actions */}
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-9 w-[90px]" /> {/* Columns */}
+              <Skeleton className="h-9 w-[130px]" /> {/* Add Participant */}
+            </div>
+          </div>
+        </div>
+
         {/* Filters Section */}
         <div className="space-y-4">
           {/* Filter Header */}
           <div className="flex items-center justify-between">
             <Skeleton className="h-6 w-32" />
             <Skeleton className="h-8 w-20" />
+          </div>
+
+          {/* Main Filter Bar */}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Search Filter */}
+            <Skeleton className="h-10 w-[280px]" />
+
+            {/* Quick Filters */}
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-8 w-[60px]" />
+              <Skeleton className="h-8 w-[70px]" />
+              <Skeleton className="h-8 w-[80px]" />
+              <Skeleton className="h-8 w-[65px]" />
+            </div>
+
+            {/* More Filters Button */}
+            <Skeleton className="h-8 w-[140px]" />
           </div>
 
           {/* Filter Grid */}
@@ -110,11 +148,139 @@ function ParticipantsPageSkeleton() {
             </div>
           </div>
 
+          {/* Active Filter Badges */}
+          <div className="flex flex-wrap gap-2">
+            <Skeleton className="h-6 w-[90px] rounded-full" />
+            <Skeleton className="h-6 w-[110px] rounded-full" />
+            <Skeleton className="h-6 w-[75px] rounded-full" />
+            <Skeleton className="h-6 w-[95px] rounded-full" />
+          </div>
+
           {/* Search and Clear */}
           <div className="flex items-center gap-4">
             <div className="flex-1 space-y-2">
               <Skeleton className="h-4 w-20" />
               <Skeleton className="h-10 w-full" />
+            </div>
+          </div>
+        </div>
+
+        {/* Participants Table Section */}
+        <div className="space-y-4">
+          {/* Table */}
+          <div className="overflow-hidden rounded-md border">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-muted text-muted-foreground">
+                  <tr>
+                    {/* Checkbox column */}
+                    <th className="w-[50px] p-4">
+                      <div className="flex items-center justify-center">
+                        <Skeleton className="h-4 w-4" />
+                      </div>
+                    </th>
+                    {/* Name column */}
+                    <th className="w-[180px] p-4">
+                      <Skeleton className="h-4 w-[80px]" />
+                    </th>
+                    {/* Contact column */}
+                    <th className="w-[140px] p-4">
+                      <Skeleton className="h-4 w-[60px]" />
+                    </th>
+                    {/* Age column */}
+                    <th className="w-[80px] p-4">
+                      <Skeleton className="h-4 w-[35px]" />
+                    </th>
+                    {/* Gender column */}
+                    <th className="w-[100px] p-4">
+                      <Skeleton className="h-4 w-[50px]" />
+                    </th>
+                    {/* Location column */}
+                    <th className="w-[200px] p-4">
+                      <Skeleton className="h-4 w-[70px]" />
+                    </th>
+                    {/* Skills column */}
+                    <th className="w-[150px] p-4">
+                      <Skeleton className="h-4 w-[45px]" />
+                    </th>
+                    {/* Organization column */}
+                    <th className="w-[160px] p-4">
+                      <Skeleton className="h-4 w-[85px]" />
+                    </th>
+                    {/* Actions column */}
+                    <th className="w-[50px] p-4">
+                      <Skeleton className="h-4 w-[50px]" />
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.from({ length: 10 }).map((_, rowIndex) => (
+                    <tr key={rowIndex} className="border-b">
+                      {/* Checkbox */}
+                      <td className="p-4">
+                        <div className="flex items-center justify-center">
+                          <Skeleton className="h-4 w-4" />
+                        </div>
+                      </td>
+                      {/* Name */}
+                      <td className="p-4">
+                        <div className="space-y-1">
+                          <Skeleton className="h-4 w-[140px]" />
+                          <Skeleton className="h-3 w-[100px]" />
+                        </div>
+                      </td>
+                      {/* Contact */}
+                      <td className="p-4">
+                        <Skeleton className="h-4 w-[110px]" />
+                      </td>
+                      {/* Age */}
+                      <td className="p-4">
+                        <Skeleton className="h-4 w-[25px]" />
+                      </td>
+                      {/* Gender */}
+                      <td className="p-4">
+                        <Skeleton className="h-6 w-[60px] rounded-full" />
+                      </td>
+                      {/* Location */}
+                      <td className="p-4">
+                        <div className="space-y-1">
+                          <Skeleton className="h-3 w-[120px]" />
+                          <Skeleton className="h-3 w-[90px]" />
+                        </div>
+                      </td>
+                      {/* Skills */}
+                      <td className="p-4">
+                        <div className="flex flex-wrap gap-1">
+                          <Skeleton className="h-5 w-[50px] rounded" />
+                          <Skeleton className="h-5 w-[40px] rounded" />
+                          <Skeleton className="h-5 w-[35px] rounded" />
+                        </div>
+                      </td>
+                      {/* Organization */}
+                      <td className="p-4">
+                        <Skeleton className="h-4 w-[130px]" />
+                      </td>
+                      {/* Actions */}
+                      <td className="p-4">
+                        <div className="flex items-center justify-center">
+                          <Skeleton className="h-8 w-8 rounded" />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Pagination */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-[200px]" /> {/* Results text */}
+            </div>
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-9 w-[80px]" /> {/* Previous button */}
+              <Skeleton className="h-9 w-[60px]" /> {/* Next button */}
             </div>
           </div>
         </div>
