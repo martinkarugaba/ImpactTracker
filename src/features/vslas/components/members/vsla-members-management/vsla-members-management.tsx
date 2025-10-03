@@ -4,9 +4,13 @@ import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import { Plus, Filter, Download, Upload } from "lucide-react";
+import { Plus, Filter, Download, Trash2 } from "lucide-react";
 import { VSLA } from "../../../types";
-import { VSLAMember, getVSLAMembers } from "../../../actions/vsla-members";
+import {
+  VSLAMember,
+  getVSLAMembers,
+  deleteVSLAMembers,
+} from "../../../actions/vsla-members";
 import {
   AddVSLAMemberDialog,
   AddParticipantToVSLADialog,
@@ -14,6 +18,8 @@ import {
 } from "../../dialogs";
 import { createVSLAMembersColumns } from "./vsla-members-columns";
 import { VSLAMembersStats } from "./vsla-members-stats";
+import { ExcelImportDialog } from "@/components/shared/excel-import-dialog";
+import { createVSLAMemberImportConfig } from "../../../config/vsla-members-import-config";
 import { toast } from "sonner";
 
 interface VSLAMembersManagementProps {
@@ -24,6 +30,7 @@ export function VSLAMembersManagement({ vsla }: VSLAMembersManagementProps) {
   const [members, setMembers] = useState<VSLAMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editingMember, setEditingMember] = useState<VSLAMember | null>(null);
+  const [selectedMembers, setSelectedMembers] = useState<VSLAMember[]>([]);
 
   const loadMembers = useCallback(async () => {
     setIsLoading(true);
@@ -56,6 +63,34 @@ export function VSLAMembersManagement({ vsla }: VSLAMembersManagementProps) {
     toast.success("Member added successfully");
   };
 
+  const handleBulkDelete = async () => {
+    if (selectedMembers.length === 0) return;
+
+    const confirmed = window.confirm(
+      `Are you sure you want to remove ${selectedMembers.length} member(s) from this VSLA? This action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const ids = selectedMembers.map(m => m.id);
+      const result = await deleteVSLAMembers(ids);
+
+      if (result.success) {
+        toast.success(
+          `Successfully removed ${selectedMembers.length} member(s)`
+        );
+        setSelectedMembers([]);
+        loadMembers();
+      } else {
+        toast.error(result.error || "Failed to remove members");
+      }
+    } catch (error) {
+      console.error("Error in bulk delete:", error);
+      toast.error("An error occurred while removing members");
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -73,6 +108,8 @@ export function VSLAMembersManagement({ vsla }: VSLAMembersManagementProps) {
             <AddParticipantToVSLADialog
               vslaId={vsla.id}
               clusterId={vsla.cluster_id}
+              organizationId={vsla.organization_id || undefined}
+              projectId={vsla.project_id || undefined}
               onSuccess={handleSuccess}
             />
           )}
@@ -94,16 +131,31 @@ export function VSLAMembersManagement({ vsla }: VSLAMembersManagementProps) {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               Members ({members.length})
+              {selectedMembers.length > 0 && (
+                <span className="text-muted-foreground text-sm font-normal">
+                  ({selectedMembers.length} selected)
+                </span>
+              )}
             </CardTitle>
             <div className="flex items-center gap-2">
+              {selectedMembers.length > 0 && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleBulkDelete}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete {selectedMembers.length}
+                </Button>
+              )}
               <Button variant="outline" size="sm">
                 <Download className="mr-2 h-4 w-4" />
                 Export
               </Button>
-              <Button variant="outline" size="sm">
-                <Upload className="mr-2 h-4 w-4" />
-                Import
-              </Button>
+              <ExcelImportDialog
+                config={createVSLAMemberImportConfig([vsla])}
+                onImportComplete={handleSuccess}
+              />
               <Button variant="outline" size="sm">
                 <Filter className="mr-2 h-4 w-4" />
                 Filter
@@ -128,6 +180,7 @@ export function VSLAMembersManagement({ vsla }: VSLAMembersManagementProps) {
                 showPagination={true}
                 showRowSelection={true}
                 pageSize={10}
+                onRowSelectionChange={setSelectedMembers}
               />
             )}
           </div>

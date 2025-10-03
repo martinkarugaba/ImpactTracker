@@ -81,7 +81,6 @@ projects operating in Uganda and East Africa.
 - **NextAuth.js** - Authentication and authorization
 - **Drizzle ORM** - Type-safe database operations
 - **PostgreSQL** - Primary database
-- **Clerk** - Additional authentication provider
 
 ### **Data & Analytics**
 
@@ -166,7 +165,6 @@ src/
    DATABASE_URL="postgresql://username:password@localhost:5432/kpi_edge_db"
    NEXTAUTH_SECRET="your-nextauth-secret"
    NEXTAUTH_URL="http://localhost:3000"
-   CLERK_SECRET_KEY="your-clerk-secret"
    # Add other required environment variables
    ```
 
@@ -300,7 +298,6 @@ Ensure these environment variables are set in your production environment:
 - `DATABASE_URL`
 - `NEXTAUTH_SECRET`
 - `NEXTAUTH_URL`
-- `CLERK_SECRET_KEY`
 
 ## 🤝 Contributing
 

@@ -72,6 +72,7 @@ export const navigationData = {
       url: "/dashboard/activities",
       icon: IconActivity,
     },
+
     {
       name: "VSLAs",
       url: "/dashboard/vslas",

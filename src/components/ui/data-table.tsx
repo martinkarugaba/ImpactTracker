@@ -274,7 +274,6 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
           <Select>
             <SelectTrigger
               className="w-38 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate"
-              size="sm"
               id={`${row.original.id}-reviewer`}
             >
               <SelectValue placeholder="Assign reviewer" />

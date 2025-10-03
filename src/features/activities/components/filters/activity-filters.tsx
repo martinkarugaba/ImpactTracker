@@ -58,19 +58,8 @@ export function ActivityFiltersComponent({
 
   return (
     <div className="space-y-4">
-      {/* Search Bar */}
+      {/* Filters Button with Active Count */}
       <div className="flex items-center space-x-2">
-        <div className="relative flex-1">
-          <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
-          <Input
-            placeholder="Search activities..."
-            value={searchValue || filters.search || ""}
-            onChange={e => {
-              updateFilters("search", e.target.value);
-            }}
-            className="pl-8"
-          />
-        </div>
         <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline" className="relative">
@@ -86,7 +75,7 @@ export function ActivityFiltersComponent({
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-80" align="end">
+          <PopoverContent className="w-80" align="start">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h4 className="font-medium">Filters</h4>
@@ -98,6 +87,22 @@ export function ActivityFiltersComponent({
                 >
                   Clear all
                 </Button>
+              </div>
+
+              {/* Search Bar - Inside Dropdown */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Search</label>
+                <div className="relative">
+                  <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
+                  <Input
+                    placeholder="Search activities..."
+                    value={searchValue || filters.search || ""}
+                    onChange={e => {
+                      updateFilters("search", e.target.value);
+                    }}
+                    className="pl-8"
+                  />
+                </div>
               </div>
 
               {/* Activity Type */}
@@ -248,14 +253,18 @@ export function ActivityFiltersComponent({
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {filters.startDate
-                          ? format(filters.startDate, "PPP")
+                          ? format(new Date(filters.startDate), "PPP")
                           : "Start date"}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
-                        selected={filters.startDate}
+                        selected={
+                          filters.startDate
+                            ? new Date(filters.startDate)
+                            : undefined
+                        }
                         onSelect={date => updateFilters("startDate", date)}
                         initialFocus
                       />
@@ -272,14 +281,18 @@ export function ActivityFiltersComponent({
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {filters.endDate
-                          ? format(filters.endDate, "PPP")
+                          ? format(new Date(filters.endDate), "PPP")
                           : "End date"}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
-                        selected={filters.endDate}
+                        selected={
+                          filters.endDate
+                            ? new Date(filters.endDate)
+                            : undefined
+                        }
                         onSelect={date => updateFilters("endDate", date)}
                         initialFocus
                       />
@@ -359,7 +372,7 @@ export function ActivityFiltersComponent({
           )}
           {filters.startDate && (
             <Badge variant="secondary" className="flex items-center gap-1">
-              From: {format(filters.startDate, "MMM dd, yyyy")}
+              From: {format(new Date(filters.startDate), "MMM dd, yyyy")}
               <X
                 className="h-3 w-3 cursor-pointer"
                 onClick={() => updateFilters("startDate", undefined)}
@@ -368,7 +381,7 @@ export function ActivityFiltersComponent({
           )}
           {filters.endDate && (
             <Badge variant="secondary" className="flex items-center gap-1">
-              To: {format(filters.endDate, "MMM dd, yyyy")}
+              To: {format(new Date(filters.endDate), "MMM dd, yyyy")}
               <X
                 className="h-3 w-3 cursor-pointer"
                 onClick={() => updateFilters("endDate", undefined)}

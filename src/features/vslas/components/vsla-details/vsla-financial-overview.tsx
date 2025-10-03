@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
+import { MetricCard } from "@/components/ui/metric-card";
+import { IconTrendingUp } from "@tabler/icons-react";
+import { formatCurrency } from "../../utils";
 import { VSLA } from "../../types";
 
 interface VSLAFinancialOverviewProps {
@@ -9,47 +9,36 @@ interface VSLAFinancialOverviewProps {
 
 export function VSLAFinancialOverview({ vsla }: VSLAFinancialOverviewProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Financial Overview</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-4 md:grid-cols-3">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-green-600" />
-              <span className="text-muted-foreground text-sm font-medium">
-                Total Savings
-              </span>
-            </div>
-            <p className="text-2xl font-bold text-green-600">
-              {formatCurrency(vsla.total_savings)}
-            </p>
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-blue-600" />
-              <span className="text-muted-foreground text-sm font-medium">
-                Total Loans
-              </span>
-            </div>
-            <p className="text-2xl font-bold text-blue-600">
-              {formatCurrency(vsla.total_loans)}
-            </p>
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-purple-600" />
-              <span className="text-muted-foreground text-sm font-medium">
-                Net Difference
-              </span>
-            </div>
-            <p className="text-2xl font-bold text-purple-600">
-              {formatCurrency(vsla.total_savings - vsla.total_loans)}
-            </p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-3">
+      <MetricCard
+        title="Total Savings"
+        value={formatCurrency(vsla.total_savings)}
+        footer={{
+          title: "Member Contributions",
+          description: "Accumulated savings pool",
+        }}
+        icon={<IconTrendingUp className="size-4 text-green-600" />}
+      />
+
+      <MetricCard
+        title="Total Loans"
+        value={formatCurrency(vsla.total_loans)}
+        footer={{
+          title: "Outstanding Amounts",
+          description: "Active loan portfolio",
+        }}
+        icon={<IconTrendingUp className="size-4 text-blue-600" />}
+      />
+
+      <MetricCard
+        title="Net Difference"
+        value={formatCurrency(vsla.total_savings - vsla.total_loans)}
+        footer={{
+          title: "Savings minus Loans",
+          description: "Available liquidity",
+        }}
+        icon={<IconTrendingUp className="size-4 text-purple-600" />}
+      />
+    </div>
   );
 }

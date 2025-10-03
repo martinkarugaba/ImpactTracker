@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import { getVSLAs } from "../../actions/vslas";
+import { getVSLAs, deleteVSLAs } from "../../actions/vslas";
 import { VSLAsTable, VSLAsTableSkeleton } from "../tables";
 import { CreateVSLADialog, EditVSLADialog, DeleteVSLADialog } from "../dialogs";
 import { VSLAMetricsCards } from "../metrics/vsla-metrics-cards";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, BarChart3, Table } from "lucide-react";
 import { VSLA } from "../../types";
 import type { Organization } from "@/features/organizations/types";
 import type { Cluster } from "@/features/clusters/components/clusters-table";
@@ -31,6 +32,7 @@ export function VSLAsPageContent({
   const [isLoading, setIsLoading] = useState(false);
   const [editingVSLA, setEditingVSLA] = useState<VSLA | null>(null);
   const [deletingVSLA, setDeletingVSLA] = useState<VSLA | null>(null);
+  const [activeTab, setActiveTab] = useState("table");
   const router = useRouter();
 
   const handleRowClick = (vsla: VSLA) => {
@@ -46,13 +48,36 @@ export function VSLAsPageContent({
     setDeletingVSLA(vsla);
   };
 
-  const handleAdd = () => {
-    // This will be handled by the CreateVSLADialog component
-  };
+  const handleBulkDelete = async (vslasToDelete: VSLA[]) => {
+    if (vslasToDelete.length === 0) return;
 
-  const handleImport = () => {
-    // Implement CSV/Excel import functionality
-    toast.success("Import functionality coming soon!");
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${vslasToDelete.length} VSLA(s)? This action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    setIsLoading(true);
+    try {
+      const ids = vslasToDelete.map(v => v.id);
+      const result = await deleteVSLAs(ids);
+
+      if (result.success) {
+        toast.success(
+          result.message ||
+            `Successfully deleted ${vslasToDelete.length} VSLA(s)`
+        );
+        // Refresh the list
+        await refreshData();
+      } else {
+        toast.error(result.error || "Failed to delete VSLAs");
+      }
+    } catch (error) {
+      console.error("Error in bulk delete:", error);
+      toast.error("An error occurred while deleting VSLAs");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleExport = () => {
@@ -115,31 +140,15 @@ export function VSLAsPageContent({
 
   return (
     <div className="space-y-6">
-      {/* Metrics Cards */}
-      <VSLAMetricsCards vslas={vslas} isLoading={isLoading} />
-
-      {/* Header with Action Buttons */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">
-            Village Savings and Loans Associations
-          </h2>
-          <p className="text-muted-foreground">
-            Manage and track all VSLAs across your organization ({vslas.length}{" "}
-            total)
-          </p>
-        </div>
-        <CreateVSLADialog
-          organizations={organizations}
-          clusters={clusters}
-          projects={projects}
-          onSuccess={refreshData}
-        >
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            New VSLA
-          </Button>
-        </CreateVSLADialog>
+      {/* Header */}
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight">
+          Village Savings and Loans Associations
+        </h2>
+        <p className="text-muted-foreground">
+          Manage and track all VSLAs across your organization ({vslas.length}{" "}
+          total)
+        </p>
       </div>
 
       {vslas.length === 0 ? (
@@ -163,17 +172,39 @@ export function VSLAsPageContent({
           </div>
         </div>
       ) : (
-        <VSLAsTable
-          data={vslas}
-          onRowClick={handleRowClick}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onAdd={handleAdd}
-          onImport={handleImport}
-          onExport={handleExport}
-          isLoading={isLoading}
-          pageSize={20}
-        />
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList>
+            <TabsTrigger value="table" className="flex items-center gap-2">
+              <Table className="h-4 w-4" />
+              VSLAs Table
+            </TabsTrigger>
+            <TabsTrigger value="metrics" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Metrics
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="table" className="mt-6">
+            <VSLAsTable
+              data={vslas}
+              onRowClick={handleRowClick}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onBulkDelete={handleBulkDelete}
+              onExport={handleExport}
+              isLoading={isLoading}
+              pageSize={20}
+              organizations={organizations}
+              clusters={clusters}
+              projects={projects}
+              onSuccess={refreshData}
+            />
+          </TabsContent>
+
+          <TabsContent value="metrics" className="mt-6">
+            <VSLAMetricsCards vslas={vslas} isLoading={isLoading} />
+          </TabsContent>
+        </Tabs>
       )}
 
       {/* Edit Dialog */}

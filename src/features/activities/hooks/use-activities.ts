@@ -15,6 +15,7 @@ import {
   getActivitySession,
   createActivitySession,
   updateActivitySession,
+  deleteActivitySession,
   generateActivitySessions,
 } from "../actions/sessions";
 // Import attendance actions directly
@@ -268,6 +269,31 @@ export function useUpdateActivitySession() {
         queryClient.invalidateQueries({
           queryKey: ["activity", result.data.activity_id],
         });
+      }
+    },
+  });
+}
+
+export function useDeleteActivitySession() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ sessionId }: { sessionId: string }) =>
+      deleteActivitySession(sessionId),
+    onSuccess: (result, variables) => {
+      if (result.success) {
+        // Invalidate queries to refresh the data
+        queryClient.invalidateQueries({
+          queryKey: ["activity-sessions"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["activity-session", variables.sessionId],
+        });
+        if (result.data?.activity_id) {
+          queryClient.invalidateQueries({
+            queryKey: ["activity-sessions", result.data.activity_id],
+          });
+        }
       }
     },
   });

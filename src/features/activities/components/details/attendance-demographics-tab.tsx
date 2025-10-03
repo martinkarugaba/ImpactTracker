@@ -88,8 +88,6 @@ export function AttendanceDemographicsTab({
     <AttendanceAnalyticsStandalone
       attendanceRecords={attendanceRecords}
       isLoading={isLoading}
-      title="Participant Demographics"
-      description="Demographic analysis of participants attending this activity"
       showHeader={true}
     />
   );

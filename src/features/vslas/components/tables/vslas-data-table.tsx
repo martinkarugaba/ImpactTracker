@@ -21,23 +21,10 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  ChevronDown,
-  ChevronUp,
-  LayoutGrid,
-  Search,
-  Loader2,
-} from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -52,15 +39,11 @@ interface VSLAsDataTableProps {
   columns: ColumnDef<VSLA>[];
   data: VSLA[];
   filterColumn?: string;
-  filterPlaceholder?: string;
-  showColumnToggle?: boolean;
   showPagination?: boolean;
   showRowSelection?: boolean;
   pageSize?: number;
   onRowSelectionChange?: (selectedRows: VSLA[]) => void;
-  actionButtons?: React.ReactNode;
   searchValue?: string;
-  onSearchChange?: (search: string) => void;
   isLoading?: boolean;
   rowSelection?: Record<string, boolean>;
   onRowSelectionStateChange?: (selection: Record<string, boolean>) => void;
@@ -71,19 +54,15 @@ export function VSLAsDataTable({
   columns,
   data,
   filterColumn = "name",
-  filterPlaceholder = "Filter VSLAs...",
-  showColumnToggle = true,
   showPagination = true,
   showRowSelection = false,
   pageSize = 20,
   onRowSelectionChange,
-  actionButtons,
   searchValue,
-  onSearchChange,
   isLoading = false,
   rowSelection: externalRowSelection,
   onRowSelectionStateChange,
-  onRowClick,
+  onRowClick: _onRowClick,
 }: VSLAsDataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -168,75 +147,15 @@ export function VSLAsDataTable({
     }
   }, [rowSelection, onRowSelectionChange, table]);
 
-  // Check if header should be shown
-  const showHeader = filterColumn || showColumnToggle || actionButtons;
+  // Apply search filter if searchValue is provided
+  React.useEffect(() => {
+    if (searchValue !== undefined && filterColumn) {
+      table.getColumn(filterColumn)?.setFilterValue(searchValue);
+    }
+  }, [searchValue, filterColumn, table]);
 
   return (
     <div className="w-full">
-      {showHeader && (
-        <div className="mt-4 mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {filterColumn && (
-              <div className="relative max-w-sm">
-                <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                <Input
-                  placeholder={filterPlaceholder}
-                  value={searchValue ?? ""}
-                  onChange={event => {
-                    const value = event.target.value;
-                    if (onSearchChange) {
-                      onSearchChange(value);
-                    } else {
-                      table.getColumn(filterColumn)?.setFilterValue(value);
-                    }
-                  }}
-                  className="max-w-sm pl-9"
-                />
-              </div>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            {actionButtons}
-            {showColumnToggle && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <LayoutGrid className="mr-2 h-4 w-4" />
-                    <span className="hidden lg:inline">Customize Columns</span>
-                    <span className="lg:hidden">Columns</span>
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  {table && table.getAllColumns
-                    ? table
-                        .getAllColumns()
-                        .filter(
-                          column =>
-                            typeof column.accessorFn !== "undefined" &&
-                            column.getCanHide()
-                        )
-                        .map(column => {
-                          return (
-                            <DropdownMenuCheckboxItem
-                              key={column.id}
-                              className="capitalize"
-                              checked={column.getIsVisible()}
-                              onCheckedChange={value =>
-                                column.toggleVisibility(!!value)
-                              }
-                            >
-                              {column.id}
-                            </DropdownMenuCheckboxItem>
-                          );
-                        })
-                    : null}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
-        </div>
-      )}
       <div className="overflow-hidden rounded-md border">
         <div className="relative">
           <Table>
@@ -309,11 +228,7 @@ export function VSLAsDataTable({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className={cn(
-                      "hover:bg-muted/50 cursor-pointer",
-                      onRowClick && "cursor-pointer"
-                    )}
-                    onClick={() => onRowClick?.(row.original)}
+                    className="hover:bg-muted/50"
                   >
                     {row.getVisibleCells().map(cell => (
                       <TableCell key={cell.id}>

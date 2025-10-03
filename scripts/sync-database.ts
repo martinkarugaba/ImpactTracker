@@ -1,15 +1,15 @@
 #!/usr/bin/env tsx
 import "dotenv/config";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
 import { sql } from "drizzle-orm";
 
 if (!process.env.DATABASE_URL) {
   throw new Error("DATABASE_URL is not set");
 }
 
-const client = postgres(process.env.DATABASE_URL, { ssl: true });
-const db = drizzle(client);
+const neonSql = neon(process.env.DATABASE_URL);
+const db = drizzle(neonSql);
 
 async function syncDatabase() {
   try {
@@ -46,7 +46,7 @@ async function syncDatabase() {
     console.error("❌ Database sync failed:", error);
     throw error;
   } finally {
-    await client.end();
+    // Neon HTTP client has no connection to close
   }
 }
 

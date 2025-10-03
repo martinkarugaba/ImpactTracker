@@ -116,7 +116,7 @@ export function ActivityOverviewTab({
         ) : (
           <MetricCard
             title="Project"
-            value={activity.projectName || "General"}
+            value={activity.projectAcronym || activity.projectName || "General"}
             footer={{
               title: "Project context",
               description: "Activity project",
