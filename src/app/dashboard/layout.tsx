@@ -22,9 +22,9 @@ export default async function DashboardLayout({
     <NavigationProvider>
       <CalendarProvider>
         <SidebarProvider>
-          <div className="bg-sidebar flex min-h-screen w-full gap-2 py-2 pr-0 md:pr-2 md:pb-2">
+          <div className="bg-background/95 supports-[backdrop-filter]:bg-background/60 flex min-h-screen w-full gap-2 py-2 pr-0 md:pr-2 md:pb-2">
             <AppSidebar variant="sidebar" collapsible="icon" />
-            <SidebarInset className="overflow-hidden rounded-2xl">
+            <SidebarInset className="overflow-hidden rounded-2xl backdrop-blur">
               <div className="relative w-full flex-1 overflow-hidden rounded-none border-emerald-500 transition-[margin] duration-200 ease-linear group-data-[state=collapsed]:ml-0 group-data-[state=expanded]:ml-0 md:rounded-2xl md:group-data-[state=expanded]:ml-64">
                 <SiteHeader />
                 <main className="flex-1 px-2 pt-0 pb-2 md:px-3 md:pb-3 lg:px-0">
