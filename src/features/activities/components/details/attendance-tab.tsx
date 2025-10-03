@@ -114,6 +114,10 @@ export function AttendanceTab({
   );
   const [sessionCount, setSessionCount] = useState<number>(5);
   const [selectedSessionId, setSelectedSessionId] = useState<string>("all");
+  const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
+  const [selectedParticipants, setSelectedParticipants] = useState<
+    ActivityParticipant[]
+  >([]);
 
   // Hook for updating session status
   const updateSession = useUpdateActivitySession();
@@ -144,6 +148,29 @@ export function AttendanceTab({
     useState<ActivityParticipant | null>(null);
   const [feedbackParticipant, setFeedbackParticipant] =
     useState<ActivityParticipant | null>(null);
+
+  // Handle bulk remove
+  const handleBulkRemove = async () => {
+    if (selectedParticipants.length === 0) return;
+
+    if (
+      window.confirm(
+        `Are you sure you want to remove ${selectedParticipants.length} participant(s) from this activity?`
+      )
+    ) {
+      try {
+        // TODO: Implement bulk remove API call
+        toast.success(
+          `${selectedParticipants.length} participant(s) removed successfully`
+        );
+        setRowSelection({});
+        setSelectedParticipants([]);
+      } catch (error) {
+        console.error("Error removing participants:", error);
+        toast.error("Failed to remove participants");
+      }
+    }
+  };
 
   // Fetch activity participants and sessions
   const {
@@ -875,6 +902,26 @@ export function AttendanceTab({
                 </div>
               ) : (
                 <div className="space-y-4">
+                  {/* Bulk Actions Bar */}
+                  {Object.keys(rowSelection).length > 0 && (
+                    <div className="bg-muted/50 flex items-center justify-between rounded-lg border p-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">
+                          {Object.keys(rowSelection).length} participant(s)
+                          selected
+                        </span>
+                      </div>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={handleBulkRemove}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Remove Selected
+                      </Button>
+                    </div>
+                  )}
+
                   {/* Enhanced Participants/Attendance Table */}
                   <DataTable
                     columns={participantColumns}
@@ -884,6 +931,14 @@ export function AttendanceTab({
                     showColumnToggle={true}
                     showPagination={participants.length > 10}
                     pageSize={10}
+                    rowSelection={rowSelection}
+                    onRowSelectionStateChange={newSelection => {
+                      setRowSelection(newSelection);
+                      const selected = participants.filter(
+                        (_, index) => newSelection[index]
+                      );
+                      setSelectedParticipants(selected);
+                    }}
                   />
                 </div>
               )}

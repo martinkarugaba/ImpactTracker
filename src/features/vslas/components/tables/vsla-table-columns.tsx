@@ -90,19 +90,27 @@ export const createColumns = (
       const subCounty = row.original.sub_county;
       const vslaId = row.original.id;
       return (
-        <div className="flex items-center gap-2">
-          <Link
-            href={`/dashboard/vslas/${vslaId}`}
-            className="font-medium hover:underline"
-            onClick={e => e.stopPropagation()}
-          >
-            {name}
-          </Link>
-          {subCounty && (
-            <Badge variant="secondary" className="text-xs">
-              {subCounty}
-            </Badge>
-          )}
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/30">
+            <Users className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <Link
+              href={`/dashboard/vslas/${vslaId}`}
+              className="font-medium text-gray-900 hover:underline dark:text-gray-100"
+              onClick={e => e.stopPropagation()}
+            >
+              {name}
+            </Link>
+            {subCounty && (
+              <Badge
+                variant="outline"
+                className="w-fit border-blue-200 bg-blue-100 text-xs text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+              >
+                {subCounty}
+              </Badge>
+            )}
+          </div>
         </div>
       );
     },
@@ -144,7 +152,14 @@ export const createColumns = (
     },
     cell: ({ row }) => {
       const district = row.getValue("district") as string;
-      return <div className="font-medium">{district}</div>;
+      return (
+        <Badge
+          variant="outline"
+          className="border-green-200 bg-green-100 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400"
+        >
+          {district}
+        </Badge>
+      );
     },
   },
   {
@@ -163,7 +178,14 @@ export const createColumns = (
     },
     cell: ({ row }) => {
       const subCounty = row.getValue("sub_county") as string;
-      return <div className="font-medium">{subCounty}</div>;
+      return (
+        <Badge
+          variant="outline"
+          className="border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+        >
+          {subCounty}
+        </Badge>
+      );
     },
   },
   {
@@ -184,8 +206,12 @@ export const createColumns = (
       const members = row.getValue("total_members") as number;
       return (
         <div className="flex items-center gap-2">
-          <Users className="text-muted-foreground h-4 w-4" />
-          <span className="font-medium">{members}</span>
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/30">
+            <Users className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+          </div>
+          <span className="font-semibold text-gray-900 dark:text-gray-100">
+            {members}
+          </span>
         </div>
       );
     },
@@ -197,20 +223,24 @@ export const createColumns = (
       const chairperson = getMemberByRole(row.original.members, "chairperson");
       if (!chairperson) {
         return (
-          <div className="text-muted-foreground text-sm">Not assigned</div>
+          <div className="text-sm text-gray-400 italic dark:text-gray-500">
+            Not assigned
+          </div>
         );
       }
       return (
-        <div className="space-y-1">
-          <div className="flex items-center gap-1.5">
-            <User className="text-muted-foreground h-3.5 w-3.5" />
-            <span className="text-sm font-medium">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/30">
+              <User className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+            </div>
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
               {chairperson.first_name} {chairperson.last_name}
             </span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Phone className="text-muted-foreground h-3.5 w-3.5" />
-            <span className="text-muted-foreground text-sm">
+          <div className="flex items-center gap-2 pl-8">
+            <Phone className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
+            <span className="text-sm text-gray-600 dark:text-gray-400">
               {chairperson.phone}
             </span>
           </div>
@@ -225,20 +255,24 @@ export const createColumns = (
       const secretary = getMemberByRole(row.original.members, "secretary");
       if (!secretary) {
         return (
-          <div className="text-muted-foreground text-sm">Not assigned</div>
+          <div className="text-sm text-gray-400 italic dark:text-gray-500">
+            Not assigned
+          </div>
         );
       }
       return (
-        <div className="space-y-1">
-          <div className="flex items-center gap-1.5">
-            <User className="text-muted-foreground h-3.5 w-3.5" />
-            <span className="text-sm font-medium">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-teal-100 dark:bg-teal-900/30">
+              <User className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
+            </div>
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
               {secretary.first_name} {secretary.last_name}
             </span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Phone className="text-muted-foreground h-3.5 w-3.5" />
-            <span className="text-muted-foreground text-sm">
+          <div className="flex items-center gap-2 pl-8">
+            <Phone className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
+            <span className="text-sm text-gray-600 dark:text-gray-400">
               {secretary.phone}
             </span>
           </div>
@@ -253,20 +287,24 @@ export const createColumns = (
       const treasurer = getMemberByRole(row.original.members, "treasurer");
       if (!treasurer) {
         return (
-          <div className="text-muted-foreground text-sm">Not assigned</div>
+          <div className="text-sm text-gray-400 italic dark:text-gray-500">
+            Not assigned
+          </div>
         );
       }
       return (
-        <div className="space-y-1">
-          <div className="flex items-center gap-1.5">
-            <User className="text-muted-foreground h-3.5 w-3.5" />
-            <span className="text-sm font-medium">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
+              <User className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+            </div>
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
               {treasurer.first_name} {treasurer.last_name}
             </span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Phone className="text-muted-foreground h-3.5 w-3.5" />
-            <span className="text-muted-foreground text-sm">
+          <div className="flex items-center gap-2 pl-8">
+            <Phone className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
+            <span className="text-sm text-gray-600 dark:text-gray-400">
               {treasurer.phone}
             </span>
           </div>

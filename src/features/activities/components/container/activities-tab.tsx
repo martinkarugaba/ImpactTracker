@@ -2,7 +2,6 @@
 
 import { useAtom } from "jotai";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { TabsContent } from "@/components/ui/tabs";
 import {
   DropdownMenu,
@@ -10,14 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Download,
-  FileUp,
-  Plus,
-  Search,
-  LayoutGrid,
-  ChevronDown,
-} from "lucide-react";
+import { Download, FileUp, Plus, LayoutGrid, ChevronDown } from "lucide-react";
 import { type Activity } from "../../types/types";
 import { ActivityFiltersComponent } from "../filters/activity-filters";
 import { ActivitiesDataTable } from "../data-table";
@@ -79,16 +71,12 @@ export function ActivitiesTab({
       <div className="space-y-4">
         {/* Action Buttons Section - At the very top */}
         <div className="flex items-center justify-between gap-4">
-          {/* Left side - Search */}
-          <div className="relative max-w-sm">
-            <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-            <Input
-              placeholder="Search activities..."
-              value={searchValue}
-              onChange={e => setSearchValue(e.target.value)}
-              className="w-80 pl-9"
-            />
-          </div>
+          {/* Left side - Filters */}
+          <ActivityFiltersComponent
+            organizations={[]}
+            clusters={[]}
+            projects={[]}
+          />
 
           {/* Right side - Action buttons */}
           <div className="flex items-center gap-2">
@@ -138,14 +126,7 @@ export function ActivitiesTab({
           </div>
         </div>
 
-        {/* Filters Section - Below action buttons */}
-        <ActivityFiltersComponent
-          organizations={[]}
-          clusters={[]}
-          projects={[]}
-        />
-
-        {/* Activities Table - Below filters */}
+        {/* Activities Table - Below action buttons */}
         <ActivitiesDataTable
           data={activities}
           pagination={pagination}

@@ -99,12 +99,6 @@ export function VSLAsTable({
       <div className="flex items-center justify-between gap-4">
         {/* Left side - Search and Bulk Actions */}
         <div className="flex items-center gap-2">
-          {selectedRows.length > 0 && onBulkDelete && (
-            <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete {selectedRows.length} selected
-            </Button>
-          )}
           <div className="relative">
             <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
             <Input
@@ -114,6 +108,12 @@ export function VSLAsTable({
               className="w-80 pl-9"
             />
           </div>
+          {selectedRows.length > 0 && onBulkDelete && (
+            <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete {selectedRows.length} selected
+            </Button>
+          )}
         </div>
 
         {/* Right side - Action buttons */}

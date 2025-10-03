@@ -8,7 +8,8 @@ import { VSLAsTable, VSLAsTableSkeleton } from "../tables";
 import { CreateVSLADialog, EditVSLADialog, DeleteVSLADialog } from "../dialogs";
 import { VSLAMetricsCards } from "../metrics/vsla-metrics-cards";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, BarChart3, Table } from "lucide-react";
 import { VSLA } from "../../types";
 import type { Organization } from "@/features/organizations/types";
 import type { Cluster } from "@/features/clusters/components/clusters-table";
@@ -31,6 +32,7 @@ export function VSLAsPageContent({
   const [isLoading, setIsLoading] = useState(false);
   const [editingVSLA, setEditingVSLA] = useState<VSLA | null>(null);
   const [deletingVSLA, setDeletingVSLA] = useState<VSLA | null>(null);
+  const [activeTab, setActiveTab] = useState("table");
   const router = useRouter();
 
   const handleRowClick = (vsla: VSLA) => {
@@ -138,9 +140,6 @@ export function VSLAsPageContent({
 
   return (
     <div className="space-y-6">
-      {/* Metrics Cards */}
-      <VSLAMetricsCards vslas={vslas} isLoading={isLoading} />
-
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold tracking-tight">
@@ -173,20 +172,39 @@ export function VSLAsPageContent({
           </div>
         </div>
       ) : (
-        <VSLAsTable
-          data={vslas}
-          onRowClick={handleRowClick}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onBulkDelete={handleBulkDelete}
-          onExport={handleExport}
-          isLoading={isLoading}
-          pageSize={20}
-          organizations={organizations}
-          clusters={clusters}
-          projects={projects}
-          onSuccess={refreshData}
-        />
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList>
+            <TabsTrigger value="table" className="flex items-center gap-2">
+              <Table className="h-4 w-4" />
+              VSLAs Table
+            </TabsTrigger>
+            <TabsTrigger value="metrics" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Metrics
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="table" className="mt-6">
+            <VSLAsTable
+              data={vslas}
+              onRowClick={handleRowClick}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onBulkDelete={handleBulkDelete}
+              onExport={handleExport}
+              isLoading={isLoading}
+              pageSize={20}
+              organizations={organizations}
+              clusters={clusters}
+              projects={projects}
+              onSuccess={refreshData}
+            />
+          </TabsContent>
+
+          <TabsContent value="metrics" className="mt-6">
+            <VSLAMetricsCards vslas={vslas} isLoading={isLoading} />
+          </TabsContent>
+        </Tabs>
       )}
 
       {/* Edit Dialog */}

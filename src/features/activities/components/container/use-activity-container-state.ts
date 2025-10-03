@@ -66,8 +66,12 @@ export function useActivityContainerState({
       status: filters.status || undefined,
       organization: filters.organizationId || undefined,
       project: filters.projectId || undefined,
-      dateFrom: filters.startDate?.toISOString(),
-      dateTo: filters.endDate?.toISOString(),
+      dateFrom: filters.startDate
+        ? new Date(filters.startDate).toISOString()
+        : undefined,
+      dateTo: filters.endDate
+        ? new Date(filters.endDate).toISOString()
+        : undefined,
     },
     page: pagination.page,
     limit: pagination.limit,
