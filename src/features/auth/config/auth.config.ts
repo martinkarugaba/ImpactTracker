@@ -54,6 +54,12 @@ export const authConfig: NextAuthConfig = {
       session.user.role = token.role as string;
       session.accessToken = token.accessToken as string;
 
+      // Validate that we have a valid user ID before proceeding
+      if (!session.user.id || typeof session.user.id !== "string") {
+        console.error("Invalid user ID in session:", session.user.id);
+        return session;
+      }
+
       // Only try database operations if we're not in Edge Runtime
       // Edge Runtime detection: check if process.versions exists (Node.js specific)
       // We need to safely check for Node.js APIs that don't exist in Edge Runtime
@@ -70,6 +76,12 @@ export const authConfig: NextAuthConfig = {
 
       if (isNodeRuntime) {
         try {
+          // Validate ID format before querying
+          if (!session.user.id || session.user.id.trim() === "") {
+            console.error("Empty or invalid user ID, skipping database query");
+            return session;
+          }
+
           const user = await db.query.users.findFirst({
             where: eq(users.id, session.user.id),
           });
@@ -88,8 +100,9 @@ export const authConfig: NextAuthConfig = {
           // Database connection error, log but proceed with session
           console.error(
             "Database connection error in session callback:",
-            dbError
+            dbError instanceof Error ? dbError.message : dbError
           );
+          // Don't throw, just return session with token data
         }
       } else {
         console.log("Skipping database check in Edge Runtime context");
