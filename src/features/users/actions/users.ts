@@ -11,16 +11,6 @@ import {
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-// Define types for Clerk user data
-// interface ClerkUser {
-//   id: string;
-//   firstName?: string;
-//   lastName?: string;
-//   username?: string;
-//   emailAddresses: Array<{ emailAddress: string }>;
-//   createdAt: string;
-// }
-
 export async function getUsers() {
   try {
     const session = await auth();

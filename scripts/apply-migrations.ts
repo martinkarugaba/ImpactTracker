@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 import "dotenv/config";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
 import { sql } from "drizzle-orm";
 import fs from "fs";
 import path from "path";
@@ -10,8 +10,8 @@ if (!process.env.DATABASE_URL) {
   throw new Error("DATABASE_URL is not set");
 }
 
-const client = postgres(process.env.DATABASE_URL, { ssl: true });
-const db = drizzle(client);
+const neonSql = neon(process.env.DATABASE_URL);
+const db = drizzle(neonSql);
 
 async function applyMigrations() {
   try {
@@ -42,9 +42,14 @@ async function applyMigrations() {
         );
 
         try {
-          // For manual migrations, you might want to apply them selectively
-          // This is just a framework - you would add specific logic here
-          console.log(`✓ Migration ${file} checked`);
+          // Apply only the targeted, idempotent SQL needed to fix casting
+          if (file === "20251002_cast_vocational_arrays.sql") {
+            console.log(`Applying migration ${file}...`);
+            await db.execute(sql.raw(_migrationContent));
+            console.log(`✓ Migration ${file} applied`);
+          } else {
+            console.log(`✓ Migration ${file} checked`);
+          }
         } catch (error) {
           console.warn(`⚠️  Warning applying migration ${file}:`, error);
         }
@@ -63,7 +68,23 @@ async function applyMigrations() {
     `);
 
     console.log("Current participants table structure:");
-    participantsColumns.forEach(col => {
+    const rows: Array<{
+      column_name: string;
+      data_type: string;
+      is_nullable: string;
+      column_default: string | null;
+    }> =
+      (
+        participantsColumns as unknown as {
+          rows: Array<{
+            column_name: string;
+            data_type: string;
+            is_nullable: string;
+            column_default: string | null;
+          }>;
+        }
+      ).rows ?? [];
+    rows.forEach(col => {
       console.log(
         `  ${col.column_name}: ${col.data_type}${col.is_nullable === "YES" ? " NULL" : " NOT NULL"}`
       );
@@ -74,10 +95,8 @@ async function applyMigrations() {
     console.error("❌ Migration failed:", error);
     throw error;
   } finally {
-    await client.end();
+    // Neon HTTP client has no connection to close
   }
 }
-
-applyMigrations();
 
 applyMigrations();

@@ -65,9 +65,6 @@ export function ActivitiesDataTable({
 
   return (
     <div className="space-y-4">
-      {/* <Card>
-        <CardContent className="p-0">
-          Table Content */}
       <TableContent
         data={data}
         pagination={pagination}
@@ -81,8 +78,6 @@ export function ActivitiesDataTable({
         columnVisibility={columnVisibility}
         onColumnVisibilityChange={() => {}} // Handle at parent level
       />
-      {/* </CardContent>
-      </Card> */}
 
       {/* Pagination */}
       <PaginationControls

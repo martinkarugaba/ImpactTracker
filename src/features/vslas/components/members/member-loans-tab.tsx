@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, DollarSign, Calendar, TrendingUp } from "lucide-react";
 import { DataTable } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "../../utils";
 import { VSLAMember } from "../../actions/vsla-members";
 import { VSLALoan, VSLALoanPayment } from "../../schemas/enhanced-vsla-drizzle";
 import {

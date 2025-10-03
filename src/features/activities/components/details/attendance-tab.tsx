@@ -54,6 +54,7 @@ import {
   useGenerateActivitySessions,
   useSessionAttendance,
   useUpdateActivitySession,
+  useDeleteActivitySession,
 } from "../../hooks/use-activities";
 import { createParticipantsTableColumns } from "./participants-table-columns";
 import { EditParticipantDialog } from "@/features/participants/components/edit-participant-dialog";
@@ -116,6 +117,27 @@ export function AttendanceTab({
 
   // Hook for updating session status
   const updateSession = useUpdateActivitySession();
+  const deleteSession = useDeleteActivitySession();
+
+  const handleDeleteSession = async (sessionId: string) => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this session? This action cannot be undone and will also delete all attendance records for this session."
+      )
+    ) {
+      try {
+        const result = await deleteSession.mutateAsync({ sessionId });
+        if (result.success) {
+          toast.success("Session deleted successfully");
+        } else {
+          toast.error(result.error || "Failed to delete session");
+        }
+      } catch (error) {
+        console.error("Error deleting session:", error);
+        toast.error("Failed to delete session");
+      }
+    }
+  };
 
   // Dialog state management
   const [editingParticipant, setEditingParticipant] =
@@ -346,9 +368,7 @@ export function AttendanceTab({
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onClick={() => {
-                    // TODO: Implement session deletion
-                  }}
+                  onClick={() => handleDeleteSession(session.id)}
                   className="text-red-600"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
@@ -617,7 +637,7 @@ export function AttendanceTab({
 
         <TabsContent value="attendance" className="mt-6">
           {/* Comprehensive Attendance Metrics */}
-          <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card mb-6 grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
+          <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card mb-6 grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             <MetricCard
               title="Total Participants"
               value={stats.total}
@@ -658,6 +678,74 @@ export function AttendanceTab({
                 description: "Awaiting update",
               }}
             />
+
+            {/* Session-Specific Attendance Summary (when a session is selected) */}
+            {selectedSessionId !== "all" && (
+              <>
+                <MetricCard
+                  title="Session Attended"
+                  value={
+                    isLoadingSessionAttendance
+                      ? "..."
+                      : sessionAttendanceResponse?.data?.filter(
+                          a => a.attendance_status === "attended"
+                        )?.length || 0
+                  }
+                  description={`Session ${sessions.find(s => s.id === selectedSessionId)?.session_number} present`}
+                  icon={<CheckCircle className="h-4 w-4 text-green-600" />}
+                  footer={{
+                    title: "Present today",
+                    description: "Attended session",
+                  }}
+                />
+                <MetricCard
+                  title="Session Absent"
+                  value={
+                    isLoadingSessionAttendance
+                      ? "..."
+                      : sessionAttendanceResponse?.data?.filter(
+                          a => a.attendance_status === "absent"
+                        )?.length || 0
+                  }
+                  description={`Session ${sessions.find(s => s.id === selectedSessionId)?.session_number} absent`}
+                  icon={<XCircle className="h-4 w-4 text-red-600" />}
+                  footer={{
+                    title: "Missing today",
+                    description: "Did not attend",
+                  }}
+                />
+                <MetricCard
+                  title="Session Late"
+                  value={
+                    isLoadingSessionAttendance
+                      ? "..."
+                      : sessionAttendanceResponse?.data?.filter(
+                          a => a.attendance_status === "late"
+                        )?.length || 0
+                  }
+                  description={`Session ${sessions.find(s => s.id === selectedSessionId)?.session_number} late arrivals`}
+                  icon={<Clock className="h-4 w-4 text-yellow-600" />}
+                  footer={{
+                    title: "Late arrivals",
+                    description: "Came late",
+                  }}
+                />
+                <MetricCard
+                  title="Session Total"
+                  value={
+                    isLoadingSessionAttendance
+                      ? "..."
+                      : sessionAttendanceResponse?.data?.length || 0
+                  }
+                  description={`Session ${sessions.find(s => s.id === selectedSessionId)?.session_number} total tracked`}
+                  icon={<Users className="h-4 w-4 text-blue-600" />}
+                  footer={{
+                    title: "Total tracked",
+                    description: "Session participants",
+                  }}
+                />
+              </>
+            )}
           </div>
 
           <Card>
@@ -787,63 +875,6 @@ export function AttendanceTab({
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {/* Attendance Summary for Selected Session */}
-                  {selectedSessionId !== "all" && (
-                    <div className="bg-muted/20 rounded-lg border p-4">
-                      <h4 className="mb-2 font-medium">
-                        Session{" "}
-                        {
-                          sessions.find(s => s.id === selectedSessionId)
-                            ?.session_number
-                        }{" "}
-                        Attendance Summary
-                        {isLoadingSessionAttendance && (
-                          <LoadingSpinner className="ml-2 inline-block h-4 w-4" />
-                        )}
-                      </h4>
-                      <div className="grid grid-cols-4 gap-4 text-sm">
-                        <div className="text-center">
-                          <div className="text-lg font-medium text-green-600">
-                            {isLoadingSessionAttendance
-                              ? "..."
-                              : sessionAttendanceResponse?.data?.filter(
-                                  a => a.attendance_status === "attended"
-                                ).length || 0}
-                          </div>
-                          <div className="text-muted-foreground">Attended</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-lg font-medium text-red-600">
-                            {isLoadingSessionAttendance
-                              ? "..."
-                              : sessionAttendanceResponse?.data?.filter(
-                                  a => a.attendance_status === "absent"
-                                ).length || 0}
-                          </div>
-                          <div className="text-muted-foreground">Absent</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-lg font-medium text-yellow-600">
-                            {isLoadingSessionAttendance
-                              ? "..."
-                              : sessionAttendanceResponse?.data?.filter(
-                                  a => a.attendance_status === "late"
-                                ).length || 0}
-                          </div>
-                          <div className="text-muted-foreground">Late</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-lg font-medium text-blue-600">
-                            {isLoadingSessionAttendance
-                              ? "..."
-                              : sessionAttendanceResponse?.data?.length || 0}
-                          </div>
-                          <div className="text-muted-foreground">Total</div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
                   {/* Enhanced Participants/Attendance Table */}
                   <DataTable
                     columns={participantColumns}

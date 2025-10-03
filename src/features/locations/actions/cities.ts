@@ -4,7 +4,6 @@ import { db } from "@/lib/db";
 import { cities } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { ApiResult } from "@/lib/utils";
 import {
   districts,
   counties,
@@ -12,6 +11,11 @@ import {
   municipalities,
 } from "@/lib/db/schema";
 import type { City } from "@/features/locations/components/data-table/cities-columns";
+
+// API Result type for consistent response format
+type ApiResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: string };
 
 export async function createCity(formData: FormData) {
   try {

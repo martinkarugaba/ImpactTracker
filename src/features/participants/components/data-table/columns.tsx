@@ -5,7 +5,8 @@ import { type Participant } from "../../types/types";
 import { type LocationNames } from "../../hooks/use-location-names";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { capitalizeWords, calculateAge, formatContact } from "@/lib/utils";
+import { capitalizeWords, formatContact } from "@/lib/utils";
+import { calculateAge } from "../../lib/age-calculator";
 import { Phone, Flag } from "lucide-react";
 import { ActionCell } from "./action-cell";
 

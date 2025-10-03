@@ -96,7 +96,7 @@ export const organizationMembers = pgTable("organization_members", {
   organization_id: uuid("organization_id")
     .references(() => organizations.id)
     .notNull(),
-  user_id: text("user_id").notNull(), // Clerk user ID
+  user_id: text("user_id").notNull(), // User ID from auth system
   role: userRole("role").notNull().default("organization_member"),
   last_accessed: timestamp("last_accessed"),
   created_at: timestamp("created_at").defaultNow(),
@@ -1043,6 +1043,9 @@ export const vslaMembers = pgTable("vsla_members", {
   vsla_id: uuid("vsla_id")
     .references(() => vslas.id)
     .notNull(),
+  participant_id: uuid("participant_id").references(() => participants.id, {
+    onDelete: "cascade",
+  }), // Link to participant table - nullable for backwards compatibility
   first_name: text("first_name").notNull(),
   last_name: text("last_name").notNull(),
   phone: text("phone").notNull(),
@@ -1055,6 +1058,41 @@ export const vslaMembers = pgTable("vsla_members", {
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
 });
+
+export const vslaMonthlyData = pgTable(
+  "vsla_monthly_data",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    vsla_id: uuid("vsla_id")
+      .references(() => vslas.id, { onDelete: "cascade" })
+      .notNull(),
+
+    // Period Information
+    month: varchar("month", { length: 20 }).notNull(), // January, February, etc.
+    year: varchar("year", { length: 4 }).notNull(), // 2024, 2025, etc.
+
+    // Monthly Metrics
+    total_loans: integer("total_loans").notNull().default(0), // Number of loans disbursed in the month
+    total_savings: integer("total_savings").notNull().default(0), // Total savings amount for the month
+    total_meetings: integer("total_meetings").notNull().default(0), // Number of meetings held in the month
+
+    // Optional detailed information
+    notes: text("notes"),
+
+    // System fields
+    created_by: text("created_by"),
+    created_at: timestamp("created_at").defaultNow(),
+    updated_at: timestamp("updated_at").defaultNow(),
+  },
+  table => ({
+    // Ensure unique month/year per VSLA
+    uniqueVslaMonthYear: unique("unique_vsla_month_year").on(
+      table.vsla_id,
+      table.month,
+      table.year
+    ),
+  })
+);
 
 export const activityReportsRelations = relations(
   activityReports,
@@ -1165,6 +1203,7 @@ export const vslasRelations = relations(vslas, ({ one, many }) => ({
     references: [projects.id],
   }),
   members: many(vslaMembers),
+  monthlyData: many(vslaMonthlyData),
 }));
 
 export const vslaMembersRelations = relations(vslaMembers, ({ one }) => ({
@@ -1172,4 +1211,18 @@ export const vslaMembersRelations = relations(vslaMembers, ({ one }) => ({
     fields: [vslaMembers.vsla_id],
     references: [vslas.id],
   }),
+  participant: one(participants, {
+    fields: [vslaMembers.participant_id],
+    references: [participants.id],
+  }),
 }));
+
+export const vslaMonthlyDataRelations = relations(
+  vslaMonthlyData,
+  ({ one }) => ({
+    vsla: one(vslas, {
+      fields: [vslaMonthlyData.vsla_id],
+      references: [vslas.id],
+    }),
+  })
+);

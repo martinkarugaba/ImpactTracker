@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "next-auth/react";
 import {
   Dialog,
   DialogContent,
@@ -56,7 +56,7 @@ export function DailyAttendanceDialog({
   sessionNumber,
   children,
 }: DailyAttendanceDialogProps) {
-  const { user } = useUser();
+  const { data: session } = useSession();
   const [editingRecord, setEditingRecord] = useState<string | null>(null);
   const [tempRecords, setTempRecords] = useState<Record<string, TempRecord>>(
     {}
@@ -161,7 +161,7 @@ export function DailyAttendanceDialog({
           ? new Date(`1970-01-01T${tempRecord.check_out_time}:00`)
           : undefined,
         notes: tempRecord.notes,
-        recorded_by: user?.emailAddresses[0]?.emailAddress ?? "system",
+        recorded_by: session?.user?.email ?? "system",
       };
 
       await markAttendance.mutateAsync({

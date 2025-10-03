@@ -4,7 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/features/themes/components/mode-toggle";
 import { ThemeSelector } from "@/features/themes/components/theme-selector";
 import { Separator } from "@/components/ui/separator";
@@ -24,7 +23,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigation } from "@/features/dashboard/contexts/navigation-context";
-import { ArrowLeft } from "lucide-react";
 
 interface SiteHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   heading?: string;
@@ -38,7 +36,7 @@ export function SiteHeader({
   className,
   ...props
 }: Omit<SiteHeaderProps, "title">) {
-  const { breadcrumbs, showBackButton, goBack } = useNavigation();
+  const { breadcrumbs } = useNavigation();
 
   const renderBreadcrumbs = () => {
     if (breadcrumbs.length === 0) return null;
@@ -111,59 +109,29 @@ export function SiteHeader({
   return (
     <header
       className={cn(
-        "bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full rounded-none border-b backdrop-blur transition-[margin] duration-200 ease-linear group-data-[state=collapsed]:ml-0 md:rounded-t-2xl md:group-data-[state=expanded]:ml-64",
+        "bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full rounded-t-lg border-b backdrop-blur transition-[margin] duration-200 ease-linear group-data-[state=collapsed]:ml-0 md:rounded-t-2xl md:group-data-[state=expanded]:ml-64",
         "px-2 sm:px-4 md:px-6",
         className
       )}
       {...props}
     >
-      <div className="container flex h-14 items-center">
+      <div className="container flex h-12 items-center">
         {/* Mobile: Show sidebar trigger and back button */}
         <div className="flex items-center gap-2 md:hidden">
           <SidebarTrigger />
-          {showBackButton && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={goBack}
-              className="h-8 w-8 p-0"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span className="sr-only">Go back</span>
-            </Button>
-          )}
+          <Separator orientation="vertical" className="mx-3 h-4" />
         </div>
 
-        {/* Desktop: Show sidebar trigger and back button */}
+        {/* Desktop: Show sidebar trigger */}
         <div className="hidden md:flex md:items-center md:gap-2">
           <SidebarTrigger />
-          {showBackButton && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={goBack}
-              className="h-8 gap-2 px-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back
-            </Button>
-          )}
         </div>
-
-        <Separator orientation="vertical" className="mx-3 h-4" />
 
         <div className="flex flex-1 items-center justify-between">
           {/* Navigation section */}
           <div className="flex flex-1 flex-col gap-1">
-            {/* Breadcrumbs - show on desktop or when no back button on mobile */}
-            <div
-              className={cn(
-                "flex items-center",
-                showBackButton ? "hidden md:flex" : "flex"
-              )}
-            >
-              {renderBreadcrumbs()}
-            </div>
+            {/* Breadcrumbs */}
+            <div className="flex items-center">{renderBreadcrumbs()}</div>
           </div>
 
           {/* Theme controls */}

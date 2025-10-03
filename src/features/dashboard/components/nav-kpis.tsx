@@ -50,10 +50,10 @@ export function NavDocuments({
   if (!mounted) {
     return (
       <SidebarGroup>
-        <SidebarGroupLabel className="font-semibold text-emerald-600 dark:text-emerald-400">
+        <SidebarGroupLabel className="text-primary font-semibold">
           My KPIs
         </SidebarGroupLabel>
-        <SidebarGroupContent className="ml-2 space-y-1 border-l-2 border-emerald-300/30 pl-4 dark:border-emerald-600/30">
+        <SidebarGroupContent>
           <SidebarMenu>
             {filteredItems.map(item => (
               <SidebarMenuItem key={item.name}>
@@ -74,29 +74,27 @@ export function NavDocuments({
     >
       <SidebarGroup>
         <SidebarGroupLabel asChild>
-          <CollapsibleTrigger className="font-semibold text-emerald-600 transition-colors hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">
+          <CollapsibleTrigger className="text-primary hover:text-primary/80 font-semibold transition-colors">
             My KPIs
-            <ChevronDown className="text-emerald-500 transition-all duration-200 group-data-[state=open]/collapsible:rotate-180" />
+            <ChevronDown className="text-primary/70 ml-auto transition-all duration-200 group-data-[state=open]/collapsible:rotate-180" />
           </CollapsibleTrigger>
         </SidebarGroupLabel>
         <CollapsibleContent>
-          <SidebarGroupContent className="ml-2 space-y-1 border-l-2 border-emerald-300/30 pl-4 dark:border-emerald-600/30">
+          <SidebarGroupContent>
             <SidebarMenu>
               {filteredItems.map(item => (
                 <SidebarMenuItem key={item.name}>
                   <SidebarMenuButton
                     asChild
                     tooltip={item.name}
-                    className="border-l-2 border-transparent transition-all duration-200 hover:border-emerald-300 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50 dark:hover:border-emerald-600 dark:hover:from-emerald-900/20 dark:hover:to-blue-900/20"
+                    className="hover:from-primary/10 hover:to-primary/5 transition-all duration-200 hover:bg-gradient-to-r"
                   >
                     <Link
                       href={item.url}
                       title={item.name}
-                      className="flex items-center gap-3"
+                      className="flex items-center gap-3 group-data-[state=closed]/collapsible:mx-4"
                     >
-                      {item.icon && (
-                        <item.icon className="text-emerald-600 dark:text-emerald-400" />
-                      )}
+                      {item.icon && <item.icon className="text-primary/80" />}
                       <span className="text-foreground/90 hover:text-foreground">
                         {item.name}
                       </span>

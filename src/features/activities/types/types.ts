@@ -11,6 +11,7 @@ import {
 export type Activity = InferSelectModel<typeof activities> & {
   organizationName?: string;
   projectName?: string;
+  projectAcronym?: string;
   clusterName?: string;
   participantCount?: number;
 };

@@ -87,7 +87,6 @@ Ensured that:
 ## Files Modified
 
 1. **`/src/features/participants/actions/index.ts`**:
-
    - Added `count` import from drizzle-orm
    - Replaced inefficient count query with SQL COUNT
    - Added performance logging

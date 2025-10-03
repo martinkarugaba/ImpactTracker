@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
-import { VSLAParticipantSelectionDialog } from "@/components/shared/vsla-participant-selection-dialog";
+import { ParticipantSelectionDialog } from "@/components/shared/participant-selection";
 import { createVSLAMember } from "../../actions/vsla-members";
 import { Participant } from "@/features/participants/types/types";
 import { toast } from "sonner";
@@ -11,12 +11,16 @@ import { toast } from "sonner";
 interface AddParticipantToVSLADialogProps {
   vslaId: string;
   clusterId: string;
+  organizationId?: string;
+  projectId?: string;
   onSuccess?: () => void;
 }
 
 export function AddParticipantToVSLADialog({
   vslaId,
   clusterId,
+  organizationId,
+  projectId,
   onSuccess,
 }: AddParticipantToVSLADialogProps) {
   const [isSelectionDialogOpen, setIsSelectionDialogOpen] = useState(false);
@@ -40,12 +44,13 @@ export function AddParticipantToVSLADialog({
 
       const results = await Promise.all(promises);
       const successful = results.filter(result => result.success).length;
+      const failed = results.length - successful;
 
       if (successful > 0) {
         toast.success(
           `Successfully added ${successful} participant${
             successful > 1 ? "s" : ""
-          } to VSLA`
+          } to VSLA${failed > 0 ? `. ${failed} failed to add.` : ""}`
         );
         onSuccess?.();
       } else {
@@ -68,13 +73,18 @@ export function AddParticipantToVSLADialog({
         Add Participants
       </Button>
 
-      <VSLAParticipantSelectionDialog
+      <ParticipantSelectionDialog
         open={isSelectionDialogOpen}
         onOpenChange={setIsSelectionDialogOpen}
         onParticipantsSelected={handleParticipantsSelected}
-        clusterId={clusterId}
+        context={{
+          cluster_id: clusterId,
+          organization_id: organizationId,
+          project_id: projectId,
+        }}
         title="Add Participants to VSLA"
-        description="Select existing participants to add as members to this VSLA."
+        description="Search existing participants from your database first. If the participant doesn't exist, you can create a new one."
+        allowCreateNew={true}
       />
     </>
   );

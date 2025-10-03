@@ -102,7 +102,7 @@ pnpm db:studio            # Database GUI
 
 ### Authentication
 
-- NextAuth.js + Clerk for dual auth support
+- NextAuth.js for auth
 - Role-based access: `super_admin`, `cluster_manager`, etc.
 - Session checks in server actions
 

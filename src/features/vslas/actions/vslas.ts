@@ -1,8 +1,14 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { vslas, organizations, clusters, projects } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import {
+  vslas,
+  organizations,
+  clusters,
+  projects,
+  vslaMembers,
+} from "@/lib/db/schema";
+import { eq, inArray } from "drizzle-orm";
 import { CreateVSLAInput, UpdateVSLAInput } from "../schemas/vsla-schema";
 import { getVSLAsFallback, checkVSLASchemaStatus } from "./vslas-fallback";
 
@@ -64,6 +70,24 @@ export async function deleteVSLA(id: string) {
   } catch (error) {
     console.error("Error deleting VSLA:", error);
     return { success: false, error: "Failed to delete VSLA" };
+  }
+}
+
+export async function deleteVSLAs(ids: string[]) {
+  try {
+    const deletedVSLAs = await db
+      .delete(vslas)
+      .where(inArray(vslas.id, ids))
+      .returning();
+
+    return {
+      success: true,
+      data: deletedVSLAs,
+      message: `Successfully deleted ${deletedVSLAs.length} VSLA(s)`,
+    };
+  } catch (error) {
+    console.error("Error deleting VSLAs:", error);
+    return { success: false, error: "Failed to delete VSLAs" };
   }
 }
 
@@ -140,7 +164,28 @@ export async function getVSLAs() {
       .leftJoin(clusters, eq(vslas.cluster_id, clusters.id))
       .leftJoin(projects, eq(vslas.project_id, projects.id));
 
-    return { success: true, data: vslaList };
+    // Fetch members for all VSLAs
+    const allMembers = await db.select().from(vslaMembers);
+
+    // Group members by VSLA ID
+    const membersByVSLA = allMembers.reduce(
+      (acc, member) => {
+        if (!acc[member.vsla_id]) {
+          acc[member.vsla_id] = [];
+        }
+        acc[member.vsla_id].push(member);
+        return acc;
+      },
+      {} as Record<string, typeof allMembers>
+    );
+
+    // Add members to each VSLA
+    const vslaListWithMembers = vslaList.map(vsla => ({
+      ...vsla,
+      members: membersByVSLA[vsla.id] || [],
+    }));
+
+    return { success: true, data: vslaListWithMembers };
   } catch (error) {
     console.error("Error fetching VSLAs:", error);
 

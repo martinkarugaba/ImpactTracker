@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "../../utils";
 import { VSLA } from "../../types";
 
 interface VSLAFinancialOverviewProps {

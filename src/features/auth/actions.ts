@@ -8,7 +8,7 @@ import {
   organizations,
   clusterUsers,
 } from "@/lib/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 export async function getUserClusterId() {
   try {
@@ -35,19 +35,18 @@ export async function getUserClusterId() {
       return firstCluster?.id || null;
     }
 
-    // Cluster managers can access clusters they manage
-    if (user.role === "cluster_manager") {
-      const userCluster = await db.query.clusterUsers.findFirst({
-        where: and(
-          eq(clusterUsers.user_id, session.user.id),
-          eq(clusterUsers.role, "cluster_manager")
-        ),
-        columns: { cluster_id: true },
-      });
-      return userCluster?.cluster_id || null;
+    // Check if user is directly assigned to any cluster via clusterUsers table
+    // This covers cluster_managers and other users directly assigned to clusters
+    const userCluster = await db.query.clusterUsers.findFirst({
+      where: eq(clusterUsers.user_id, session.user.id),
+      columns: { cluster_id: true },
+    });
+
+    if (userCluster?.cluster_id) {
+      return userCluster.cluster_id;
     }
 
-    // For regular users, get cluster through organization membership
+    // For users not directly assigned to a cluster, get cluster through organization membership
     const organizationId = await getOrganizationId();
     if (!organizationId) {
       return null;
