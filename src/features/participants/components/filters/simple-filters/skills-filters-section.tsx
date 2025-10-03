@@ -15,10 +15,12 @@ import {
 
 interface SkillsFiltersSectionProps {
   isLoading?: boolean;
+  clusterId?: string;
 }
 
 export function SkillsFiltersSection({
   isLoading = false,
+  clusterId,
 }: SkillsFiltersSectionProps) {
   const filters = useAtomValue(participantFiltersAtom);
   const updateFilter = useSetAtom(updateFilterAtom);
@@ -34,7 +36,7 @@ export function SkillsFiltersSection({
     const loadSkills = async () => {
       setIsLoadingSkills(true);
       try {
-        const skills = await getUniqueSkills();
+        const skills = await getUniqueSkills(clusterId);
         console.log("🎯 Loaded skills:", skills);
         setSkillsOptions(skills);
       } catch (error) {
@@ -45,7 +47,7 @@ export function SkillsFiltersSection({
     };
 
     loadSkills();
-  }, []);
+  }, [clusterId]);
 
   const handleFilterUpdate = (
     key: keyof ParticipantFiltersType,
@@ -57,11 +59,12 @@ export function SkillsFiltersSection({
 
   // Helper function to convert skills array to ComboboxOption format
   const convertSkillsToOptions = (skills: string[]): ComboboxOption[] => {
+    const sanitizeLabel = (s: string) => s.replace(/["'{}]/g, "").trim();
     return [
       { value: "all", label: "All Skills" },
       ...skills.map(skill => ({
         value: skill,
-        label: skill,
+        label: sanitizeLabel(skill),
       })),
     ];
   };

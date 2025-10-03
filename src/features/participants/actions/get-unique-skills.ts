@@ -1,6 +1,6 @@
 "use server";
 
-import { sql } from "drizzle-orm";
+import { sql, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { participants } from "@/lib/db/schema";
 
@@ -14,12 +14,14 @@ export interface SkillsOptions {
  * Get all unique skills from the database for filter options
  * Updated to match the improved filtering logic with better data handling
  */
-export async function getUniqueSkills(): Promise<SkillsOptions> {
+export async function getUniqueSkills(
+  clusterId?: string
+): Promise<SkillsOptions> {
   try {
     console.log("🔍 Fetching unique skills from database...");
 
-    // Get all participants with their skills arrays
-    const allParticipants = await db
+    // Get all participants with their skills arrays, scoped by cluster when provided
+    const baseQuery = db
       .select({
         vocationalSkillsParticipations:
           participants.vocationalSkillsParticipations,
@@ -32,13 +34,18 @@ export async function getUniqueSkills(): Promise<SkillsOptions> {
       })
       .from(participants);
 
+    const allParticipants = clusterId
+      ? await baseQuery.where(eq(participants.cluster_id, clusterId))
+      : await baseQuery;
+
     console.log(
       `📊 Processing skills from ${allParticipants.length} participants`
     );
 
     // Extract unique skills from arrays with improved data handling
-    const vocationalSkillsSet = new Set<string>();
-    const softSkillsSet = new Set<string>();
+    // Use maps keyed by cleaned lowercase token to deduplicate variants
+    const vocationalSkillsMap = new Map<string, string>();
+    const softSkillsMap = new Map<string, string>();
 
     // Helper function to process skills arrays and extract individual skills
     const processSkillsArray = (
@@ -120,9 +127,13 @@ export async function getUniqueSkills(): Promise<SkillsOptions> {
 
       allVocationalSkills.forEach(skill => {
         if (skill && skill.trim()) {
-          // Normalize the skill name for consistency
-          const normalizedSkill = skill.trim();
-          vocationalSkillsSet.add(normalizedSkill);
+          // Normalize for dedupe but keep original for value display
+          const original = skill.trim();
+          const cleaned = original.replace(/["'{}]/g, "");
+          const key = cleaned.toLowerCase();
+          if (!vocationalSkillsMap.has(key)) {
+            vocationalSkillsMap.set(key, original);
+          }
         }
       });
 
@@ -135,19 +146,22 @@ export async function getUniqueSkills(): Promise<SkillsOptions> {
 
       allSoftSkills.forEach(skill => {
         if (skill && skill.trim()) {
-          // Normalize the skill name for consistency
-          const normalizedSkill = skill.trim();
-          softSkillsSet.add(normalizedSkill);
+          const original = skill.trim();
+          const cleaned = original.replace(/["'{}]/g, "");
+          const key = cleaned.toLowerCase();
+          if (!softSkillsMap.has(key)) {
+            softSkillsMap.set(key, original);
+          }
         }
       });
     });
 
     // Convert sets to sorted arrays with case-insensitive sorting
-    const vocationalSkills = Array.from(vocationalSkillsSet).sort((a, b) =>
-      a.toLowerCase().localeCompare(b.toLowerCase())
+    const vocationalSkills = Array.from(vocationalSkillsMap.values()).sort(
+      (a, b) => a.toLowerCase().localeCompare(b.toLowerCase())
     );
 
-    const softSkills = Array.from(softSkillsSet).sort((a, b) =>
+    const softSkills = Array.from(softSkillsMap.values()).sort((a, b) =>
       a.toLowerCase().localeCompare(b.toLowerCase())
     );
 

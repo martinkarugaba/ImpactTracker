@@ -15,9 +15,13 @@ import {
 
 interface SkillsFiltersProps {
   isLoading?: boolean;
+  clusterId?: string;
 }
 
-export function SkillsFilters({ isLoading = false }: SkillsFiltersProps) {
+export function SkillsFilters({
+  isLoading = false,
+  clusterId,
+}: SkillsFiltersProps) {
   const filters = useAtomValue(participantFiltersAtom);
   const updateFilter = useSetAtom(updateFilterAtom);
   const [skillsOptions, setSkillsOptions] = useState<SkillsOptions>({
@@ -32,7 +36,7 @@ export function SkillsFilters({ isLoading = false }: SkillsFiltersProps) {
     const loadSkills = async () => {
       setIsLoadingSkills(true);
       try {
-        const skills = await getUniqueSkills();
+        const skills = await getUniqueSkills(clusterId);
         console.log("🎯 Loaded skills for inline filters:", skills);
         setSkillsOptions(skills);
       } catch (error) {
@@ -43,7 +47,7 @@ export function SkillsFilters({ isLoading = false }: SkillsFiltersProps) {
     };
 
     loadSkills();
-  }, []);
+  }, [clusterId]);
 
   const handleFilterUpdate = (
     key: keyof ParticipantFiltersType,
@@ -55,13 +59,18 @@ export function SkillsFilters({ isLoading = false }: SkillsFiltersProps) {
 
   // Helper function to convert skills array to ComboboxOption format
   const convertSkillsToOptions = (skills: string[]): ComboboxOption[] => {
-    return [
-      { value: "all", label: "All" },
-      ...skills.map(skill => ({
-        value: skill,
-        label: skill,
-      })),
-    ];
+    const sanitizeLabel = (s: string) => s.replace(/["'{}]/g, "").trim();
+    const seen = new Set<string>();
+    const options: ComboboxOption[] = [{ value: "all", label: "All" }];
+    for (const skill of skills) {
+      const label = sanitizeLabel(skill);
+      const key = label.toLowerCase();
+      if (key && !seen.has(key)) {
+        seen.add(key);
+        options.push({ value: skill, label });
+      }
+    }
+    return options;
   };
 
   const isDisabled = isLoadingSkills || isLoading;

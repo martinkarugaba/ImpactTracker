@@ -221,10 +221,7 @@ export function ParticipantsTab({
               {/* Management Actions Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    size="sm"
-                    className="bg-slate-600 text-white hover:bg-slate-700 focus:ring-2 focus:ring-slate-500 focus:ring-offset-1 dark:bg-slate-700 dark:hover:bg-slate-800"
-                  >
+                  <Button variant="outline" size="sm">
                     <Settings className="h-4 w-4" />
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
@@ -251,8 +248,8 @@ export function ParticipantsTab({
 
               <Button
                 onClick={() => setIsImportDialogOpen(true)}
+                variant="outline"
                 size="sm"
-                className="bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:bg-blue-700 dark:hover:bg-blue-800"
               >
                 <Upload className="mr-2 h-4 w-4" />
                 Import from Excel
@@ -264,16 +261,16 @@ export function ParticipantsTab({
                     debugExcelExport();
                     toast.success("Debug info logged to console");
                   }}
+                  variant="outline"
                   size="sm"
-                  className="bg-amber-600 text-white hover:bg-amber-700 focus:ring-2 focus:ring-amber-500 focus:ring-offset-1 dark:bg-amber-700 dark:hover:bg-amber-800"
                 >
                   🔍 Debug Excel
                 </Button>
               )}
               <Button
                 onClick={() => setIsExportDialogOpen(true)}
+                variant="outline"
                 size="sm"
-                className="bg-purple-600 text-white hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-1 dark:bg-purple-700 dark:hover:bg-purple-800"
               >
                 <Download className="mr-2 h-4 w-4" />
                 Export
@@ -289,8 +286,8 @@ export function ParticipantsTab({
                       dataTableRef.current?.clearSelection();
                       setSelectedParticipants([]);
                     }}
+                    variant="destructive"
                     size="sm"
-                    className="bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-1 dark:bg-red-700 dark:hover:bg-red-800"
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete Selected ({selectedParticipants.length})
@@ -300,8 +297,8 @@ export function ParticipantsTab({
                       dataTableRef.current?.clearSelection();
                       setSelectedParticipants([]);
                     }}
+                    variant="outline"
                     size="sm"
-                    className="bg-gray-600 text-white hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 focus:ring-offset-1 dark:bg-gray-700 dark:hover:bg-gray-800"
                   >
                     Clear Selection
                   </Button>
@@ -313,10 +310,7 @@ export function ParticipantsTab({
             <div className="flex items-center gap-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    size="sm"
-                    className="bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 dark:bg-indigo-700 dark:hover:bg-indigo-800"
-                  >
+                  <Button variant="outline" size="sm">
                     <LayoutGrid className="mr-2 h-4 w-4" />
                     <span className="hidden lg:inline">Columns</span>
                     <span className="lg:hidden">Columns</span>
@@ -363,6 +357,7 @@ export function ParticipantsTab({
           participants={participants}
           isLoading={isParticipantsLoading}
           isFiltering={isFiltering}
+          clusterId={clusterId}
         />
 
         {/* Pagination Controls - Right above table */}

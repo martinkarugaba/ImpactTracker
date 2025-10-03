@@ -290,28 +290,33 @@ export function getParticipantColumns({
         const statusMap = {
           employed: {
             label: "Employed",
-            color:
-              "bg-green-600/80 text-white hover:bg-green-700/80 dark:bg-green-700/80 dark:hover:bg-green-800/80",
+            variant: "outline" as const,
+            className:
+              "border-green-300 bg-green-50/50 text-green-700 hover:bg-green-50 dark:border-green-600 dark:bg-green-950/20 dark:text-green-400",
           },
           unemployed: {
             label: "Unemployed",
-            color:
-              "bg-red-600/80 text-white hover:bg-red-700/80 dark:bg-red-700/80 dark:hover:bg-red-800/80",
+            variant: "outline" as const,
+            className:
+              "border-red-300 bg-red-50/50 text-red-700 hover:bg-red-50 dark:border-red-600 dark:bg-red-950/20 dark:text-red-400",
           },
           "self-employed": {
             label: "Self-Employed",
-            color:
-              "bg-blue-600/80 text-white hover:bg-blue-700/80 dark:bg-blue-700/80 dark:hover:bg-blue-800/80",
+            variant: "outline" as const,
+            className:
+              "border-blue-300 bg-blue-50/50 text-blue-700 hover:bg-blue-50 dark:border-blue-600 dark:bg-blue-950/20 dark:text-blue-400",
           },
           student: {
             label: "Student",
-            color:
-              "bg-purple-600/80 text-white hover:bg-purple-700/80 dark:bg-purple-700/80 dark:hover:bg-purple-800/80",
+            variant: "outline" as const,
+            className:
+              "border-purple-300 bg-purple-50/50 text-purple-700 hover:bg-purple-50 dark:border-purple-600 dark:bg-purple-950/20 dark:text-purple-400",
           },
           retired: {
             label: "Retired",
-            color:
-              "bg-gray-600/80 text-white hover:bg-gray-700/80 dark:bg-gray-700/80 dark:hover:bg-gray-800/80",
+            variant: "outline" as const,
+            className:
+              "border-gray-300 bg-gray-50/50 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-950/20 dark:text-gray-400",
           },
         };
 
@@ -320,14 +325,17 @@ export function getParticipantColumns({
 
         if (!statusInfo) {
           return (
-            <Badge className="max-w-[150px] truncate">
+            <Badge variant="outline" className="max-w-[150px] truncate">
               {capitalizeWords(employmentStatus)}
             </Badge>
           );
         }
 
         return (
-          <Badge className={`${statusInfo.color} max-w-[150px] truncate`}>
+          <Badge
+            variant={statusInfo.variant}
+            className={`${statusInfo.className} max-w-[150px] truncate`}
+          >
             {statusInfo.label}
           </Badge>
         );
@@ -344,15 +352,21 @@ export function getParticipantColumns({
 
         if (isSubscribed) {
           return (
-            <Badge className="bg-green-600/80 text-white hover:bg-green-700/80 dark:bg-green-700/80 dark:hover:bg-green-800/80">
+            <Badge
+              variant="outline"
+              className="border-green-300 bg-green-50/50 text-green-700 hover:bg-green-50 dark:border-green-600 dark:bg-green-950/20 dark:text-green-400"
+            >
               ✓ Member
             </Badge>
           );
         }
 
         return (
-          <Badge className="bg-gray-600/80 text-white hover:bg-gray-700/80 dark:bg-gray-700/80 dark:hover:bg-gray-800/80">
-            Not Member
+          <Badge
+            variant="outline"
+            className="border-gray-300 bg-gray-50/50 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-950/20 dark:text-gray-400"
+          >
+            ✗ Not Member
           </Badge>
         );
       },
@@ -445,33 +459,42 @@ export function getParticipantColumns({
         const statusMap = {
           single: {
             label: "Single",
-            color:
-              "bg-blue-600/80 text-white hover:bg-blue-700/80 dark:bg-blue-700/80 dark:hover:bg-blue-800/80",
+            variant: "outline" as const,
+            className:
+              "border-blue-300 bg-blue-50/50 text-blue-700 hover:bg-blue-50 dark:border-blue-600 dark:bg-blue-950/20 dark:text-blue-400",
           },
           married: {
             label: "Married",
-            color:
-              "bg-green-600/80 text-white hover:bg-green-700/80 dark:bg-green-700/80 dark:hover:bg-green-800/80",
+            variant: "outline" as const,
+            className:
+              "border-green-300 bg-green-50/50 text-green-700 hover:bg-green-50 dark:border-green-600 dark:bg-green-950/20 dark:text-green-400",
           },
           divorced: {
             label: "Divorced",
-            color:
-              "bg-orange-600/80 text-white hover:bg-orange-700/80 dark:bg-orange-700/80 dark:hover:bg-orange-800/80",
+            variant: "outline" as const,
+            className:
+              "border-orange-300 bg-orange-50/50 text-orange-700 hover:bg-orange-50 dark:border-orange-600 dark:bg-orange-950/20 dark:text-orange-400",
           },
           widowed: {
             label: "Widowed",
-            color:
-              "bg-gray-600/80 text-white hover:bg-gray-700/80 dark:bg-gray-700/80 dark:hover:bg-gray-800/80",
+            variant: "outline" as const,
+            className:
+              "border-gray-300 bg-gray-50/50 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-950/20 dark:text-gray-400",
           },
         };
 
         const statusInfo = statusMap[maritalStatus as keyof typeof statusMap];
         const displayText = statusInfo?.label || capitalizeWords(maritalStatus);
-        const colorClass =
-          statusInfo?.color ||
-          "bg-gray-600/80 text-white hover:bg-gray-700/80 dark:bg-gray-700/80 dark:hover:bg-gray-800/80";
+        const variant = statusInfo?.variant || ("outline" as const);
+        const className =
+          statusInfo?.className ||
+          "border-gray-300 bg-gray-50/50 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-950/20 dark:text-gray-400";
 
-        return <Badge className={colorClass}>{displayText}</Badge>;
+        return (
+          <Badge variant={variant} className={className}>
+            {displayText}
+          </Badge>
+        );
       },
     },
     {
@@ -487,38 +510,48 @@ export function getParticipantColumns({
         const levelMap = {
           none: {
             label: "None",
-            color:
-              "bg-red-600/80 text-white hover:bg-red-700/80 dark:bg-red-700/80 dark:hover:bg-red-800/80",
+            variant: "outline" as const,
+            className:
+              "border-red-300 bg-red-50/50 text-red-700 hover:bg-red-50 dark:border-red-600 dark:bg-red-950/20 dark:text-red-400",
           },
           primary: {
             label: "Primary",
-            color:
-              "bg-yellow-600/80 text-white hover:bg-yellow-700/80 dark:bg-yellow-700/80 dark:hover:bg-yellow-800/80",
+            variant: "outline" as const,
+            className:
+              "border-yellow-300 bg-yellow-50/50 text-yellow-700 hover:bg-yellow-50 dark:border-yellow-600 dark:bg-yellow-950/20 dark:text-yellow-400",
           },
           secondary: {
             label: "Secondary",
-            color:
-              "bg-blue-600/80 text-white hover:bg-blue-700/80 dark:bg-blue-700/80 dark:hover:bg-blue-800/80",
+            variant: "outline" as const,
+            className:
+              "border-blue-300 bg-blue-50/50 text-blue-700 hover:bg-blue-50 dark:border-blue-600 dark:bg-blue-950/20 dark:text-blue-400",
           },
           tertiary: {
             label: "Tertiary",
-            color:
-              "bg-purple-600/80 text-white hover:bg-purple-700/80 dark:bg-purple-700/80 dark:hover:bg-purple-800/80",
+            variant: "outline" as const,
+            className:
+              "border-purple-300 bg-purple-50/50 text-purple-700 hover:bg-purple-50 dark:border-purple-600 dark:bg-purple-950/20 dark:text-purple-400",
           },
           university: {
             label: "University",
-            color:
-              "bg-green-600/80 text-white hover:bg-green-700/80 dark:bg-green-700/80 dark:hover:bg-green-800/80",
+            variant: "outline" as const,
+            className:
+              "border-green-300 bg-green-50/50 text-green-700 hover:bg-green-50 dark:border-green-600 dark:bg-green-950/20 dark:text-green-400",
           },
         };
 
         const levelInfo = levelMap[educationLevel as keyof typeof levelMap];
         const displayText = levelInfo?.label || capitalizeWords(educationLevel);
-        const colorClass =
-          levelInfo?.color ||
-          "bg-gray-600/80 text-white hover:bg-gray-700/80 dark:bg-gray-700/80 dark:hover:bg-gray-800/80";
+        const variant = levelInfo?.variant || ("outline" as const);
+        const className =
+          levelInfo?.className ||
+          "border-gray-300 bg-gray-50/50 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-950/20 dark:text-gray-400";
 
-        return <Badge className={colorClass}>{displayText}</Badge>;
+        return (
+          <Badge variant={variant} className={className}>
+            {displayText}
+          </Badge>
+        );
       },
     },
     {
