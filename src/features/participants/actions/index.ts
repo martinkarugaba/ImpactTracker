@@ -311,15 +311,15 @@ export async function getParticipants(
           sql`(
             EXISTS (
               SELECT 1 FROM unnest(${participants.vocationalSkillsParticipations}) AS skill
-              WHERE LOWER(skill) = LOWER(${skillToMatch})
+              WHERE LOWER(skill) = LOWER(${skillToMatch}) OR LOWER(skill) ILIKE '%' || LOWER(${skillToMatch}) || '%'
             ) OR
             EXISTS (
               SELECT 1 FROM unnest(${participants.vocationalSkillsCompletions}) AS skill
-              WHERE LOWER(skill) = LOWER(${skillToMatch})
+              WHERE LOWER(skill) = LOWER(${skillToMatch}) OR LOWER(skill) ILIKE '%' || LOWER(${skillToMatch}) || '%'
             ) OR
             EXISTS (
               SELECT 1 FROM unnest(${participants.vocationalSkillsCertifications}) AS skill
-              WHERE LOWER(skill) = LOWER(${skillToMatch})
+              WHERE LOWER(skill) = LOWER(${skillToMatch}) OR LOWER(skill) ILIKE '%' || LOWER(${skillToMatch}) || '%'
             )
           )`
         );
@@ -341,15 +341,15 @@ export async function getParticipants(
           sql`(
             EXISTS (
               SELECT 1 FROM unnest(${participants.softSkillsParticipations}) AS skill
-              WHERE LOWER(skill) = LOWER(${skillToMatch})
+              WHERE LOWER(skill) = LOWER(${skillToMatch}) OR LOWER(skill) ILIKE '%' || LOWER(${skillToMatch}) || '%'
             ) OR
             EXISTS (
               SELECT 1 FROM unnest(${participants.softSkillsCompletions}) AS skill
-              WHERE LOWER(skill) = LOWER(${skillToMatch})
+              WHERE LOWER(skill) = LOWER(${skillToMatch}) OR LOWER(skill) ILIKE '%' || LOWER(${skillToMatch}) || '%'
             ) OR
             EXISTS (
               SELECT 1 FROM unnest(${participants.softSkillsCertifications}) AS skill
-              WHERE LOWER(skill) = LOWER(${skillToMatch})
+              WHERE LOWER(skill) = LOWER(${skillToMatch}) OR LOWER(skill) ILIKE '%' || LOWER(${skillToMatch}) || '%'
             )
           )`
         );
@@ -371,15 +371,15 @@ export async function getParticipants(
           sql`(
             EXISTS (
               SELECT 1 FROM unnest(${participants.vocationalSkillsParticipations}) AS skill
-              WHERE LOWER(skill) = LOWER(${skillToMatch})
+              WHERE LOWER(skill) = LOWER(${skillToMatch}) OR LOWER(skill) ILIKE '%' || LOWER(${skillToMatch}) || '%'
             ) OR
             EXISTS (
               SELECT 1 FROM unnest(${participants.vocationalSkillsCompletions}) AS skill
-              WHERE LOWER(skill) = LOWER(${skillToMatch})
+              WHERE LOWER(skill) = LOWER(${skillToMatch}) OR LOWER(skill) ILIKE '%' || LOWER(${skillToMatch}) || '%'
             ) OR
             EXISTS (
               SELECT 1 FROM unnest(${participants.vocationalSkillsCertifications}) AS skill
-              WHERE LOWER(skill) = LOWER(${skillToMatch})
+              WHERE LOWER(skill) = LOWER(${skillToMatch}) OR LOWER(skill) ILIKE '%' || LOWER(${skillToMatch}) || '%'
             )
           )`
         );
@@ -1122,15 +1122,15 @@ export async function getAllFilteredParticipantsForExport(
           sql`(
             EXISTS (
               SELECT 1 FROM unnest(${participants.vocationalSkillsParticipations}) AS skill
-              WHERE LOWER(skill) = LOWER(${skillToMatch})
+              WHERE LOWER(skill) = LOWER(${skillToMatch}) OR LOWER(skill) ILIKE '%' || LOWER(${skillToMatch}) || '%'
             ) OR
             EXISTS (
               SELECT 1 FROM unnest(${participants.vocationalSkillsCompletions}) AS skill
-              WHERE LOWER(skill) = LOWER(${skillToMatch})
+              WHERE LOWER(skill) = LOWER(${skillToMatch}) OR LOWER(skill) ILIKE '%' || LOWER(${skillToMatch}) || '%'
             ) OR
             EXISTS (
               SELECT 1 FROM unnest(${participants.vocationalSkillsCertifications}) AS skill
-              WHERE LOWER(skill) = LOWER(${skillToMatch})
+              WHERE LOWER(skill) = LOWER(${skillToMatch}) OR LOWER(skill) ILIKE '%' || LOWER(${skillToMatch}) || '%'
             )
           )`
         );
@@ -1147,15 +1147,15 @@ export async function getAllFilteredParticipantsForExport(
           sql`(
             EXISTS (
               SELECT 1 FROM unnest(${participants.softSkillsParticipations}) AS skill
-              WHERE LOWER(skill) = LOWER(${skillToMatch})
+              WHERE LOWER(skill) = LOWER(${skillToMatch}) OR LOWER(skill) ILIKE '%' || LOWER(${skillToMatch}) || '%'
             ) OR
             EXISTS (
               SELECT 1 FROM unnest(${participants.softSkillsCompletions}) AS skill
-              WHERE LOWER(skill) = LOWER(${skillToMatch})
+              WHERE LOWER(skill) = LOWER(${skillToMatch}) OR LOWER(skill) ILIKE '%' || LOWER(${skillToMatch}) || '%'
             ) OR
             EXISTS (
               SELECT 1 FROM unnest(${participants.softSkillsCertifications}) AS skill
-              WHERE LOWER(skill) = LOWER(${skillToMatch})
+              WHERE LOWER(skill) = LOWER(${skillToMatch}) OR LOWER(skill) ILIKE '%' || LOWER(${skillToMatch}) || '%'
             )
           )`
         );
@@ -1175,15 +1175,15 @@ export async function getAllFilteredParticipantsForExport(
           sql`(
             EXISTS (
               SELECT 1 FROM unnest(${participants.vocationalSkillsParticipations}) AS skill
-              WHERE LOWER(skill) = LOWER(${skillToMatch})
+              WHERE LOWER(skill) = LOWER(${skillToMatch}) OR LOWER(skill) ILIKE '%' || LOWER(${skillToMatch}) || '%'
             ) OR
             EXISTS (
               SELECT 1 FROM unnest(${participants.vocationalSkillsCompletions}) AS skill
-              WHERE LOWER(skill) = LOWER(${skillToMatch})
+              WHERE LOWER(skill) = LOWER(${skillToMatch}) OR LOWER(skill) ILIKE '%' || LOWER(${skillToMatch}) || '%'
             ) OR
             EXISTS (
               SELECT 1 FROM unnest(${participants.vocationalSkillsCertifications}) AS skill
-              WHERE LOWER(skill) = LOWER(${skillToMatch})
+              WHERE LOWER(skill) = LOWER(${skillToMatch}) OR LOWER(skill) ILIKE '%' || LOWER(${skillToMatch}) || '%'
             )
           )`
         );

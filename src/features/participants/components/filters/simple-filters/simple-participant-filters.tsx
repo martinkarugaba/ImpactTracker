@@ -20,7 +20,8 @@ export function SimpleParticipantFilters({
   participants: _participants = [],
   isLoading = false,
   isFiltering: propIsFiltering = false,
-}: SimpleParticipantFiltersProps) {
+  clusterId,
+}: SimpleParticipantFiltersProps & { clusterId?: string }) {
   const filters = useAtomValue(participantFiltersAtom);
   const updateFilter = useSetAtom(updateFilterAtom);
   const clearFilters = useSetAtom(clearFiltersAtom);
@@ -120,7 +121,10 @@ export function SimpleParticipantFilters({
           <div className="hidden h-8 w-px bg-gray-200 md:block" />
 
           {/* Inline Skills Filters */}
-          <SkillsFilters isLoading={isLoading || isFiltering} />
+          <SkillsFilters
+            clusterId={clusterId}
+            isLoading={isLoading || isFiltering}
+          />
         </div>
       </div>
 
