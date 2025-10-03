@@ -13,12 +13,7 @@ import { SidebarMainNav } from "./sidebar-main-nav";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar
-      className="bg-background/95 supports-[backdrop-filter]:bg-background/60 border-none backdrop-blur"
-      collapsible="offcanvas"
-      side="left"
-      {...props}
-    >
+    <Sidebar className="" collapsible="offcanvas" side="left" {...props}>
       {/* Subtle background pattern */}
       <div className="bg-grid-small-primary/[0.02] pointer-events-none absolute inset-0" />
       <div className="from-primary/[0.03] to-primary/[0.01] pointer-events-none absolute inset-0 bg-gradient-to-br via-transparent" />
