@@ -95,6 +95,7 @@ export function TableContent({
       serverSideTotal={pagination.total}
       serverSideFiltered={pagination.total}
       isLoading={showLoading} // Show loading overlay during initial load or filtering
+      loadingText="Loading participants..."
     />
   );
 }

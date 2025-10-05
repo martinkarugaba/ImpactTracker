@@ -303,16 +303,30 @@ export function ActivityFiltersComponent({
             </div>
           </PopoverContent>
         </Popover>
+        {activeFiltersCount > 0 && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearFilters}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <X className="mr-2 h-4 w-4" />
+            Clear Filters
+          </Button>
+        )}
       </div>
 
       {/* Active Filters Display */}
       {activeFiltersCount > 0 && (
         <div className="flex flex-wrap gap-2">
           {(searchValue || filters.search) && (
-            <Badge variant="secondary" className="flex items-center gap-1">
+            <Badge
+              variant="outline"
+              className="flex items-center gap-1 border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+            >
               Search: {searchValue || filters.search}
               <X
-                className="h-3 w-3 cursor-pointer"
+                className="h-3 w-3 cursor-pointer hover:opacity-70"
                 onClick={() => {
                   updateFilters("search", "");
                 }}
@@ -320,70 +334,91 @@ export function ActivityFiltersComponent({
             </Badge>
           )}
           {filters.type && (
-            <Badge variant="secondary" className="flex items-center gap-1">
+            <Badge
+              variant="outline"
+              className="flex items-center gap-1 border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
+            >
               Type:{" "}
               {filters.type
                 .split("_")
                 .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                 .join(" ")}
               <X
-                className="h-3 w-3 cursor-pointer"
+                className="h-3 w-3 cursor-pointer hover:opacity-70"
                 onClick={() => updateFilters("type", undefined)}
               />
             </Badge>
           )}
           {filters.status && (
-            <Badge variant="secondary" className="flex items-center gap-1">
+            <Badge
+              variant="outline"
+              className="flex items-center gap-1 border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400"
+            >
               Status:{" "}
               {filters.status.charAt(0).toUpperCase() + filters.status.slice(1)}
               <X
-                className="h-3 w-3 cursor-pointer"
+                className="h-3 w-3 cursor-pointer hover:opacity-70"
                 onClick={() => updateFilters("status", undefined)}
               />
             </Badge>
           )}
           {filters.organizationId && (
-            <Badge variant="secondary" className="flex items-center gap-1">
+            <Badge
+              variant="outline"
+              className="flex items-center gap-1 border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400"
+            >
               Org:{" "}
               {organizations.find(o => o.id === filters.organizationId)?.name}
               <X
-                className="h-3 w-3 cursor-pointer"
+                className="h-3 w-3 cursor-pointer hover:opacity-70"
                 onClick={() => updateFilters("organizationId", undefined)}
               />
             </Badge>
           )}
           {filters.clusterId && (
-            <Badge variant="secondary" className="flex items-center gap-1">
+            <Badge
+              variant="outline"
+              className="flex items-center gap-1 border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400"
+            >
               Cluster: {clusters.find(c => c.id === filters.clusterId)?.name}
               <X
-                className="h-3 w-3 cursor-pointer"
+                className="h-3 w-3 cursor-pointer hover:opacity-70"
                 onClick={() => updateFilters("clusterId", undefined)}
               />
             </Badge>
           )}
           {filters.projectId && (
-            <Badge variant="secondary" className="flex items-center gap-1">
+            <Badge
+              variant="outline"
+              className="flex items-center gap-1 border-pink-200 bg-pink-50 text-pink-700 dark:border-pink-800 dark:bg-pink-900/20 dark:text-pink-400"
+            >
               Project: {projects.find(p => p.id === filters.projectId)?.name}
               <X
-                className="h-3 w-3 cursor-pointer"
+                className="h-3 w-3 cursor-pointer hover:opacity-70"
                 onClick={() => updateFilters("projectId", undefined)}
               />
             </Badge>
           )}
           {filters.startDate && (
-            <Badge variant="secondary" className="flex items-center gap-1">
+            <Badge
+              variant="outline"
+              className="flex items-center gap-1 border-teal-200 bg-teal-50 text-teal-700 dark:border-teal-800 dark:bg-teal-900/20 dark:text-teal-400"
+            >
               From: {format(new Date(filters.startDate), "MMM dd, yyyy")}
               <X
-                className="h-3 w-3 cursor-pointer"
+                className="h-3 w-3 cursor-pointer hover:opacity-70"
                 onClick={() => updateFilters("startDate", undefined)}
               />
             </Badge>
           )}
           {filters.endDate && (
-            <Badge variant="secondary" className="flex items-center gap-1">
+            <Badge
+              variant="outline"
+              className="flex items-center gap-1 border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-800 dark:bg-orange-900/20 dark:text-orange-400"
+            >
               To: {format(new Date(filters.endDate), "MMM dd, yyyy")}
               <X
-                className="h-3 w-3 cursor-pointer"
+                className="h-3 w-3 cursor-pointer hover:opacity-70"
                 onClick={() => updateFilters("endDate", undefined)}
               />
             </Badge>

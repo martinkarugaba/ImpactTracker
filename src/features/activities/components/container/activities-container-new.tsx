@@ -113,10 +113,7 @@ export function ActivitiesContainerNew({
             onAddActivity={() => state.setIsCreateDialogOpen(true)}
             onEditActivity={activity => state.setEditingActivity(activity)}
             onDeleteActivity={activity => state.setDeletingActivity(activity)}
-            onDeleteMultipleActivities={(ids: string[]) => {
-              // TODO: Implement bulk delete functionality
-              console.log("Delete activities:", ids);
-            }}
+            onDeleteMultipleActivities={state.handleDeleteMultiple}
             onExportData={() => {
               // TODO: Implement export functionality
               console.log("Export activities");
@@ -139,7 +136,7 @@ export function ActivitiesContainerNew({
         setEditingActivity={state.setEditingActivity}
         deletingActivity={state.deletingActivity}
         setDeletingActivity={state.setDeletingActivity}
-        organizations={state.organizations}
+        clusterUsers={state.clusterUsers}
         clusters={[]}
         projects={[]}
       />

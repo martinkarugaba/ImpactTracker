@@ -1,0 +1,2 @@
+ALTER TABLE "vsla_members" ADD COLUMN "participant_id" uuid;--> statement-breakpoint
+ALTER TABLE "vsla_members" ADD CONSTRAINT "vsla_members_participant_id_participants_id_fk" FOREIGN KEY ("participant_id") REFERENCES "public"."participants"("id") ON DELETE cascade ON UPDATE no action;

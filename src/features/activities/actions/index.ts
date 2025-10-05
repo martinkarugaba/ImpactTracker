@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { activities, activityParticipants } from "@/lib/db/schema";
-import { eq, and, desc, between, ilike, or } from "drizzle-orm";
+import { eq, and, desc, between, ilike, or, inArray } from "drizzle-orm";
 import {
   type NewActivity,
   type ActivityResponse,
@@ -274,6 +274,37 @@ export async function deleteActivity(id: string): Promise<ActivityResponse> {
     return {
       success: false,
       error: "Failed to delete activity",
+    };
+  }
+}
+
+export async function deleteMultipleActivities(
+  ids: string[]
+): Promise<{ success: boolean; deletedCount: number; error?: string }> {
+  try {
+    // Delete all participants for these activities
+    await db
+      .delete(activityParticipants)
+      .where(inArray(activityParticipants.activity_id, ids));
+
+    // Delete the activities
+    const deleted = await db
+      .delete(activities)
+      .where(inArray(activities.id, ids))
+      .returning();
+
+    revalidatePath(`/dashboard/activities`);
+
+    return {
+      success: true,
+      deletedCount: deleted.length,
+    };
+  } catch (error) {
+    console.error("Error deleting multiple activities:", error);
+    return {
+      success: false,
+      deletedCount: 0,
+      error: "Failed to delete activities",
     };
   }
 }

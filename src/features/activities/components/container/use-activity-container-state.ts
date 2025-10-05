@@ -2,8 +2,15 @@
 
 import { useEffect } from "react";
 import { useAtom, useSetAtom } from "jotai";
-import { useActivities, useActivityMetrics } from "../../hooks/use-activities";
+import { toast } from "sonner";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import {
+  useActivities,
+  useActivityMetrics,
+  useDeleteMultipleActivities,
+} from "../../hooks/use-activities";
 import { useOrganizationsByCluster } from "../../hooks/use-organizations";
+import { useClusterUsers } from "../../hooks/use-cluster-users";
 import {
   activeTabAtom,
   searchValueAtom,
@@ -24,6 +31,10 @@ interface UseActivityContainerStateProps {
 export function useActivityContainerState({
   clusterId,
 }: UseActivityContainerStateProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   // Jotai atoms for state management
   const [activeTab, setActiveTab] = useAtom(activeTabAtom);
   const [searchValue, setSearchValue] = useAtom(searchValueAtom);
@@ -44,6 +55,47 @@ export function useActivityContainerState({
   const handleSearchChangeAction = useSetAtom(handleSearchChangeAtom);
   const updatePaginationAction = useSetAtom(updatePaginationAtom);
 
+  // Initialize state from URL params on mount
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    const search = searchParams.get("search");
+    const type = searchParams.get("type");
+    const status = searchParams.get("status");
+    const organization = searchParams.get("organization");
+    const project = searchParams.get("project");
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
+
+    // Set tab from URL
+    if (
+      tab &&
+      ["activities", "metrics", "demographics", "calendar"].includes(tab)
+    ) {
+      setActiveTab(
+        tab as "activities" | "metrics" | "demographics" | "calendar"
+      );
+    }
+
+    // Set search from URL
+    if (search) {
+      setSearchValue(search);
+    }
+
+    // Set filters from URL
+    const urlFilters: Partial<typeof filters> = {};
+    if (type) urlFilters.type = type;
+    if (status) urlFilters.status = status;
+    if (organization) urlFilters.organizationId = organization;
+    if (project) urlFilters.projectId = project;
+    if (startDate) urlFilters.startDate = new Date(startDate);
+    if (endDate) urlFilters.endDate = new Date(endDate);
+
+    if (Object.keys(urlFilters).length > 0) {
+      setFilters(prev => ({ ...prev, ...urlFilters }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount
+
   // Initialize clusterId in filters if provided
   useEffect(() => {
     if (clusterId && filters.clusterId !== clusterId) {
@@ -53,6 +105,41 @@ export function useActivityContainerState({
       }));
     }
   }, [clusterId, filters.clusterId, setFilters]);
+
+  // Sync URL with state changes
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    // Add tab to URL
+    if (activeTab !== "activities") {
+      params.set("tab", activeTab);
+    }
+
+    // Add search to URL
+    if (searchValue) {
+      params.set("search", searchValue);
+    }
+
+    // Add filters to URL
+    if (filters.type) params.set("type", filters.type);
+    if (filters.status) params.set("status", filters.status);
+    if (filters.organizationId)
+      params.set("organization", filters.organizationId);
+    if (filters.projectId) params.set("project", filters.projectId);
+    if (filters.startDate)
+      params.set("startDate", filters.startDate.toISOString().split("T")[0]);
+    if (filters.endDate)
+      params.set("endDate", filters.endDate.toISOString().split("T")[0]);
+
+    // Update URL without triggering navigation
+    const queryString = params.toString();
+    const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+
+    // Only update if URL actually changed
+    if (window.location.pathname + window.location.search !== newUrl) {
+      router.replace(newUrl, { scroll: false });
+    }
+  }, [activeTab, searchValue, filters, pathname, router]);
 
   // Fetch activities with filters for the table
   const {
@@ -91,9 +178,20 @@ export function useActivityContainerState({
     error: _organizationsError,
   } = useOrganizationsByCluster(clusterId);
 
+  // Fetch cluster users
+  const {
+    data: clusterUsersData,
+    isLoading: _isClusterUsersLoading,
+    error: _clusterUsersError,
+  } = useClusterUsers(clusterId);
+
+  // Delete multiple activities mutation
+  const deleteMultipleMutation = useDeleteMultipleActivities();
+
   const activities = activitiesData?.data?.data || [];
   const metricsActivities = activities; // Use the same data for now
   const organizations = organizationsData?.data || [];
+  const clusterUsers = clusterUsersData?.data || [];
 
   // Build pagination object from API response
   const paginationData = {
@@ -120,6 +218,18 @@ export function useActivityContainerState({
     updatePaginationAction({ page });
   };
 
+  const handleDeleteMultiple = async (ids: string[]) => {
+    try {
+      await deleteMultipleMutation.mutateAsync({ ids });
+      toast.success(
+        `Successfully deleted ${ids.length} ${ids.length === 1 ? "activity" : "activities"}`
+      );
+    } catch (error) {
+      console.error("Error deleting activities:", error);
+      toast.error("Failed to delete activities. Please try again.");
+    }
+  };
+
   return {
     // Tab state
     activeTab,
@@ -138,6 +248,7 @@ export function useActivityContainerState({
     metricsActivities,
     metricsData,
     organizations,
+    clusterUsers,
 
     // Loading states
     isActivitiesLoading,
@@ -151,6 +262,9 @@ export function useActivityContainerState({
     pagination: paginationData,
     handlePaginationChange,
     handlePageChange,
+
+    // Actions
+    handleDeleteMultiple,
 
     // Dialog states
     isCreateDialogOpen,
