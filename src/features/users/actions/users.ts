@@ -7,6 +7,8 @@ import {
   userRole,
   clusterUsers,
   organizationMembers,
+  clusters,
+  organizations,
 } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -244,5 +246,121 @@ export async function updateUserRole(
   } catch (error) {
     console.error("Error updating user role:", error);
     return { success: false, message: "Failed to update user role" };
+  }
+}
+
+export async function updateUserCluster(
+  userId: string,
+  clusterId: string | null
+) {
+  try {
+    const session = await auth();
+
+    if (!session?.user) {
+      return { success: false, message: "Not authenticated" };
+    }
+
+    // Remove existing cluster associations
+    await db.delete(clusterUsers).where(eq(clusterUsers.user_id, userId));
+
+    // Add new cluster association if clusterId is provided
+    if (clusterId) {
+      const user = await db.query.users.findFirst({
+        where: eq(users.id, userId),
+      });
+
+      if (user) {
+        await db.insert(clusterUsers).values({
+          cluster_id: clusterId,
+          user_id: userId,
+          role: user.role,
+        });
+      }
+    }
+
+    revalidatePath("/dashboard/users");
+    return { success: true, message: "User cluster updated successfully" };
+  } catch (error) {
+    console.error("Error updating user cluster:", error);
+    return { success: false, message: "Failed to update user cluster" };
+  }
+}
+
+export async function updateUserOrganization(
+  userId: string,
+  organizationId: string | null
+) {
+  try {
+    const session = await auth();
+
+    if (!session?.user) {
+      return { success: false, message: "Not authenticated" };
+    }
+
+    // Remove existing organization associations
+    await db
+      .delete(organizationMembers)
+      .where(eq(organizationMembers.user_id, userId));
+
+    // Add new organization association if organizationId is provided
+    if (organizationId) {
+      const user = await db.query.users.findFirst({
+        where: eq(users.id, userId),
+      });
+
+      if (user) {
+        await db.insert(organizationMembers).values({
+          organization_id: organizationId,
+          user_id: userId,
+          role: user.role,
+        });
+      }
+    }
+
+    revalidatePath("/dashboard/users");
+    return {
+      success: true,
+      message: "User organization updated successfully",
+    };
+  } catch (error) {
+    console.error("Error updating user organization:", error);
+    return { success: false, message: "Failed to update user organization" };
+  }
+}
+
+export async function getClusters() {
+  try {
+    const session = await auth();
+
+    if (!session?.user) {
+      return { success: false, data: [] };
+    }
+
+    const allClusters = await db.select().from(clusters).orderBy(clusters.name);
+
+    return { success: true, data: allClusters };
+  } catch (error) {
+    console.error("Error fetching clusters:", error);
+    return { success: false, data: [] };
+  }
+}
+
+export async function getOrganizations() {
+  try {
+    const session = await auth();
+
+    if (!session?.user) {
+      return { success: false, data: [] };
+    }
+
+    const allOrganizations = await db
+      .select()
+      .from(organizations)
+      .orderBy(organizations.name);
+
+    return { success: true, data: allOrganizations };
+  } catch (error) {
+    console.error("Error fetching organizations:", error);
+    return { success: false, data: [] };
   }
 }

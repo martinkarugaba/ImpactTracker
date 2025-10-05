@@ -5,7 +5,12 @@ import { useState } from "react";
 import { UsersTable } from "@/features/users/components/users-table";
 import { User } from "@/features/users/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { updateUserRole, getUsers } from "@/features/users/actions/users";
+import {
+  updateUserRole,
+  updateUserCluster,
+  updateUserOrganization,
+  getUsers,
+} from "@/features/users/actions/users";
 import { toast } from "sonner";
 import { AddUserDialog } from "@/features/users/components/add-user-dialog";
 import { DeleteUserDialog } from "@/features/users/components/delete-user-dialog";
@@ -13,9 +18,15 @@ import { userRole } from "@/lib/db/schema";
 
 interface UsersClientProps {
   users: User[];
+  clusters: Array<{ id: string; name: string }>;
+  organizations: Array<{ id: string; name: string; acronym: string }>;
 }
 
-export function UsersClient({ users }: UsersClientProps) {
+export function UsersClient({
+  users,
+  clusters,
+  organizations,
+}: UsersClientProps) {
   const [activeUsers, setActiveUsers] = useState<User[]>(users);
   const [selectedUserToDelete, setSelectedUserToDelete] = useState<User | null>(
     null
@@ -83,6 +94,45 @@ export function UsersClient({ users }: UsersClientProps) {
     }
   };
 
+  const handleClusterChange = async (user: User, clusterId: string | null) => {
+    try {
+      const response = await updateUserCluster(user.id, clusterId);
+      if (response.success) {
+        // Refetch users to get updated cluster data
+        const result = await getUsers();
+        if (result.success) {
+          setActiveUsers(result.data);
+        }
+      } else {
+        toast.error("Failed to update user cluster");
+      }
+    } catch (error) {
+      console.error("Error updating user cluster:", error);
+      toast.error("An error occurred while updating the cluster");
+    }
+  };
+
+  const handleOrganizationChange = async (
+    user: User,
+    organizationId: string | null
+  ) => {
+    try {
+      const response = await updateUserOrganization(user.id, organizationId);
+      if (response.success) {
+        // Refetch users to get updated organization data
+        const result = await getUsers();
+        if (result.success) {
+          setActiveUsers(result.data);
+        }
+      } else {
+        toast.error("Failed to update user organization");
+      }
+    } catch (error) {
+      console.error("Error updating user organization:", error);
+      toast.error("An error occurred while updating the organization");
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -103,18 +153,26 @@ export function UsersClient({ users }: UsersClientProps) {
         <TabsContent value="staff" className="mt-4">
           <UsersTable
             users={staffUsers}
+            clusters={clusters}
+            organizations={organizations}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onRoleChange={handleRoleChange}
+            onClusterChange={handleClusterChange}
+            onOrganizationChange={handleOrganizationChange}
           />
         </TabsContent>
 
         <TabsContent value="clients" className="mt-4">
           <UsersTable
             users={clientUsers}
+            clusters={clusters}
+            organizations={organizations}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onRoleChange={handleRoleChange}
+            onClusterChange={handleClusterChange}
+            onOrganizationChange={handleOrganizationChange}
           />
         </TabsContent>
       </Tabs>
