@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { QueryProvider } from "@/providers/query-provider";
@@ -7,9 +7,10 @@ import { ActiveThemeProvider } from "@/features/themes/components/active-theme";
 import { CalendarProvider } from "@/components/event-calendar/calendar-context";
 import "./globals.css";
 
-const fontSans = Geist({
+const fontSans = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const fontMono = Geist_Mono({
@@ -25,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${fontSans.variable} ${fontMono.variable} bg-sidebar font-sans antialiased`}
+        className={`${fontSans.variable} ${fontSans.className} ${fontMono.variable} bg-sidebar font-sans antialiased`}
         suppressHydrationWarning
       >
         <ThemeProvider

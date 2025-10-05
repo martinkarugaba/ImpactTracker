@@ -7,6 +7,7 @@ import {
   users,
   organizations,
   clusterUsers,
+  clusterMembers,
 } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
@@ -49,6 +50,9 @@ export async function getUserClusterId() {
     // For users not directly assigned to a cluster, get cluster through organization membership
     const organizationId = await getOrganizationId();
     if (!organizationId) {
+      console.log(
+        "getUserClusterId: No organization membership found for user"
+      );
       return null;
     }
 
@@ -58,7 +62,27 @@ export async function getUserClusterId() {
       .from(organizations)
       .where(eq(organizations.id, organizationId));
 
-    return org?.cluster_id || null;
+    if (org?.cluster_id) {
+      return org.cluster_id;
+    }
+
+    // Fallback: resolve cluster via clusterMembers mapping if organization has no cluster_id set
+    console.log(
+      "getUserClusterId: Organization has no cluster_id. Checking clusterMembers mapping..."
+    );
+    const orgCluster = await db.query.clusterMembers.findFirst({
+      where: eq(clusterMembers.organization_id, organizationId),
+      columns: { cluster_id: true },
+    });
+
+    if (orgCluster?.cluster_id) {
+      return orgCluster.cluster_id;
+    }
+
+    console.log(
+      "getUserClusterId: No cluster found via direct assignment or organization mapping"
+    );
+    return null;
   } catch (error) {
     console.error("Error getting cluster ID:", error);
     return null;

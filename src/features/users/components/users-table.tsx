@@ -18,24 +18,33 @@ import {
 import { MoreHorizontal, Pencil, Trash2, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 import { userRole } from "@/lib/db/schema";
 
 interface UsersTableProps {
   users: User[];
+  clusters?: Array<{ id: string; name: string }>;
+  organizations?: Array<{ id: string; name: string; acronym: string }>;
   onEdit?: (user: User) => void;
   onDelete?: (user: User) => void;
   onRoleChange?: (
     user: User,
     newRole: (typeof userRole.enumValues)[number]
   ) => void;
+  onClusterChange?: (user: User, clusterId: string | null) => void;
+  onOrganizationChange?: (user: User, organizationId: string | null) => void;
 }
 
 export function UsersTable({
   users,
+  clusters = [],
+  organizations = [],
   onEdit,
   onDelete,
   onRoleChange,
+  onClusterChange,
+  onOrganizationChange,
 }: UsersTableProps) {
   const [selectedRows, setSelectedRows] = useState<User[]>([]);
 
@@ -96,13 +105,60 @@ export function UsersTable({
       accessorKey: "cluster",
       header: "Cluster",
       cell: ({ row }) => {
-        const cluster = row.original.cluster;
-        return cluster ? (
-          <Badge variant="secondary" className="capitalize">
-            {cluster.name}
-          </Badge>
-        ) : (
-          <span className="text-muted-foreground">-</span>
+        const user = row.original;
+        const currentCluster = user.cluster;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="flex h-8 w-48 items-center justify-between gap-1 px-2"
+              >
+                {currentCluster ? (
+                  <Badge variant="secondary" className="capitalize">
+                    {currentCluster.name}
+                  </Badge>
+                ) : (
+                  <span className="text-muted-foreground text-sm">
+                    Not assigned
+                  </span>
+                )}
+                <ChevronDown className="h-4 w-4 opacity-50" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-48">
+              <DropdownMenuLabel>Assign Cluster</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => {
+                  if (onClusterChange) {
+                    onClusterChange(user, null);
+                    toast.success("Cluster assignment removed");
+                  }
+                }}
+                className={!currentCluster ? "bg-muted" : ""}
+              >
+                <span className="text-muted-foreground">No cluster</span>
+              </DropdownMenuItem>
+              {clusters.map(cluster => (
+                <DropdownMenuItem
+                  key={cluster.id}
+                  onClick={() => {
+                    if (onClusterChange) {
+                      onClusterChange(user, cluster.id);
+                      toast.success(`Assigned to ${cluster.name}`);
+                    }
+                  }}
+                  className={
+                    currentCluster?.id === cluster.id ? "bg-muted" : ""
+                  }
+                >
+                  {cluster.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       },
     },
@@ -110,13 +166,68 @@ export function UsersTable({
       accessorKey: "organization",
       header: "Organization",
       cell: ({ row }) => {
-        const organization = row.original.organization;
-        return organization ? (
-          <Badge variant="outline" className="capitalize">
-            {organization.acronym}
-          </Badge>
-        ) : (
-          <span className="text-muted-foreground">-</span>
+        const user = row.original;
+        const currentOrganization = user.organization;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="flex h-8 w-48 items-center justify-between gap-1 px-2"
+              >
+                {currentOrganization ? (
+                  <Badge variant="outline" className="capitalize">
+                    {currentOrganization.acronym}
+                  </Badge>
+                ) : (
+                  <span className="text-muted-foreground text-sm">
+                    Not assigned
+                  </span>
+                )}
+                <ChevronDown className="h-4 w-4 opacity-50" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="start"
+              className="max-h-80 w-64 overflow-y-auto"
+            >
+              <DropdownMenuLabel>Assign Organization</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => {
+                  if (onOrganizationChange) {
+                    onOrganizationChange(user, null);
+                    toast.success("Organization assignment removed");
+                  }
+                }}
+                className={!currentOrganization ? "bg-muted" : ""}
+              >
+                <span className="text-muted-foreground">No organization</span>
+              </DropdownMenuItem>
+              {organizations.map(org => (
+                <DropdownMenuItem
+                  key={org.id}
+                  onClick={() => {
+                    if (onOrganizationChange) {
+                      onOrganizationChange(user, org.id);
+                      toast.success(`Assigned to ${org.name}`);
+                    }
+                  }}
+                  className={
+                    currentOrganization?.id === org.id ? "bg-muted" : ""
+                  }
+                >
+                  <div className="flex flex-col">
+                    <span className="font-medium">{org.acronym}</span>
+                    <span className="text-muted-foreground text-xs">
+                      {org.name}
+                    </span>
+                  </div>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       },
     },

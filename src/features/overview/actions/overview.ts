@@ -17,6 +17,7 @@ import {
 } from "@/lib/db/schema";
 import { sql, eq, and, gte, lte, desc } from "drizzle-orm";
 import { auth } from "@/features/auth/auth";
+import { getUserClusterId } from "@/features/auth/actions";
 
 export interface KPIOverviewMetrics {
   participants: {
@@ -161,7 +162,7 @@ export interface KPIOverviewMetrics {
   };
 }
 
-export async function getKPIOverviewMetrics(): Promise<{
+export async function getKPIOverviewMetrics(clusterId?: string): Promise<{
   success: boolean;
   data?: KPIOverviewMetrics;
   error?: string;
@@ -179,9 +180,12 @@ export async function getKPIOverviewMetrics(): Promise<{
     const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
 
-    // Get user's organization and cluster context
+    // Resolve cluster context (prefer explicit argument, else from user assignment)
+    const resolvedClusterId = clusterId || (await getUserClusterId());
+
+    // Get user's organization and cluster context (retain org for any additional scoping if needed)
     let userOrgId: string | undefined;
-    let userClusterIds: string[] = [];
+    let userClusterIds: string[] = resolvedClusterId ? [resolvedClusterId] : [];
 
     // For non-super_admin users, find their organization and clusters
     if (session.user.role !== "super_admin") {
@@ -190,17 +194,19 @@ export async function getKPIOverviewMetrics(): Promise<{
         where: eq(organizationMembers.user_id, session.user.id),
       });
       userOrgId = userMembership?.organization_id;
-
-      // Get user's clusters
-      const userClusters = await db.query.clusterUsers.findMany({
-        where: eq(clusterUsers.user_id, session.user.id),
-      });
-      userClusterIds = userClusters.map(uc => uc.cluster_id);
+      // If no explicit cluster resolved yet, get user's clusters (fallback)
+      if (!resolvedClusterId) {
+        const userClusters = await db.query.clusterUsers.findMany({
+          where: eq(clusterUsers.user_id, session.user.id),
+        });
+        userClusterIds = userClusters.map(uc => uc.cluster_id);
+      }
     }
 
     // Participants metrics - filter by both organization and clusters
-    const participantsQuery =
-      userOrgId || userClusterIds.length > 0
+    const participantsQuery = resolvedClusterId
+      ? eq(participants.cluster_id, resolvedClusterId)
+      : userOrgId || userClusterIds.length > 0
         ? userOrgId
           ? and(
               eq(participants.organization_id, userOrgId),
@@ -298,8 +304,9 @@ export async function getKPIOverviewMetrics(): Promise<{
       .limit(5);
 
     // Activities metrics
-    const activitiesQuery =
-      userOrgId || userClusterIds.length > 0
+    const activitiesQuery = resolvedClusterId
+      ? eq(activities.cluster_id, resolvedClusterId)
+      : userOrgId || userClusterIds.length > 0
         ? userOrgId
           ? and(
               eq(activities.organization_id, userOrgId),
@@ -377,8 +384,9 @@ export async function getKPIOverviewMetrics(): Promise<{
       .limit(5);
 
     // VSLAs metrics
-    const vslasQuery =
-      userOrgId || userClusterIds.length > 0
+    const vslasQuery = resolvedClusterId
+      ? eq(vslas.cluster_id, resolvedClusterId)
+      : userOrgId || userClusterIds.length > 0
         ? userOrgId
           ? and(
               eq(vslas.organization_id, userOrgId),
@@ -499,8 +507,9 @@ export async function getKPIOverviewMetrics(): Promise<{
       .limit(5);
 
     // Trainings metrics
-    const trainingsQuery =
-      userOrgId || userClusterIds.length > 0
+    const trainingsQuery = resolvedClusterId
+      ? eq(trainings.cluster_id, resolvedClusterId)
+      : userOrgId || userClusterIds.length > 0
         ? userOrgId
           ? and(
               eq(trainings.organization_id, userOrgId),
@@ -649,8 +658,9 @@ export async function getKPIOverviewMetrics(): Promise<{
       .limit(5);
 
     // Clusters metrics - show only clusters the user belongs to
-    const clustersQuery =
-      userClusterIds.length > 0
+    const clustersQuery = resolvedClusterId
+      ? eq(clusters.id, resolvedClusterId)
+      : userClusterIds.length > 0
         ? sql`${clusters.id} = ANY(${userClusterIds})`
         : undefined;
 
