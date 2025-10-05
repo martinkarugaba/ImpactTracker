@@ -20,7 +20,7 @@ import { getKPIOverviewMetrics } from "../actions/overview";
 export function OverviewMetricCards() {
   const { data: response, isLoading } = useQuery({
     queryKey: ["kpi-overview-metrics"],
-    queryFn: getKPIOverviewMetrics,
+    queryFn: () => getKPIOverviewMetrics(),
   });
 
   if (isLoading) {
