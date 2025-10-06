@@ -109,7 +109,7 @@ export function JotaiParticipantsContainer({
             projects={projects}
             clusters={clusters}
             organizations={organizations}
-            filterOptions={{ districts: [], subCounties: [], enterprises: [] }}
+            filterOptions={state.filterOptions}
             searchValue={state.searchValue}
             onSearchChange={() => {}} // No longer needed - Jotai handles this
             isParticipantsLoading={state.isParticipantsLoading}

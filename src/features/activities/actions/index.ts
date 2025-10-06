@@ -2,7 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { activities, activityParticipants } from "@/lib/db/schema";
+import {
+  activities,
+  activityParticipants,
+  activityReports,
+  conceptNotes,
+} from "@/lib/db/schema";
 import { eq, and, desc, between, ilike, or, inArray } from "drizzle-orm";
 import {
   type NewActivity,
@@ -249,12 +254,19 @@ export async function updateActivity(
 
 export async function deleteActivity(id: string): Promise<ActivityResponse> {
   try {
-    // First delete all activity participants
+    // Delete all related records first (in order of dependencies)
+    // 1. Delete activity participants
     await db
       .delete(activityParticipants)
       .where(eq(activityParticipants.activity_id, id));
 
-    // Then delete the activity
+    // 2. Delete activity reports
+    await db.delete(activityReports).where(eq(activityReports.activity_id, id));
+
+    // 3. Delete concept notes
+    await db.delete(conceptNotes).where(eq(conceptNotes.activity_id, id));
+
+    // Finally delete the activity itself
     const [activity] = await db
       .delete(activities)
       .where(eq(activities.id, id))
@@ -282,12 +294,21 @@ export async function deleteMultipleActivities(
   ids: string[]
 ): Promise<{ success: boolean; deletedCount: number; error?: string }> {
   try {
-    // Delete all participants for these activities
+    // Delete all related records first (in order of dependencies)
+    // 1. Delete activity participants
     await db
       .delete(activityParticipants)
       .where(inArray(activityParticipants.activity_id, ids));
 
-    // Delete the activities
+    // 2. Delete activity reports
+    await db
+      .delete(activityReports)
+      .where(inArray(activityReports.activity_id, ids));
+
+    // 3. Delete concept notes
+    await db.delete(conceptNotes).where(inArray(conceptNotes.activity_id, ids));
+
+    // Finally delete the activities
     const deleted = await db
       .delete(activities)
       .where(inArray(activities.id, ids))

@@ -15,6 +15,9 @@ interface FilterHeaderProps {
     organizations: Array<{ id: string; name: string }>;
     districts: Array<{ id: string; name: string }>;
     subCounties: Array<{ id: string; name: string }>;
+    counties: Array<{ id: string; name: string }>;
+    parishes: Array<{ id: string; name: string }>;
+    villages: Array<{ id: string; name: string }>;
     enterprises: Array<{ id: string; name: string }>;
   };
   onRemoveFilter: (key: keyof ParticipantFilters) => void;
@@ -51,6 +54,12 @@ export function FilterHeader({
         return (
           filterOptions?.subCounties.find(s => s.id === value)?.name || value
         );
+      case "county":
+        return filterOptions?.counties.find(c => c.id === value)?.name || value;
+      case "parish":
+        return filterOptions?.parishes.find(p => p.id === value)?.name || value;
+      case "village":
+        return filterOptions?.villages.find(v => v.id === value)?.name || value;
       case "enterprise":
         return (
           filterOptions?.enterprises.find(e => e.id === value)?.name || value

@@ -6,6 +6,7 @@ import { useAtom } from "jotai";
 import { useParticipants } from "../hooks/use-participants";
 import { useParticipantMetrics } from "../hooks/use-participant-metrics";
 import { useLocationNames } from "../hooks/use-location-names";
+import { useFilterOptions } from "../components/container/use-filter-options";
 import {
   participantFiltersAtom,
   participantPaginationAtom,
@@ -428,6 +429,12 @@ export function useParticipantContainerJotai({
     locationIds.countryIds
   );
 
+  // Get filter options from participants data
+  const filterOptions = useFilterOptions({
+    clusterId,
+    locationNames,
+  });
+
   const handleView = (participant: Participant) => {
     router.push(`/dashboard/participants/${participant.id}`);
   };
@@ -620,6 +627,7 @@ export function useParticipantContainerJotai({
     metricsParticipants,
     participantsData,
     locationNames,
+    filterOptions,
 
     // Loading & Error states
     isParticipantsLoading,

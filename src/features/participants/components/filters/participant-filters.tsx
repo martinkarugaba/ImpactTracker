@@ -32,6 +32,9 @@ interface ParticipantFiltersProps {
   organizations: Array<{ id: string; name: string; acronym: string }>;
   districts?: Array<{ id: string; name: string }>;
   subCounties?: Array<{ id: string; name: string }>;
+  counties?: Array<{ id: string; name: string }>;
+  parishes?: Array<{ id: string; name: string }>;
+  villages?: Array<{ id: string; name: string }>;
   enterprises?: Array<{ id: string; name: string }>;
   searchTerm?: string;
   onSearchChange?: (search: string) => void;
@@ -53,6 +56,9 @@ export function ParticipantFilters({
   organizations = [],
   districts = [],
   subCounties = [],
+  counties = [],
+  parishes = [],
+  villages = [],
   enterprises = [],
   searchTerm: _searchTerm,
   onSearchChange: _onSearchChange,
@@ -126,6 +132,9 @@ export function ParticipantFilters({
           updateFilter={updateFilter}
           districts={districts}
           subCounties={subCounties}
+          counties={counties}
+          parishes={parishes}
+          villages={villages}
         />
       ),
     },
@@ -212,7 +221,7 @@ export function ParticipantFilters({
       case "demographics":
         return ["sex", "ageGroup", "isPWD", "maritalStatus", "educationLevel"];
       case "location":
-        return ["district", "subCounty"];
+        return ["district", "county", "subCounty", "parish", "village"];
       case "vsla":
         return ["isSubscribedToVSLA"];
       case "enterprise":
@@ -244,6 +253,9 @@ export function ParticipantFilters({
                 organizations,
                 districts,
                 subCounties,
+                counties,
+                parishes,
+                villages,
                 enterprises,
               }}
               onRemoveFilter={removeFilter}
