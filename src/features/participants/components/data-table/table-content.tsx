@@ -4,7 +4,6 @@ import { DataTable } from "@/components/ui/data-table";
 import { type Participant } from "../../types/types";
 import { type ParticipantFormValues } from "../participant-form";
 import { getParticipantColumns } from "./columns";
-import { TableSkeleton } from "./table-skeleton";
 
 interface TableContentProps {
   data: Participant[];
@@ -69,17 +68,6 @@ export function TableContent({
       })
     : allColumns;
 
-  // Show skeleton while loading initially (no data)
-  if (isLoading && data.length === 0) {
-    return (
-      <TableSkeleton
-        rows={pagination.limit}
-        columns={visibleColumns.length}
-        showRealColumns={true}
-      />
-    );
-  }
-
   // Show loading state for both initial loading and filtering
   const showLoading = isLoading || isFiltering;
 
@@ -94,7 +82,7 @@ export function TableContent({
       onRowSelectionStateChange={onRowSelectionStateChange}
       serverSideTotal={pagination.total}
       serverSideFiltered={pagination.total}
-      isLoading={showLoading} // Show loading overlay during initial load or filtering
+      isLoading={showLoading}
       loadingText="Loading participants..."
     />
   );
