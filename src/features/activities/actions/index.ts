@@ -198,6 +198,7 @@ export async function createActivity(
         cluster_id: data.cluster_id,
         project_id: data.project_id,
         organization_id: data.organization_id,
+        created_by: data.created_by,
       })
       .returning();
 

@@ -194,6 +194,7 @@ export function ActivityFormDialog({
             project_id: data.projectId || undefined,
             organization_id: organizationId,
             expectedSessions: data.sessionCount || null,
+            created_by: data.activityLead,
           },
         });
         createdActivity = result.data;

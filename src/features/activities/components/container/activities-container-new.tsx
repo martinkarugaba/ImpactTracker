@@ -1,9 +1,16 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Calendar, CalendarDays, UserCheck } from "lucide-react";
+import {
+  BarChart3,
+  Calendar,
+  CalendarDays,
+  PieChart,
+  UserCheck,
+} from "lucide-react";
 import { useActivityContainerState } from "./use-activity-container-state";
 import { MetricsTab } from "./metrics-tab";
+import { ChartsTab } from "./charts-tab";
 import { ActivitiesTab } from "./activities-tab";
 import { ActivitiesDemographicsTab } from "./activities-demographics-tab";
 import { ActivityDialogs } from "./activity-dialogs";
@@ -42,15 +49,20 @@ export function ActivitiesContainerNew({
           value={state.activeTab}
           onValueChange={value =>
             state.setActiveTab(
-              value as "activities" | "metrics" | "demographics" | "calendar"
+              value as
+                | "activities"
+                | "metrics"
+                | "charts"
+                | "demographics"
+                | "calendar"
             )
           }
           className="mb-4 w-full"
         >
-          <TabsList className="grid h-10 w-full grid-cols-4 rounded-md bg-gray-100 p-1 dark:bg-gray-900">
+          <TabsList className="bg-muted/30 grid h-11 w-full grid-cols-5 rounded-lg p-1">
             <TabsTrigger
               value="activities"
-              className="flex cursor-pointer items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium text-gray-600 transition-all data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm dark:text-gray-400 dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-gray-100"
+              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
             >
               <Calendar className="h-4 w-4" />
               <span className="hidden sm:inline">Activities</span>
@@ -58,15 +70,23 @@ export function ActivitiesContainerNew({
             </TabsTrigger>
             <TabsTrigger
               value="metrics"
-              className="flex cursor-pointer items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium text-gray-600 transition-all data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm dark:text-gray-400 dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-gray-100"
+              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
             >
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">Analytics</span>
               <span className="sm:hidden">Stats</span>
             </TabsTrigger>
             <TabsTrigger
+              value="charts"
+              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
+            >
+              <PieChart className="h-4 w-4" />
+              <span className="hidden sm:inline">Charts</span>
+              <span className="sm:hidden">Visual</span>
+            </TabsTrigger>
+            <TabsTrigger
               value="demographics"
-              className="flex cursor-pointer items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium text-gray-600 transition-all data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm dark:text-gray-400 dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-gray-100"
+              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
             >
               <UserCheck className="h-4 w-4" />
               <span className="hidden sm:inline">Demographics</span>
@@ -74,7 +94,7 @@ export function ActivitiesContainerNew({
             </TabsTrigger>
             <TabsTrigger
               value="calendar"
-              className="flex cursor-pointer items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium text-gray-600 transition-all data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm dark:text-gray-400 dark:data-[state=active]:bg-gray-950 dark:data-[state=active]:text-gray-100"
+              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
             >
               <CalendarDays className="h-4 w-4" />
               <span className="hidden sm:inline">Calendar</span>
@@ -87,6 +107,12 @@ export function ActivitiesContainerNew({
             metricsData={state.metricsData}
             isMetricsLoading={state.isMetricsLoading}
             filters={state.filters}
+          />
+
+          <ChartsTab
+            metricsActivities={state.metricsActivities}
+            metricsData={state.metricsData}
+            isMetricsLoading={state.isMetricsLoading}
           />
 
           <ActivitiesDemographicsTab

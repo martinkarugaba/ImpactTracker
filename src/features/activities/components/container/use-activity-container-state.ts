@@ -69,10 +69,12 @@ export function useActivityContainerState({
     // Set tab from URL
     if (
       tab &&
-      ["activities", "metrics", "demographics", "calendar"].includes(tab)
+      ["activities", "metrics", "charts", "demographics", "calendar"].includes(
+        tab
+      )
     ) {
       setActiveTab(
-        tab as "activities" | "metrics" | "demographics" | "calendar"
+        tab as "activities" | "metrics" | "charts" | "demographics" | "calendar"
       );
     }
 
