@@ -23,6 +23,9 @@ interface MoreFiltersPopoverProps {
   organizations: Array<{ id: string; name: string; acronym: string }>;
   districts: Array<{ id: string; name: string }>;
   subCounties: Array<{ id: string; name: string }>;
+  counties?: Array<{ id: string; name: string }>;
+  parishes?: Array<{ id: string; name: string }>;
+  villages?: Array<{ id: string; name: string }>;
   activeFiltersCount: number;
   isLoading?: boolean;
 }
@@ -33,6 +36,9 @@ export function MoreFiltersPopover({
   organizations,
   districts = [],
   subCounties = [],
+  counties = [],
+  parishes = [],
+  villages = [],
   activeFiltersCount,
   isLoading = false,
 }: MoreFiltersPopoverProps) {
@@ -84,6 +90,9 @@ export function MoreFiltersPopover({
               organizations={organizations}
               districts={districts}
               subCounties={subCounties}
+              counties={counties}
+              parishes={parishes}
+              villages={villages}
               isLoading={isLoading}
             />
 

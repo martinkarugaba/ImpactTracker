@@ -13,8 +13,10 @@ import {
 import { SearchFilter } from "./search-filter";
 import { QuickFilters } from "./quick-filters";
 import { SkillsFilters } from "./skills-filters";
+import { LocationFiltersInline } from "./location-filters-inline";
 // import { AdvancedFilters } from "./advanced-filters"; // Disabled for now
 import { type SimpleParticipantFiltersProps } from "./types";
+import { Separator } from "@/components/ui/separator";
 
 export function SimpleParticipantFilters({
   participants: _participants = [],
@@ -118,7 +120,16 @@ export function SimpleParticipantFilters({
           />
 
           {/* Separator for visual grouping */}
-          <div className="hidden h-8 w-px bg-gray-200 md:block" />
+          <Separator className="hidden md:block" orientation="vertical" />
+
+          {/* Location Filters */}
+          <LocationFiltersInline
+            clusterId={clusterId}
+            isLoading={isLoading || isFiltering}
+          />
+
+          {/* Separator for visual grouping */}
+          <Separator className="hidden md:block" orientation="vertical" />
 
           {/* Inline Skills Filters */}
           <SkillsFilters
@@ -127,35 +138,6 @@ export function SimpleParticipantFilters({
           />
         </div>
       </div>
-
-      {/* Advanced Filters Toggle - Disabled for now */}
-      {/* <div className="flex items-center justify-between">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-          className="h-8 px-3 text-sm text-gray-600 hover:text-gray-800"
-        >
-          {showAdvancedFilters ? (
-            <>
-              <ChevronUp className="mr-2 h-4 w-4" />
-              Hide Advanced Filters
-            </>
-          ) : (
-            <>
-              <ChevronDown className="mr-2 h-4 w-4" />
-              Show Advanced Filters
-            </>
-          )}
-        </Button>
-      </div> */}
-
-      {/* Advanced Filters Section - Disabled for now */}
-      {/* {showAdvancedFilters && (
-        <div className="rounded-lg border border-gray-200 bg-gray-50/50 p-4">
-          <AdvancedFilters isLoading={isLoading || isFiltering} />
-        </div>
-      )} */}
 
       {/* Active Filter Badges */}
       {getActiveFiltersCount() > 0 && (
@@ -236,6 +218,34 @@ export function SimpleParticipantFilters({
                   <button
                     onClick={() => removeFilter(key)}
                     className="ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-green-200 text-green-700 hover:bg-green-300 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700"
+                  >
+                    <X className="h-2.5 w-2.5" />
+                  </button>
+                </span>
+              );
+            }
+            return null;
+          })}
+
+          {/* Location Filter Badges */}
+          {[
+            { key: "district", label: "District" },
+            { key: "county", label: "County" },
+            { key: "subCounty", label: "Sub County" },
+            { key: "parish", label: "Parish" },
+            { key: "village", label: "Village" },
+          ].map(({ key, label }) => {
+            const value = (filters as Record<string, string>)[key];
+            if (value && value !== "all") {
+              return (
+                <span
+                  key={key}
+                  className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-3 py-1.5 text-xs font-medium text-orange-800 shadow-sm ring-1 ring-orange-600/20 ring-inset dark:bg-orange-900/50 dark:text-orange-200 dark:ring-orange-400/30"
+                >
+                  {label}: {value}
+                  <button
+                    onClick={() => removeFilter(key)}
+                    className="ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-orange-200 text-orange-700 hover:bg-orange-300 dark:bg-orange-800 dark:text-orange-200 dark:hover:bg-orange-700"
                   >
                     <X className="h-2.5 w-2.5" />
                   </button>

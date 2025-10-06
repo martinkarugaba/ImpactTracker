@@ -175,6 +175,30 @@ export function getParticipantColumns({
       },
     },
     {
+      id: "subCounty",
+      header: "Sub County",
+      enableHiding: true,
+      enableSorting: true,
+      accessorFn: row => {
+        const subCountyId = row.subCounty;
+        const subCountyName =
+          locationNames?.subCounties[subCountyId] || subCountyId || "—";
+        return capitalizeWords(subCountyName);
+      },
+      cell: ({ row }) => {
+        const subCountyId = row.original.subCounty;
+        const subCountyName =
+          locationNames?.subCounties[subCountyId] || subCountyId || "—";
+        const capitalizedName = capitalizeWords(subCountyName);
+
+        return (
+          <div className="max-w-[150px] truncate" title={capitalizedName}>
+            {capitalizedName}
+          </div>
+        );
+      },
+    },
+    {
       id: "contact",
       header: "Contact",
       enableHiding: true,
@@ -223,37 +247,37 @@ export function getParticipantColumns({
         );
       },
     },
-    {
-      id: "organization",
-      header: "Organization",
-      enableHiding: true,
-      enableSorting: true,
-      accessorFn: row => row.organizationName || row.organization_id,
-      cell: ({ row }) => {
-        const name =
-          row.original.organizationName || row.original.organization_id;
+    // {
+    //   id: "organization",
+    //   header: "Organization",
+    //   enableHiding: true,
+    //   enableSorting: true,
+    //   accessorFn: row => row.organizationName || row.organization_id,
+    //   cell: ({ row }) => {
+    //     const name =
+    //       row.original.organizationName || row.original.organization_id;
 
-        if (!name) return <span className="text-muted-foreground">-</span>;
+    //     if (!name) return <span className="text-muted-foreground">-</span>;
 
-        // Generate acronym from organization name
-        const acronym = name
-          .split(/\s+/)
-          .map(word => word[0])
-          .join("")
-          .toUpperCase()
-          .slice(0, 4); // Allow up to 4 characters for better readability
+    //     // Generate acronym from organization name
+    //     const acronym = name
+    //       .split(/\s+/)
+    //       .map(word => word[0])
+    //       .join("")
+    //       .toUpperCase()
+    //       .slice(0, 4); // Allow up to 4 characters for better readability
 
-        return (
-          <Badge
-            variant="outline"
-            className="border-purple-300 bg-purple-50/50 font-mono text-purple-700 hover:bg-purple-50 dark:border-purple-600 dark:bg-purple-950/20 dark:text-purple-400"
-            title={name}
-          >
-            {acronym}
-          </Badge>
-        );
-      },
-    },
+    //     return (
+    //       <Badge
+    //         variant="outline"
+    //         className="border-purple-300 bg-purple-50/50 font-mono text-purple-700 hover:bg-purple-50 dark:border-purple-600 dark:bg-purple-950/20 dark:text-purple-400"
+    //         title={name}
+    //       >
+    //         {acronym}
+    //       </Badge>
+    //     );
+    //   },
+    // },
     {
       id: "project",
       header: "Project",
@@ -392,30 +416,7 @@ export function getParticipantColumns({
         return <span className="text-muted-foreground text-sm">—</span>;
       },
     },
-    {
-      id: "subCounty",
-      header: "Sub County",
-      enableHiding: true,
-      enableSorting: true,
-      accessorFn: row => {
-        const subCountyId = row.subCounty;
-        const subCountyName =
-          locationNames?.subCounties[subCountyId] || subCountyId || "—";
-        return capitalizeWords(subCountyName);
-      },
-      cell: ({ row }) => {
-        const subCountyId = row.original.subCounty;
-        const subCountyName =
-          locationNames?.subCounties[subCountyId] || subCountyId || "—";
-        const capitalizedName = capitalizeWords(subCountyName);
 
-        return (
-          <div className="max-w-[150px] truncate" title={capitalizedName}>
-            {capitalizedName}
-          </div>
-        );
-      },
-    },
     {
       id: "parish",
       header: "Parish",

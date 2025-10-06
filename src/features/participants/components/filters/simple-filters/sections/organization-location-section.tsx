@@ -18,6 +18,9 @@ interface OrganizationLocationSectionProps {
   organizations: Array<{ id: string; name: string; acronym: string }>;
   districts: Array<{ id: string; name: string }>;
   subCounties: Array<{ id: string; name: string }>;
+  counties?: Array<{ id: string; name: string }>;
+  parishes?: Array<{ id: string; name: string }>;
+  villages?: Array<{ id: string; name: string }>;
   isLoading?: boolean;
 }
 
@@ -26,6 +29,9 @@ export function OrganizationLocationSection({
   organizations,
   districts = [],
   subCounties = [],
+  counties = [],
+  parishes = [],
+  villages = [],
   isLoading = false,
 }: OrganizationLocationSectionProps) {
   const filters = useAtomValue(participantFiltersAtom);
@@ -36,7 +42,7 @@ export function OrganizationLocationSection({
       <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
         Organization & Location
       </h5>
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-5">
         <div className="space-y-2">
           <label className="text-xs font-medium">Project</label>
           <Select
@@ -117,6 +123,69 @@ export function OrganizationLocationSection({
               {subCounties.map(subCounty => (
                 <SelectItem key={subCounty.id} value={subCounty.id}>
                   {subCounty.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-xs font-medium">County</label>
+          <Select
+            value={filters.county}
+            onValueChange={value => updateFilter({ key: "county", value })}
+            disabled={isLoading}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select county..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Counties</SelectItem>
+              {counties.map(county => (
+                <SelectItem key={county.id} value={county.id}>
+                  {county.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-xs font-medium">Parish</label>
+          <Select
+            value={filters.parish}
+            onValueChange={value => updateFilter({ key: "parish", value })}
+            disabled={isLoading}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select parish..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Parishes</SelectItem>
+              {parishes.map(parish => (
+                <SelectItem key={parish.id} value={parish.id}>
+                  {parish.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-xs font-medium">Village</label>
+          <Select
+            value={filters.village}
+            onValueChange={value => updateFilter({ key: "village", value })}
+            disabled={isLoading}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select village..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Villages</SelectItem>
+              {villages.map(village => (
+                <SelectItem key={village.id} value={village.id}>
+                  {village.name}
                 </SelectItem>
               ))}
             </SelectContent>
