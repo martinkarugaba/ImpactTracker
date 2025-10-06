@@ -1,7 +1,8 @@
 "use client";
 
 import { useAtom } from "jotai";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import type { ActivityParticipant } from "../../types/types";
 import type { Participant } from "@/features/participants/types/types";
 import { deletingSessionIdAtom } from "../../atoms/activities-atoms";
@@ -109,6 +110,11 @@ export function AttendanceTab({
   onCreateSession,
   onEditSession,
 }: AttendanceTabProps) {
+  // URL parameter management hooks
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [_deletingSessionId, _setDeletingSessionId] = useAtom(
     deletingSessionIdAtom
   );
@@ -118,6 +124,31 @@ export function AttendanceTab({
   const [selectedParticipants, setSelectedParticipants] = useState<
     ActivityParticipant[]
   >([]);
+  const [activeSubTab, setActiveSubTab] = useState<string>("sessions");
+
+  // Initialize subtab from URL on mount
+  useEffect(() => {
+    const subtab = searchParams.get("subtab");
+    if (subtab && ["sessions", "attendance"].includes(subtab)) {
+      setActiveSubTab(subtab);
+    }
+  }, [searchParams]);
+
+  // Sync URL when subtab changes
+  const handleSubTabChange = (value: string) => {
+    setActiveSubTab(value);
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (value === "sessions") {
+      params.delete("subtab");
+    } else {
+      params.set("subtab", value);
+    }
+
+    const queryString = params.toString();
+    const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+    router.replace(newUrl, { scroll: false });
+  };
 
   // Hook for updating session status
   const updateSession = useUpdateActivitySession();
@@ -480,7 +511,11 @@ export function AttendanceTab({
   return (
     <div className="space-y-6">
       {/* Sessions and Attendance Management Tabs */}
-      <Tabs defaultValue="sessions" className="w-full">
+      <Tabs
+        value={activeSubTab}
+        onValueChange={handleSubTabChange}
+        className="w-full"
+      >
         <TabsList className="w-fit">
           <TabsTrigger value="sessions" className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />

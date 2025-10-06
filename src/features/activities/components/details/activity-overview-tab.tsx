@@ -214,17 +214,17 @@ export function ActivityOverviewTab({
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {activity.projectName && (
-                          <div className="flex items-center gap-1.5 rounded-md border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 px-2 py-1 text-xs shadow-sm dark:border-blue-800/50 dark:from-blue-950/30 dark:to-indigo-950/30">
-                            <Building className="h-3 w-3 text-blue-600 dark:text-blue-400" />
-                            <span className="font-medium text-blue-700 dark:text-blue-300">
+                          <div className="bg-muted flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs shadow-sm">
+                            <Building className="text-muted-foreground h-3 w-3" />
+                            <span className="text-foreground font-medium">
                               {activity.projectName}
                             </span>
                           </div>
                         )}
                         {activity.clusterName && (
-                          <div className="flex items-center gap-1.5 rounded-md border border-purple-200 bg-gradient-to-r from-purple-50 to-violet-50 px-2 py-1 text-xs shadow-sm dark:border-purple-800/50 dark:from-purple-950/30 dark:to-violet-950/30">
-                            <Users className="h-3 w-3 text-purple-600 dark:text-purple-400" />
-                            <span className="font-medium text-purple-700 dark:text-purple-300">
+                          <div className="bg-muted flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs shadow-sm">
+                            <Users className="text-muted-foreground h-3 w-3" />
+                            <span className="text-foreground font-medium">
                               {activity.clusterName}
                             </span>
                           </div>
