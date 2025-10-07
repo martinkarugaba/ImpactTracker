@@ -9,12 +9,14 @@ import {
   LayoutGrid,
   ChevronDown,
   Trash2,
+  FileSpreadsheet,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { createColumns } from "./vsla-table-columns";
@@ -33,7 +35,8 @@ interface VSLAsTableProps {
   onEdit?: (vsla: VSLA) => void;
   onDelete?: (vsla: VSLA) => void;
   onBulkDelete?: (vslas: VSLA[]) => void;
-  onExport?: () => void;
+  onExportToExcel?: () => void;
+  onExportToCSV?: () => void;
   isLoading?: boolean;
   pageSize?: number;
   organizations?: Organization[];
@@ -48,7 +51,8 @@ export function VSLAsTable({
   onEdit,
   onDelete,
   onBulkDelete,
-  onExport,
+  onExportToExcel,
+  onExportToCSV,
   isLoading = false,
   pageSize = 10,
   organizations = [],
@@ -147,11 +151,30 @@ export function VSLAsTable({
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-          {onExport && (
-            <Button variant="outline" onClick={onExport}>
-              <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
+          {(onExportToExcel || onExportToCSV) && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  <Download className="mr-2 h-4 w-4" />
+                  Export
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {onExportToExcel && (
+                  <DropdownMenuItem onClick={onExportToExcel}>
+                    <FileSpreadsheet className="mr-2 h-4 w-4" />
+                    Export to Excel
+                  </DropdownMenuItem>
+                )}
+                {onExportToCSV && (
+                  <DropdownMenuItem onClick={onExportToCSV}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Export to CSV
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
           <ExcelImportDialog
             config={createVSLAImportConfig(organizations, clusters, projects)}

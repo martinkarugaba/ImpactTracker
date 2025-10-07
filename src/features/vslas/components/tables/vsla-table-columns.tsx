@@ -86,7 +86,6 @@ export const createColumns = (
       );
     },
     cell: ({ row }) => {
-      const _subCounty = row.original.sub_county;
       const vslaId = row.original.id;
       const name = row.original.name;
       return (
@@ -104,6 +103,32 @@ export const createColumns = (
             </Link>
           </div>
         </div>
+      );
+    },
+  },
+  {
+    accessorKey: "sub_county",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="h-auto p-0 font-medium hover:bg-transparent"
+        >
+          Subcounty
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const subCounty = row.getValue("sub_county") as string;
+      return (
+        <Badge
+          variant="outline"
+          className="border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+        >
+          {subCounty}
+        </Badge>
       );
     },
   },

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import { useSession } from "next-auth/react";
+import * as XLSX from "xlsx";
 import { getVSLAs, deleteVSLAs } from "../../actions/vslas";
 import { VSLAsTable, VSLAsTableSkeleton } from "../tables";
 import { CreateVSLADialog, EditVSLADialog, DeleteVSLADialog } from "../dialogs";
@@ -34,6 +36,8 @@ export function VSLAsPageContent({
   const [deletingVSLA, setDeletingVSLA] = useState<VSLA | null>(null);
   const [activeTab, setActiveTab] = useState("table");
   const router = useRouter();
+  const { data: session } = useSession();
+  const isSuperAdmin = session?.user?.role === "super_admin";
 
   const handleRowClick = (vsla: VSLA) => {
     // Navigate to VSLA details page
@@ -80,12 +84,37 @@ export function VSLAsPageContent({
     }
   };
 
-  const handleExport = () => {
-    // Implement CSV/Excel export functionality
+  const handleExportToExcel = () => {
+    // Export to Excel
+    const exportData = vslas.map(vsla => ({
+      Name: vsla.name,
+      Code: vsla.code,
+      District: vsla.district || "",
+      Subcounty: vsla.sub_county || "",
+      Organization: vsla.organization?.name || "",
+      Cluster: vsla.cluster?.name || "",
+      Members: vsla.total_members,
+      "Total Savings": vsla.total_savings,
+      "Total Loans": vsla.total_loans,
+      Status: vsla.status,
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "VSLAs");
+    XLSX.writeFile(wb, `vslas-${new Date().toISOString().split("T")[0]}.xlsx`);
+
+    toast.success("VSLAs exported to Excel successfully!");
+  };
+
+  const handleExportToCSV = () => {
+    // Export to CSV (super_admin only)
     const csvContent = [
       [
         "Name",
         "Code",
+        "District",
+        "Subcounty",
         "Organization",
         "Cluster",
         "Members",
@@ -96,6 +125,8 @@ export function VSLAsPageContent({
       ...vslas.map(vsla => [
         vsla.name,
         vsla.code,
+        vsla.district || "",
+        vsla.sub_county || "",
         vsla.organization?.name || "",
         vsla.cluster?.name || "",
         vsla.total_members.toString(),
@@ -117,7 +148,7 @@ export function VSLAsPageContent({
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    toast.success("VSLAs exported successfully!");
+    toast.success("VSLAs exported to CSV successfully!");
   };
 
   const refreshData = async () => {
@@ -191,7 +222,8 @@ export function VSLAsPageContent({
               onEdit={handleEdit}
               onDelete={handleDelete}
               onBulkDelete={handleBulkDelete}
-              onExport={handleExport}
+              onExportToExcel={handleExportToExcel}
+              onExportToCSV={isSuperAdmin ? handleExportToCSV : undefined}
               isLoading={isLoading}
               pageSize={20}
               organizations={organizations}
