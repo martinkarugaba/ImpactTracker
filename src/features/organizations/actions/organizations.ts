@@ -1,9 +1,15 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { organizations, clusters, projects } from "@/lib/db/schema";
-import { eq, inArray } from "drizzle-orm";
+import {
+  organizations,
+  clusters,
+  projects,
+  clusterUsers,
+} from "@/lib/db/schema";
+import { eq, inArray, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/features/auth/auth";
 import {
   createOrganizationSchema,
   type CreateOrganizationInput,
@@ -83,6 +89,35 @@ export async function createOrganization(data: CreateOrganizationInput) {
 
 export async function getOrganizations(cluster_id?: string) {
   try {
+    const session = await auth();
+
+    if (!session?.user) {
+      return { success: false, error: "Not authenticated" };
+    }
+
+    // Determine which clusters the user can see
+    let allowedClusterIds: string[] | undefined;
+
+    if (session.user.role === "cluster_manager") {
+      // Cluster manager sees only organizations in clusters they manage
+      const userClusters = await db
+        .select({ cluster_id: clusterUsers.cluster_id })
+        .from(clusterUsers)
+        .where(
+          and(
+            eq(clusterUsers.user_id, session.user.id),
+            eq(clusterUsers.role, "cluster_manager")
+          )
+        );
+
+      allowedClusterIds = userClusters.map(uc => uc.cluster_id);
+
+      if (allowedClusterIds.length === 0) {
+        return { success: true, data: [] };
+      }
+    }
+    // super_admin sees all organizations (no filter applied)
+
     const orgs = await db
       .select({
         id: organizations.id,
@@ -112,7 +147,13 @@ export async function getOrganizations(cluster_id?: string) {
       .from(organizations)
       .leftJoin(clusters, eq(organizations.cluster_id, clusters.id))
       .leftJoin(projects, eq(organizations.project_id, projects.id))
-      .where(cluster_id ? eq(organizations.cluster_id, cluster_id) : undefined);
+      .where(
+        cluster_id
+          ? eq(organizations.cluster_id, cluster_id)
+          : allowedClusterIds
+            ? inArray(organizations.cluster_id, allowedClusterIds)
+            : undefined
+      );
 
     // Collect all district codes and subcounty codes for batch lookup
     const districtCodes = orgs.map(org => org.district).filter(Boolean);

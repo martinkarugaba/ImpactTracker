@@ -48,6 +48,33 @@ export function useFilterOptions({
       name: locationNames.subCounties[id as string] || (id as string),
     }));
 
+    const uniqueParishes = [
+      ...new Set(
+        allParticipants.map((p: Participant) => p.parish).filter(Boolean)
+      ),
+    ].map(parish => ({
+      id: parish as string,
+      name: parish as string,
+    }));
+
+    const uniqueVillages = [
+      ...new Set(
+        allParticipants.map((p: Participant) => p.village).filter(Boolean)
+      ),
+    ].map(village => ({
+      id: village as string,
+      name: village as string,
+    }));
+
+    const uniqueCounties = [
+      ...new Set(
+        allParticipants.map((p: Participant) => p.countyName).filter(Boolean)
+      ),
+    ].map(county => ({
+      id: county as string,
+      name: county as string,
+    }));
+
     const uniqueEnterprises = [
       ...new Set(
         allParticipants.map((p: Participant) => p.enterprise).filter(Boolean)
@@ -60,6 +87,9 @@ export function useFilterOptions({
     return {
       districts: uniqueDistricts,
       subCounties: uniqueSubCounties,
+      parishes: uniqueParishes,
+      villages: uniqueVillages,
+      counties: uniqueCounties,
       enterprises: uniqueEnterprises,
     };
   }, [allParticipants, locationNames.districts, locationNames.subCounties]);

@@ -363,6 +363,7 @@ interface DataTableProps<TData, TValue> {
   searchValue?: string;
   onSearchChange?: (value: string) => void;
   isLoading?: boolean;
+  loadingText?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -388,6 +389,7 @@ export function DataTable<TData, TValue>({
   searchValue,
   onSearchChange,
   isLoading = false,
+  loadingText = "Loading data...",
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -596,7 +598,7 @@ export function DataTable<TData, TValue>({
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <span className="text-muted-foreground text-sm">
-                  Loading participants...
+                  {loadingText}
                 </span>
               </div>
             </div>

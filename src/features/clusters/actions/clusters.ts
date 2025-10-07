@@ -7,13 +7,23 @@ import type {
   ClusterData,
   ClusterUpdateData,
 } from "./types";
-import { clusters, clusterMembers, organizations } from "@/lib/db/schema";
-import { eq, and, sql } from "drizzle-orm";
+import {
+  clusters,
+  clusterMembers,
+  organizations,
+  clusterUsers,
+} from "@/lib/db/schema";
+import { eq, and, sql, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/features/auth/auth";
 
 // Get all clusters
 /**
  * Fetches all clusters from the database
+ * Role-based filtering:
+ * - super_admin: sees all clusters
+ * - cluster_manager: sees only clusters they manage
+ * - other roles: sees clusters they're associated with
  * @returns {Promise<ActionResponse<Array<typeof clusters.$inferSelect>>>} List of clusters or error message
  */
 export async function getClusters(): Promise<
@@ -22,7 +32,57 @@ export async function getClusters(): Promise<
   try {
     console.log("🔄 Attempting to fetch clusters...");
 
-    const clustersList = await db.select().from(clusters);
+    const session = await auth();
+
+    if (!session?.user) {
+      return { success: false, error: "Not authenticated" };
+    }
+
+    let clustersList: Array<typeof clusters.$inferSelect>;
+
+    if (session.user.role === "super_admin") {
+      // Super admin sees all clusters
+      clustersList = await db.select().from(clusters);
+    } else if (session.user.role === "cluster_manager") {
+      // Cluster manager sees only clusters they manage
+      const userClusters = await db
+        .select({ cluster_id: clusterUsers.cluster_id })
+        .from(clusterUsers)
+        .where(
+          and(
+            eq(clusterUsers.user_id, session.user.id),
+            eq(clusterUsers.role, "cluster_manager")
+          )
+        );
+
+      const clusterIds = userClusters.map(uc => uc.cluster_id);
+
+      if (clusterIds.length === 0) {
+        return { success: true, data: [] };
+      }
+
+      clustersList = await db
+        .select()
+        .from(clusters)
+        .where(inArray(clusters.id, clusterIds));
+    } else {
+      // Other roles see clusters they're associated with
+      const userClusters = await db
+        .select({ cluster_id: clusterUsers.cluster_id })
+        .from(clusterUsers)
+        .where(eq(clusterUsers.user_id, session.user.id));
+
+      const clusterIds = userClusters.map(uc => uc.cluster_id);
+
+      if (clusterIds.length === 0) {
+        return { success: true, data: [] };
+      }
+
+      clustersList = await db
+        .select()
+        .from(clusters)
+        .where(inArray(clusters.id, clusterIds));
+    }
 
     console.log(`✅ Successfully fetched ${clustersList.length} clusters`);
     return { success: true, data: clustersList };

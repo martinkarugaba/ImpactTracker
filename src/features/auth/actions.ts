@@ -19,11 +19,19 @@ export async function getUserClusterId() {
     }
 
     // Get the user to check their role
-    const user = await db.query.users.findFirst({
-      where: eq(users.id, session.user.id),
-    });
+    const user = await db.query.users
+      .findFirst({
+        where: eq(users.id, session.user.id),
+      })
+      .catch(error => {
+        console.error("Database error while fetching user:", error);
+        return null;
+      });
 
     if (!user) {
+      console.warn(
+        `User ${session.user.id} not found in database. Session may be stale.`
+      );
       return null;
     }
 
@@ -100,13 +108,20 @@ export async function getOrganizationId() {
     console.log("Found user session for user:", session.user.id);
 
     // Check if user exists in database
-    const user = await db.query.users.findFirst({
-      where: eq(users.id, session.user.id),
-    });
+    const user = await db.query.users
+      .findFirst({
+        where: eq(users.id, session.user.id),
+      })
+      .catch(error => {
+        console.error("Database error while fetching user:", error);
+        return null;
+      });
 
     // If user doesn't exist, return null
     if (!user) {
-      console.log(`User ${session.user.id} not found in database`);
+      console.warn(
+        `User ${session.user.id} not found in database. Session may be stale.`
+      );
       return null;
     }
     console.log("Found user in database:", user.id);

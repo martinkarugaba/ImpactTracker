@@ -1,11 +1,12 @@
 "use client";
 
 import { useMemo, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAtom } from "jotai";
 import { useParticipants } from "../hooks/use-participants";
 import { useParticipantMetrics } from "../hooks/use-participant-metrics";
 import { useLocationNames } from "../hooks/use-location-names";
+import { useFilterOptions } from "../components/container/use-filter-options";
 import {
   participantFiltersAtom,
   participantPaginationAtom,
@@ -46,13 +47,15 @@ export function useParticipantContainerJotai({
   clusterId,
 }: UseParticipantContainerJotaiProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   // Get all state from Jotai atoms
-  const [filters] = useAtom(participantFiltersAtom);
+  const [filters, setFilters] = useAtom(participantFiltersAtom);
   const [, updateFilter] = useAtom(updateFilterAtom);
   const [pagination, setPagination] = useAtom(participantPaginationAtom);
   const [searchValue, setSearchValue] = useAtom(participantSearchAtom);
-  const [activeTab] = useAtom(activeTabAtom);
+  const [activeTab, setActiveTab] = useAtom(activeTabAtom);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useAtom(createDialogAtom);
   const [isImportDialogOpen, setIsImportDialogOpen] = useAtom(importDialogAtom);
   const [editingParticipant, setEditingParticipant] = useAtom(
@@ -63,6 +66,99 @@ export function useParticipantContainerJotai({
   );
   const [isFiltering] = useAtom(isFilteringAtom);
   const [, clearFiltering] = useAtom(clearFilteringAtom);
+
+  // Initialize state from URL params on mount
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    const search = searchParams.get("search");
+    const project = searchParams.get("project");
+    const organization = searchParams.get("organization");
+    const district = searchParams.get("district");
+    const subCounty = searchParams.get("subCounty");
+    const enterprise = searchParams.get("enterprise");
+    const sex = searchParams.get("sex");
+    const isPWD = searchParams.get("isPWD");
+    const ageGroup = searchParams.get("ageGroup");
+    const maritalStatus = searchParams.get("maritalStatus");
+    const educationLevel = searchParams.get("educationLevel");
+    const employmentStatus = searchParams.get("employmentStatus");
+
+    // Set tab from URL
+    if (tab && ["participants", "analytics", "charts"].includes(tab)) {
+      setActiveTab(tab as "participants" | "analytics" | "charts");
+    }
+
+    // Set search from URL
+    if (search) {
+      setSearchValue(search);
+    }
+
+    // Set filters from URL
+    const urlFilters: Partial<ParticipantFilters> = {};
+    if (project) urlFilters.project = project;
+    if (organization) urlFilters.organization = organization;
+    if (district) urlFilters.district = district;
+    if (subCounty) urlFilters.subCounty = subCounty;
+    if (enterprise) urlFilters.enterprise = enterprise;
+    if (sex) urlFilters.sex = sex;
+    if (isPWD) urlFilters.isPWD = isPWD;
+    if (ageGroup) urlFilters.ageGroup = ageGroup;
+    if (maritalStatus) urlFilters.maritalStatus = maritalStatus;
+    if (educationLevel) urlFilters.educationLevel = educationLevel;
+    if (employmentStatus) urlFilters.employmentStatus = employmentStatus;
+
+    if (Object.keys(urlFilters).length > 0) {
+      setFilters(prev => ({ ...prev, ...urlFilters }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount
+
+  // Sync URL with state changes
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    // Add tab to URL
+    if (activeTab !== "participants") {
+      params.set("tab", activeTab);
+    }
+
+    // Add search to URL
+    if (searchValue) {
+      params.set("search", searchValue);
+    }
+
+    // Add filters to URL (only if not "all")
+    if (filters.project && filters.project !== "all")
+      params.set("project", filters.project);
+    if (filters.organization && filters.organization !== "all")
+      params.set("organization", filters.organization);
+    if (filters.district && filters.district !== "all")
+      params.set("district", filters.district);
+    if (filters.subCounty && filters.subCounty !== "all")
+      params.set("subCounty", filters.subCounty);
+    if (filters.enterprise && filters.enterprise !== "all")
+      params.set("enterprise", filters.enterprise);
+    if (filters.sex && filters.sex !== "all") params.set("sex", filters.sex);
+    if (filters.isPWD && filters.isPWD !== "all")
+      params.set("isPWD", filters.isPWD);
+    if (filters.ageGroup && filters.ageGroup !== "all")
+      params.set("ageGroup", filters.ageGroup);
+    if (filters.maritalStatus && filters.maritalStatus !== "all")
+      params.set("maritalStatus", filters.maritalStatus);
+    if (filters.educationLevel && filters.educationLevel !== "all")
+      params.set("educationLevel", filters.educationLevel);
+    if (filters.employmentStatus && filters.employmentStatus !== "all")
+      params.set("employmentStatus", filters.employmentStatus);
+
+    // Update URL without triggering navigation
+    const queryString = params.toString();
+    const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+
+    // Only update if URL actually changed
+    if (window.location.pathname + window.location.search !== newUrl) {
+      router.replace(newUrl, { scroll: false });
+    }
+  }, [activeTab, searchValue, filters, pathname, router]);
 
   const handleFiltersChange = (newFilters: ParticipantFilters) => {
     // Check if any filters are actually changing
@@ -333,6 +429,12 @@ export function useParticipantContainerJotai({
     locationIds.countryIds
   );
 
+  // Get filter options from participants data
+  const filterOptions = useFilterOptions({
+    clusterId,
+    locationNames,
+  });
+
   const handleView = (participant: Participant) => {
     router.push(`/dashboard/participants/${participant.id}`);
   };
@@ -525,6 +627,7 @@ export function useParticipantContainerJotai({
     metricsParticipants,
     participantsData,
     locationNames,
+    filterOptions,
 
     // Loading & Error states
     isParticipantsLoading,

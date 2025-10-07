@@ -18,6 +18,7 @@ import {
   organizations,
   projects,
   clusters,
+  users,
 } from "@/lib/db/schema";
 import { eq, and, sql, asc, desc, or, count } from "drizzle-orm";
 import { withQueryTracking } from "@/lib/performance/query-monitor";
@@ -110,6 +111,7 @@ export async function getActivitiesOptimized(
             projectName: projects.name,
             projectAcronym: projects.acronym,
             clusterName: clusters.name,
+            activityLeadName: users.name,
             // Aggregated counts (conditional)
             ...(includeSessionCounts && {
               sessionCount: sql<number>`COALESCE(session_counts.session_count, 0)`,
@@ -126,7 +128,8 @@ export async function getActivitiesOptimized(
             eq(activities.organization_id, organizations.id)
           )
           .leftJoin(projects, eq(activities.project_id, projects.id))
-          .leftJoin(clusters, eq(activities.cluster_id, clusters.id));
+          .leftJoin(clusters, eq(activities.cluster_id, clusters.id))
+          .leftJoin(users, eq(activities.created_by, users.id));
 
         // Add session counts subquery if needed
         if (includeSessionCounts) {

@@ -74,6 +74,9 @@ export type ParticipantFilters = {
   organization: string;
   district: string;
   subCounty: string;
+  county: string;
+  parish: string;
+  village: string;
   enterprise: string;
   sex: string;
   isPWD: string;

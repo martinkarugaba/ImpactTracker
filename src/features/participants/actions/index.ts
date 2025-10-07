@@ -20,6 +20,9 @@ export interface GetParticipantsParams {
     organization?: string;
     district?: string;
     subCounty?: string;
+    county?: string;
+    parish?: string;
+    village?: string;
     enterprise?: string;
     sex?: string;
     isPWD?: string;
@@ -128,6 +131,16 @@ export async function getParticipants(
         whereConditions.push(
           eq(participants.subCounty, params.filters.subCounty)
         );
+      }
+      if (params.filters.parish && params.filters.parish !== "all") {
+        console.log("Adding parish filter:", params.filters.parish);
+        appliedFilters.push("parish");
+        whereConditions.push(eq(participants.parish, params.filters.parish));
+      }
+      if (params.filters.village && params.filters.village !== "all") {
+        console.log("Adding village filter:", params.filters.village);
+        appliedFilters.push("village");
+        whereConditions.push(eq(participants.village, params.filters.village));
       }
       if (params.filters.enterprise && params.filters.enterprise !== "all") {
         console.log("Adding enterprise filter:", params.filters.enterprise);
@@ -945,6 +958,9 @@ export async function getAllFilteredParticipantsForExport(
     organization?: string;
     district?: string;
     subCounty?: string;
+    county?: string;
+    parish?: string;
+    village?: string;
     enterprise?: string;
     sex?: string;
     isPWD?: string;
@@ -1004,6 +1020,14 @@ export async function getAllFilteredParticipantsForExport(
       if (filters.subCounty && filters.subCounty !== "all") {
         console.log("Adding subCounty filter:", filters.subCounty);
         whereConditions.push(eq(participants.subCounty, filters.subCounty));
+      }
+      if (filters.parish && filters.parish !== "all") {
+        console.log("Adding parish filter:", filters.parish);
+        whereConditions.push(eq(participants.parish, filters.parish));
+      }
+      if (filters.village && filters.village !== "all") {
+        console.log("Adding village filter:", filters.village);
+        whereConditions.push(eq(participants.village, filters.village));
       }
       if (filters.enterprise && filters.enterprise !== "all") {
         console.log("Adding enterprise filter:", filters.enterprise);

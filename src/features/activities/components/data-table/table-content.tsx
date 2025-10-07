@@ -22,6 +22,12 @@ interface TableContentProps {
   actionButtons: React.ReactNode;
   columnVisibility?: VisibilityState;
   onColumnVisibilityChange?: (visibility: VisibilityState) => void;
+  rowSelection?: Record<string, boolean>;
+  onRowSelectionChange?: (
+    updater:
+      | Record<string, boolean>
+      | ((prev: Record<string, boolean>) => Record<string, boolean>)
+  ) => void;
 }
 
 export function TableContent({
@@ -36,6 +42,8 @@ export function TableContent({
   actionButtons: _actionButtons,
   columnVisibility: _columnVisibility,
   onColumnVisibilityChange: _onColumnVisibilityChange,
+  rowSelection,
+  onRowSelectionChange,
 }: TableContentProps) {
   const columns = getActivityColumns({
     onEdit: onEditActivity,
@@ -44,14 +52,19 @@ export function TableContent({
   });
 
   return (
-    <DataTable
-      columns={columns}
-      data={data}
-      showColumnToggle={false} // Handled at top level
-      showPagination={false}
-      showRowSelection={false}
-      pageSize={pagination.limit}
-      isLoading={isLoading}
-    />
+    <div className="from-primary/5 to-card dark:bg-card rounded-lg bg-gradient-to-t shadow-xs">
+      <DataTable<Activity, unknown>
+        columns={columns}
+        data={data}
+        showColumnToggle={false} // Handled at top level
+        showPagination={false}
+        showRowSelection={true}
+        pageSize={pagination.limit}
+        isLoading={isLoading}
+        loadingText="Loading activities..."
+        rowSelection={rowSelection}
+        onRowSelectionStateChange={onRowSelectionChange}
+      />
+    </div>
   );
 }

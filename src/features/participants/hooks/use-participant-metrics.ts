@@ -54,12 +54,123 @@ export function useParticipantMetrics(
               filters?.district !== "all" ? filters?.district : undefined,
             subCounty:
               filters?.subCounty !== "all" ? filters?.subCounty : undefined,
+            county: filters?.county !== "all" ? filters?.county : undefined,
+            parish: filters?.parish !== "all" ? filters?.parish : undefined,
+            village: filters?.village !== "all" ? filters?.village : undefined,
             enterprise:
               filters?.enterprise !== "all" ? filters?.enterprise : undefined,
             sex: filters?.sex !== "all" ? filters?.sex : undefined,
             isPWD: filters?.isPWD !== "all" ? filters?.isPWD : undefined,
             ageGroup:
               filters?.ageGroup !== "all" ? filters?.ageGroup : undefined,
+            maritalStatus:
+              filters?.maritalStatus !== "all"
+                ? filters?.maritalStatus
+                : undefined,
+            educationLevel:
+              filters?.educationLevel !== "all"
+                ? filters?.educationLevel
+                : undefined,
+            isSubscribedToVSLA:
+              filters?.isSubscribedToVSLA !== "all"
+                ? filters?.isSubscribedToVSLA
+                : undefined,
+            ownsEnterprise:
+              filters?.ownsEnterprise !== "all"
+                ? filters?.ownsEnterprise
+                : undefined,
+            employmentStatus:
+              filters?.employmentStatus !== "all"
+                ? filters?.employmentStatus
+                : undefined,
+            employmentSector:
+              filters?.employmentSector !== "all"
+                ? filters?.employmentSector
+                : undefined,
+            hasVocationalSkills:
+              filters?.hasVocationalSkills !== "all"
+                ? filters?.hasVocationalSkills
+                : undefined,
+            hasSoftSkills:
+              filters?.hasSoftSkills !== "all"
+                ? filters?.hasSoftSkills
+                : undefined,
+            hasBusinessSkills:
+              filters?.hasBusinessSkills !== "all"
+                ? filters?.hasBusinessSkills
+                : undefined,
+            specificVocationalSkill:
+              filters?.specificVocationalSkill !== "all"
+                ? filters?.specificVocationalSkill
+                : undefined,
+            specificSoftSkill:
+              filters?.specificSoftSkill !== "all"
+                ? filters?.specificSoftSkill
+                : undefined,
+            specificBusinessSkill:
+              filters?.specificBusinessSkill !== "all"
+                ? filters?.specificBusinessSkill
+                : undefined,
+            populationSegment:
+              filters?.populationSegment !== "all"
+                ? filters?.populationSegment
+                : undefined,
+            isActiveStudent:
+              filters?.isActiveStudent !== "all"
+                ? filters?.isActiveStudent
+                : undefined,
+            isTeenMother:
+              filters?.isTeenMother !== "all"
+                ? filters?.isTeenMother
+                : undefined,
+            sourceOfIncome:
+              filters?.sourceOfIncome !== "all"
+                ? filters?.sourceOfIncome
+                : undefined,
+            enterpriseSector:
+              filters?.enterpriseSector !== "all"
+                ? filters?.enterpriseSector
+                : undefined,
+            businessScale:
+              filters?.businessScale !== "all"
+                ? filters?.businessScale
+                : undefined,
+            nationality:
+              filters?.nationality !== "all" ? filters?.nationality : undefined,
+            locationSetting:
+              filters?.locationSetting !== "all"
+                ? filters?.locationSetting
+                : undefined,
+            isRefugee:
+              filters?.isRefugee !== "all" ? filters?.isRefugee : undefined,
+            isMother:
+              filters?.isMother !== "all" ? filters?.isMother : undefined,
+            monthlyIncomeRange:
+              filters?.monthlyIncomeRange !== "all"
+                ? filters?.monthlyIncomeRange
+                : undefined,
+            numberOfChildrenRange:
+              filters?.numberOfChildrenRange !== "all"
+                ? filters?.numberOfChildrenRange
+                : undefined,
+            noOfTrainingsRange:
+              filters?.noOfTrainingsRange !== "all"
+                ? filters?.noOfTrainingsRange
+                : undefined,
+            employmentType:
+              filters?.employmentType !== "all"
+                ? filters?.employmentType
+                : undefined,
+            accessedLoans:
+              filters?.accessedLoans !== "all"
+                ? filters?.accessedLoans
+                : undefined,
+            individualSaving:
+              filters?.individualSaving !== "all"
+                ? filters?.individualSaving
+                : undefined,
+            groupSaving:
+              filters?.groupSaving !== "all" ? filters?.groupSaving : undefined,
           },
         });
         console.log(

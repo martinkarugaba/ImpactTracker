@@ -25,7 +25,7 @@ interface ActivityDialogsProps {
   setEditingActivity: (activity: Activity | null) => void;
   deletingActivity: Activity | null;
   setDeletingActivity: (activity: Activity | null) => void;
-  organizations: Array<{ id: string; name: string; acronym?: string }>;
+  clusterUsers: Array<{ id: string; name: string; email: string }>;
   clusters: Array<{ id: string; name: string }>;
   projects: Array<{ id: string; name: string; acronym?: string }>;
 }
@@ -40,7 +40,7 @@ export function ActivityDialogs({
   setEditingActivity,
   deletingActivity,
   setDeletingActivity,
-  organizations,
+  clusterUsers,
   clusters,
   projects,
 }: ActivityDialogsProps) {
@@ -71,7 +71,7 @@ export function ActivityDialogs({
         }}
         activity={editingActivity || undefined}
         clusterId={clusterId}
-        organizations={organizations}
+        clusterUsers={clusterUsers}
         clusters={clusters}
         projects={projects}
       />

@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Info, Users, UserCheck, TrendingUp } from "lucide-react";
 import { Activity } from "../../types/types";
@@ -37,8 +39,42 @@ export function ActivityDetailsTabs({
   refreshKey,
   activityReportsRefreshKey,
 }: ActivityDetailsTabsProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState<string>("overview");
+
+  // Initialize tab from URL on mount
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (
+      tab &&
+      ["overview", "attendance", "demographics", "analytics"].includes(tab)
+    ) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  // Sync URL when tab changes
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (value === "overview") {
+      params.delete("tab");
+      params.delete("subtab"); // Clear subtab when switching main tabs
+    } else {
+      params.set("tab", value);
+      params.delete("subtab"); // Clear subtab when switching main tabs
+    }
+
+    const queryString = params.toString();
+    const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+    router.replace(newUrl, { scroll: false });
+  };
+
   return (
-    <Tabs defaultValue="overview" className="w-full">
+    <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
       <TabsList className="grid w-full grid-cols-5">
         <TabsTrigger value="overview">
           <Info className="h-4 w-4" />

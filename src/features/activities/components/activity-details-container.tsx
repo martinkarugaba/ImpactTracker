@@ -32,6 +32,7 @@ import {
   useDeleteActivity,
   useAddActivityParticipants,
 } from "../hooks/use-activities";
+import { useClusterUsers } from "../hooks/use-cluster-users";
 import {
   createConceptNote,
   updateConceptNote,
@@ -48,18 +49,24 @@ import toast from "react-hot-toast";
 
 interface ActivityDetailsContainerProps {
   activity: Activity;
-  organizations?: Array<{ id: string; name: string }>;
   clusters?: Array<{ id: string; name: string }>;
   projects?: Array<{ id: string; name: string }>;
 }
 
 export function ActivityDetailsContainer({
   activity,
-  organizations = [],
   clusters = [],
   projects = [],
 }: ActivityDetailsContainerProps) {
   const queryClient = useQueryClient();
+
+  // Fetch cluster users
+  const { data: clusterUsersData } = useClusterUsers(
+    activity.cluster_id || undefined
+  );
+
+  const clusterUsers = clusterUsersData?.data || [];
+
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isConceptNoteDialogOpen, setIsConceptNoteDialogOpen] = useState(false);
@@ -336,7 +343,7 @@ export function ActivityDetailsContainer({
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
         activity={activity}
-        organizations={organizations}
+        clusterUsers={clusterUsers}
         clusters={clusters}
         projects={projects}
       />
