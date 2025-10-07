@@ -12,7 +12,7 @@ import type { Participant } from "../../participants/types/types";
 
 // Tab navigation state
 export const activeTabAtom = atom<
-  "activities" | "metrics" | "charts" | "demographics" | "calendar"
+  "activities" | "metrics" | "charts" | "demographics" | "calendar" | "targets"
 >("activities");
 
 // Search state

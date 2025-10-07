@@ -9,9 +9,10 @@ import { getVSLAs, deleteVSLAs } from "../../actions/vslas";
 import { VSLAsTable, VSLAsTableSkeleton } from "../tables";
 import { CreateVSLADialog, EditVSLADialog, DeleteVSLADialog } from "../dialogs";
 import { VSLAMetricsCards } from "../metrics/vsla-metrics-cards";
+import { TargetsTab } from "./targets-tab";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, BarChart3, Table } from "lucide-react";
+import { Plus, BarChart3, Table, Target } from "lucide-react";
 import { VSLA } from "../../types";
 import type { Organization } from "@/features/organizations/types";
 import type { Cluster } from "@/features/clusters/components/clusters-table";
@@ -213,6 +214,10 @@ export function VSLAsPageContent({
               <BarChart3 className="h-4 w-4" />
               Metrics
             </TabsTrigger>
+            <TabsTrigger value="targets" className="flex items-center gap-2">
+              <Target className="h-4 w-4" />
+              Targets
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="table" className="mt-6">
@@ -235,6 +240,10 @@ export function VSLAsPageContent({
 
           <TabsContent value="metrics" className="mt-6">
             <VSLAMetricsCards vslas={vslas} isLoading={isLoading} />
+          </TabsContent>
+
+          <TabsContent value="targets" className="mt-6">
+            <TargetsTab vslas={vslas} isLoading={isLoading} />
           </TabsContent>
         </Tabs>
       )}

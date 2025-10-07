@@ -1,13 +1,14 @@
 "use client";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Users, PieChart } from "lucide-react";
+import { BarChart3, Users, PieChart, Target } from "lucide-react";
 import { useParticipantContainerJotai } from "../../state/use-participant-container-jotai";
 import { useParticipantState } from "../../state/use-participant-state";
 import type { Participant } from "../../types/types";
 import { AnalyticsTab } from "./metrics-tab";
 import { ChartsTab } from "./charts-tab";
 import { ParticipantsTab } from "./participants-tab";
+import { TargetsTab } from "./targets-tab";
 import { ParticipantDialogs } from "./participant-dialogs";
 
 interface JotaiParticipantsContainerProps {
@@ -67,7 +68,15 @@ export function JotaiParticipantsContainer({
     <div className="space-y-6 border-green-500">
       {/* Modern Tabs Design */}
       <div className="bg-transparent">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs
+          value={activeTab}
+          onValueChange={value =>
+            setActiveTab(
+              value as "participants" | "analytics" | "charts" | "targets"
+            )
+          }
+          className="w-full"
+        >
           <TabsList className="bg-muted">
             <TabsTrigger
               value="participants"
@@ -89,6 +98,13 @@ export function JotaiParticipantsContainer({
             >
               <PieChart className="h-4 w-4" />
               Charts
+            </TabsTrigger>
+            <TabsTrigger
+              value="targets"
+              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
+            >
+              <Target className="h-4 w-4" />
+              Targets
             </TabsTrigger>
           </TabsList>
 
@@ -133,6 +149,12 @@ export function JotaiParticipantsContainer({
 
           {/* Charts Tab */}
           <ChartsTab
+            metricsParticipants={state.metricsParticipants}
+            isMetricsLoading={state.isMetricsLoading}
+          />
+
+          {/* Targets Tab */}
+          <TargetsTab
             metricsParticipants={state.metricsParticipants}
             isMetricsLoading={state.isMetricsLoading}
           />
