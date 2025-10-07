@@ -23,7 +23,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigation } from "@/features/dashboard/contexts/navigation-context";
-
 interface SiteHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   heading?: string;
   text?: string;
@@ -109,7 +108,7 @@ export function SiteHeader({
   return (
     <header
       className={cn(
-        "bg-background/95 sticky top-0 z-50 w-full rounded-t-lg border-b backdrop-blur transition-[margin] duration-200 ease-linear group-data-[state=collapsed]:ml-0 md:rounded-t-2xl md:group-data-[state=expanded]:ml-64 dark:bg-[#0A0A0A]",
+        "sticky top-0 z-50 w-full rounded-t-lg border-b bg-white backdrop-blur transition-[margin] duration-200 ease-linear group-data-[state=collapsed]:ml-0 md:rounded-t-2xl md:group-data-[state=expanded]:ml-64 dark:bg-[#0A0A0A]",
         "px-2 sm:px-4 md:px-6",
         className
       )}

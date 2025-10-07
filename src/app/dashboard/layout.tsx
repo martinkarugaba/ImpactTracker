@@ -21,10 +21,10 @@ export default async function DashboardLayout({
     <NavigationProvider>
       <CalendarProvider>
         <SidebarProvider>
-          <AppSidebar />
+          <AppSidebar className="bg-sidebar dark:bg-gray-900" />
           <SidebarInset className="flex min-h-screen flex-1 flex-col border-none">
             <SiteHeader />
-            <main className="bg-background flex-1 rounded-b-2xl px-2 pt-0 pb-2 md:px-3 md:pb-3 lg:px-0 dark:bg-[#0A0A0A]">
+            <main className="flex-1 rounded-b-2xl bg-white px-2 pt-0 pb-2 md:px-3 md:pb-3 lg:px-0 dark:bg-[#0A0A0A]">
               {children}
             </main>
           </SidebarInset>

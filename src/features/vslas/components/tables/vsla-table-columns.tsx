@@ -86,9 +86,9 @@ export const createColumns = (
       );
     },
     cell: ({ row }) => {
-      const name = row.getValue("name") as string;
-      const subCounty = row.original.sub_county;
+      const _subCounty = row.original.sub_county;
       const vslaId = row.original.id;
+      const name = row.original.name;
       return (
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/30">
@@ -102,40 +102,11 @@ export const createColumns = (
             >
               {name}
             </Link>
-            {subCounty && (
-              <Badge
-                variant="outline"
-                className="w-fit border-blue-200 bg-blue-100 text-xs text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
-              >
-                {subCounty}
-              </Badge>
-            )}
           </div>
         </div>
       );
     },
   },
-  // {
-  //   accessorKey: "code",
-  //   header: ({ column }) => {
-  //     return (
-  //       <Button
-  //         variant="ghost"
-  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-  //         className="h-auto p-0 font-medium hover:bg-transparent"
-  //       >
-  //         Code
-  //         <ArrowUpDown className="ml-2 h-4 w-4" />
-  //       </Button>
-  //     );
-  //   },
-  //   cell: ({ row }) => {
-  //     const code = row.getValue("code") as string;
-  //     return (
-  //       <div className="text-muted-foreground font-mono text-sm">{code}</div>
-  //     );
-  //   },
-  // },
   {
     accessorKey: "district",
     header: ({ column }) => {
@@ -162,32 +133,7 @@ export const createColumns = (
       );
     },
   },
-  {
-    accessorKey: "sub_county",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-medium hover:bg-transparent"
-        >
-          Sub County
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const subCounty = row.getValue("sub_county") as string;
-      return (
-        <Badge
-          variant="outline"
-          className="border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
-        >
-          {subCounty}
-        </Badge>
-      );
-    },
-  },
+
   {
     accessorKey: "total_members",
     header: ({ column }) => {
