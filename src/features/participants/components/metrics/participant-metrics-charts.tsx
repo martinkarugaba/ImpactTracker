@@ -333,13 +333,23 @@ export function ParticipantMetricsCharts({
               className="h-[280px] w-full"
             >
               <BarChart data={ageGenderData} width={500} height={280}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <ChartTooltip content={<BarTooltipContent />} />
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                />
+                <YAxis tickLine={false} axisLine={false} />
+                <ChartTooltip cursor={false} content={<BarTooltipContent />} />
                 <ChartLegend content={<ChartLegendContent />} />
-                <Bar dataKey="Female" fill="#ec4899" />
-                <Bar dataKey="Male" fill="#3b82f6" />
+                <Bar
+                  dataKey="Female"
+                  fill="#ec4899"
+                  radius={8}
+                  strokeWidth={2}
+                />
+                <Bar dataKey="Male" fill="#3b82f6" radius={8} strokeWidth={2} />
               </BarChart>
             </ChartContainer>
           </CardContent>
@@ -362,11 +372,20 @@ export function ParticipantMetricsCharts({
               className="h-[280px] w-full"
             >
               <BarChart data={pwdBreakdownData} width={500} height={280}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <ChartTooltip content={<BarTooltipContent />} />
-                <Bar dataKey="value" fill="#8b5cf6" />
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                />
+                <YAxis tickLine={false} axisLine={false} />
+                <ChartTooltip cursor={false} content={<BarTooltipContent />} />
+                <Bar dataKey="value" radius={8} strokeWidth={2}>
+                  {pwdBreakdownData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Bar>
               </BarChart>
             </ChartContainer>
           </CardContent>

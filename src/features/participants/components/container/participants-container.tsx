@@ -68,30 +68,27 @@ export function JotaiParticipantsContainer({
       {/* Modern Tabs Design */}
       <div className="bg-transparent">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="bg-muted/30 grid h-11 w-auto grid-cols-3 rounded-lg p-1">
+          <TabsList className="bg-muted">
             <TabsTrigger
               value="participants"
-              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
+              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
             >
               <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Participants</span>
-              <span className="sm:hidden">Data</span>
+              Participants
             </TabsTrigger>
             <TabsTrigger
               value="analytics"
-              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
+              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
             >
               <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline">Analytics</span>
-              <span className="sm:hidden">Metrics</span>
+              Analytics
             </TabsTrigger>
             <TabsTrigger
               value="charts"
-              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
+              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
             >
               <PieChart className="h-4 w-4" />
-              <span className="hidden sm:inline">Charts</span>
-              <span className="sm:hidden">Visual</span>
+              Charts
             </TabsTrigger>
           </TabsList>
 
