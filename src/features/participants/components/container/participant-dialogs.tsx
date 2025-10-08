@@ -167,6 +167,8 @@ export function ParticipantDialogs({
         // Legacy VSLA fields for backward compatibility
         isSubscribedToVSLA: data.vslaId ? "yes" : "no",
         vslaName: data.vslaId || "",
+        // Ensure contact is always a string (empty string if not provided)
+        contact: data.contact || "",
       };
 
       const result = await createParticipant.mutateAsync(createData);
@@ -281,6 +283,8 @@ export function ParticipantDialogs({
         // Legacy VSLA fields for backward compatibility
         isSubscribedToVSLA: data.vslaId ? "yes" : "no",
         vslaName: data.vslaId || "",
+        // Ensure contact is always a string (empty string if not provided)
+        contact: data.contact || "",
       };
 
       const result = await updateParticipant.mutateAsync({

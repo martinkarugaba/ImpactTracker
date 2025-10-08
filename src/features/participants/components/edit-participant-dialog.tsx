@@ -56,7 +56,8 @@ export function EditParticipantDialog({
         firstName: data.firstName,
         lastName: data.lastName,
         sex: data.sex,
-        contact: data.contact,
+        // Ensure contact is always a string (empty string if not provided)
+        contact: data.contact || "",
         project_id: data.project_id,
         cluster_id: data.cluster_id,
         organization_id: data.organization_id,

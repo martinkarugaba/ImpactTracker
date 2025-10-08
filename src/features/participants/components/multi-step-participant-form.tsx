@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Combobox } from "@/components/ui/combobox";
+import { DatePicker } from "@/components/ui/date-picker";
 import toast from "react-hot-toast";
 import { type Project } from "@/features/projects/types";
 import {
@@ -105,7 +106,7 @@ const formSchema = z
     isRefugee: z.enum(["yes", "no"]),
     designation: z.string().optional(),
     enterprise: z.string().optional(),
-    contact: z.string().min(10, "Contact must be at least 10 characters"),
+    contact: z.string().optional(),
     project_id: z.string().min(1, "Project is required"),
     cluster_id: z.string().min(1, "Cluster is required"),
     organization_id: z.string().min(1, "Organization is required"),
@@ -749,7 +750,7 @@ function PersonalInfoStep({ form }: { form: any }) {
             name="contact"
             render={({ field }) => (
               <Field>
-                <FieldLabel htmlFor="contact">Contact Number *</FieldLabel>
+                <FieldLabel htmlFor="contact">Contact Number</FieldLabel>
                 <FormControl>
                   <Input
                     id="contact"
@@ -790,7 +791,14 @@ function PersonalInfoStep({ form }: { form: any }) {
               <Field>
                 <FieldLabel htmlFor="dateOfBirth">Date of Birth</FieldLabel>
                 <FormControl>
-                  <Input id="dateOfBirth" type="date" {...field} />
+                  <DatePicker
+                    date={field.value ? new Date(field.value) : null}
+                    setDate={(date: Date | null) => {
+                      field.onChange(
+                        date ? date.toISOString().split("T")[0] : ""
+                      );
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </Field>
