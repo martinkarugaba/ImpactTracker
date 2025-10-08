@@ -21,7 +21,10 @@ export default async function DashboardLayout({
     <NavigationProvider>
       <CalendarProvider>
         <SidebarProvider>
-          <div className="flex min-h-screen w-full bg-neutral-100 dark:bg-neutral-900">
+          <div
+            className="flex min-h-screen w-full bg-neutral-100 dark:bg-neutral-900"
+            suppressHydrationWarning
+          >
             <AppSidebar className="" />
             <SidebarInset className="flex min-h-screen flex-1 flex-col border-none bg-neutral-100 dark:bg-neutral-900">
               <div className="flex min-h-screen flex-1 flex-col rounded-2xl bg-white dark:bg-[#121212]">

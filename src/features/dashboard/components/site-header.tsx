@@ -108,7 +108,7 @@ export function SiteHeader({
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full rounded-t-lg border-b bg-transparent backdrop-blur transition-[margin] duration-200 ease-linear group-data-[state=collapsed]:ml-0 md:rounded-t-2xl md:group-data-[state=expanded]:ml-64",
+        "sticky top-0 z-50 w-full rounded-t-2xl border-b bg-transparent backdrop-blur transition-[margin] duration-200 ease-linear group-data-[state=collapsed]:ml-0 md:rounded-t-2xl md:group-data-[state=expanded]:ml-64",
         "px-2 sm:px-4 md:px-6",
         className
       )}
