@@ -65,9 +65,7 @@ export function ActivitiesContainerNew({
           }
           className="mb-4 w-full"
         >
-          <TabsList
-            className={`bg-muted/30 grid h-11 w-full rounded-lg p-1 ${isSuperAdmin ? "grid-cols-6" : "grid-cols-4"}`}
-          >
+          <TabsList className="bg-muted/30 inline-flex h-11 w-auto rounded-lg p-1">
             <TabsTrigger
               value="activities"
               className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
