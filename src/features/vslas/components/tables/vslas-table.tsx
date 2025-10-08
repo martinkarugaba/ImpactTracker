@@ -25,6 +25,10 @@ import { VSLA } from "../../types";
 import { CreateVSLADialog } from "../dialogs";
 import { ExcelImportDialog } from "@/components/shared/excel-import-dialog";
 import { createVSLAImportConfig } from "../../config/vsla-import-config";
+import {
+  VSLAFiltersComponent,
+  type VSLAFilters,
+} from "../filters/vsla-filters";
 import type { Organization } from "@/features/organizations/types";
 import type { Cluster } from "@/features/clusters/components/clusters-table";
 import type { Project } from "@/features/projects/types";
@@ -43,6 +47,10 @@ interface VSLAsTableProps {
   clusters?: Cluster[];
   projects?: Project[];
   onSuccess?: () => void;
+  filters?: VSLAFilters;
+  onFiltersChange?: (filters: VSLAFilters) => void;
+  districts?: string[];
+  subCounties?: string[];
 }
 
 export function VSLAsTable({
@@ -59,6 +67,10 @@ export function VSLAsTable({
   clusters = [],
   projects = [],
   onSuccess,
+  filters,
+  onFiltersChange,
+  districts = [],
+  subCounties = [],
 }: VSLAsTableProps) {
   const [searchValue, setSearchValue] = useState("");
   const [selectedRows, setSelectedRows] = useState<VSLA[]>([]);
@@ -99,6 +111,19 @@ export function VSLAsTable({
 
   return (
     <div className="w-full space-y-4">
+      {/* Filters Section */}
+      {filters && onFiltersChange && (
+        <VSLAFiltersComponent
+          filters={filters}
+          onFiltersChange={onFiltersChange}
+          organizations={organizations}
+          clusters={clusters}
+          projects={projects}
+          districts={districts}
+          subCounties={subCounties}
+        />
+      )}
+
       {/* Action Buttons Section - At the very top */}
       <div className="flex items-center justify-between gap-4">
         {/* Left side - Search and Bulk Actions */}

@@ -1,13 +1,15 @@
 "use client";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Users, PieChart } from "lucide-react";
+import { BarChart3, Users, PieChart, Target } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useParticipantContainerJotai } from "../../state/use-participant-container-jotai";
 import { useParticipantState } from "../../state/use-participant-state";
 import type { Participant } from "../../types/types";
 import { AnalyticsTab } from "./metrics-tab";
 import { ChartsTab } from "./charts-tab";
 import { ParticipantsTab } from "./participants-tab";
+import { TargetsTab } from "./targets-tab";
 import { ParticipantDialogs } from "./participant-dialogs";
 
 interface JotaiParticipantsContainerProps {
@@ -28,6 +30,10 @@ export function JotaiParticipantsContainer({
 
   // Get tab state from Jotai
   const { activeTab, setActiveTab } = useParticipantState();
+
+  // Get user session for role checking
+  const { data: session } = useSession();
+  const isSuperAdmin = session?.user?.role === "super_admin";
 
   // Wrapper functions to match ParticipantsTab interface
   const handleEditWrapper = (data: unknown, id: string) => {
@@ -67,32 +73,48 @@ export function JotaiParticipantsContainer({
     <div className="space-y-6 border-green-500">
       {/* Modern Tabs Design */}
       <div className="bg-transparent">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="bg-muted/30 grid h-11 w-auto grid-cols-3 rounded-lg p-1">
+        <Tabs
+          value={activeTab}
+          onValueChange={value =>
+            setActiveTab(
+              value as "participants" | "analytics" | "charts" | "targets"
+            )
+          }
+          className="w-full"
+        >
+          <TabsList className="bg-muted">
             <TabsTrigger
               value="participants"
-              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
+              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
             >
               <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Participants</span>
-              <span className="sm:hidden">Data</span>
+              Participants
             </TabsTrigger>
             <TabsTrigger
               value="analytics"
-              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
+              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
             >
               <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline">Analytics</span>
-              <span className="sm:hidden">Metrics</span>
+              Analytics
             </TabsTrigger>
-            <TabsTrigger
-              value="charts"
-              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
-            >
-              <PieChart className="h-4 w-4" />
-              <span className="hidden sm:inline">Charts</span>
-              <span className="sm:hidden">Visual</span>
-            </TabsTrigger>
+            {isSuperAdmin && (
+              <>
+                <TabsTrigger
+                  value="charts"
+                  className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
+                >
+                  <PieChart className="h-4 w-4" />
+                  Charts
+                </TabsTrigger>
+                <TabsTrigger
+                  value="targets"
+                  className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
+                >
+                  <Target className="h-4 w-4" />
+                  Targets
+                </TabsTrigger>
+              </>
+            )}
           </TabsList>
 
           {/* Participants Tab */}
@@ -134,11 +156,21 @@ export function JotaiParticipantsContainer({
             isMetricsLoading={state.isMetricsLoading}
           />
 
-          {/* Charts Tab */}
-          <ChartsTab
-            metricsParticipants={state.metricsParticipants}
-            isMetricsLoading={state.isMetricsLoading}
-          />
+          {/* Charts Tab - Super Admin Only */}
+          {isSuperAdmin && (
+            <ChartsTab
+              metricsParticipants={state.metricsParticipants}
+              isMetricsLoading={state.isMetricsLoading}
+            />
+          )}
+
+          {/* Targets Tab - Super Admin Only */}
+          {isSuperAdmin && (
+            <TargetsTab
+              metricsParticipants={state.metricsParticipants}
+              isMetricsLoading={state.isMetricsLoading}
+            />
+          )}
         </Tabs>
       </div>
 

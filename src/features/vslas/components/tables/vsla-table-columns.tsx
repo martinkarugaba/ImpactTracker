@@ -15,6 +15,8 @@ import {
   Copy,
   Phone,
   User,
+  Calendar,
+  Clock,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -155,6 +157,61 @@ export const createColumns = (
         >
           {district}
         </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: "meeting_frequency",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="h-auto p-0 font-medium hover:bg-transparent"
+        >
+          Meeting Frequency
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const frequency = row.getValue("meeting_frequency") as string;
+      if (!frequency) return <span className="text-muted-foreground">-</span>;
+      return (
+        <Badge
+          variant="outline"
+          className="border-purple-200 bg-purple-100 text-purple-800 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
+        >
+          <Calendar className="mr-1 h-3 w-3" />
+          {frequency.charAt(0).toUpperCase() + frequency.slice(1)}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: "meeting_day",
+    header: "Meeting Day",
+    cell: ({ row }) => {
+      const day = row.getValue("meeting_day") as string;
+      if (!day) return <span className="text-muted-foreground">-</span>;
+      return (
+        <span className="capitalize">
+          {day.charAt(0).toUpperCase() + day.slice(1)}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "meeting_time",
+    header: "Meeting Time",
+    cell: ({ row }) => {
+      const time = row.getValue("meeting_time") as string;
+      if (!time) return <span className="text-muted-foreground">-</span>;
+      return (
+        <div className="flex items-center gap-2">
+          <Clock className="text-muted-foreground h-3.5 w-3.5" />
+          <span>{time}</span>
+        </div>
       );
     },
   },

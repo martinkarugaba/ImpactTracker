@@ -38,10 +38,25 @@ export async function getUserClusterId() {
     // Super admins can access any cluster - for now, let's get the first available cluster
     // In a multi-cluster setup, you might want to add cluster selection logic
     if (user.role === "super_admin") {
-      const firstCluster = await db.query.clusters.findFirst({
-        columns: { id: true },
-      });
-      return firstCluster?.id || null;
+      try {
+        const firstCluster = await db.query.clusters.findFirst({
+          columns: { id: true },
+        });
+
+        if (!firstCluster) {
+          console.warn("No clusters found in database for super_admin user");
+          return null;
+        }
+
+        return firstCluster.id;
+      } catch (error) {
+        console.error(
+          "Database error while fetching cluster for super_admin:",
+          error
+        );
+        // Return null instead of throwing to allow app to continue
+        return null;
+      }
     }
 
     // Check if user is directly assigned to any cluster via clusterUsers table

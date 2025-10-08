@@ -363,7 +363,7 @@ export function ParticipantDialogs({
           }
         }}
       >
-        <DialogContent className="max-h-[90vh] w-[95vw] max-w-6xl overflow-y-auto">
+        <DialogContent className="max-h-[90vh] w-full max-w-4xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingParticipant ? "Edit Participant" : "Add New Participant"}

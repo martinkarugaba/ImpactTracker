@@ -7,12 +7,15 @@ import {
   CalendarDays,
   PieChart,
   UserCheck,
+  Target,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useActivityContainerState } from "./use-activity-container-state";
 import { MetricsTab } from "./metrics-tab";
 import { ChartsTab } from "./charts-tab";
 import { ActivitiesTab } from "./activities-tab";
 import { ActivitiesDemographicsTab } from "./activities-demographics-tab";
+import { TargetsTab } from "./targets-tab";
 import { ActivityDialogs } from "./activity-dialogs";
 import { ActivitiesCalendar } from "../calendar";
 import { CalendarProvider } from "@/components/event-calendar/calendar-context";
@@ -25,6 +28,8 @@ export function ActivitiesContainerNew({
   clusterId,
 }: ActivitiesContainerProps) {
   const state = useActivityContainerState({ clusterId });
+  const { data: session } = useSession();
+  const isSuperAdmin = session?.user?.role === "super_admin";
 
   if (state.activitiesError || state.metricsError) {
     return (
@@ -55,11 +60,14 @@ export function ActivitiesContainerNew({
                 | "charts"
                 | "demographics"
                 | "calendar"
+                | "targets"
             )
           }
           className="mb-4 w-full"
         >
-          <TabsList className="bg-muted/30 grid h-11 w-full grid-cols-5 rounded-lg p-1">
+          <TabsList
+            className={`bg-muted/30 grid h-11 w-full rounded-lg p-1 ${isSuperAdmin ? "grid-cols-6" : "grid-cols-4"}`}
+          >
             <TabsTrigger
               value="activities"
               className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
@@ -76,14 +84,18 @@ export function ActivitiesContainerNew({
               <span className="hidden sm:inline">Analytics</span>
               <span className="sm:hidden">Stats</span>
             </TabsTrigger>
-            <TabsTrigger
-              value="charts"
-              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
-            >
-              <PieChart className="h-4 w-4" />
-              <span className="hidden sm:inline">Charts</span>
-              <span className="sm:hidden">Visual</span>
-            </TabsTrigger>
+            {isSuperAdmin && (
+              <>
+                <TabsTrigger
+                  value="charts"
+                  className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
+                >
+                  <PieChart className="h-4 w-4" />
+                  <span className="hidden sm:inline">Charts</span>
+                  <span className="sm:hidden">Visual</span>
+                </TabsTrigger>
+              </>
+            )}
             <TabsTrigger
               value="demographics"
               className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
@@ -100,6 +112,16 @@ export function ActivitiesContainerNew({
               <span className="hidden sm:inline">Calendar</span>
               <span className="sm:hidden">Cal</span>
             </TabsTrigger>
+            {isSuperAdmin && (
+              <TabsTrigger
+                value="targets"
+                className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
+              >
+                <Target className="h-4 w-4" />
+                <span className="hidden sm:inline">Targets</span>
+                <span className="sm:hidden">Tgt</span>
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <MetricsTab
@@ -109,11 +131,13 @@ export function ActivitiesContainerNew({
             filters={state.filters}
           />
 
-          <ChartsTab
-            metricsActivities={state.metricsActivities}
-            metricsData={state.metricsData}
-            isMetricsLoading={state.isMetricsLoading}
-          />
+          {isSuperAdmin && (
+            <ChartsTab
+              metricsActivities={state.metricsActivities}
+              metricsData={state.metricsData}
+              isMetricsLoading={state.isMetricsLoading}
+            />
+          )}
 
           <ActivitiesDemographicsTab
             activities={state.activities}
@@ -129,6 +153,13 @@ export function ActivitiesContainerNew({
               <ActivitiesCalendar className="w-full" clusterId={clusterId} />
             </CalendarProvider>
           </TabsContent>
+
+          {isSuperAdmin && (
+            <TargetsTab
+              metricsActivities={state.metricsActivities}
+              isMetricsLoading={state.isMetricsLoading}
+            />
+          )}
 
           <ActivitiesTab
             activities={state.activities}

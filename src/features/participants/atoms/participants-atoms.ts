@@ -58,10 +58,9 @@ export const participantPaginationAtom = atom({
 });
 
 export const participantSearchAtom = atom("");
-export const activeTabAtom = atomWithStorage(
-  "participants-active-tab",
-  "participants"
-);
+export const activeTabAtom = atomWithStorage<
+  "participants" | "analytics" | "charts" | "targets"
+>("participants-active-tab", "participants");
 
 // Loading state for filtering operations
 export const isFilteringAtom = atom(false);

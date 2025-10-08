@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useSession } from "next-auth/react";
@@ -9,9 +9,10 @@ import { getVSLAs, deleteVSLAs } from "../../actions/vslas";
 import { VSLAsTable, VSLAsTableSkeleton } from "../tables";
 import { CreateVSLADialog, EditVSLADialog, DeleteVSLADialog } from "../dialogs";
 import { VSLAMetricsCards } from "../metrics/vsla-metrics-cards";
+import { TargetsTab } from "./targets-tab";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, BarChart3, Table } from "lucide-react";
+import { Plus, BarChart3, Table, Target } from "lucide-react";
 import { VSLA } from "../../types";
 import type { Organization } from "@/features/organizations/types";
 import type { Cluster } from "@/features/clusters/components/clusters-table";
@@ -35,9 +36,68 @@ export function VSLAsPageContent({
   const [editingVSLA, setEditingVSLA] = useState<VSLA | null>(null);
   const [deletingVSLA, setDeletingVSLA] = useState<VSLA | null>(null);
   const [activeTab, setActiveTab] = useState("table");
+  const [filters, setFilters] = useState({
+    organization: "all",
+    cluster: "all",
+    project: "all",
+    district: "all",
+    subCounty: "all",
+    status: "all",
+    meetingFrequency: "all",
+    saccoMember: "all",
+    hasConstitution: "all",
+  });
   const router = useRouter();
   const { data: session } = useSession();
   const isSuperAdmin = session?.user?.role === "super_admin";
+
+  // Get unique districts and subcounties for filters
+  const districts = useMemo(
+    () => Array.from(new Set(vslas.map(v => v.district).filter(Boolean))),
+    [vslas]
+  );
+
+  const subCounties = useMemo(
+    () => Array.from(new Set(vslas.map(v => v.sub_county).filter(Boolean))),
+    [vslas]
+  );
+
+  // Filter VSLAs based on active filters
+  const filteredVSLAs = useMemo(() => {
+    return vslas.filter(vsla => {
+      if (
+        filters.organization !== "all" &&
+        vsla.organization_id !== filters.organization
+      )
+        return false;
+      if (filters.cluster !== "all" && vsla.cluster_id !== filters.cluster)
+        return false;
+      if (filters.project !== "all" && vsla.project_id !== filters.project)
+        return false;
+      if (filters.district !== "all" && vsla.district !== filters.district)
+        return false;
+      if (filters.subCounty !== "all" && vsla.sub_county !== filters.subCounty)
+        return false;
+      if (filters.status !== "all" && vsla.status !== filters.status)
+        return false;
+      if (
+        filters.meetingFrequency !== "all" &&
+        vsla.meeting_frequency !== filters.meetingFrequency
+      )
+        return false;
+      if (
+        filters.saccoMember !== "all" &&
+        vsla.sacco_member !== filters.saccoMember
+      )
+        return false;
+      if (
+        filters.hasConstitution !== "all" &&
+        vsla.has_constitution !== filters.hasConstitution
+      )
+        return false;
+      return true;
+    });
+  }, [vslas, filters]);
 
   const handleRowClick = (vsla: VSLA) => {
     // Navigate to VSLA details page
@@ -177,7 +237,9 @@ export function VSLAsPageContent({
           Village Savings and Loans Associations
         </h2>
         <p className="text-muted-foreground">
-          Manage and track all VSLAs across your organization ({vslas.length}{" "}
+          Manage and track all VSLAs across your organization (
+          {filteredVSLAs.length}
+          {filteredVSLAs.length !== vslas.length && ` of ${vslas.length}`}{" "}
           total)
         </p>
       </div>
@@ -204,20 +266,37 @@ export function VSLAsPageContent({
         </div>
       ) : (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList>
-            <TabsTrigger value="table" className="flex items-center gap-2">
+          <TabsList className="bg-muted">
+            <TabsTrigger
+              value="table"
+              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
+            >
               <Table className="h-4 w-4" />
               VSLAs Table
             </TabsTrigger>
-            <TabsTrigger value="metrics" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Metrics
-            </TabsTrigger>
+            {isSuperAdmin && (
+              <>
+                <TabsTrigger
+                  value="metrics"
+                  className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  Metrics
+                </TabsTrigger>
+                <TabsTrigger
+                  value="targets"
+                  className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
+                >
+                  <Target className="h-4 w-4" />
+                  Targets
+                </TabsTrigger>
+              </>
+            )}
           </TabsList>
 
           <TabsContent value="table" className="mt-6">
             <VSLAsTable
-              data={vslas}
+              data={filteredVSLAs}
               onRowClick={handleRowClick}
               onEdit={handleEdit}
               onDelete={handleDelete}
@@ -230,12 +309,24 @@ export function VSLAsPageContent({
               clusters={clusters}
               projects={projects}
               onSuccess={refreshData}
+              filters={filters}
+              onFiltersChange={setFilters}
+              districts={districts}
+              subCounties={subCounties}
             />
           </TabsContent>
 
-          <TabsContent value="metrics" className="mt-6">
-            <VSLAMetricsCards vslas={vslas} isLoading={isLoading} />
-          </TabsContent>
+          {isSuperAdmin && (
+            <TabsContent value="metrics" className="mt-6">
+              <VSLAMetricsCards vslas={vslas} isLoading={isLoading} />
+            </TabsContent>
+          )}
+
+          {isSuperAdmin && (
+            <TabsContent value="targets" className="mt-6">
+              <TargetsTab vslas={vslas} isLoading={isLoading} />
+            </TabsContent>
+          )}
         </Tabs>
       )}
 
