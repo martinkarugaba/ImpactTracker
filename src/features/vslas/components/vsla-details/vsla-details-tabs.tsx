@@ -2,7 +2,7 @@
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { FileText, Users, TrendingUp, BarChart3 } from "lucide-react";
-import { VSLA } from "../../types";
+import type { VSLA } from "../../types";
 import { VSLABasicInfo } from "./vsla-basic-info";
 import { VSLAFinancialOverview } from "./vsla-financial-overview";
 import { VSLAAffiliations } from "./vsla-affiliations";

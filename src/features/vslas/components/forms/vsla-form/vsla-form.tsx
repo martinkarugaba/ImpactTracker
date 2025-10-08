@@ -36,9 +36,9 @@ import {
   type CreateVSLAInput,
 } from "../../../schemas/vsla-schema";
 import { PRIMARY_BUSINESS_OPTIONS, type PrimaryBusiness } from "../../../types";
-import { Organization } from "@/features/organizations/types";
-import { Cluster } from "@/features/clusters/components/clusters-table";
-import { Project } from "@/features/projects/types";
+import type { Organization } from "@/features/organizations/types";
+import type { Cluster } from "@/features/clusters/components/clusters-table";
+import type { Project } from "@/features/projects/types";
 import { createVSLA, updateVSLA } from "../../../actions/vslas";
 import {
   getCountryOptions,

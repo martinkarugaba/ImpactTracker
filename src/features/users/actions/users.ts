@@ -2,9 +2,9 @@
 
 import { auth } from "@/features/auth/auth";
 import { db } from "@/lib/db";
+import type { userRole } from "@/lib/db/schema";
 import {
   users,
-  userRole,
   clusterUsers,
   organizationMembers,
   clusters,

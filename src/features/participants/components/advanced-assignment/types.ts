@@ -1,24 +1,24 @@
 export type AssignmentLevel = "subcounty" | "parish";
 
-export type SubCountyOption = {
+export interface SubCountyOption {
   id: string;
   name: string;
   selected: boolean;
-};
+}
 
-export type ParishOption = {
+export interface ParishOption {
   id: string;
   name: string;
   subCountyId: string;
   selected: boolean;
-};
+}
 
-export type OrganizationOption = {
+export interface OrganizationOption {
   id: string;
   name: string;
-};
+}
 
-export type AssignmentResult = {
+export interface AssignmentResult {
   success: boolean;
   message?: string;
   error?: string;
@@ -35,11 +35,11 @@ export type AssignmentResult = {
       participantsUpdated: number;
     }>;
   };
-};
+}
 
-export type AssignmentPreview = {
+export interface AssignmentPreview {
   level: AssignmentLevel;
   organization: OrganizationOption;
   selectedItems: SubCountyOption[] | ParishOption[];
   totalItems: number;
-};
+}

@@ -14,12 +14,12 @@ export enum LocationType {
   Country = "country",
 }
 
-type LocationNameCellProps = {
+interface LocationNameCellProps {
   id: string;
   type: LocationType;
   fallbackValue?: string;
   className?: string;
-};
+}
 
 export function LocationNameCell({
   id,

@@ -2,7 +2,12 @@
 
 import { columns } from "@/features/locations/components/data-table/subcounties-columns";
 import { DataTable } from "@/components/ui/data-table";
-import { subCounties, districts, counties, countries } from "@/lib/db/schema";
+import type {
+  subCounties,
+  districts,
+  counties,
+  countries,
+} from "@/lib/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
 import { AddSubCountyDialog } from "@/features/locations/components/dialogs/add-subcounty-dialog";
 import { Button } from "@/components/ui/button";

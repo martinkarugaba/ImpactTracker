@@ -6,9 +6,9 @@ import { Modal } from "@/components/ui/modal";
 import { ClusterForm } from "./cluster-form";
 import { Plus } from "lucide-react";
 
-type CreateClusterDialogProps = {
+interface CreateClusterDialogProps {
   children?: React.ReactNode;
-};
+}
 
 export function CreateClusterDialog({ children }: CreateClusterDialogProps) {
   const [open, setOpen] = useState(false);

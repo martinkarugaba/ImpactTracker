@@ -3,11 +3,11 @@
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
-import { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
 import { NameInput } from "./name-input";
 import { CodeInput } from "./code-input";
 import { CountrySelector } from "./country-selector";
-import { Country, FormValues } from "./schema";
+import type { Country, FormValues } from "./schema";
 
 interface DistrictFormProps {
   form: UseFormReturn<FormValues>;

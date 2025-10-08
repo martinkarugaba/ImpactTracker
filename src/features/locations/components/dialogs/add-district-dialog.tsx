@@ -16,14 +16,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getAllCountries } from "@/features/locations/actions/countries";
 
-import {
-  AddDistrictDialogProps,
-  Country,
-  formSchema,
-  FormValues,
-  generateDistrictCode,
-  DistrictForm,
-} from "./district";
+import type { AddDistrictDialogProps, Country, FormValues } from "./district";
+import { formSchema, generateDistrictCode, DistrictForm } from "./district";
 
 export function AddDistrictDialog({
   children,

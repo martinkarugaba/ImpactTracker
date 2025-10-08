@@ -2,9 +2,9 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { ChartConfig } from "@/components/ui/chart";
 import {
   ChartContainer,
-  ChartConfig,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";

@@ -7,9 +7,9 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 
-type CreateProjectDialogProps = {
+interface CreateProjectDialogProps {
   children?: React.ReactNode;
-};
+}
 
 export function CreateProjectDialog({ children }: CreateProjectDialogProps) {
   const [open, setOpen] = useState(false);

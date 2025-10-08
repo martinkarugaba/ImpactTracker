@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, Layers3, FolderOpen } from "lucide-react";
-import { VSLA } from "../../types";
+import type { VSLA } from "../../types";
 
 interface VSLAAffiliationsProps {
   vsla: VSLA;

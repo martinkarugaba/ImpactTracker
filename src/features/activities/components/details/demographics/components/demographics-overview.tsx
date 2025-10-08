@@ -1,6 +1,6 @@
 import { MetricCard } from "@/components/ui/metric-card";
 import { Users, MapPin, BarChart3, UserCheck } from "lucide-react";
-import { DemographicsProps } from "../types/demographics";
+import type { DemographicsProps } from "../types/demographics";
 
 export function DemographicsOverview({ data }: DemographicsProps) {
   return (

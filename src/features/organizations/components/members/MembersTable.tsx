@@ -18,8 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { OrganizationMember } from "../../types";
-import { userRole } from "@/lib/db/schema";
+import type { OrganizationMember } from "../../types";
+import type { userRole } from "@/lib/db/schema";
 
 interface MembersTableProps {
   members: OrganizationMember[];

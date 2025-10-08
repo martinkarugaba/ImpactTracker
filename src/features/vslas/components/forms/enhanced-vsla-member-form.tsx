@@ -29,7 +29,8 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
-import { updateVSLAMember, VSLAMember } from "../../actions/vsla-members";
+import type { VSLAMember } from "../../actions/vsla-members";
+import { updateVSLAMember } from "../../actions/vsla-members";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 

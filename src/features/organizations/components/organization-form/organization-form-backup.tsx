@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Combobox } from "@/components/ui/combobox";
-import { Cluster } from "@/features/clusters/components/clusters-table";
+import type { Cluster } from "@/features/clusters/components/clusters-table";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -43,14 +43,14 @@ import {
   getWards,
   getDivisions,
 } from "@/features/locations/actions/administrative-units";
-import { Project } from "@/features/projects/types";
+import type { Project } from "@/features/projects/types";
 import { getProjects } from "@/features/projects/actions/projects";
 import {
   createOrganization,
   updateOrganization,
 } from "@/features/organizations/actions/organizations";
 import { MultiSelectCombobox } from "./location/MultiSelectCombobox";
-import { Organization } from "@/features/organizations/types";
+import type { Organization } from "@/features/organizations/types";
 
 interface OrganizationFormProps {
   clusters: Cluster[];

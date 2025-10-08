@@ -11,7 +11,7 @@ import {
   VillagesTab,
   CitiesTab,
 } from "@/features/locations/components/tabs";
-import { countries } from "@/lib/db/schema";
+import type { countries } from "@/lib/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
 
 type Country = InferSelectModel<typeof countries>;

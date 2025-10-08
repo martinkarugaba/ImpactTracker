@@ -98,7 +98,7 @@ export function LocationFiltersInline({
     <>
       {locationFilters.map(filter => {
         const currentValue =
-          (filters as Record<string, string>)[filter.key] || "all";
+          (filters as unknown as Record<string, string>)[filter.key] || "all";
         const displayValue = getDisplayValue(filter.key, currentValue);
 
         return (

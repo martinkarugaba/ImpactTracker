@@ -1,4 +1,4 @@
-import { userRole } from "./db/schema";
+import type { userRole } from "./db/schema";
 
 type Role = (typeof userRole.enumValues)[number];
 
@@ -43,8 +43,8 @@ export function getMinimumRequiredRole(requiredRole: Role): Role[] {
 }
 
 // Authorization middleware type
-export type AuthConfig = {
+export interface AuthConfig {
   roles?: Role[];
   requireAllRoles?: boolean;
   redirectTo?: string;
-};
+}

@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Cluster } from "@/features/clusters/types";
+import type { Cluster } from "@/features/clusters/types";
 
 interface TableFiltersProps {
   clusters: Cluster[];

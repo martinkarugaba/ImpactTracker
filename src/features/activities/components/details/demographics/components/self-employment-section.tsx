@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { MetricCard } from "@/components/ui/metric-card";
 import { Building, MapPin, Briefcase, TrendingUp, Users } from "lucide-react";
-import { DemographicsProps } from "../types/demographics";
+import type { DemographicsProps } from "../types/demographics";
 
 export function SelfEmploymentSection({ data }: DemographicsProps) {
   return (

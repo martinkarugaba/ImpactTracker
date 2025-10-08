@@ -1,19 +1,24 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { districts, counties, subCounties, parishes } from "@/lib/db/schema";
+import type {
+  districts,
+  counties,
+  subCounties,
+  parishes,
+} from "@/lib/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
 
 // Define response types for better type safety
-type SuccessResponse<T> = {
+interface SuccessResponse<T> {
   success: true;
   data: T;
-};
+}
 
-type ErrorResponse = {
+interface ErrorResponse {
   success: false;
   error: string;
-};
+}
 
 type ApiResponse<T> = SuccessResponse<T> | ErrorResponse;
 

@@ -10,7 +10,7 @@ import {
 import { eq, desc, and, ilike, gte, lte, sql } from "drizzle-orm";
 import { getUserClusterId } from "@/features/auth/actions";
 
-export type ConceptNote = {
+export interface ConceptNote {
   id: string;
   activity_id: string;
   content: string;
@@ -26,7 +26,7 @@ export type ConceptNote = {
   budget_notes: string | null;
   created_at: Date;
   updated_at: Date;
-};
+}
 
 export type ConceptNoteWithDetails = ConceptNote & {
   activity: {
@@ -47,7 +47,7 @@ export type ConceptNoteWithDetails = ConceptNote & {
   };
 };
 
-export type ConceptNotesFilters = {
+export interface ConceptNotesFilters {
   search?: string;
   activityType?: string;
   projectId?: string;
@@ -57,9 +57,9 @@ export type ConceptNotesFilters = {
   submissionDateFrom?: string;
   submissionDateTo?: string;
   month?: string;
-};
+}
 
-export type ConceptNotesMetrics = {
+export interface ConceptNotesMetrics {
   totalConceptNotes: number;
   pendingReview: number;
   approved: number;
@@ -70,9 +70,9 @@ export type ConceptNotesMetrics = {
     approvedChange: number;
     monthlyChange: number;
   };
-};
+}
 
-export type ConceptNotesResponse = {
+export interface ConceptNotesResponse {
   success: boolean;
   data?: {
     conceptNotes: ConceptNoteWithDetails[];
@@ -86,27 +86,27 @@ export type ConceptNotesResponse = {
     };
   };
   error?: string;
-};
+}
 
-export type ConceptNotesMetricsResponse = {
+export interface ConceptNotesMetricsResponse {
   success: boolean;
   data?: ConceptNotesMetrics;
   error?: string;
-};
+}
 
-export type ActivityOption = {
+export interface ActivityOption {
   id: string;
   title: string;
   type: string;
   projectName: string;
   organizationName: string;
-};
+}
 
-export type ActivitiesForConceptNotesResponse = {
+export interface ActivitiesForConceptNotesResponse {
   success: boolean;
   data?: ActivityOption[];
   error?: string;
-};
+}
 
 export async function getConceptNotes(
   page: number = 1,

@@ -2,7 +2,7 @@
 
 import { columns } from "@/features/locations/components/data-table/parishes-columns";
 import { DataTable } from "@/components/ui/data-table";
-import {
+import type {
   parishes,
   countries,
   counties,

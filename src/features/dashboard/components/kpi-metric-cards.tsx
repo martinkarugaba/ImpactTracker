@@ -8,7 +8,7 @@ import {
   IconTrendingDown,
   IconMinus,
 } from "@tabler/icons-react";
-import { KPIOverviewMetrics } from "../actions/overview";
+import type { KPIOverviewMetrics } from "../actions/overview";
 
 interface KPIMetricCardProps {
   title: string;

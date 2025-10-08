@@ -12,7 +12,7 @@ import {
   CheckCircle,
   TrendingUp,
 } from "lucide-react";
-import { Activity } from "../../types/types";
+import type { Activity } from "../../types/types";
 import {
   useActivityParticipants,
   useActivitySessions,

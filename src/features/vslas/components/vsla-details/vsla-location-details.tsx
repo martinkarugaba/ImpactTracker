@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin } from "lucide-react";
-import { VSLA } from "../../types";
+import type { VSLA } from "../../types";
 
 interface VSLALocationDetailsProps {
   vsla: VSLA;

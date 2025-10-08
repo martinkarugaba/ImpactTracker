@@ -16,8 +16,9 @@ import { getDistricts } from "@/features/locations/actions/districts";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FormValues, formSchema } from "./county/schema";
-import { District, Country } from "./county/schema";
+import type { FormValues } from "./county/schema";
+import { formSchema } from "./county/schema";
+import type { District, Country } from "./county/schema";
 import { CountyForm } from "./county/county-form";
 
 interface AddCountyDialogProps {

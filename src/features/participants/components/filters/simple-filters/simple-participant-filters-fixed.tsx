@@ -122,7 +122,7 @@ export function SimpleParticipantFilters({
 
           {/* Quick Filter Badges */}
           {quickFilters.map(filter => {
-            const currentValue = (filters as Record<string, string>)[
+            const currentValue = (filters as unknown as Record<string, string>)[
               filter.key
             ];
             if (currentValue && currentValue !== "all") {
@@ -151,7 +151,7 @@ export function SimpleParticipantFilters({
             "specificSoftSkill",
             "specificBusinessSkill",
           ].map(key => {
-            const value = (filters as Record<string, string>)[key];
+            const value = (filters as unknown as Record<string, string>)[key];
             if (value && value !== "all") {
               const skillType = key
                 .replace("specific", "")

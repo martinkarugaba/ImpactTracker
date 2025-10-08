@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Activity } from "../types/types";
+import type { Activity } from "../types/types";
 import type {
   ConceptNote,
   NewConceptNote,

@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
+import type {
   ColumnDef,
+  PaginationState,
+  SortingState,
+} from "@tanstack/react-table";
+import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  PaginationState,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -45,7 +47,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-type Item = {
+interface Item {
   id: string;
   name: string;
   email: string;
@@ -53,7 +55,7 @@ type Item = {
   flag: string;
   status: "Active" | "Inactive" | "Pending";
   balance: number;
-};
+}
 
 const columns: ColumnDef<Item>[] = [
   {

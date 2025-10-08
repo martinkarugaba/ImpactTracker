@@ -10,10 +10,10 @@ import {
 } from "@/lib/db/schema";
 import { eq, sql } from "drizzle-orm";
 
-export type LocationLookupResult = {
+export interface LocationLookupResult {
   id: string;
   name: string;
-};
+}
 
 export async function getDistrictName(
   id: string

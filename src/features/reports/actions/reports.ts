@@ -10,7 +10,7 @@ import {
 import { eq, desc, sql, and, gte, lte } from "drizzle-orm";
 import { getUserClusterId } from "@/features/auth/actions";
 
-export type ReportWithDetails = {
+export interface ReportWithDetails {
   id: string;
   title: string;
   execution_date: Date;
@@ -34,18 +34,18 @@ export type ReportWithDetails = {
   activity_status?: string;
   project_name?: string;
   organization_name?: string;
-};
+}
 
-export type ReportsFilters = {
+export interface ReportsFilters {
   search?: string;
   status?: string;
   dateFrom?: string;
   dateTo?: string;
   activityType?: string;
   clusterId?: string;
-};
+}
 
-export type ReportsMetrics = {
+export interface ReportsMetrics {
   totalReports: number;
   draftReports: number;
   submittedReports: number;
@@ -54,9 +54,9 @@ export type ReportsMetrics = {
   totalCost: number;
   thisMonthReports: number;
   lastMonthReports: number;
-};
+}
 
-export type ReportsResponse = {
+export interface ReportsResponse {
   success: boolean;
   data?: {
     reports: ReportWithDetails[];
@@ -70,13 +70,13 @@ export type ReportsResponse = {
     };
   };
   error?: string;
-};
+}
 
-export type ReportsMetricsResponse = {
+export interface ReportsMetricsResponse {
   success: boolean;
   data?: ReportsMetrics;
   error?: string;
-};
+}
 
 export async function getReports(
   page: number = 1,

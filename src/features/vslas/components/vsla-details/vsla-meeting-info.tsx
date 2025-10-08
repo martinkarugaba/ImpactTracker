@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Clock } from "lucide-react";
-import { VSLA } from "../../types";
+import type { VSLA } from "../../types";
 
 interface VSLAMeetingInfoProps {
   vsla: VSLA;

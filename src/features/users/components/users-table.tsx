@@ -3,8 +3,8 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { ReusableDataTable } from "@/components/ui/reusable-data-table";
-import { User } from "../types";
-import { ColumnDef } from "@tanstack/react-table";
+import type { User } from "../types";
+import type { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -20,7 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-import { userRole } from "@/lib/db/schema";
+import type { userRole } from "@/lib/db/schema";
 
 interface UsersTableProps {
   users: User[];

@@ -2,7 +2,7 @@
 
 import { MunicipalitiesTable } from "../municipalities-table";
 import { useEffect, useState } from "react";
-import { municipalities } from "@/lib/db/schema";
+import type { municipalities } from "@/lib/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
 import { getMunicipalities } from "@/features/locations/actions/municipalities";
 

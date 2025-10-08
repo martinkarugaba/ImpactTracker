@@ -29,7 +29,7 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-type ClusterFormProps = {
+interface ClusterFormProps {
   initialData?: {
     id: string;
     name: string;
@@ -40,7 +40,7 @@ type ClusterFormProps = {
   onSuccess?: () => void;
   isLoading?: boolean;
   setIsLoading?: (loading: boolean) => void;
-};
+}
 
 export function ClusterForm({
   initialData,

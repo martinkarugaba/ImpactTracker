@@ -6,14 +6,14 @@ import { revalidatePath } from "next/cache";
 import { eq, and, sql, ilike } from "drizzle-orm";
 import type { PaginationParams } from "../types/pagination";
 
-export type CreateMunicipalityInput = {
+export interface CreateMunicipalityInput {
   name: string;
   code: string;
   countryId: string;
   districtId: string;
   countyId: string;
   subCountyId: string;
-};
+}
 
 export async function createMunicipality(data: CreateMunicipalityInput) {
   try {

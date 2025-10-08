@@ -13,7 +13,7 @@ import {
   VillagesTab,
   CitiesTab,
 } from "@/features/locations/components/tabs";
-import { countries } from "@/lib/db/schema";
+import type { countries } from "@/lib/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
 import { useCountry } from "@/features/locations/hooks/use-locations-query";
 import { useParams } from "next/navigation";

@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { countries, districts, subCounties, parishes } from "@/lib/db/schema";
-import { LocationType } from "../components/columns";
+import type { LocationType } from "../components/columns";
 
 export async function getParentOptions(type: LocationType) {
   try {

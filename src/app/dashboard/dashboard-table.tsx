@@ -13,11 +13,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ReusableDataTable } from "@/components/ui/reusable-data-table";
 import { IconCircleCheckFilled, IconLoader } from "@tabler/icons-react";
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 
 // Define the type for the dashboard data
-export type DashboardItem = {
+export interface DashboardItem {
   id: number;
   header: string;
   type: string;
@@ -25,7 +25,7 @@ export type DashboardItem = {
   target: string;
   limit: string;
   reviewer: string;
-};
+}
 
 // Define the columns for the dashboard table
 export const columns: ColumnDef<DashboardItem>[] = [

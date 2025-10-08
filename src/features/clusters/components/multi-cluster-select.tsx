@@ -17,7 +17,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Cluster } from "@/features/clusters/types";
+import type { Cluster } from "@/features/clusters/types";
 
 interface MultiClusterSelectProps {
   clusters: Cluster[];

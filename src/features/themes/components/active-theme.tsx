@@ -1,12 +1,7 @@
 "use client";
 
-import {
-  ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import type { ReactNode } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const COOKIE_NAME = "active_theme";
 const DEFAULT_THEME = "green";
@@ -17,10 +12,10 @@ function setThemeCookie(theme: string) {
   document.cookie = `${COOKIE_NAME}=${theme}; path=/; max-age=31536000; SameSite=Lax; ${window.location.protocol === "https:" ? "Secure;" : ""}`;
 }
 
-type ThemeContextType = {
+interface ThemeContextType {
   activeTheme: string;
   setActiveTheme: (theme: string) => void;
-};
+}
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 

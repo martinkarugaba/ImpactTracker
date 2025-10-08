@@ -11,13 +11,13 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Cluster } from "@/features/clusters/components/clusters-table";
+import type { Cluster } from "@/features/clusters/components/clusters-table";
 import { OrganizationForm } from "./organization-form/organization-form";
 
-type CreateOrganizationDialogProps = {
+interface CreateOrganizationDialogProps {
   clusters: Cluster[];
   children?: React.ReactNode;
-};
+}
 
 export function CreateOrganizationDialog({
   clusters,

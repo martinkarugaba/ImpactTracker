@@ -13,7 +13,7 @@ import { TargetsTab } from "./targets-tab";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, BarChart3, Table, Target } from "lucide-react";
-import { VSLA } from "../../types";
+import type { VSLA } from "../../types";
 import type { Organization } from "@/features/organizations/types";
 import type { Cluster } from "@/features/clusters/components/clusters-table";
 import type { Project } from "@/features/projects/types";

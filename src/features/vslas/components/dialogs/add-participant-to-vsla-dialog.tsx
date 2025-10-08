@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 import { ParticipantSelectionDialog } from "@/components/shared/participant-selection";
 import { createVSLAMember } from "../../actions/vsla-members";
-import { Participant } from "@/features/participants/types/types";
+import type { Participant } from "@/features/participants/types/types";
 import { toast } from "sonner";
 
 interface AddParticipantToVSLADialogProps {

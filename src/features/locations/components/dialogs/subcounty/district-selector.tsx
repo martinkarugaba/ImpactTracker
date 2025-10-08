@@ -7,7 +7,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { District, FormValues } from "./schema";
+import type { District, FormValues } from "./schema";
 
 interface DistrictSelectorProps {
   form: UseFormReturn<FormValues>;

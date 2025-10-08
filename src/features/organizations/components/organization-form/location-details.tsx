@@ -21,9 +21,9 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown, X } from "lucide-react";
-import { UseFormReturn } from "react-hook-form";
-import { OrganizationFormValues } from "./form-context/types";
-import { ICity, ICountry, IState } from "country-state-city";
+import type { UseFormReturn } from "react-hook-form";
+import type { OrganizationFormValues } from "./form-context/types";
+import type { ICity, ICountry, IState } from "country-state-city";
 
 interface LocationDetailsProps {
   form: UseFormReturn<OrganizationFormValues>;

@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
 import {
   Popover,
   PopoverContent,
@@ -26,7 +26,7 @@ import {
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
-import { FormValues, District, Country } from "./schema";
+import type { FormValues, District, Country } from "./schema";
 
 interface CountyFormProps {
   form: UseFormReturn<FormValues>;

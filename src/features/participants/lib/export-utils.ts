@@ -345,7 +345,7 @@ export function downloadExcel(
     if ("showSaveFilePicker" in window) {
       // Use File System Access API if available (Chrome/Edge)
       try {
-        type FileSystemAPI = {
+        interface FileSystemAPI {
           showSaveFilePicker: (options: {
             suggestedName: string;
             types: Array<{
@@ -358,7 +358,7 @@ export function downloadExcel(
               close: () => Promise<void>;
             }>;
           }>;
-        };
+        }
 
         (window as typeof window & FileSystemAPI)
           .showSaveFilePicker({

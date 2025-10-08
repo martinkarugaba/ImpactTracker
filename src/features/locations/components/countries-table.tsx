@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { DataTable } from "@/components/ui/data-table";
-import { countries } from "@/lib/db/schema";
+import type { countries } from "@/lib/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
 import { countryColumns } from "@/features/locations/components/data-table";
 import { Button } from "@/components/ui/button";

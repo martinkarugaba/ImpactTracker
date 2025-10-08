@@ -29,7 +29,7 @@ export function QuickFilters({
 
   // Helper function to safely access filter values
   const getFilterValue = (key: string): string => {
-    return (filters as Record<string, string>)[key] || "all";
+    return (filters as unknown as Record<string, string>)[key] || "all";
   };
 
   const handleFilterUpdate = (

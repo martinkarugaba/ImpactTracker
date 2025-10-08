@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/data-table";
 import { Plus, MoreHorizontal, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
