@@ -274,20 +274,24 @@ export function VSLAsPageContent({
               <Table className="h-4 w-4" />
               VSLAs Table
             </TabsTrigger>
-            <TabsTrigger
-              value="metrics"
-              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
-            >
-              <BarChart3 className="h-4 w-4" />
-              Metrics
-            </TabsTrigger>
-            <TabsTrigger
-              value="targets"
-              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
-            >
-              <Target className="h-4 w-4" />
-              Targets
-            </TabsTrigger>
+            {isSuperAdmin && (
+              <>
+                <TabsTrigger
+                  value="metrics"
+                  className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  Metrics
+                </TabsTrigger>
+                <TabsTrigger
+                  value="targets"
+                  className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
+                >
+                  <Target className="h-4 w-4" />
+                  Targets
+                </TabsTrigger>
+              </>
+            )}
           </TabsList>
 
           <TabsContent value="table" className="mt-6">
@@ -312,13 +316,17 @@ export function VSLAsPageContent({
             />
           </TabsContent>
 
-          <TabsContent value="metrics" className="mt-6">
-            <VSLAMetricsCards vslas={vslas} isLoading={isLoading} />
-          </TabsContent>
+          {isSuperAdmin && (
+            <TabsContent value="metrics" className="mt-6">
+              <VSLAMetricsCards vslas={vslas} isLoading={isLoading} />
+            </TabsContent>
+          )}
 
-          <TabsContent value="targets" className="mt-6">
-            <TargetsTab vslas={vslas} isLoading={isLoading} />
-          </TabsContent>
+          {isSuperAdmin && (
+            <TabsContent value="targets" className="mt-6">
+              <TargetsTab vslas={vslas} isLoading={isLoading} />
+            </TabsContent>
+          )}
         </Tabs>
       )}
 

@@ -2,6 +2,7 @@
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart3, Users, PieChart, Target } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useParticipantContainerJotai } from "../../state/use-participant-container-jotai";
 import { useParticipantState } from "../../state/use-participant-state";
 import type { Participant } from "../../types/types";
@@ -29,6 +30,10 @@ export function JotaiParticipantsContainer({
 
   // Get tab state from Jotai
   const { activeTab, setActiveTab } = useParticipantState();
+
+  // Get user session for role checking
+  const { data: session } = useSession();
+  const isSuperAdmin = session?.user?.role === "super_admin";
 
   // Wrapper functions to match ParticipantsTab interface
   const handleEditWrapper = (data: unknown, id: string) => {
@@ -92,20 +97,24 @@ export function JotaiParticipantsContainer({
               <BarChart3 className="h-4 w-4" />
               Analytics
             </TabsTrigger>
-            <TabsTrigger
-              value="charts"
-              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
-            >
-              <PieChart className="h-4 w-4" />
-              Charts
-            </TabsTrigger>
-            <TabsTrigger
-              value="targets"
-              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
-            >
-              <Target className="h-4 w-4" />
-              Targets
-            </TabsTrigger>
+            {isSuperAdmin && (
+              <>
+                <TabsTrigger
+                  value="charts"
+                  className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
+                >
+                  <PieChart className="h-4 w-4" />
+                  Charts
+                </TabsTrigger>
+                <TabsTrigger
+                  value="targets"
+                  className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
+                >
+                  <Target className="h-4 w-4" />
+                  Targets
+                </TabsTrigger>
+              </>
+            )}
           </TabsList>
 
           {/* Participants Tab */}
@@ -147,17 +156,21 @@ export function JotaiParticipantsContainer({
             isMetricsLoading={state.isMetricsLoading}
           />
 
-          {/* Charts Tab */}
-          <ChartsTab
-            metricsParticipants={state.metricsParticipants}
-            isMetricsLoading={state.isMetricsLoading}
-          />
+          {/* Charts Tab - Super Admin Only */}
+          {isSuperAdmin && (
+            <ChartsTab
+              metricsParticipants={state.metricsParticipants}
+              isMetricsLoading={state.isMetricsLoading}
+            />
+          )}
 
-          {/* Targets Tab */}
-          <TargetsTab
-            metricsParticipants={state.metricsParticipants}
-            isMetricsLoading={state.isMetricsLoading}
-          />
+          {/* Targets Tab - Super Admin Only */}
+          {isSuperAdmin && (
+            <TargetsTab
+              metricsParticipants={state.metricsParticipants}
+              isMetricsLoading={state.isMetricsLoading}
+            />
+          )}
         </Tabs>
       </div>
 
