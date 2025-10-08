@@ -167,8 +167,8 @@ export function ParticipantDialogs({
         // Legacy VSLA fields for backward compatibility
         isSubscribedToVSLA: data.vslaId ? "yes" : "no",
         vslaName: data.vslaId || "",
-        // Ensure contact is always a string (empty string if not provided)
-        contact: data.contact || "",
+        // Contact is now optional in both form and database
+        contact: data.contact || null,
       };
 
       const result = await createParticipant.mutateAsync(createData);
@@ -283,8 +283,8 @@ export function ParticipantDialogs({
         // Legacy VSLA fields for backward compatibility
         isSubscribedToVSLA: data.vslaId ? "yes" : "no",
         vslaName: data.vslaId || "",
-        // Ensure contact is always a string (empty string if not provided)
-        contact: data.contact || "",
+        // Contact is now optional in both form and database
+        contact: data.contact || null,
       };
 
       const result = await updateParticipant.mutateAsync({
@@ -326,7 +326,7 @@ export function ParticipantDialogs({
     isRefugee: participant.isRefugee as "yes" | "no",
     designation: participant.designation || undefined,
     enterprise: participant.enterprise || undefined,
-    contact: participant.contact,
+    contact: participant.contact || undefined,
     project_id: participant.project_id,
     cluster_id: participant.cluster_id,
     organization_id: participant.organization_id,

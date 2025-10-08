@@ -127,7 +127,7 @@ export const participants = pgTable("participants", {
   isRefugee: text("is_refugee").notNull().default("no"),
   designation: text("designation"),
   enterprise: text("enterprise"),
-  contact: text("contact").notNull(),
+  contact: text("contact"),
   isPermanentResident: text("is_permanent_resident").notNull().default("no"),
   areParentsAlive: text("are_parents_alive").notNull().default("no"),
   numberOfChildren: integer("number_of_children").notNull().default(0),

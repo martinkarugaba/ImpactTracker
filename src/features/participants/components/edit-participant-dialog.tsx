@@ -56,8 +56,8 @@ export function EditParticipantDialog({
         firstName: data.firstName,
         lastName: data.lastName,
         sex: data.sex,
-        // Ensure contact is always a string (empty string if not provided)
-        contact: data.contact || "",
+        // Contact is now optional in both form and database
+        contact: data.contact || null,
         project_id: data.project_id,
         cluster_id: data.cluster_id,
         organization_id: data.organization_id,
@@ -197,7 +197,7 @@ export function EditParticipantDialog({
     isRefugee: participant.isRefugee as "yes" | "no",
     designation: participant.designation || "",
     enterprise: participant.enterprise || "",
-    contact: participant.contact,
+    contact: participant.contact || undefined,
     project_id: participant.project_id,
     cluster_id: participant.cluster_id,
     organization_id: participant.organization_id,

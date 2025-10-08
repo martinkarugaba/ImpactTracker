@@ -210,7 +210,7 @@ export async function importVSLAMembers(
           // Keep legacy fields for backwards compatibility
           first_name: participant.firstName,
           last_name: participant.lastName,
-          phone: participant.contact,
+          phone: participant.contact || "",
           email: row.participant_email || null,
           role: row.role.toLowerCase(),
           joined_date: joinedDate,

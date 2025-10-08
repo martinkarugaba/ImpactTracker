@@ -25,7 +25,7 @@ export type ActivityParticipant = InferSelectModel<
     id: string;
     firstName: string;
     lastName: string;
-    contact: string;
+    contact: string | null;
     designation: string | null;
     organizationName?: string;
   };
@@ -223,7 +223,7 @@ export type DailyAttendance = InferSelectModel<typeof dailyAttendance> & {
     id: string;
     firstName: string;
     lastName: string;
-    contact: string;
+    contact: string | null;
     designation: string | null;
     organizationName?: string;
   };

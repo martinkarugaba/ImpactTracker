@@ -32,7 +32,7 @@ export function AddParticipantToVSLADialog({
           vsla_id: vslaId,
           first_name: participant.firstName,
           last_name: participant.lastName,
-          phone: participant.contact,
+          phone: participant.contact || "",
           email: "", // Participants don't have email in the schema
           role: "member",
           joined_date: new Date(),
