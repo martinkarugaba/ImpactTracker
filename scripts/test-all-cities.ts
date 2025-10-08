@@ -1,4 +1,5 @@
-import cities, { City } from "all-the-cities";
+import type { City } from "all-the-cities";
+import cities from "all-the-cities";
 
 // Filter cities in Uganda
 const ugandaCities = cities.filter((city: City) => city.country === "UG");
