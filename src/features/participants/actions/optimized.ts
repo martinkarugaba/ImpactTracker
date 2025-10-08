@@ -447,9 +447,9 @@ export async function getParticipantsOptimized(
           projectAcronym: participant.projectAcronym ?? undefined,
           clusterName: participant.clusterName ?? undefined,
           // Add computed fields for backward compatibility
-          districtName: participant.district,
-          subCountyName: participant.subCounty,
-          countyName: participant.country,
+          districtName: participant.district ?? undefined,
+          subCountyName: participant.subCounty ?? undefined,
+          countyName: participant.country ?? undefined,
         }));
 
         return {
@@ -665,9 +665,9 @@ export async function getAllParticipantsForMetricsOptimized(
               projectName: undefined,
               projectAcronym: undefined,
               clusterName: undefined,
-              districtName: participant.district,
-              subCountyName: participant.subCounty,
-              countyName: participant.country,
+              districtName: participant.district ?? undefined,
+              subCountyName: participant.subCounty ?? undefined,
+              countyName: participant.country ?? undefined,
             })),
             pagination: {
               page: 1,

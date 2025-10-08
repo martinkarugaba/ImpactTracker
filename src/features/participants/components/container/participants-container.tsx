@@ -144,6 +144,7 @@ export function JotaiParticipantsContainer({
             onAddParticipant={() => state.setIsCreateDialogOpen(true)}
             onEditParticipant={handleEditWrapper}
             onDeleteParticipant={handleDeleteWrapper}
+            onBulkDeleteParticipants={state.handleBulkDelete}
             onViewParticipant={state.handleView}
             onExportData={format => state.handleExport(format)}
             onImport={() => {}} // TODO: Implement import

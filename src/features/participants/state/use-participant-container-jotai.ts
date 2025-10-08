@@ -6,6 +6,7 @@ import { useAtom } from "jotai";
 import { useParticipants } from "../hooks/use-participants";
 import { useParticipantMetrics } from "../hooks/use-participant-metrics";
 import { useLocationNames } from "../hooks/use-location-names";
+import { useBulkDeleteParticipants } from "../hooks/use-participants";
 import { useFilterOptions } from "../components/container/use-filter-options";
 import {
   participantFiltersAtom,
@@ -203,6 +204,18 @@ export function useParticipantContainerJotai({
     setDeletingParticipant(participant);
   };
 
+  const handleBulkDelete = async (participantIds: string[]) => {
+    try {
+      await bulkDeleteParticipants.mutateAsync(participantIds);
+      toast.success(
+        `Successfully deleted ${participantIds.length} participants`
+      );
+    } catch (error) {
+      console.error("Bulk delete error:", error);
+      toast.error("Failed to delete participants. Please try again.");
+    }
+  };
+
   // Data fetching with Jotai state
   const {
     data: participantsData,
@@ -372,6 +385,9 @@ export function useParticipantContainerJotai({
     },
     searchValue
   );
+
+  // Bulk delete mutation
+  const bulkDeleteParticipants = useBulkDeleteParticipants(clusterId);
 
   // Enhanced filtering state management
   // The isFilteringAtom is automatically set to true by updateFilterAtom when filters change
@@ -642,6 +658,7 @@ export function useParticipantContainerJotai({
     handleFiltersChange,
     handleEdit,
     handleDelete,
+    handleBulkDelete,
     handleView,
     handleExport,
   };

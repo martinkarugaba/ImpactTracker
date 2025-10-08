@@ -16,7 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getProjects } from "@/features/projects/actions/projects";
 import { type Project } from "@/features/projects/types";
 import { type Participant } from "../types/types";
-import { type ParticipantFormValues } from "./participant-form";
+import { type ParticipantFormValues } from "./multi-step-participant-form";
 import toast from "react-hot-toast";
 
 interface EditParticipantDialogProps {
@@ -52,7 +52,42 @@ export function EditParticipantDialog({
   const handleSubmit = async (data: ParticipantFormValues) => {
     try {
       const updateData = {
-        ...data,
+        // Basic fields
+        firstName: data.firstName,
+        lastName: data.lastName,
+        sex: data.sex,
+        contact: data.contact,
+        project_id: data.project_id,
+        cluster_id: data.cluster_id,
+        organization_id: data.organization_id,
+        // Convert location fields from string | undefined to string | null
+        country: data.country || null,
+        district: data.district || null,
+        subCounty: data.subCounty || null,
+        parish: data.parish || null,
+        village: data.village || null,
+        designation: data.designation || null,
+        enterprise: data.enterprise || null,
+        // Required enum fields
+        isPWD: data.isPWD,
+        isMother: data.isMother,
+        isRefugee: data.isRefugee,
+        isActive: data.isActive,
+        isPermanentResident: data.isPermanentResident,
+        areParentsAlive: data.areParentsAlive,
+        isWillingToParticipate: data.isWillingToParticipate,
+        isActiveStudent: data.isActiveStudent,
+        isTeenMother: data.isTeenMother,
+        ownsEnterprise: data.ownsEnterprise,
+        accessedLoans: data.accessedLoans,
+        individualSaving: data.individualSaving,
+        groupSaving: data.groupSaving,
+        // Additional required fields
+        employmentStatus: data.employmentStatus,
+        nationality: data.nationality || "Ugandan",
+        hasVocationalSkills: "no", // Default value
+        hasSoftSkills: "no", // Default value
+        hasBusinessSkills: "no", // Default value
         age: data.age ? parseInt(data.age) : null,
         noOfTrainings: parseInt(data.noOfTrainings),
         numberOfChildren: parseInt(data.numberOfChildren),
@@ -69,7 +104,6 @@ export function EditParticipantDialog({
         sourceOfIncome: data.sourceOfIncome || null,
         populationSegment: data.populationSegment || null,
         refugeeLocation: data.refugeeLocation || null,
-        vslaName: data.vslaName || null,
         enterpriseName: data.enterpriseName || null,
         enterpriseSector: data.enterpriseSector || null,
         enterpriseSize: data.enterpriseSize || null,
@@ -114,10 +148,9 @@ export function EditParticipantDialog({
         secondaryEmploymentStatus: null,
         secondaryEmploymentSector: null,
         secondaryBusinessScale: null,
-        accessedLoans: "no",
-        individualSaving: "no",
-        groupSaving: "no",
         locationSetting: null,
+        isSubscribedToVSLA: "no", // Default value since it's not in the form but required in NewParticipant
+        vslaName: null, // Default value since it's not in the form but required in NewParticipant
         // Location IDs (convert undefined to null)
         country_id: data.country_id || null,
         district_id: data.district_id || null,
@@ -148,11 +181,11 @@ export function EditParticipantDialog({
   const initialData: ParticipantFormValues = {
     firstName: participant.firstName,
     lastName: participant.lastName,
-    country: participant.country,
-    district: participant.district,
-    subCounty: participant.subCounty,
-    parish: participant.parish,
-    village: participant.village,
+    country: participant.country || "",
+    district: participant.district || "",
+    subCounty: participant.subCounty || "",
+    parish: participant.parish || "",
+    village: participant.village || "",
     sex: participant.sex as "male" | "female" | "other",
     age: participant.age ? participant.age.toString() : undefined,
     dateOfBirth: participant.dateOfBirth
@@ -161,8 +194,8 @@ export function EditParticipantDialog({
     isPWD: participant.isPWD as "yes" | "no",
     isMother: participant.isMother as "yes" | "no",
     isRefugee: participant.isRefugee as "yes" | "no",
-    designation: participant.designation,
-    enterprise: participant.enterprise,
+    designation: participant.designation || "",
+    enterprise: participant.enterprise || "",
     contact: participant.contact,
     project_id: participant.project_id,
     cluster_id: participant.cluster_id,
@@ -207,8 +240,7 @@ export function EditParticipantDialog({
     isActiveStudent: "no" as "yes" | "no",
 
     // VSLA Information
-    isSubscribedToVSLA: "no" as "yes" | "no",
-    vslaName: undefined,
+    vslaId: undefined,
 
     // Teen Mother
     isTeenMother: "no" as "yes" | "no",

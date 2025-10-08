@@ -181,14 +181,16 @@ export function getParticipantColumns({
       enableSorting: true,
       accessorFn: row => {
         const subCountyId = row.subCounty;
-        const subCountyName =
-          locationNames?.subCounties[subCountyId] || subCountyId || "—";
+        const subCountyName = subCountyId
+          ? locationNames?.subCounties[subCountyId] || subCountyId
+          : "—";
         return capitalizeWords(subCountyName);
       },
       cell: ({ row }) => {
         const subCountyId = row.original.subCounty;
-        const subCountyName =
-          locationNames?.subCounties[subCountyId] || subCountyId || "—";
+        const subCountyName = subCountyId
+          ? locationNames?.subCounties[subCountyId] || subCountyId
+          : "—";
         const capitalizedName = capitalizeWords(subCountyName);
 
         return (
@@ -225,14 +227,16 @@ export function getParticipantColumns({
       enableSorting: true,
       accessorFn: row => {
         const districtId = row.district;
-        const districtName =
-          locationNames?.districts[districtId] || districtId || "—";
+        const districtName = districtId
+          ? locationNames?.districts[districtId] || districtId
+          : "—";
         return capitalizeWords(districtName);
       },
       cell: ({ row }) => {
         const districtId = row.original.district;
-        const districtName =
-          locationNames?.districts[districtId] || districtId || "—";
+        const districtName = districtId
+          ? locationNames?.districts[districtId] || districtId
+          : "—";
         const capitalizedName = capitalizeWords(districtName);
 
         return (

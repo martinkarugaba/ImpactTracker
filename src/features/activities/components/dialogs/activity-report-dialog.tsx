@@ -25,7 +25,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Loader2, Plus, Trash2 } from "lucide-react";
-import { Activity, ActivityReport, NewActivityReport } from "../../types/types";
+import type {
+  Activity,
+  ActivityReport,
+  NewActivityReport,
+} from "../../types/types";
 import type { FollowUpAction, NewFollowUpAction } from "../../types/types";
 import {
   createActivityReport,
@@ -87,9 +91,22 @@ export function ActivityReportDialog({
       // Basic Information - prefill from activity data or existing report
       activityName: activityReport?.title || activity.title || "",
       executionDate: activityReport?.execution_date
-        ? new Date(activityReport.execution_date).toISOString().split("T")[0]
+        ? (() => {
+            const date = new Date(activityReport.execution_date);
+            return !isNaN(date.getTime())
+              ? date.toISOString().split("T")[0]
+              : "";
+          })()
         : activity.startDate
-          ? new Date(activity.startDate).toISOString().split("T")[0]
+          ? (() => {
+              const date =
+                activity.startDate instanceof Date
+                  ? activity.startDate
+                  : new Date(activity.startDate);
+              return !isNaN(date.getTime())
+                ? date.toISOString().split("T")[0]
+                : "";
+            })()
           : "",
       clusterName: activityReport?.cluster_name || activity.clusterName || "",
       venue: activityReport?.venue || activity.venue || "",

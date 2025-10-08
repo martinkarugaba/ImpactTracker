@@ -26,7 +26,7 @@ export type ActivityParticipant = InferSelectModel<
     firstName: string;
     lastName: string;
     contact: string;
-    designation: string;
+    designation: string | null;
     organizationName?: string;
   };
 };
@@ -49,13 +49,13 @@ export type NewActivity = Omit<
   | "participantCount"
 >;
 
-export type ActivityResponse = {
+export interface ActivityResponse {
   success: boolean;
   data?: Activity;
   error?: string;
-};
+}
 
-export type PaginatedActivitiesResponse = {
+export interface PaginatedActivitiesResponse {
   success: boolean;
   data?: {
     data: Activity[];
@@ -69,11 +69,11 @@ export type PaginatedActivitiesResponse = {
     };
   };
   error?: string;
-};
+}
 
 export type ActivitiesResponse = PaginatedActivitiesResponse;
 
-export type ActivityFilters = {
+export interface ActivityFilters {
   search?: string;
   type?: string;
   status?: string;
@@ -82,9 +82,9 @@ export type ActivityFilters = {
   projectId?: string;
   startDate?: Date;
   endDate?: Date;
-};
+}
 
-export type ActivityMetrics = {
+export interface ActivityMetrics {
   totalActivities: number;
   activeActivities: number;
   completedActivities: number;
@@ -108,13 +108,13 @@ export type ActivityMetrics = {
   averageActivityDuration: number;
   sessionCompletionRate: number;
   activitiesWithSessions: number;
-};
+}
 
-export type ActivityMetricsResponse = {
+export interface ActivityMetricsResponse {
   success: boolean;
   data?: ActivityMetrics;
   error?: string;
-};
+}
 
 export const ACTIVITY_TYPES = [
   "meeting",
@@ -173,27 +173,27 @@ export type NewActivityReport = Omit<
 >;
 
 // Follow-up Action Types for UI
-export type FollowUpAction = {
+export interface FollowUpAction {
   id: string;
   action: string;
   responsiblePerson: string;
   timeline: string;
-};
+}
 
 export type NewFollowUpAction = Omit<FollowUpAction, "id">;
 
 // Activity Report Response Types
-export type ActivityReportResponse = {
+export interface ActivityReportResponse {
   success: boolean;
   data?: ActivityReport;
   error?: string;
-};
+}
 
-export type ActivityReportsResponse = {
+export interface ActivityReportsResponse {
   success: boolean;
   data?: ActivityReport[];
   error?: string;
-};
+}
 
 // Activity Sessions Types
 export type ActivitySession = InferSelectModel<typeof activitySessions>;
@@ -203,17 +203,17 @@ export type NewActivitySession = Omit<
   "id" | "created_at" | "updated_at"
 >;
 
-export type ActivitySessionResponse = {
+export interface ActivitySessionResponse {
   success: boolean;
   data?: ActivitySession;
   error?: string;
-};
+}
 
-export type ActivitySessionsResponse = {
+export interface ActivitySessionsResponse {
   success: boolean;
   data?: ActivitySession[];
   error?: string;
-};
+}
 
 // Daily Attendance Types
 export type DailyAttendance = InferSelectModel<typeof dailyAttendance> & {
@@ -224,7 +224,7 @@ export type DailyAttendance = InferSelectModel<typeof dailyAttendance> & {
     firstName: string;
     lastName: string;
     contact: string;
-    designation: string;
+    designation: string | null;
     organizationName?: string;
   };
   session?: {
@@ -245,17 +245,17 @@ export type NewDailyAttendance = Omit<
   | "session"
 >;
 
-export type DailyAttendanceResponse = {
+export interface DailyAttendanceResponse {
   success: boolean;
   data?: DailyAttendance;
   error?: string;
-};
+}
 
-export type DailyAttendanceListResponse = {
+export interface DailyAttendanceListResponse {
   success: boolean;
   data?: DailyAttendance[];
   error?: string;
-};
+}
 
 // Enhanced Activity Type with Sessions
 export type ActivityWithSessions = Activity & {
@@ -266,7 +266,7 @@ export type ActivityWithSessions = Activity & {
 };
 
 // Session Attendance Summary
-export type SessionAttendanceSummary = {
+export interface SessionAttendanceSummary {
   sessionId: string;
   sessionDate: string;
   sessionNumber: number;
@@ -276,10 +276,10 @@ export type SessionAttendanceSummary = {
   late: number;
   excused: number;
   attendanceRate: number;
-};
+}
 
 // Activity Attendance Overview
-export type ActivityAttendanceOverview = {
+export interface ActivityAttendanceOverview {
   activityId: string;
   totalParticipants: number;
   totalSessions: number;
@@ -292,7 +292,7 @@ export type ActivityAttendanceOverview = {
     totalSessions: number;
     attendanceRate: number;
   }>;
-};
+}
 
 // Session Status Types
 export const SESSION_STATUSES = [

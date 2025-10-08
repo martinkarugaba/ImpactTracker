@@ -15,6 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Field, FieldLabel, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -24,7 +25,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Combobox } from "@/components/ui/combobox";
-import { Progress } from "@/components/ui/progress";
 import toast from "react-hot-toast";
 import { type Project } from "@/features/projects/types";
 import {
@@ -85,11 +85,11 @@ const formSchema = z
   .object({
     firstName: z.string().min(2, "First name must be at least 2 characters"),
     lastName: z.string().min(2, "Last name must be at least 2 characters"),
-    country: z.string().min(2, "Country is required"),
-    district: z.string().min(2, "District is required"),
-    subCounty: z.string().min(2, "Sub-county is required"),
-    parish: z.string().min(2, "Parish is required"),
-    village: z.string().min(2, "Village is required"),
+    country: z.string().optional(),
+    district: z.string().optional(),
+    subCounty: z.string().optional(),
+    parish: z.string().optional(),
+    village: z.string().optional(),
     // Location IDs (optional, used when mapping is successful)
     country_id: z.string().optional(),
     district_id: z.string().optional(),
@@ -103,8 +103,8 @@ const formSchema = z
     disabilityType: z.string().optional(),
     isMother: z.enum(["yes", "no"]),
     isRefugee: z.enum(["yes", "no"]),
-    designation: z.string().min(2, "Designation is required"),
-    enterprise: z.string().min(2, "Enterprise is required"),
+    designation: z.string().optional(),
+    enterprise: z.string().optional(),
     contact: z.string().min(10, "Contact must be at least 10 characters"),
     project_id: z.string().min(1, "Project is required"),
     cluster_id: z.string().min(1, "Cluster is required"),
@@ -150,8 +150,7 @@ const formSchema = z
     refugeeLocation: z.string().optional(),
     isActiveStudent: z.enum(["yes", "no"]),
     // VSLA Information
-    isSubscribedToVSLA: z.enum(["yes", "no"]),
-    vslaName: z.string().optional(),
+    vslaId: z.string().optional(),
     // Teen Mother
     isTeenMother: z.enum(["yes", "no"]),
     // Enterprise Information
@@ -351,8 +350,7 @@ export function MultiStepParticipantForm({
       populationSegment: "youth",
       refugeeLocation: "",
       isActiveStudent: "no",
-      isSubscribedToVSLA: "no",
-      vslaName: "",
+      vslaId: "",
       isTeenMother: "no",
       ownsEnterprise: "no",
       enterpriseName: "",
@@ -404,7 +402,6 @@ export function MultiStepParticipantForm({
   }, [initialData]);
 
   const currentStepIndex = STEPS.findIndex(step => step.id === currentStep);
-  const progress = ((currentStepIndex + 1) / STEPS.length) * 100;
 
   const handleSubmit = async (data: ParticipantFormValues) => {
     try {
@@ -474,11 +471,6 @@ export function MultiStepParticipantForm({
         ];
       case "location":
         return [
-          "country",
-          "district",
-          "subCounty",
-          "parish",
-          "village",
           "locationSetting",
           "isPermanentResident",
           "isRefugee",
@@ -509,16 +501,13 @@ export function MultiStepParticipantForm({
           "enterpriseName",
           "enterpriseSector",
           "enterpriseSize",
-          "designation",
-          "enterprise",
         ];
       case "organization":
         return [
           "project_id",
           "organization_id",
           "cluster_id",
-          "isSubscribedToVSLA",
-          "vslaName",
+          "vslaId",
           "isTeenMother",
           "isMother",
           "isWillingToParticipate",
@@ -563,85 +552,43 @@ export function MultiStepParticipantForm({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Progress Header */}
-      <div className="bg-card rounded-lg border p-4 shadow-sm">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold">
-            {initialData ? "Update Participant" : "Add New Participant"}
-          </h2>
-          <div className="text-muted-foreground flex items-center gap-2 text-sm">
-            <CheckCircle2 className="h-4 w-4" />
-            <span>{Math.round(progress)}% Complete</span>
-          </div>
-        </div>
-        <Progress value={progress} className="h-2" />
-        <p className="text-muted-foreground mt-2 text-sm">
-          Step {currentStepIndex + 1} of {STEPS.length}:{" "}
-          {STEPS[currentStepIndex].description}
-        </p>
-      </div>
-
-      {/* Step Navigation */}
-      <div className="bg-card rounded-lg border p-4 shadow-sm">
-        <div className="flex items-center justify-between gap-2">
+    <div className="w-full max-w-full space-y-4">
+      {/* Minimal Step Indicator */}
+      <div className="flex items-center justify-between border-b pb-3">
+        <div className="flex items-center gap-4">
           {STEPS.map((step, index) => {
             const Icon = step.icon;
             const isActive = step.id === currentStep;
             const isCompleted = completedSteps.has(step.id);
-            const isAccessible =
-              index <= currentStepIndex || completedSteps.has(step.id);
 
             return (
               <React.Fragment key={step.id}>
                 <button
-                  onClick={() => isAccessible && goToStep(step.id)}
-                  disabled={!isAccessible}
-                  className={`group relative flex flex-col items-center gap-2 transition-all ${
-                    isAccessible ? "cursor-pointer" : "cursor-not-allowed"
-                  }`}
-                  title={step.title}
+                  onClick={() => goToStep(step.id)}
+                  disabled={index > currentStepIndex && !isCompleted}
+                  className="group flex shrink-0 items-center gap-2 disabled:opacity-40"
+                  type="button"
                 >
-                  {/* Step Circle */}
                   <div
-                    className={`relative flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all ${
+                    className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
                       isActive
-                        ? "border-primary bg-primary text-primary-foreground scale-110 shadow-md"
+                        ? "bg-primary text-primary-foreground"
                         : isCompleted
-                          ? "border-green-600 bg-green-600 text-white"
-                          : isAccessible
-                            ? "border-muted-foreground/30 bg-background text-muted-foreground group-hover:border-primary/50"
-                            : "border-muted-foreground/20 bg-muted/50 text-muted-foreground/50"
+                          ? "bg-green-600 text-white"
+                          : "bg-muted text-muted-foreground"
                     }`}
                   >
                     {isCompleted ? (
-                      <CheckCircle2 className="h-5 w-5" />
+                      <CheckCircle2 className="h-4 w-4" />
                     ) : (
-                      <Icon className="h-5 w-5" />
+                      <Icon className="h-4 w-4" />
                     )}
                   </div>
-
-                  {/* Step Label */}
-                  <span
-                    className={`max-w-[80px] truncate text-center text-xs font-medium transition-colors ${
-                      isActive
-                        ? "text-primary"
-                        : isCompleted
-                          ? "text-green-600"
-                          : isAccessible
-                            ? "text-muted-foreground group-hover:text-foreground"
-                            : "text-muted-foreground/50"
-                    }`}
-                  >
-                    {step.title}
-                  </span>
                 </button>
-
-                {/* Connector Line */}
                 {index < STEPS.length - 1 && (
                   <div
-                    className={`h-0.5 flex-1 transition-colors ${
-                      isCompleted ? "bg-green-600" : "bg-muted-foreground/20"
+                    className={`hidden h-px w-8 sm:block ${
+                      isCompleted ? "bg-green-600" : "bg-border"
                     }`}
                   />
                 )}
@@ -649,6 +596,9 @@ export function MultiStepParticipantForm({
             );
           })}
         </div>
+        <span className="text-muted-foreground text-sm">
+          {currentStepIndex + 1} / {STEPS.length}
+        </span>
       </div>
 
       {/* Form Content */}
@@ -656,14 +606,14 @@ export function MultiStepParticipantForm({
         <form
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onSubmit={form.handleSubmit(handleSubmit as any)}
-          className="space-y-6"
+          className="w-full space-y-4"
         >
-          <div className="bg-card rounded-lg border p-4 shadow-sm sm:p-6">
-            {renderStepContent()}
+          <div className="w-full max-w-full overflow-hidden rounded-lg border p-4 sm:p-6">
+            <div className="w-full max-w-none">{renderStepContent()}</div>
           </div>
 
           {/* Navigation Buttons */}
-          <div className="bg-card flex justify-between rounded-lg border p-4 shadow-sm">
+          <div className="flex justify-between">
             <Button
               type="button"
               variant="outline"
@@ -671,7 +621,7 @@ export function MultiStepParticipantForm({
               disabled={currentStepIndex === 0}
               className="flex items-center gap-2"
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-4 w-4" />
               <span className="hidden sm:inline">Previous</span>
             </Button>
 
@@ -680,13 +630,13 @@ export function MultiStepParticipantForm({
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                  className="flex items-center gap-2"
                 >
                   {isLoading ? (
                     <>Saving...</>
                   ) : (
                     <>
-                      <CheckCircle2 className="h-5 w-5" />
+                      <CheckCircle2 className="h-4 w-4" />
                       <span>
                         {initialData ? "Update" : "Create"} Participant
                       </span>
@@ -700,7 +650,7 @@ export function MultiStepParticipantForm({
                   className="flex items-center gap-2"
                 >
                   <span className="hidden sm:inline">Next</span>
-                  <ChevronRight className="h-5 w-5" />
+                  <ChevronRight className="h-4 w-4" />
                 </Button>
               )}
             </div>
@@ -715,229 +665,139 @@ export function MultiStepParticipantForm({
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function PersonalInfoStep({ form }: { form: any }) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center gap-3 border-b pb-4">
-        <div className="rounded-lg bg-blue-100 p-2">
-          <User className="h-5 w-5 text-blue-600" />
+        <div className="bg-primary/10 rounded-lg p-2">
+          <User className="text-primary h-5 w-5" />
         </div>
         <div>
           <h3 className="text-lg font-semibold">Personal Information</h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-muted-foreground text-sm">
             Basic personal details and identity
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <FormField
-          control={form.control}
-          name="firstName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>First Name *</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter first name" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="lastName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Last Name *</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter last name" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="sex"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Gender *</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select gender" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="contact"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Contact Number *</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter phone number" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="age"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Age</FormLabel>
-              <FormControl>
-                <Input type="number" placeholder="Enter age" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="dateOfBirth"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Date of Birth</FormLabel>
-              <FormControl>
-                <Input type="date" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="maritalStatus"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Marital Status</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select marital status" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="single">Single</SelectItem>
-                  <SelectItem value="married">Married</SelectItem>
-                  <SelectItem value="divorced">Divorced</SelectItem>
-                  <SelectItem value="widowed">Widowed</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="numberOfChildren"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Number of Children</FormLabel>
-              <FormControl>
-                <Input type="number" placeholder="0" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="isPWD"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Person with Disability (PWD)</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select PWD status" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="no">No</SelectItem>
-                  <SelectItem value="yes">Yes</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {form.watch("isPWD") === "yes" && (
+      <FieldGroup>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
-            name="disabilityType"
+            name="firstName"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Disability Type</FormLabel>
+              <Field>
+                <FieldLabel htmlFor="firstName">First Name *</FieldLabel>
                 <FormControl>
-                  <Input placeholder="Specify disability type" {...field} />
+                  <Input
+                    id="firstName"
+                    placeholder="Enter first name"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
-              </FormItem>
+              </Field>
             )}
           />
-        )}
 
-        <FormField
-          control={form.control}
-          name="nationality"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nationality</FormLabel>
-              <FormControl>
-                <Input placeholder="Ugandan" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="populationSegment"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Population Segment</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <Field>
+                <FieldLabel htmlFor="lastName">Last Name *</FieldLabel>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select population segment" />
-                  </SelectTrigger>
+                  <Input
+                    id="lastName"
+                    placeholder="Enter last name"
+                    {...field}
+                  />
                 </FormControl>
-                <SelectContent>
-                  <SelectItem value="youth">Youth</SelectItem>
-                  <SelectItem value="women">Women</SelectItem>
-                  <SelectItem value="pwd">PWD</SelectItem>
-                  <SelectItem value="elderly">Elderly</SelectItem>
-                  <SelectItem value="refugee">Refugee</SelectItem>
-                  <SelectItem value="host">Host Community</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+                <FormMessage />
+              </Field>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="sex"
+            render={({ field }) => (
+              <Field>
+                <FieldLabel htmlFor="sex">Gender *</FieldLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger id="sex">
+                      <SelectValue placeholder="Select gender" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </Field>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="contact"
+            render={({ field }) => (
+              <Field>
+                <FieldLabel htmlFor="contact">Contact Number *</FieldLabel>
+                <FormControl>
+                  <Input
+                    id="contact"
+                    placeholder="Enter phone number"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </Field>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="age"
+            render={({ field }) => (
+              <Field>
+                <FieldLabel htmlFor="age">Age</FieldLabel>
+                <FormControl>
+                  <Input
+                    id="age"
+                    type="number"
+                    placeholder="Enter age"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </Field>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="dateOfBirth"
+            render={({ field }) => (
+              <Field>
+                <FieldLabel htmlFor="dateOfBirth">Date of Birth</FieldLabel>
+                <FormControl>
+                  <Input id="dateOfBirth" type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </Field>
+            )}
+          />
+        </div>
+      </FieldGroup>
     </div>
   );
 }
@@ -1748,41 +1608,27 @@ function OrganizationStep({
 
         <FormField
           control={form.control}
-          name="isSubscribedToVSLA"
+          name="vslaId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>VSLA Member</FormLabel>
+              <FormLabel>VSLA (Optional)</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select VSLA membership" />
+                    <SelectValue placeholder="Select VSLA" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="no">No</SelectItem>
-                  <SelectItem value="yes">Yes</SelectItem>
+                  <SelectItem value="">No VSLA</SelectItem>
+                  {/* TODO: Add actual VSLA options from database */}
+                  <SelectItem value="vsla1">Sample VSLA 1</SelectItem>
+                  <SelectItem value="vsla2">Sample VSLA 2</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
             </FormItem>
           )}
         />
-
-        {form.watch("isSubscribedToVSLA") === "yes" && (
-          <FormField
-            control={form.control}
-            name="vslaName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>VSLA Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter VSLA name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
 
         <FormField
           control={form.control}

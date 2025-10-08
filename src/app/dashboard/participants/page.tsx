@@ -1,4 +1,7 @@
-import { Suspense } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PageTitle } from "@/features/dashboard/components/page-title";
@@ -7,6 +10,18 @@ import { getUserClusterId } from "@/features/auth/actions";
 import { getClusters } from "@/features/clusters/actions/clusters";
 import { getOrganizations } from "@/features/organizations/actions/organizations";
 import { ParticipantsContainer } from "@/features/participants/components/container";
+import type { Project } from "@/features/projects/types";
+
+interface Cluster {
+  id: string;
+  name: string;
+}
+
+interface Organization {
+  id: string;
+  name: string;
+  acronym: string;
+}
 
 // Loading component for the page
 function ParticipantsPageSkeleton() {
@@ -312,63 +327,106 @@ function ParticipantsPageSkeleton() {
   );
 }
 
-// Main participants page content
-async function ParticipantsPageContent() {
-  try {
-    // Get user's cluster ID first
-    const clusterId = await getUserClusterId();
+// Client-side component that handles async cluster verification
+function ParticipantsPageContent() {
+  const { data: session, status } = useSession();
+  const [clusterId, setClusterId] = useState<string | null>(null);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [clusters, setClusters] = useState<Cluster[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    if (!clusterId) {
-      return (
-        <div className="flex h-96 items-center justify-center">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold">No cluster assigned</h3>
-            <p className="text-muted-foreground mt-2">
-              Please contact an administrator to assign you to a cluster.
-            </p>
-          </div>
-        </div>
-      );
+  useEffect(() => {
+    async function fetchData() {
+      if (status === "loading") return; // Wait for session to load
+      if (!session?.user?.id) {
+        setError("Not authenticated");
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        // Get user's cluster ID first with proper timeout handling
+        const userClusterId = await Promise.race([
+          getUserClusterId(),
+          new Promise<null>((_, reject) =>
+            setTimeout(() => reject(new Error("Cluster lookup timeout")), 10000)
+          ),
+        ]);
+
+        if (!userClusterId) {
+          setError("no_cluster");
+          setIsLoading(false);
+          return;
+        }
+
+        setClusterId(userClusterId);
+
+        // Fetch all required data in parallel
+        const [organizationsResult, clustersResult, projectsResult] =
+          await Promise.allSettled([
+            getOrganizations().catch(() => ({ success: false, data: [] })),
+            getClusters().catch(() => ({ success: false, data: [] })),
+            getProjects().catch(() => ({ success: false, data: [] })),
+          ]);
+
+        // Extract organizations (optional)
+        const orgs =
+          organizationsResult.status === "fulfilled" &&
+          organizationsResult.value.success
+            ? organizationsResult.value.data || []
+            : [];
+        setOrganizations(orgs);
+
+        // Extract clusters (optional)
+        const clusterData =
+          clustersResult.status === "fulfilled" && clustersResult.value.success
+            ? clustersResult.value.data || []
+            : [];
+        setClusters(clusterData);
+
+        // Extract projects (optional)
+        const projectData =
+          projectsResult.status === "fulfilled" && projectsResult.value.success
+            ? projectsResult.value.data || []
+            : [];
+        setProjects(projectData);
+
+        setIsLoading(false);
+      } catch (err) {
+        console.error("Error loading participants page data:", err);
+        setError("load_error");
+        setIsLoading(false);
+      }
     }
 
-    // Fetch all required data in parallel
-    const [organizationsResult, clustersResult, projectsResult] =
-      await Promise.allSettled([
-        getOrganizations(),
-        getClusters().catch(() => ({ success: false, data: [] })), // Graceful fallback for optional data
-        getProjects().catch(() => ({ success: false, data: [] })), // Graceful fallback for optional data
-      ]);
+    fetchData();
+  }, [session, status]);
 
-    // Extract organizations (optional)
-    const organizations =
-      organizationsResult.status === "fulfilled" &&
-      organizationsResult.value.success
-        ? organizationsResult.value.data || []
-        : [];
+  // Show loading state while checking cluster assignment
+  if (status === "loading" || isLoading) {
+    return <ParticipantsPageSkeleton />;
+  }
 
-    // Extract clusters (optional)
-    const clusters =
-      clustersResult.status === "fulfilled" && clustersResult.value.success
-        ? clustersResult.value.data || []
-        : [];
-
-    // Extract projects (optional)
-    const projects =
-      projectsResult.status === "fulfilled" && projectsResult.value.success
-        ? projectsResult.value.data || []
-        : [];
-
+  // Handle different error states
+  if (error === "no_cluster") {
     return (
-      <ParticipantsContainer
-        clusterId={clusterId}
-        projects={projects}
-        clusters={clusters}
-        organizations={organizations}
-      />
+      <div className="flex h-96 items-center justify-center">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold">No cluster assigned</h3>
+          <p className="text-muted-foreground mt-2">
+            Please contact an administrator to assign you to a cluster.
+          </p>
+        </div>
+      </div>
     );
-  } catch (error) {
-    console.error("Error loading participants page data:", error);
+  }
 
+  if (error === "load_error") {
     return (
       <div className="flex h-96 items-center justify-center">
         <div className="text-center">
@@ -380,14 +438,46 @@ async function ParticipantsPageContent() {
       </div>
     );
   }
+
+  if (!session?.user?.id) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold">Not authenticated</h3>
+          <p className="text-muted-foreground mt-2">
+            Please sign in to view participants.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!clusterId) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold">
+            Loading cluster assignment...
+          </h3>
+          <p className="text-muted-foreground mt-2">
+            Verifying your cluster access...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <ParticipantsContainer
+      clusterId={clusterId}
+      projects={projects}
+      clusters={clusters}
+      organizations={organizations}
+    />
+  );
 }
 
 // Main page component with proper metadata
-export const metadata = {
-  title: "Participants | Impact Tracker",
-  description: "Manage and track project participants and beneficiaries",
-};
-
 export default function ParticipantsPage() {
   return (
     <>
@@ -395,9 +485,7 @@ export default function ParticipantsPage() {
       <div className="flex flex-1 flex-col px-2 sm:px-4 md:px-6">
         <div className="@container/main flex flex-1 flex-col gap-2">
           <div className="flex flex-col gap-3 py-3 sm:gap-4 sm:py-4 md:gap-6 md:py-6">
-            <Suspense fallback={<ParticipantsPageSkeleton />}>
-              <ParticipantsPageContent />
-            </Suspense>
+            <ParticipantsPageContent />
           </div>
         </div>
       </div>

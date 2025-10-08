@@ -719,7 +719,7 @@ export async function getKPIOverviewMetrics(clusterId?: string): Promise<{
           (participantsLastMonth?.count as number) || 0
         ),
         byDistrict: participantsByDistrict.map(p => ({
-          district: p.district,
+          district: p.district ?? "Unknown",
           count: p.count as number,
         })),
         byAge: participantsByAge.map(p => ({
@@ -730,7 +730,7 @@ export async function getKPIOverviewMetrics(clusterId?: string): Promise<{
           id: p.id,
           firstName: p.firstName,
           lastName: p.lastName,
-          district: p.district,
+          district: p.district ?? "Unknown",
           created_at: p.created_at!,
         })),
       },

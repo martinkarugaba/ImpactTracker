@@ -10,6 +10,7 @@ import {
   updateParticipant,
   deleteParticipant,
 } from "../actions";
+import { deleteParticipants } from "../actions/find-all-duplicates";
 import { importParticipants } from "../actions/import-participants";
 import { type NewParticipant } from "../types/types";
 
@@ -270,6 +271,28 @@ export function useExportParticipants() {
         throw new Error(result.error || "Failed to export participants");
       }
       return result.data?.data || [];
+    },
+  });
+}
+
+export function useBulkDeleteParticipants(clusterId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (participantIds: string[]) => {
+      await deleteParticipants(participantIds);
+      return participantIds;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["participants", clusterId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["participant-metrics", clusterId],
+      });
+    },
+    onError: error => {
+      console.error("Bulk delete error:", error);
     },
   });
 }
