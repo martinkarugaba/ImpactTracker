@@ -12,6 +12,9 @@ export const participantFiltersAtom = atomWithStorage<ParticipantFilters>(
     organization: "all",
     district: "all",
     subCounty: "all",
+    county: "all",
+    parish: "all",
+    village: "all",
     enterprise: "all",
     sex: "all",
     isPWD: "all",
@@ -55,10 +58,9 @@ export const participantPaginationAtom = atom({
 });
 
 export const participantSearchAtom = atom("");
-export const activeTabAtom = atomWithStorage(
-  "participants-active-tab",
-  "participants"
-);
+export const activeTabAtom = atomWithStorage<
+  "participants" | "analytics" | "charts" | "targets"
+>("participants-active-tab", "participants");
 
 // Loading state for filtering operations
 export const isFilteringAtom = atom(false);
@@ -79,6 +81,7 @@ export const columnVisibilityAtom = atomWithStorage("participants-columns", {
   contact: true,
   district: true,
   subCounty: false,
+  county: false,
   parish: false,
   village: false,
   organization: true,
@@ -122,6 +125,9 @@ export const clearFiltersAtom = atom(null, (get, set) => {
     organization: "all",
     district: "all",
     subCounty: "all",
+    county: "all",
+    parish: "all",
+    village: "all",
     enterprise: "all",
     sex: "all",
     isPWD: "all",

@@ -34,6 +34,9 @@ export interface GetParticipantsOptimizedParams {
     organization?: string;
     district?: string;
     subCounty?: string;
+    county?: string;
+    parish?: string;
+    village?: string;
     enterprise?: string;
     sex?: string;
     isPWD?: string;
@@ -244,6 +247,12 @@ export async function getParticipantsOptimized(
           }
           if (filters.subCounty && filters.subCounty !== "all") {
             whereConditions.push(eq(participants.subCounty, filters.subCounty));
+          }
+          if (filters.parish && filters.parish !== "all") {
+            whereConditions.push(eq(participants.parish, filters.parish));
+          }
+          if (filters.village && filters.village !== "all") {
+            whereConditions.push(eq(participants.village, filters.village));
           }
           if (filters.sex && filters.sex !== "all") {
             whereConditions.push(eq(participants.sex, filters.sex));

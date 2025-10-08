@@ -29,11 +29,8 @@ After creating the project, Neon will provide you with connection strings:
 
 Update your `.env.local` file:
 
-```bash
+````bash
 # Neon Database URLs
-DATABASE_URL="postgresql://[user]:[password]@[endpoint].neon.tech/[database]?sslmode=require&pgbouncer=true"
-DIRECT_URL="postgresql://[user]:[password]@[endpoint].neon.tech/[database]?sslmode=require"
-```
 
 **Important Notes:**
 
@@ -54,7 +51,7 @@ pnpm db:push
 # Or generate and run migrations
 pnpm db:generate
 pnpm db:migrate
-```
+````
 
 ### 5. Migrate Your Data (Optional)
 
@@ -64,7 +61,6 @@ If you need to migrate existing data from Supabase to Neon:
 
 ```bash
 # Export from Supabase
-pg_dump "postgresql://postgres.hldkbvsqfwwizfgnpmyq:IuWNO61Vueg1hmaF@aws-1-eu-central-2.pooler.supabase.com:6543/postgres" > backup.sql
 
 # Import to Neon (use DIRECT_URL)
 psql "postgresql://[your-neon-direct-url]" < backup.sql
@@ -151,7 +147,7 @@ If you experience timeouts:
 Make sure your connection string includes `sslmode=require`:
 
 ```
-?sslmode=require
+
 ```
 
 ### Migration Errors

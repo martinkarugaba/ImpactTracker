@@ -563,9 +563,9 @@ export function MultiStepParticipantForm({
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <div className="space-y-6">
       {/* Progress Header */}
-      <div className="bg-card rounded-lg border p-6 shadow-sm">
+      <div className="bg-card rounded-lg border p-4 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold">
             {initialData ? "Update Participant" : "Add New Participant"}
@@ -583,8 +583,8 @@ export function MultiStepParticipantForm({
       </div>
 
       {/* Step Navigation */}
-      <div className="bg-card rounded-lg border p-6 shadow-sm">
-        <div className="flex flex-wrap justify-between gap-2">
+      <div className="bg-card rounded-lg border p-4 shadow-sm">
+        <div className="flex items-center justify-between gap-2">
           {STEPS.map((step, index) => {
             const Icon = step.icon;
             const isActive = step.id === currentStep;
@@ -593,43 +593,59 @@ export function MultiStepParticipantForm({
               index <= currentStepIndex || completedSteps.has(step.id);
 
             return (
-              <button
-                key={step.id}
-                onClick={() => isAccessible && goToStep(step.id)}
-                disabled={!isAccessible}
-                className={`flex min-w-0 flex-1 items-center gap-3 rounded-lg px-4 py-3 text-left transition-colors ${
-                  isActive
-                    ? "bg-primary/10 text-primary border-primary border"
-                    : isCompleted
-                      ? "border border-green-200 bg-green-50 text-green-700 hover:bg-green-100 dark:border-green-800 dark:bg-green-900/20 dark:text-green-300 dark:hover:bg-green-900/30"
-                      : isAccessible
-                        ? "bg-muted text-foreground hover:bg-muted/80 border-border border"
-                        : "bg-muted/50 text-muted-foreground border-border cursor-not-allowed border"
-                }`}
-              >
-                <div
-                  className={`flex-shrink-0 rounded-lg p-2 ${
-                    isActive
-                      ? "bg-blue-100"
-                      : isCompleted
-                        ? "bg-green-100"
-                        : "bg-gray-100"
+              <React.Fragment key={step.id}>
+                <button
+                  onClick={() => isAccessible && goToStep(step.id)}
+                  disabled={!isAccessible}
+                  className={`group relative flex flex-col items-center gap-2 transition-all ${
+                    isAccessible ? "cursor-pointer" : "cursor-not-allowed"
                   }`}
+                  title={step.title}
                 >
-                  <Icon className="h-4 w-4" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-medium">
+                  {/* Step Circle */}
+                  <div
+                    className={`relative flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all ${
+                      isActive
+                        ? "border-primary bg-primary text-primary-foreground scale-110 shadow-md"
+                        : isCompleted
+                          ? "border-green-600 bg-green-600 text-white"
+                          : isAccessible
+                            ? "border-muted-foreground/30 bg-background text-muted-foreground group-hover:border-primary/50"
+                            : "border-muted-foreground/20 bg-muted/50 text-muted-foreground/50"
+                    }`}
+                  >
+                    {isCompleted ? (
+                      <CheckCircle2 className="h-5 w-5" />
+                    ) : (
+                      <Icon className="h-5 w-5" />
+                    )}
+                  </div>
+
+                  {/* Step Label */}
+                  <span
+                    className={`max-w-[80px] truncate text-center text-xs font-medium transition-colors ${
+                      isActive
+                        ? "text-primary"
+                        : isCompleted
+                          ? "text-green-600"
+                          : isAccessible
+                            ? "text-muted-foreground group-hover:text-foreground"
+                            : "text-muted-foreground/50"
+                    }`}
+                  >
                     {step.title}
-                  </div>
-                  <div className="hidden truncate text-xs opacity-75 sm:block">
-                    {step.description}
-                  </div>
-                </div>
-                {isCompleted && (
-                  <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-green-600" />
+                  </span>
+                </button>
+
+                {/* Connector Line */}
+                {index < STEPS.length - 1 && (
+                  <div
+                    className={`h-0.5 flex-1 transition-colors ${
+                      isCompleted ? "bg-green-600" : "bg-muted-foreground/20"
+                    }`}
+                  />
                 )}
-              </button>
+              </React.Fragment>
             );
           })}
         </div>
@@ -642,12 +658,12 @@ export function MultiStepParticipantForm({
           onSubmit={form.handleSubmit(handleSubmit as any)}
           className="space-y-6"
         >
-          <div className="bg-card rounded-lg border p-6 shadow-sm">
+          <div className="bg-card rounded-lg border p-4 shadow-sm sm:p-6">
             {renderStepContent()}
           </div>
 
           {/* Navigation Buttons */}
-          <div className="bg-card flex justify-between rounded-lg border p-6 shadow-sm">
+          <div className="bg-card flex justify-between rounded-lg border p-4 shadow-sm">
             <Button
               type="button"
               variant="outline"
@@ -655,8 +671,8 @@ export function MultiStepParticipantForm({
               disabled={currentStepIndex === 0}
               className="flex items-center gap-2"
             >
-              <ChevronLeft className="h-4 w-4" />
-              Previous
+              <ChevronLeft className="h-5 w-5" />
+              <span className="hidden sm:inline">Previous</span>
             </Button>
 
             <div className="flex gap-3">
@@ -666,9 +682,16 @@ export function MultiStepParticipantForm({
                   disabled={isLoading}
                   className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
                 >
-                  {isLoading ? "Saving..." : initialData ? "Update" : "Create"}{" "}
-                  Participant
-                  <CheckCircle2 className="h-4 w-4" />
+                  {isLoading ? (
+                    <>Saving...</>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="h-5 w-5" />
+                      <span>
+                        {initialData ? "Update" : "Create"} Participant
+                      </span>
+                    </>
+                  )}
                 </Button>
               ) : (
                 <Button
@@ -676,8 +699,8 @@ export function MultiStepParticipantForm({
                   onClick={nextStep}
                   className="flex items-center gap-2"
                 >
-                  Next
-                  <ChevronRight className="h-4 w-4" />
+                  <span className="hidden sm:inline">Next</span>
+                  <ChevronRight className="h-5 w-5" />
                 </Button>
               )}
             </div>

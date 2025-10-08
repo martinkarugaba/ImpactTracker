@@ -13,10 +13,10 @@ import { SidebarMainNav } from "./sidebar-main-nav";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar className="" collapsible="offcanvas" side="left" {...props}>
+    <Sidebar className="border-none" variant="inset" side="left" {...props}>
       {/* Subtle background pattern */}
-      <div className="bg-grid-small-primary/[0.02] pointer-events-none absolute inset-0" />
-      <div className="from-primary/[0.03] to-primary/[0.01] pointer-events-none absolute inset-0 bg-gradient-to-br via-transparent" />
+      {/* <div className="bg-grid-small-primary/[0.02] pointer-events-none absolute inset-0" />
+      <div className="from-primary/[0.03] to-primary/[0.01] pointer-events-none absolute inset-0 bg-gradient-to-br via-transparent" /> */}
 
       <SidebarHeader className="border-border/20 flex-shrink-0 border-b">
         <TeamSwitcher />

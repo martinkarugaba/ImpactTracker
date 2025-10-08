@@ -1,8 +1,8 @@
 "use client";
 
 import { TabsContent } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Users, UserCircle, Briefcase, Store, Layers } from "lucide-react";
 import { useCalculatedParticipantMetrics } from "../../hooks/use-calculated-participant-metrics";
 import {
   DemographicsMetrics,
@@ -45,13 +45,41 @@ function DetailedParticipantMetrics({
   }
 
   return (
-    <Tabs defaultValue="demographics" className="w-full border-orange-500">
-      <TabsList className="grid w-full grid-cols-5">
-        <TabsTrigger value="demographics">Demographics</TabsTrigger>
-        <TabsTrigger value="youth-employment">Youth in Work</TabsTrigger>
-        <TabsTrigger value="wage-employment">Wage Employment</TabsTrigger>
-        <TabsTrigger value="self-employment">Self Employment</TabsTrigger>
-        <TabsTrigger value="secondary-employment">
+    <Tabs defaultValue="demographics" className="w-full">
+      <TabsList className="bg-muted">
+        <TabsTrigger
+          value="demographics"
+          className="flex items-center gap-2 data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-purple-500"
+        >
+          <Users className="h-4 w-4" />
+          Demographics
+        </TabsTrigger>
+        <TabsTrigger
+          value="youth-employment"
+          className="flex items-center gap-2 data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-purple-500"
+        >
+          <UserCircle className="h-4 w-4" />
+          Youth in Work
+        </TabsTrigger>
+        <TabsTrigger
+          value="wage-employment"
+          className="flex items-center gap-2 data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-purple-500"
+        >
+          <Briefcase className="h-4 w-4" />
+          Wage Employment
+        </TabsTrigger>
+        <TabsTrigger
+          value="self-employment"
+          className="flex items-center gap-2 data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-purple-500"
+        >
+          <Store className="h-4 w-4" />
+          Self Employment
+        </TabsTrigger>
+        <TabsTrigger
+          value="secondary-employment"
+          className="flex items-center gap-2 data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-purple-500"
+        >
+          <Layers className="h-4 w-4" />
           Secondary Employment
         </TabsTrigger>
       </TabsList>
@@ -92,12 +120,12 @@ export function AnalyticsTab({
     <TabsContent value="analytics" className="mt-4">
       {/* Analytics Container */}
       <div className="space-y-0">
-        {/* Header */}
+        {/* Header
         <div className="flex items-center justify-end pb-4">
           <Badge variant="outline" className="text-xs">
             {metricsParticipants.length} participants
           </Badge>
-        </div>
+        </div> */}
 
         {/* Detailed Metrics with Tabs */}
         <DetailedParticipantMetrics

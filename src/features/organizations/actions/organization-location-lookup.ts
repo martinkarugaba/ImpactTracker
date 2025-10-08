@@ -125,18 +125,23 @@ export async function batchGetSubCountyNamesByCodes(
     // Remove duplicates before querying
     const uniqueCodes = [...new Set(actualCodes)];
 
-    const subCountiesData = await db.query.subCounties.findMany({
-      where: inArray(subCounties.code, uniqueCodes),
-      columns: {
-        code: true,
-        name: true,
-      },
-    });
+    try {
+      const subCountiesData = await db.query.subCounties.findMany({
+        where: inArray(subCounties.code, uniqueCodes),
+        columns: {
+          code: true,
+          name: true,
+        },
+      });
 
-    // Add the retrieved names
-    subCountiesData.forEach(subCounty => {
-      nameMap[subCounty.code] = subCounty.name;
-    });
+      // Add the retrieved names
+      subCountiesData.forEach(subCounty => {
+        nameMap[subCounty.code] = subCounty.name;
+      });
+    } catch (dbError) {
+      console.error("Database query error for subcounties:", dbError);
+      // Continue with fallback - use codes as names
+    }
 
     // Add fallback for codes not found
     codes.forEach(code => {

@@ -105,11 +105,18 @@ export async function getProjects() {
       });
       userOrgId = userMembership?.organization_id;
 
-      // Get user's clusters
-      const userClusters = await db.query.clusterUsers.findMany({
-        where: eq(clusterUsers.user_id, session.user.id),
-      });
-      userClusterIds = userClusters.map(uc => uc.cluster_id);
+      // Get user's clusters - cluster managers only see their managed clusters
+      if (session.user.role === "cluster_manager") {
+        const userClusters = await db.query.clusterUsers.findMany({
+          where: sql`${clusterUsers.user_id} = ${session.user.id} AND ${clusterUsers.role} = 'cluster_manager'`,
+        });
+        userClusterIds = userClusters.map(uc => uc.cluster_id);
+      } else {
+        const userClusters = await db.query.clusterUsers.findMany({
+          where: eq(clusterUsers.user_id, session.user.id),
+        });
+        userClusterIds = userClusters.map(uc => uc.cluster_id);
+      }
     }
 
     let projectsList: Array<{

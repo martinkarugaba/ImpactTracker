@@ -65,6 +65,9 @@ interface ParticipantsTabProps {
   filterOptions: {
     districts: Array<{ id: string; name: string }>;
     subCounties: Array<{ id: string; name: string }>;
+    counties: Array<{ id: string; name: string }>;
+    parishes: Array<{ id: string; name: string }>;
+    villages: Array<{ id: string; name: string }>;
     enterprises: Array<{ id: string; name: string }>;
   };
   searchValue: string;

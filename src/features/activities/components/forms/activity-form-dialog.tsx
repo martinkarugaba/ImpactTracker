@@ -63,7 +63,7 @@ const activityFormSchema = z.object({
   venue: z.string().min(1, "Venue is required"),
   budget: z.number().optional(),
   objectives: z.string().optional(),
-  organizationId: z.string().min(1, "Lead partner is required"),
+  activityLead: z.string().min(1, "Activity lead is required"),
   clusterId: z.string().optional(),
   projectId: z.string().optional(),
   // Expected number of sessions
@@ -81,7 +81,13 @@ interface ActivityFormDialogProps {
   onOpenChange: (open: boolean) => void;
   activity?: Activity;
   clusterId?: string;
-  organizations: Array<{ id: string; name: string; acronym?: string }>;
+  clusterUsers?: Array<{
+    id: string;
+    name: string;
+    email: string;
+    organization_id?: string | null;
+    organization_name?: string | null;
+  }>;
   clusters?: Array<{ id: string; name: string }>;
   projects?: Array<{ id: string; name: string }>;
 }
@@ -91,7 +97,7 @@ export function ActivityFormDialog({
   onOpenChange,
   activity,
   clusterId,
-  organizations,
+  clusterUsers = [],
   clusters = [],
   projects = [],
 }: ActivityFormDialogProps) {
@@ -109,7 +115,7 @@ export function ActivityFormDialog({
       venue: "",
       budget: undefined,
       objectives: "",
-      organizationId: "",
+      activityLead: "",
       clusterId: "",
       projectId: "",
       sessionCount: undefined,
@@ -132,7 +138,8 @@ export function ActivityFormDialog({
           objectives: Array.isArray(activity.objectives)
             ? activity.objectives.join("\n")
             : activity.objectives || "",
-          organizationId: activity.organization_id || "",
+          activityLead:
+            (activity as Activity & { created_by?: string }).created_by || "",
           clusterId: activity.cluster_id || "",
           projectId: activity.project_id || "",
           sessionCount: activity.expectedSessions || undefined,
@@ -146,7 +153,7 @@ export function ActivityFormDialog({
           venue: "",
           budget: undefined,
           objectives: "",
-          organizationId: "",
+          activityLead: "",
           clusterId: clusterId || "",
           projectId: "",
           sessionCount: undefined,
@@ -158,6 +165,19 @@ export function ActivityFormDialog({
   const onSubmit = async (data: ActivityFormValues) => {
     try {
       let createdActivity;
+
+      // Find the selected activity lead user to get their organization_id
+      const selectedUser = clusterUsers.find(
+        user => user.id === data.activityLead
+      );
+      const organizationId = selectedUser?.organization_id || "";
+
+      // Validate that the user has an organization
+      if (!organizationId) {
+        throw new Error(
+          "Selected user does not have an associated organization"
+        );
+      }
 
       if (activity) {
         const result = await updateActivity.mutateAsync({
@@ -172,8 +192,9 @@ export function ActivityFormDialog({
             endDate: data.endDate || null,
             cluster_id: data.clusterId || undefined,
             project_id: data.projectId || undefined,
-            organization_id: data.organizationId,
+            organization_id: organizationId,
             expectedSessions: data.sessionCount || null,
+            created_by: data.activityLead,
           },
         });
         createdActivity = result.data;
@@ -188,7 +209,7 @@ export function ActivityFormDialog({
           endDate: data.endDate || null,
           cluster_id: data.clusterId || clusterId || null,
           project_id: data.projectId || null,
-          organization_id: data.organizationId,
+          organization_id: organizationId,
           expectedSessions: data.sessionCount || null,
           // Provide default values for missing required fields
           actualCost: null,
@@ -197,7 +218,7 @@ export function ActivityFormDialog({
           challenges: null,
           recommendations: null,
           attachments: [],
-          created_by: "current-user", // TODO: Get from auth context
+          created_by: data.activityLead,
         };
 
         console.log("Creating activity with data:", activityData);
@@ -483,7 +504,9 @@ export function ActivityFormDialog({
                       }
                     />
                   </FormControl>
-                  <FormDescription>Budget in USD</FormDescription>
+                  <FormDescription>
+                    Budget in UGX (Uganda Shillings)
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -491,27 +514,36 @@ export function ActivityFormDialog({
 
             <FormField
               control={form.control}
-              name="organizationId"
+              name="activityLead"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Lead Partner</FormLabel>
+                  <FormLabel>Activity Lead</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select lead partner" />
+                        <SelectValue placeholder="Select activity lead" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {organizations.map(org => (
-                        <SelectItem key={org.id} value={org.id}>
-                          {org.acronym || org.name}
+                      {clusterUsers.map(user => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.name} ({user.email})
+                          {user.organization_name && (
+                            <span className="text-muted-foreground ml-2 text-xs">
+                              - {user.organization_name}
+                            </span>
+                          )}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormDescription>
+                    Select a cluster member to lead this activity. Their
+                    organization will be used as the lead partner.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

@@ -9,12 +9,14 @@ import {
   LayoutGrid,
   ChevronDown,
   Trash2,
+  FileSpreadsheet,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { createColumns } from "./vsla-table-columns";
@@ -23,6 +25,10 @@ import { VSLA } from "../../types";
 import { CreateVSLADialog } from "../dialogs";
 import { ExcelImportDialog } from "@/components/shared/excel-import-dialog";
 import { createVSLAImportConfig } from "../../config/vsla-import-config";
+import {
+  VSLAFiltersComponent,
+  type VSLAFilters,
+} from "../filters/vsla-filters";
 import type { Organization } from "@/features/organizations/types";
 import type { Cluster } from "@/features/clusters/components/clusters-table";
 import type { Project } from "@/features/projects/types";
@@ -33,13 +39,18 @@ interface VSLAsTableProps {
   onEdit?: (vsla: VSLA) => void;
   onDelete?: (vsla: VSLA) => void;
   onBulkDelete?: (vslas: VSLA[]) => void;
-  onExport?: () => void;
+  onExportToExcel?: () => void;
+  onExportToCSV?: () => void;
   isLoading?: boolean;
   pageSize?: number;
   organizations?: Organization[];
   clusters?: Cluster[];
   projects?: Project[];
   onSuccess?: () => void;
+  filters?: VSLAFilters;
+  onFiltersChange?: (filters: VSLAFilters) => void;
+  districts?: string[];
+  subCounties?: string[];
 }
 
 export function VSLAsTable({
@@ -48,13 +59,18 @@ export function VSLAsTable({
   onEdit,
   onDelete,
   onBulkDelete,
-  onExport,
+  onExportToExcel,
+  onExportToCSV,
   isLoading = false,
   pageSize = 10,
   organizations = [],
   clusters = [],
   projects = [],
   onSuccess,
+  filters,
+  onFiltersChange,
+  districts = [],
+  subCounties = [],
 }: VSLAsTableProps) {
   const [searchValue, setSearchValue] = useState("");
   const [selectedRows, setSelectedRows] = useState<VSLA[]>([]);
@@ -95,6 +111,19 @@ export function VSLAsTable({
 
   return (
     <div className="w-full space-y-4">
+      {/* Filters Section */}
+      {filters && onFiltersChange && (
+        <VSLAFiltersComponent
+          filters={filters}
+          onFiltersChange={onFiltersChange}
+          organizations={organizations}
+          clusters={clusters}
+          projects={projects}
+          districts={districts}
+          subCounties={subCounties}
+        />
+      )}
+
       {/* Action Buttons Section - At the very top */}
       <div className="flex items-center justify-between gap-4">
         {/* Left side - Search and Bulk Actions */}
@@ -147,11 +176,30 @@ export function VSLAsTable({
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-          {onExport && (
-            <Button variant="outline" onClick={onExport}>
-              <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
+          {(onExportToExcel || onExportToCSV) && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  <Download className="mr-2 h-4 w-4" />
+                  Export
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {onExportToExcel && (
+                  <DropdownMenuItem onClick={onExportToExcel}>
+                    <FileSpreadsheet className="mr-2 h-4 w-4" />
+                    Export to Excel
+                  </DropdownMenuItem>
+                )}
+                {onExportToCSV && (
+                  <DropdownMenuItem onClick={onExportToCSV}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Export to CSV
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
           <ExcelImportDialog
             config={createVSLAImportConfig(organizations, clusters, projects)}

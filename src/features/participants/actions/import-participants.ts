@@ -34,11 +34,19 @@ export async function importParticipants(data: ParticipantFormValues[]) {
     console.log("User authenticated:", session.user.id);
 
     // Get user's global role
-    const user = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.id, session.user.id),
-    });
+    const user = await db.query.users
+      .findFirst({
+        where: (users, { eq }) => eq(users.id, session.user.id),
+      })
+      .catch(error => {
+        console.error("Database error while fetching user:", error);
+        return null;
+      });
 
     if (!user) {
+      console.warn(
+        `User ${session.user.id} not found in database. Session may be stale.`
+      );
       return { success: false, error: "User not found" };
     }
 

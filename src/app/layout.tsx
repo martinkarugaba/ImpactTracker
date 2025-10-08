@@ -1,22 +1,31 @@
-import { Inter, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { QueryProvider } from "@/providers/query-provider";
 import { AuthProvider } from "@/providers/session-provider";
 import { ActiveThemeProvider } from "@/features/themes/components/active-theme";
 import { CalendarProvider } from "@/components/event-calendar/calendar-context";
+import type { Metadata } from "next";
 import "./globals.css";
 
 const fontSans = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800"],
+  preload: true,
+  fallback: ["system-ui", "arial"],
 });
 
-const fontMono = Geist_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-});
+export const metadata: Metadata = {
+  title: "Impact Tracker",
+  description:
+    "KPI Edge - Impact tracking platform for development organizations in Uganda/East Africa",
+  icons: {
+    icon: "/icon.png",
+    apple: "/apple-icon.png",
+  },
+};
 
 export default function RootLayout({
   children,
@@ -26,7 +35,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${fontSans.variable} ${fontSans.className} ${fontMono.variable} bg-sidebar font-sans antialiased`}
+        className={`${fontSans.variable} bg-sidebar antialiased`}
+        style={{ fontFamily: "var(--font-sans)" }}
         suppressHydrationWarning
       >
         <ThemeProvider

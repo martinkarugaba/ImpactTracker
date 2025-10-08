@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useAtom } from "jotai";
 import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
@@ -9,7 +10,24 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Download, FileUp, Plus, LayoutGrid, ChevronDown } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Download,
+  FileUp,
+  Plus,
+  LayoutGrid,
+  ChevronDown,
+  Trash2,
+} from "lucide-react";
 import { type Activity } from "../../types/types";
 import { ActivityFiltersComponent } from "../filters/activity-filters";
 import { ActivitiesDataTable } from "../data-table";
@@ -53,6 +71,8 @@ export function ActivitiesTab({
   // Use atoms for state management
   const [searchValue, setSearchValue] = useAtom(searchValueAtom);
   const [columnVisibility, setColumnVisibility] = useAtom(columnVisibilityAtom);
+  const [selectedActivities, setSelectedActivities] = useState<Activity[]>([]);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // Available columns for toggle
   const availableColumns = [
@@ -66,17 +86,38 @@ export function ActivitiesTab({
     { id: "budget", label: "Budget" },
   ];
 
+  const handleBulkDelete = () => {
+    if (selectedActivities.length > 0) {
+      const ids = selectedActivities.map(a => a.id);
+      onDeleteMultipleActivities(ids);
+      setSelectedActivities([]);
+      setShowDeleteDialog(false);
+    }
+  };
+
   return (
     <TabsContent value="activities" className="mt-0">
       <div className="space-y-4">
         {/* Action Buttons Section - At the very top */}
         <div className="flex items-center justify-between gap-4">
-          {/* Left side - Filters */}
-          <ActivityFiltersComponent
-            organizations={[]}
-            clusters={[]}
-            projects={[]}
-          />
+          {/* Left side - Filters and Bulk Actions */}
+          <div className="flex items-center gap-2">
+            <ActivityFiltersComponent
+              organizations={[]}
+              clusters={[]}
+              projects={[]}
+            />
+            {selectedActivities.length > 0 && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => setShowDeleteDialog(true)}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete {selectedActivities.length} selected
+              </Button>
+            )}
+          </div>
 
           {/* Right side - Action buttons */}
           <div className="flex items-center gap-2">
@@ -142,7 +183,31 @@ export function ActivitiesTab({
           onExportData={onExportData}
           onImport={onImport}
           columnVisibility={columnVisibility}
+          onRowSelectionChange={setSelectedActivities}
         />
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently delete {selectedActivities.length}{" "}
+                {selectedActivities.length === 1 ? "activity" : "activities"}.
+                This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleBulkDelete}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </TabsContent>
   );

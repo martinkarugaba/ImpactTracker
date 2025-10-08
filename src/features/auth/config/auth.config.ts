@@ -50,63 +50,15 @@ export const authConfig: NextAuthConfig = {
         return session;
       }
 
+      // Always use token data for session - this is more reliable than querying the database
       session.user.id = token.id as string;
       session.user.role = token.role as string;
       session.accessToken = token.accessToken as string;
 
-      // Validate that we have a valid user ID before proceeding
-      if (!session.user.id || typeof session.user.id !== "string") {
-        console.error("Invalid user ID in session:", session.user.id);
-        return session;
-      }
-
-      // Only try database operations if we're not in Edge Runtime
-      // Edge Runtime detection: check if process.versions exists (Node.js specific)
-      // We need to safely check for Node.js APIs that don't exist in Edge Runtime
-      let isNodeRuntime = false;
-      try {
-        isNodeRuntime =
-          typeof process !== "undefined" &&
-          typeof process.versions !== "undefined" &&
-          typeof process.versions.node !== "undefined";
-      } catch {
-        // If accessing process.versions throws, we're in Edge Runtime
-        isNodeRuntime = false;
-      }
-
-      if (isNodeRuntime) {
-        try {
-          // Validate ID format before querying
-          if (!session.user.id || session.user.id.trim() === "") {
-            console.error("Empty or invalid user ID, skipping database query");
-            return session;
-          }
-
-          const user = await db.query.users.findFirst({
-            where: eq(users.id, session.user.id),
-          });
-
-          // If user doesn't exist, return the session without modifications
-          if (!user) {
-            console.log(
-              `User ${session.user.id} not found in database during session creation`
-            );
-            return session;
-          }
-
-          // Update session with latest user data
-          session.user.role = user.role;
-        } catch (dbError) {
-          // Database connection error, log but proceed with session
-          console.error(
-            "Database connection error in session callback:",
-            dbError instanceof Error ? dbError.message : dbError
-          );
-          // Don't throw, just return session with token data
-        }
-      } else {
-        console.log("Skipping database check in Edge Runtime context");
-      }
+      // Note: We rely on JWT token data instead of querying the database in the session callback
+      // This avoids Edge Runtime compatibility issues with the database client
+      // The user's role and other data is already stored in the JWT token during login
+      // If you need to sync with database, consider doing it in the application layer instead
 
       return session;
     },

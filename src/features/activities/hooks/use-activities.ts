@@ -7,6 +7,7 @@ import {
   createActivity,
   updateActivity,
   deleteActivity,
+  deleteMultipleActivities,
   getActivityMetrics,
 } from "../actions";
 // Import session actions directly
@@ -205,6 +206,22 @@ export function useDeleteActivity() {
           queryKey: ["activities", result.data.cluster_id],
         });
       }
+    },
+  });
+}
+
+export function useDeleteMultipleActivities() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ ids }: { ids: string[] }) => deleteMultipleActivities(ids),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["activities"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["activity-metrics"],
+      });
     },
   });
 }

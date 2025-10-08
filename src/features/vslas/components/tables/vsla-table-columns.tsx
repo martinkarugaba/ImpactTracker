@@ -15,6 +15,8 @@ import {
   Copy,
   Phone,
   User,
+  Calendar,
+  Clock,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -86,9 +88,8 @@ export const createColumns = (
       );
     },
     cell: ({ row }) => {
-      const name = row.getValue("name") as string;
-      const subCounty = row.original.sub_county;
       const vslaId = row.original.id;
+      const name = row.original.name;
       return (
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/30">
@@ -102,40 +103,37 @@ export const createColumns = (
             >
               {name}
             </Link>
-            {subCounty && (
-              <Badge
-                variant="outline"
-                className="w-fit border-blue-200 bg-blue-100 text-xs text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
-              >
-                {subCounty}
-              </Badge>
-            )}
           </div>
         </div>
       );
     },
   },
-  // {
-  //   accessorKey: "code",
-  //   header: ({ column }) => {
-  //     return (
-  //       <Button
-  //         variant="ghost"
-  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-  //         className="h-auto p-0 font-medium hover:bg-transparent"
-  //       >
-  //         Code
-  //         <ArrowUpDown className="ml-2 h-4 w-4" />
-  //       </Button>
-  //     );
-  //   },
-  //   cell: ({ row }) => {
-  //     const code = row.getValue("code") as string;
-  //     return (
-  //       <div className="text-muted-foreground font-mono text-sm">{code}</div>
-  //     );
-  //   },
-  // },
+  {
+    accessorKey: "sub_county",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="h-auto p-0 font-medium hover:bg-transparent"
+        >
+          Subcounty
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const subCounty = row.getValue("sub_county") as string;
+      return (
+        <Badge
+          variant="outline"
+          className="border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+        >
+          {subCounty}
+        </Badge>
+      );
+    },
+  },
   {
     accessorKey: "district",
     header: ({ column }) => {
@@ -163,7 +161,7 @@ export const createColumns = (
     },
   },
   {
-    accessorKey: "sub_county",
+    accessorKey: "meeting_frequency",
     header: ({ column }) => {
       return (
         <Button
@@ -171,23 +169,53 @@ export const createColumns = (
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="h-auto p-0 font-medium hover:bg-transparent"
         >
-          Sub County
+          Meeting Frequency
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
-      const subCounty = row.getValue("sub_county") as string;
+      const frequency = row.getValue("meeting_frequency") as string;
+      if (!frequency) return <span className="text-muted-foreground">-</span>;
       return (
         <Badge
           variant="outline"
-          className="border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+          className="border-purple-200 bg-purple-100 text-purple-800 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
         >
-          {subCounty}
+          <Calendar className="mr-1 h-3 w-3" />
+          {frequency.charAt(0).toUpperCase() + frequency.slice(1)}
         </Badge>
       );
     },
   },
+  {
+    accessorKey: "meeting_day",
+    header: "Meeting Day",
+    cell: ({ row }) => {
+      const day = row.getValue("meeting_day") as string;
+      if (!day) return <span className="text-muted-foreground">-</span>;
+      return (
+        <span className="capitalize">
+          {day.charAt(0).toUpperCase() + day.slice(1)}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "meeting_time",
+    header: "Meeting Time",
+    cell: ({ row }) => {
+      const time = row.getValue("meeting_time") as string;
+      if (!time) return <span className="text-muted-foreground">-</span>;
+      return (
+        <div className="flex items-center gap-2">
+          <Clock className="text-muted-foreground h-3.5 w-3.5" />
+          <span>{time}</span>
+        </div>
+      );
+    },
+  },
+
   {
     accessorKey: "total_members",
     header: ({ column }) => {

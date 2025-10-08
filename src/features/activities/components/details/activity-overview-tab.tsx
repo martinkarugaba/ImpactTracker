@@ -127,7 +127,7 @@ export function ActivityOverviewTab({
       </div>
 
       {/* Activity Details Section */}
-      <div className="group rounded-lg border border-slate-200/60 bg-gradient-to-br from-slate-50/40 to-gray-50/40 p-1 transition-all hover:border-slate-300/70 hover:shadow-lg dark:border-slate-700/40 dark:from-slate-900/30 dark:to-gray-900/30 dark:hover:border-slate-600/50">
+      <div className="group rounded-lg border border-slate-200/60 bg-gradient-to-br from-slate-50/40 to-gray-50/40 p-0 transition-all hover:border-slate-300/70 hover:shadow-lg dark:border-slate-700/40 dark:from-slate-900/30 dark:to-gray-900/30 dark:hover:border-slate-600/50">
         <Card className="border-0 bg-white/90 backdrop-blur-sm dark:bg-gray-950/90">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base font-semibold">
@@ -146,8 +146,8 @@ export function ActivityOverviewTab({
             {/* Activity Title */}
             <div className="rounded-lg border border-gray-100 bg-gradient-to-r from-gray-50/50 to-slate-50/50 p-3 dark:border-gray-800 dark:from-gray-900/50 dark:to-slate-900/50">
               <div className="flex items-center gap-2">
-                <div className="rounded-md bg-blue-100 p-1 dark:bg-blue-900/40">
-                  <FileText className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                <div className="bg-muted rounded-md p-1">
+                  <FileText className="text-muted-foreground h-3.5 w-3.5" />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
@@ -214,17 +214,17 @@ export function ActivityOverviewTab({
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {activity.projectName && (
-                          <div className="flex items-center gap-1.5 rounded-md border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 px-2 py-1 text-xs shadow-sm dark:border-blue-800/50 dark:from-blue-950/30 dark:to-indigo-950/30">
-                            <Building className="h-3 w-3 text-blue-600 dark:text-blue-400" />
-                            <span className="font-medium text-blue-700 dark:text-blue-300">
+                          <div className="bg-muted flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs shadow-sm">
+                            <Building className="text-muted-foreground h-3 w-3" />
+                            <span className="text-foreground font-medium">
                               {activity.projectName}
                             </span>
                           </div>
                         )}
                         {activity.clusterName && (
-                          <div className="flex items-center gap-1.5 rounded-md border border-purple-200 bg-gradient-to-r from-purple-50 to-violet-50 px-2 py-1 text-xs shadow-sm dark:border-purple-800/50 dark:from-purple-950/30 dark:to-violet-950/30">
-                            <Users className="h-3 w-3 text-purple-600 dark:text-purple-400" />
-                            <span className="font-medium text-purple-700 dark:text-purple-300">
+                          <div className="bg-muted flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs shadow-sm">
+                            <Users className="text-muted-foreground h-3 w-3" />
+                            <span className="text-foreground font-medium">
                               {activity.clusterName}
                             </span>
                           </div>
@@ -253,8 +253,8 @@ export function ActivityOverviewTab({
 
                     {hasMultipleSessions && (
                       <div className="flex items-center gap-2">
-                        <div className="rounded-md bg-blue-100 p-1 dark:bg-blue-900/40">
-                          <Calendar className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                        <div className="bg-muted rounded-md p-1">
+                          <Calendar className="text-muted-foreground h-3.5 w-3.5" />
                         </div>
                         <div className="flex-1">
                           <p className="text-xs font-medium text-gray-900 dark:text-gray-100">
@@ -280,17 +280,17 @@ export function ActivityOverviewTab({
       {/* Documents Section */}
       <div className="grid gap-6 lg:grid-cols-1 xl:grid-cols-2">
         {/* Concept Notes Table */}
-        <div className="group rounded-lg border border-blue-200/50 bg-gradient-to-br from-blue-50/30 to-indigo-50/30 p-1 transition-all hover:border-blue-300/60 hover:shadow-sm dark:border-blue-800/30 dark:from-blue-950/20 dark:to-indigo-950/20 dark:hover:border-blue-700/50">
-          <Card className="border-0 bg-white/80 backdrop-blur-sm dark:bg-gray-950/80">
+        <div className="group rounded-lg border p-1 transition-all hover:shadow-sm">
+          <Card className="border-0">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base font-medium">
-                <div className="rounded-md bg-blue-100 p-1.5 dark:bg-blue-900/40">
-                  <FileText className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                <div className="bg-muted rounded-md p-1.5">
+                  <FileText className="text-muted-foreground h-3.5 w-3.5" />
                 </div>
                 <span className="text-gray-900 dark:text-gray-100">
                   Concept Notes
                 </span>
-                <div className="ml-auto rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                <div className="bg-muted text-muted-foreground ml-auto rounded-full px-2 py-0.5 text-xs font-medium">
                   Planning
                 </div>
               </CardTitle>
@@ -309,17 +309,17 @@ export function ActivityOverviewTab({
         </div>
 
         {/* Activity Reports Table */}
-        <div className="group rounded-lg border border-purple-200/50 bg-gradient-to-br from-purple-50/30 to-pink-50/30 p-1 transition-all hover:border-purple-300/60 hover:shadow-sm dark:border-purple-800/30 dark:from-purple-950/20 dark:to-pink-950/20 dark:hover:border-purple-700/50">
-          <Card className="border-0 bg-white/80 backdrop-blur-sm dark:bg-gray-950/80">
+        <div className="group rounded-lg border p-1 transition-all hover:shadow-sm">
+          <Card className="border-0">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base font-medium">
-                <div className="rounded-md bg-purple-100 p-1.5 dark:bg-purple-900/40">
-                  <ClipboardList className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+                <div className="bg-muted rounded-md p-1.5">
+                  <ClipboardList className="text-muted-foreground h-3.5 w-3.5" />
                 </div>
                 <span className="text-gray-900 dark:text-gray-100">
                   Activity Reports
                 </span>
-                <div className="ml-auto rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">
+                <div className="bg-muted text-muted-foreground ml-auto rounded-full px-2 py-0.5 text-xs font-medium">
                   Documentation
                 </div>
               </CardTitle>

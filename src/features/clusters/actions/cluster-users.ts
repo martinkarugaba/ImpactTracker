@@ -7,6 +7,7 @@ import {
   clusters,
   clusterMembers,
   organizations,
+  organizationMembers,
 } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { auth } from "@/features/auth/auth";
@@ -205,9 +206,18 @@ export async function getClusterUsers(clusterId: string) {
           created_at: clusterUsers.created_at,
           updated_at: clusterUsers.updated_at,
         },
+        organization: {
+          id: organizations.id,
+          name: organizations.name,
+        },
       })
       .from(clusterUsers)
       .innerJoin(users, eq(clusterUsers.user_id, users.id))
+      .leftJoin(organizationMembers, eq(users.id, organizationMembers.user_id))
+      .leftJoin(
+        organizations,
+        eq(organizationMembers.organization_id, organizations.id)
+      )
       .where(eq(clusterUsers.cluster_id, clusterId));
 
     const formattedUsers = clusterMemberships.map(item => ({
@@ -215,6 +225,8 @@ export async function getClusterUsers(clusterId: string) {
       name: item.user.name || "Unknown User",
       email: item.user.email,
       role: item.membership.role,
+      organization_id: item.organization?.id || null,
+      organization_name: item.organization?.name || null,
       created_at: item.membership.created_at,
       updated_at: item.membership.updated_at,
     }));

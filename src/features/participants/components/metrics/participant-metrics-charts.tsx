@@ -1,8 +1,10 @@
+import * as React from "react";
 import { type Participant } from "../../types/types";
 import { useParticipantMetrics } from "./hooks/use-participant-metrics";
 import {
   ChartContainer,
   ChartTooltip,
+  ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
   type ChartConfig,
@@ -16,6 +18,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
+  Label,
 } from "recharts";
 import {
   Card,
@@ -44,31 +47,6 @@ interface TooltipProps {
   }>;
   label?: string;
 }
-
-// Custom tooltip component for pie charts with percentages
-const PieTooltipContent = ({ active, payload }: TooltipProps) => {
-  if (active && payload && payload.length) {
-    const data = payload[0];
-    const total = payload[0].payload.total || 0;
-    const percentage = total > 0 ? ((data.value / total) * 100).toFixed(1) : 0;
-
-    return (
-      <div className="bg-background rounded-lg border p-3 shadow-md">
-        <div className="flex items-center gap-2">
-          <div
-            className="h-3 w-3 rounded-sm"
-            style={{ backgroundColor: data.payload.fill }}
-          />
-          <span className="font-medium">{data.name}</span>
-        </div>
-        <div className="text-muted-foreground mt-1 text-sm">
-          {data.value} ({percentage}%)
-        </div>
-      </div>
-    );
-  }
-  return null;
-};
 
 // Custom tooltip component for bar charts with percentages
 const BarTooltipContent = ({ active, payload, label }: TooltipProps) => {
@@ -253,33 +231,62 @@ export function ParticipantMetricsCharts({
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {/* Gender Distribution Chart - Pie Chart (1 column) */}
         <Card className="col-span-1 lg:col-span-1">
-          <CardHeader className="text-center">
+          <CardHeader className="items-center pb-0">
             <CardTitle>Gender Distribution</CardTitle>
             <CardDescription>
               Breakdown of participants by gender
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex justify-center">
+          <CardContent className="flex-1 pb-0">
             <ChartContainer
               config={genderChartConfig}
-              className="aspect-square max-h-[280px] w-full"
+              className="mx-auto aspect-square max-h-[250px]"
             >
-              <PieChart width={280} height={280}>
-                <ChartTooltip content={<PieTooltipContent />} />
+              <PieChart>
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent hideLabel />}
+                />
                 <Pie
                   data={genderData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={"30%"}
-                  outerRadius={"80%"}
-                  paddingAngle={5}
                   dataKey="value"
+                  nameKey="name"
+                  innerRadius={60}
+                  strokeWidth={5}
                 >
                   {genderData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.fill} />
                   ))}
+                  <Label
+                    content={({ viewBox }) => {
+                      if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                        return (
+                          <text
+                            x={viewBox.cx}
+                            y={viewBox.cy}
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                          >
+                            <tspan
+                              x={viewBox.cx}
+                              y={viewBox.cy}
+                              className="fill-foreground text-3xl font-bold"
+                            >
+                              {participants.length.toLocaleString()}
+                            </tspan>
+                            <tspan
+                              x={viewBox.cx}
+                              y={(viewBox.cy || 0) + 24}
+                              className="fill-muted-foreground"
+                            >
+                              Total
+                            </tspan>
+                          </text>
+                        );
+                      }
+                    }}
+                  />
                 </Pie>
-                <ChartLegend content={<ChartLegendContent />} />
               </PieChart>
             </ChartContainer>
           </CardContent>
@@ -287,33 +294,62 @@ export function ParticipantMetricsCharts({
 
         {/* PWD vs Non-PWD Chart - Pie Chart (1 column) */}
         <Card className="col-span-1 lg:col-span-1">
-          <CardHeader className="text-center">
+          <CardHeader className="items-center pb-0">
             <CardTitle>Disability Status</CardTitle>
             <CardDescription>
               Distribution of participants with disabilities
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex justify-center">
+          <CardContent className="flex-1 pb-0">
             <ChartContainer
               config={genderChartConfig}
-              className="aspect-square max-h-[280px] w-full"
+              className="mx-auto aspect-square max-h-[250px]"
             >
-              <PieChart width={280} height={280}>
-                <ChartTooltip content={<PieTooltipContent />} />
+              <PieChart>
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent hideLabel />}
+                />
                 <Pie
                   data={pwdData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={"30%"}
-                  outerRadius={"80%"}
-                  paddingAngle={5}
                   dataKey="value"
+                  nameKey="name"
+                  innerRadius={60}
+                  strokeWidth={5}
                 >
                   {pwdData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.fill} />
                   ))}
+                  <Label
+                    content={({ viewBox }) => {
+                      if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                        return (
+                          <text
+                            x={viewBox.cx}
+                            y={viewBox.cy}
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                          >
+                            <tspan
+                              x={viewBox.cx}
+                              y={viewBox.cy}
+                              className="fill-foreground text-3xl font-bold"
+                            >
+                              {disabled.length.toLocaleString()}
+                            </tspan>
+                            <tspan
+                              x={viewBox.cx}
+                              y={(viewBox.cy || 0) + 24}
+                              className="fill-muted-foreground"
+                            >
+                              PWD
+                            </tspan>
+                          </text>
+                        );
+                      }
+                    }}
+                  />
                 </Pie>
-                <ChartLegend content={<ChartLegendContent />} />
               </PieChart>
             </ChartContainer>
           </CardContent>
@@ -333,13 +369,23 @@ export function ParticipantMetricsCharts({
               className="h-[280px] w-full"
             >
               <BarChart data={ageGenderData} width={500} height={280}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <ChartTooltip content={<BarTooltipContent />} />
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                />
+                <YAxis tickLine={false} axisLine={false} />
+                <ChartTooltip cursor={false} content={<BarTooltipContent />} />
                 <ChartLegend content={<ChartLegendContent />} />
-                <Bar dataKey="Female" fill="#ec4899" />
-                <Bar dataKey="Male" fill="#3b82f6" />
+                <Bar
+                  dataKey="Female"
+                  fill="#ec4899"
+                  radius={8}
+                  strokeWidth={2}
+                />
+                <Bar dataKey="Male" fill="#3b82f6" radius={8} strokeWidth={2} />
               </BarChart>
             </ChartContainer>
           </CardContent>
@@ -362,11 +408,20 @@ export function ParticipantMetricsCharts({
               className="h-[280px] w-full"
             >
               <BarChart data={pwdBreakdownData} width={500} height={280}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <ChartTooltip content={<BarTooltipContent />} />
-                <Bar dataKey="value" fill="#8b5cf6" />
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                />
+                <YAxis tickLine={false} axisLine={false} />
+                <ChartTooltip cursor={false} content={<BarTooltipContent />} />
+                <Bar dataKey="value" radius={8} strokeWidth={2}>
+                  {pwdBreakdownData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Bar>
               </BarChart>
             </ChartContainer>
           </CardContent>
@@ -374,33 +429,62 @@ export function ParticipantMetricsCharts({
 
         {/* VSLA Membership Chart - Pie Chart (1 column) */}
         <Card className="col-span-1 lg:col-span-1">
-          <CardHeader className="text-center">
+          <CardHeader className="items-center pb-0">
             <CardTitle>VSLA Membership</CardTitle>
             <CardDescription>
               Distribution of participants by VSLA membership
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex justify-center">
+          <CardContent className="flex-1 pb-0">
             <ChartContainer
               config={genderChartConfig}
-              className="aspect-square max-h-[280px] w-full"
+              className="mx-auto aspect-square max-h-[250px]"
             >
-              <PieChart width={280} height={280}>
-                <ChartTooltip content={<PieTooltipContent />} />
+              <PieChart>
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent hideLabel />}
+                />
                 <Pie
                   data={vslaData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={"30%"}
-                  outerRadius={"80%"}
-                  paddingAngle={5}
                   dataKey="value"
+                  nameKey="name"
+                  innerRadius={60}
+                  strokeWidth={5}
                 >
                   {vslaData.map((entry, index) => (
                     <Cell key={`cell-vsla-${index}`} fill={entry.fill} />
                   ))}
+                  <Label
+                    content={({ viewBox }) => {
+                      if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                        return (
+                          <text
+                            x={viewBox.cx}
+                            y={viewBox.cy}
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                          >
+                            <tspan
+                              x={viewBox.cx}
+                              y={viewBox.cy}
+                              className="fill-foreground text-3xl font-bold"
+                            >
+                              {vslaMembers.length.toLocaleString()}
+                            </tspan>
+                            <tspan
+                              x={viewBox.cx}
+                              y={(viewBox.cy || 0) + 24}
+                              className="fill-muted-foreground"
+                            >
+                              Members
+                            </tspan>
+                          </text>
+                        );
+                      }
+                    }}
+                  />
                 </Pie>
-                <ChartLegend content={<ChartLegendContent />} />
               </PieChart>
             </ChartContainer>
           </CardContent>
