@@ -1627,7 +1627,7 @@ function OrganizationStep({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="">No VSLA</SelectItem>
+                  <SelectItem value="none">No VSLA</SelectItem>
                   {/* TODO: Add actual VSLA options from database */}
                   <SelectItem value="vsla1">Sample VSLA 1</SelectItem>
                   <SelectItem value="vsla2">Sample VSLA 2</SelectItem>

@@ -109,7 +109,7 @@ export function ParticipantDialogs({
         sourceOfIncome: data.sourceOfIncome || null,
         populationSegment: data.populationSegment || null,
         refugeeLocation: data.refugeeLocation || null,
-        vslaId: data.vslaId || null,
+        vslaId: data.vslaId && data.vslaId !== "none" ? data.vslaId : null,
         enterpriseName: data.enterpriseName || null,
         enterpriseSector: data.enterpriseSector || null,
         enterpriseSize: data.enterpriseSize || null,
@@ -165,8 +165,9 @@ export function ParticipantDialogs({
         parish_id: data.parish_id || null,
         village_id: data.village_id || null,
         // Legacy VSLA fields for backward compatibility
-        isSubscribedToVSLA: data.vslaId ? "yes" : "no",
-        vslaName: data.vslaId || "",
+        isSubscribedToVSLA:
+          data.vslaId && data.vslaId !== "none" ? "yes" : "no",
+        vslaName: data.vslaId && data.vslaId !== "none" ? data.vslaId : "",
         // Contact is now optional in both form and database
         contact: data.contact || null,
       };
@@ -225,7 +226,7 @@ export function ParticipantDialogs({
         sourceOfIncome: data.sourceOfIncome || null,
         populationSegment: data.populationSegment || null,
         refugeeLocation: data.refugeeLocation || null,
-        vslaId: data.vslaId || null,
+        vslaId: data.vslaId && data.vslaId !== "none" ? data.vslaId : null,
         enterpriseName: data.enterpriseName || null,
         enterpriseSector: data.enterpriseSector || null,
         enterpriseSize: data.enterpriseSize || null,
@@ -281,8 +282,9 @@ export function ParticipantDialogs({
         parish_id: data.parish_id || null,
         village_id: data.village_id || null,
         // Legacy VSLA fields for backward compatibility
-        isSubscribedToVSLA: data.vslaId ? "yes" : "no",
-        vslaName: data.vslaId || "",
+        isSubscribedToVSLA:
+          data.vslaId && data.vslaId !== "none" ? "yes" : "no",
+        vslaName: data.vslaId && data.vslaId !== "none" ? data.vslaId : "",
         // Contact is now optional in both form and database
         contact: data.contact || null,
       };
