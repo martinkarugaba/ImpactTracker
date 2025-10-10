@@ -1,13 +1,8 @@
 "use server";
 
 import { db } from "@/lib/db";
-import {
-  projects,
-  participants,
-  organizationMembers,
-  clusterUsers,
-} from "@/lib/db/schema";
-import { eq, sql, inArray } from "drizzle-orm";
+import { projects } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { auth } from "@/features/auth/auth";
@@ -93,32 +88,6 @@ export async function getProjects() {
       return { success: false, error: "Not authenticated" };
     }
 
-    // Get user's organization and cluster context
-    let userOrgId: string | undefined;
-    let userClusterIds: string[] = [];
-
-    // For non-super_admin users, find their organization and clusters
-    if (session.user.role !== "super_admin") {
-      // Get user's organization
-      const userMembership = await db.query.organizationMembers.findFirst({
-        where: eq(organizationMembers.user_id, session.user.id),
-      });
-      userOrgId = userMembership?.organization_id;
-
-      // Get user's clusters - cluster managers only see their managed clusters
-      if (session.user.role === "cluster_manager") {
-        const userClusters = await db.query.clusterUsers.findMany({
-          where: sql`${clusterUsers.user_id} = ${session.user.id} AND ${clusterUsers.role} = 'cluster_manager'`,
-        });
-        userClusterIds = userClusters.map(uc => uc.cluster_id);
-      } else {
-        const userClusters = await db.query.clusterUsers.findMany({
-          where: eq(clusterUsers.user_id, session.user.id),
-        });
-        userClusterIds = userClusters.map(uc => uc.cluster_id);
-      }
-    }
-
     let projectsList: Array<{
       id: string;
       name: string;
@@ -134,37 +103,14 @@ export async function getProjects() {
     if (session.user.role === "super_admin") {
       // Super admin can see all projects
       projectsList = await db.select().from(projects);
-    } else if (userClusterIds.length > 0 || userOrgId) {
-      // Find projects that are linked to participants in user's authorized clusters/organizations
-      const participantProjects = await db
-        .selectDistinct({ project_id: participants.project_id })
-        .from(participants)
-        .where(
-          userOrgId && userClusterIds.length > 0
-            ? sql`(
-                ${participants.organization_id} = ${userOrgId}
-                OR ${participants.cluster_id} = ANY(${userClusterIds})
-              )`
-            : userOrgId
-              ? eq(participants.organization_id, userOrgId)
-              : sql`${participants.cluster_id} = ANY(${userClusterIds})`
-        );
-
-      const projectIds = participantProjects
-        .map(p => p.project_id)
-        .filter(id => id !== null) as string[];
-
-      if (projectIds.length > 0) {
-        projectsList = await db
-          .select()
-          .from(projects)
-          .where(inArray(projects.id, projectIds));
-      } else {
-        projectsList = [];
-      }
     } else {
-      // User has no organization or cluster access
-      projectsList = [];
+      // For other roles, show all active projects
+      // This allows users to assign participants to any project
+      // The authorization should be handled at the organization/cluster level
+      projectsList = await db
+        .select()
+        .from(projects)
+        .where(eq(projects.status, "active"));
     }
 
     const typedProjects = projectsList.map(project => ({
