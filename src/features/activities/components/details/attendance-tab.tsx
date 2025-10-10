@@ -485,22 +485,22 @@ function SessionWithAttendanceCard({
 
   return (
     <Card className="group border-l-primary w-full overflow-hidden border-l-4 shadow-sm transition-shadow hover:shadow-md">
-      <CardHeader className="from-primary/5 bg-gradient-to-r to-transparent pb-3">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0 flex-1 space-y-2">
-            {/* Session Title and Status */}
+      <CardHeader className="from-primary/5 bg-gradient-to-r to-transparent py-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 flex-1">
+            {/* Session Title with inline metadata */}
             <div className="flex flex-wrap items-center gap-2">
               <div className="flex items-center gap-2">
-                <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold">
+                <div className="bg-primary text-primary-foreground flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold">
                   {session.session_number}
                 </div>
-                <h4 className="truncate text-lg font-semibold">
+                <h4 className="truncate font-semibold">
                   {session.title || `Session ${session.session_number}`}
                 </h4>
               </div>
               <span
                 className={cn(
-                  "inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium shadow-sm",
+                  "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
                   statusColors[session.status as keyof typeof statusColors] ||
                     statusColors.scheduled
                 )}
@@ -516,64 +516,55 @@ function SessionWithAttendanceCard({
                 )}
                 {session.status.replace("_", " ")}
               </span>
-            </div>
-
-            {/* Session Info */}
-            <div className="text-muted-foreground flex flex-col gap-2 text-sm sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+              {/* Inline session metadata */}
               {session.session_date && (
-                <div className="bg-background flex items-center gap-1.5 rounded-md px-2 py-1">
-                  <Calendar className="h-3.5 w-3.5" />
-                  <span className="truncate font-medium">
-                    {format(new Date(session.session_date), "MMM dd, yyyy")}
-                  </span>
-                </div>
+                <span className="text-muted-foreground flex items-center gap-1 text-xs">
+                  <Calendar className="h-3 w-3" />
+                  {format(new Date(session.session_date), "MMM dd, yyyy")}
+                </span>
               )}
               {session.start_time && (
-                <div className="bg-background flex items-center gap-1.5 rounded-md px-2 py-1">
-                  <Clock className="h-3.5 w-3.5" />
-                  <span className="truncate font-medium">
-                    {session.start_time}
-                    {session.end_time && ` - ${session.end_time}`}
-                  </span>
-                </div>
+                <span className="text-muted-foreground flex items-center gap-1 text-xs">
+                  <Clock className="h-3 w-3" />
+                  {session.start_time}
+                  {session.end_time && `-${session.end_time}`}
+                </span>
               )}
-              <div className="bg-background flex items-center gap-1.5 rounded-md px-2 py-1">
-                <Users className="h-3.5 w-3.5" />
-                <span className="font-medium">{sessionAttendance.length}</span>
-                <span>participants</span>
-              </div>
+              <span className="text-muted-foreground flex items-center gap-1 text-xs font-medium">
+                <Users className="h-3 w-3" />
+                {sessionAttendance.length}
+              </span>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <Button
               onClick={() => onManageAttendance(session.id)}
               variant="outline"
               size="sm"
-              className="w-auto shadow-sm transition-all hover:shadow"
+              className="h-8 text-xs"
             >
-              <UserCheck className="mr-2 h-4 w-4" />
+              <UserCheck className="mr-1.5 h-3.5 w-3.5" />
               Take Attendance
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowAttendance(!showAttendance)}
-              className="shadow-sm transition-all hover:shadow"
+              className="h-8 px-2"
             >
               {showAttendance ? (
-                <ChevronUp className="mr-1 h-4 w-4" />
+                <ChevronUp className="h-3.5 w-3.5" />
               ) : (
-                <ChevronDown className="mr-1 h-4 w-4" />
+                <ChevronDown className="h-3.5 w-3.5" />
               )}
-              {showAttendance ? "Hide" : "Show"}
             </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="shadow-sm">
-                  <MoreHorizontal className="h-4 w-4" />
+                <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                  <MoreHorizontal className="h-3.5 w-3.5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
@@ -623,52 +614,52 @@ function SessionWithAttendanceCard({
       </CardHeader>
 
       {/* Quick Attendance Summary */}
-      <CardContent className="pt-4">
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <div className="rounded-lg border bg-gradient-to-br from-green-50 to-green-100/50 p-3 text-center shadow-sm dark:from-green-950 dark:to-green-900/50">
-            <div className="mb-1 flex items-center justify-center gap-1">
-              <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+      <CardContent className="py-3">
+        <div className="grid grid-cols-4 gap-2">
+          <div className="rounded-md border bg-gradient-to-br from-green-50 to-green-100/50 p-2 text-center dark:from-green-950 dark:to-green-900/50">
+            <div className="flex items-center justify-center gap-1">
+              <CheckCircle className="h-3 w-3 text-green-600 dark:text-green-400" />
+              <div className="text-lg font-bold text-green-600 dark:text-green-400">
                 {attendedCount}
               </div>
             </div>
-            <div className="text-xs font-medium text-green-700 dark:text-green-300">
+            <div className="text-[10px] font-medium text-green-700 dark:text-green-300">
               Attended
             </div>
           </div>
 
-          <div className="rounded-lg border bg-gradient-to-br from-red-50 to-red-100/50 p-3 text-center shadow-sm dark:from-red-950 dark:to-red-900/50">
-            <div className="mb-1 flex items-center justify-center gap-1">
-              <Users className="h-4 w-4 text-red-600 dark:text-red-400" />
-              <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+          <div className="rounded-md border bg-gradient-to-br from-red-50 to-red-100/50 p-2 text-center dark:from-red-950 dark:to-red-900/50">
+            <div className="flex items-center justify-center gap-1">
+              <Users className="h-3 w-3 text-red-600 dark:text-red-400" />
+              <div className="text-lg font-bold text-red-600 dark:text-red-400">
                 {absentCount}
               </div>
             </div>
-            <div className="text-xs font-medium text-red-700 dark:text-red-300">
+            <div className="text-[10px] font-medium text-red-700 dark:text-red-300">
               Absent
             </div>
           </div>
 
-          <div className="rounded-lg border bg-gradient-to-br from-yellow-50 to-yellow-100/50 p-3 text-center shadow-sm dark:from-yellow-950 dark:to-yellow-900/50">
-            <div className="mb-1 flex items-center justify-center gap-1">
-              <Clock className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
-              <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+          <div className="rounded-md border bg-gradient-to-br from-yellow-50 to-yellow-100/50 p-2 text-center dark:from-yellow-950 dark:to-yellow-900/50">
+            <div className="flex items-center justify-center gap-1">
+              <Clock className="h-3 w-3 text-yellow-600 dark:text-yellow-400" />
+              <div className="text-lg font-bold text-yellow-600 dark:text-yellow-400">
                 {lateCount}
               </div>
             </div>
-            <div className="text-xs font-medium text-yellow-700 dark:text-yellow-300">
+            <div className="text-[10px] font-medium text-yellow-700 dark:text-yellow-300">
               Late
             </div>
           </div>
 
-          <div className="rounded-lg border bg-gradient-to-br from-blue-50 to-blue-100/50 p-3 text-center shadow-sm dark:from-blue-950 dark:to-blue-900/50">
-            <div className="mb-1 flex items-center justify-center gap-1">
-              <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+          <div className="rounded-md border bg-gradient-to-br from-blue-50 to-blue-100/50 p-2 text-center dark:from-blue-950 dark:to-blue-900/50">
+            <div className="flex items-center justify-center gap-1">
+              <Users className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+              <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
                 {sessionAttendance.length}
               </div>
             </div>
-            <div className="text-xs font-medium text-blue-700 dark:text-blue-300">
+            <div className="text-[10px] font-medium text-blue-700 dark:text-blue-300">
               Total
             </div>
           </div>
@@ -676,10 +667,10 @@ function SessionWithAttendanceCard({
 
         {/* Expandable Attendance Details */}
         {showAttendance && sessionAttendance.length > 0 && (
-          <div className="animate-in fade-in-50 slide-in-from-top-2 mt-6 border-t pt-6">
-            <div className="mb-4 flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              <h5 className="font-semibold">Attendance Details</h5>
+          <div className="animate-in fade-in-50 slide-in-from-top-2 mt-3 border-t pt-3">
+            <div className="mb-2 flex items-center gap-2">
+              <Users className="h-3.5 w-3.5" />
+              <h5 className="text-sm font-semibold">Attendance Details</h5>
             </div>
             <div className="space-y-2">
               {sessionAttendance.map(attendance => (
