@@ -66,6 +66,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { usePagination } from "@/hooks/use-pagination";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ChartConfig } from "@/components/ui/chart";
@@ -95,6 +96,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+} from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -608,44 +615,206 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
       {showPagination && (
-        <div className="flex items-center justify-between space-x-2 py-4">
-          <div className="text-muted-foreground flex-1 text-sm">
-            {showRowSelection ? (
-              <>
-                {table.getFilteredSelectedRowModel().rows.length} of{" "}
-                {serverSideFiltered ?? table.getFilteredRowModel().rows.length}{" "}
-                row(s) selected.
-              </>
-            ) : (
-              <>
-                Showing {Math.min(data.length, pageSize)} of{" "}
-                {serverSideTotal ?? data.length} result(s)
-                {serverSideTotal && serverSideTotal !== serverSideFiltered && (
-                  <> (filtered from {serverSideTotal} total)</>
-                )}
-              </>
-            )}
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              Next
-            </Button>
-          </div>
-        </div>
+        <EnhancedPaginationControls
+          table={table}
+          showRowSelection={showRowSelection}
+          serverSideTotal={serverSideTotal}
+          serverSideFiltered={serverSideFiltered}
+          data={data}
+          pageSize={pageSize}
+          isLoading={isLoading}
+        />
       )}
+    </div>
+  );
+}
+
+// Enhanced Pagination Controls Component
+interface EnhancedPaginationControlsProps<TData> {
+  table: ReturnType<typeof useReactTable<TData>>;
+  showRowSelection?: boolean;
+  serverSideTotal?: number;
+  serverSideFiltered?: number;
+  data: TData[];
+  pageSize: number;
+  isLoading?: boolean;
+}
+
+function EnhancedPaginationControls<TData>({
+  table,
+  showRowSelection,
+  serverSideTotal,
+  serverSideFiltered,
+  data,
+  pageSize,
+  isLoading,
+}: EnhancedPaginationControlsProps<TData>) {
+  const currentPage = table.getState().pagination.pageIndex + 1;
+  const totalPages = table.getPageCount();
+
+  const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
+    currentPage,
+    totalPages,
+    paginationItemsToDisplay: 5,
+  });
+
+  const selectedCount = table.getFilteredSelectedRowModel().rows.length;
+  const totalCount = serverSideFiltered ?? table.getFilteredRowModel().rows.length;
+
+  return (
+    <div className="flex items-center justify-between gap-3 px-2 py-4 max-sm:flex-col">
+      {/* Left section - Row selection info or page info */}
+      <div className="text-muted-foreground flex-1 text-sm whitespace-nowrap">
+        {showRowSelection ? (
+          <>
+            {selectedCount} of {totalCount} row(s) selected
+            {serverSideTotal && serverSideTotal !== serverSideFiltered && (
+              <> (filtered from {serverSideTotal} total)</>
+            )}
+          </>
+        ) : (
+          <>
+            Page <span className="text-foreground font-medium">{currentPage}</span> of{" "}
+            <span className="text-foreground font-medium">{totalPages}</span>
+          </>
+        )}
+      </div>
+
+      {/* Center section - Pagination buttons */}
+      <div className="grow">
+        <Pagination>
+          <PaginationContent>
+            {/* First page button */}
+            <PaginationItem className="hidden sm:block">
+              <Button
+                size="icon"
+                variant="outline"
+                className="size-8 disabled:pointer-events-none disabled:opacity-50"
+                onClick={() => table.setPageIndex(0)}
+                disabled={!table.getCanPreviousPage() || isLoading}
+                aria-label="Go to first page"
+              >
+                <IconChevronsLeft size={16} aria-hidden="true" />
+              </Button>
+            </PaginationItem>
+
+            {/* Previous page button */}
+            <PaginationItem>
+              <Button
+                size="icon"
+                variant="outline"
+                className="size-8 disabled:pointer-events-none disabled:opacity-50"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage() || isLoading}
+                aria-label="Go to previous page"
+              >
+                {isLoading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <IconChevronLeft size={16} aria-hidden="true" />
+                )}
+              </Button>
+            </PaginationItem>
+
+            {/* Left ellipsis (...) */}
+            {showLeftEllipsis && (
+              <PaginationItem className="hidden sm:block">
+                <PaginationEllipsis />
+              </PaginationItem>
+            )}
+
+            {/* Page number buttons */}
+            {pages.map(page => {
+              const isActive = page === currentPage;
+              return (
+                <PaginationItem key={page} className="hidden sm:block">
+                  <Button
+                    size="icon"
+                    variant={isActive ? "outline" : "ghost"}
+                    className="size-8"
+                    onClick={() => table.setPageIndex(page - 1)}
+                    disabled={isLoading}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    {page}
+                  </Button>
+                </PaginationItem>
+              );
+            })}
+
+            {/* Right ellipsis (...) */}
+            {showRightEllipsis && (
+              <PaginationItem className="hidden sm:block">
+                <PaginationEllipsis />
+              </PaginationItem>
+            )}
+
+            {/* Next page button */}
+            <PaginationItem>
+              <Button
+                size="icon"
+                variant="outline"
+                className="size-8 disabled:pointer-events-none disabled:opacity-50"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage() || isLoading}
+                aria-label="Go to next page"
+              >
+                {isLoading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <IconChevronRight size={16} aria-hidden="true" />
+                )}
+              </Button>
+            </PaginationItem>
+
+            {/* Last page button */}
+            <PaginationItem className="hidden sm:block">
+              <Button
+                size="icon"
+                variant="outline"
+                className="size-8 disabled:pointer-events-none disabled:opacity-50"
+                onClick={() => table.setPageIndex(totalPages - 1)}
+                disabled={!table.getCanNextPage() || isLoading}
+                aria-label="Go to last page"
+              >
+                <IconChevronsRight size={16} aria-hidden="true" />
+              </Button>
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
+
+      {/* Right section - Results per page selector */}
+      <div className="flex flex-1 justify-end">
+        <div className="flex items-center gap-2">
+          <Label htmlFor="results-per-page" className="text-sm font-medium whitespace-nowrap hidden sm:block">
+            Rows per page
+          </Label>
+          <Select
+            value={table.getState().pagination.pageSize.toString()}
+            onValueChange={value => {
+              const newSize = parseInt(value);
+              table.setPageSize(newSize);
+            }}
+            disabled={isLoading}
+            aria-label="Results per page"
+          >
+            <SelectTrigger
+              id="results-per-page"
+              className="w-fit whitespace-nowrap h-8"
+            >
+              <SelectValue placeholder="Select number of results" />
+            </SelectTrigger>
+            <SelectContent side="top">
+              {[10, 20, 30, 50, 100].map(size => (
+                <SelectItem key={size} value={size.toString()}>
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
     </div>
   );
 }
