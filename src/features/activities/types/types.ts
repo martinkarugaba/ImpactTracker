@@ -28,6 +28,10 @@ export type ActivityParticipant = InferSelectModel<
     contact: string | null;
     designation: string | null;
     organizationName?: string;
+    sex?: string;
+    age?: number | null;
+    district?: string;
+    subCounty?: string;
   };
 };
 

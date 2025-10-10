@@ -1,19 +1,15 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MetricCard } from "@/components/ui/metric-card";
 import {
   FileText,
   ClipboardList,
   Calendar,
-  MapPin,
-  DollarSign,
   Target,
   Building,
   Users,
   CheckCircle,
 } from "lucide-react";
-import { format } from "date-fns";
 import type { Activity } from "../../types/types";
 import { useActivitySessions } from "../../hooks/use-activities";
 import { ActivityNotesCard } from "../cards/activity-notes-card";
@@ -43,89 +39,12 @@ export function ActivityOverviewTab({
   refreshKey,
   activityReportsRefreshKey,
 }: ActivityOverviewTabProps) {
-  // Fetch session data for multi-day activities
   const { data: sessionsResponse } = useActivitySessions(activity.id);
   const sessions = sessionsResponse?.data || [];
   const hasMultipleSessions = sessions.length > 1;
-  const completedSessions = sessions.filter(
-    s => s.status === "completed"
-  ).length;
-  const sessionCompletionRate =
-    sessions.length > 0
-      ? Math.round((completedSessions / sessions.length) * 100)
-      : 0;
-
-  const formatDate = (date: Date | string | null) => {
-    if (!date) return "Not set";
-    try {
-      return format(new Date(date), "MMM dd, yyyy");
-    } catch {
-      return "Not set";
-    }
-  };
 
   return (
     <div className="space-y-8">
-      {/* Key Metrics */}
-      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard
-          title="Start Date"
-          value={formatDate(activity.startDate)}
-          footer={{
-            title: "Event duration",
-            description: `to ${formatDate(activity.endDate)}`,
-          }}
-          icon={<Calendar className="h-4 w-4" />}
-        />
-
-        <MetricCard
-          title="Venue"
-          value={activity.venue || "TBD"}
-          footer={{
-            title: "Event location",
-            description: "Activity venue",
-          }}
-          icon={<MapPin className="h-4 w-4" />}
-        />
-
-        <MetricCard
-          title="Budget"
-          value={
-            activity.budget
-              ? `$${Number(activity.budget).toLocaleString()}`
-              : "Not set"
-          }
-          footer={{
-            title: "Total allocation",
-            description: "Budget allocated",
-          }}
-          icon={<DollarSign className="h-4 w-4" />}
-        />
-
-        {/* Session Metrics Card - Only show for multi-day activities */}
-        {hasMultipleSessions ? (
-          <MetricCard
-            title="Sessions"
-            value={`${completedSessions}/${sessions.length}`}
-            footer={{
-              title: `${sessionCompletionRate}% complete`,
-              description: "Session progress",
-            }}
-            icon={<Calendar className="h-4 w-4" />}
-          />
-        ) : (
-          <MetricCard
-            title="Project"
-            value={activity.projectAcronym || activity.projectName || "General"}
-            footer={{
-              title: "Project context",
-              description: "Activity project",
-            }}
-            icon={<Building className="h-4 w-4" />}
-          />
-        )}
-      </div>
-
       {/* Activity Details Section */}
       <div className="group rounded-lg border border-slate-200/60 bg-gradient-to-br from-slate-50/40 to-gray-50/40 p-0 transition-all hover:border-slate-300/70 hover:shadow-lg dark:border-slate-700/40 dark:from-slate-900/30 dark:to-gray-900/30 dark:hover:border-slate-600/50">
         <Card className="border-0 bg-white/90 backdrop-blur-sm dark:bg-gray-950/90">

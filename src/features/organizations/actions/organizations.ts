@@ -310,6 +310,11 @@ export async function getCurrentOrganizationWithCluster(
   organizationId: string
 ) {
   try {
+    // Guard against empty or invalid organizationId
+    if (!organizationId || organizationId.trim() === "") {
+      return { success: false, error: "Organization ID is required" };
+    }
+
     const [organization] = await db
       .select({
         id: organizations.id,

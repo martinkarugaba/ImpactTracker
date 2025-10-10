@@ -75,7 +75,7 @@ export function ActivityDetailsTabs({
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-      <TabsList className="grid w-full grid-cols-5">
+      <TabsList className="w-fit">
         <TabsTrigger value="overview">
           <Info className="h-4 w-4" />
           <span className="hidden sm:inline">Overview</span>

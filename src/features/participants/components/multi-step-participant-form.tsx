@@ -38,8 +38,6 @@ import {
   ChevronRight,
   CheckCircle2,
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { getCurrentOrganizationWithCluster } from "@/features/organizations/actions/organizations";
 import {
   useCountries,
   useDistricts,
@@ -287,15 +285,6 @@ export function MultiStepParticipantForm({
     parishId: selectedParishId,
   });
 
-  // Organization data query
-  const { data: organization } = useQuery({
-    queryKey: ["organization"],
-    queryFn: async () => {
-      const result = await getCurrentOrganizationWithCluster("");
-      return result.success ? result.data : null;
-    },
-  });
-
   const form = useForm<ParticipantFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(formSchema) as any,
@@ -375,16 +364,12 @@ export function MultiStepParticipantForm({
     },
   });
 
-  // Set organization and cluster IDs when data is available
+  // Set organization and cluster IDs when propClusterId is available
   useEffect(() => {
-    if (organization && !initialData) {
-      form.setValue("organization_id", organization.id);
-      form.setValue(
-        "cluster_id",
-        organization.cluster_id || propClusterId || ""
-      );
+    if (propClusterId && !initialData) {
+      form.setValue("cluster_id", propClusterId);
     }
-  }, [organization, form, initialData, propClusterId]);
+  }, [propClusterId, form, initialData]);
 
   // Handle location selections
   useEffect(() => {
