@@ -121,7 +121,7 @@ export function ActivitiesTab({
 
           {/* Right side - Action buttons */}
           <div className="flex items-center gap-2">
-            <DropdownMenu>
+            <DropdownMenu id="activity-columns-dropdown">
               <DropdownMenuTrigger asChild>
                 <Button variant="outline">
                   <LayoutGrid className="mr-2 h-4 w-4" />

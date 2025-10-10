@@ -74,7 +74,12 @@ export function ActivityDetailsTabs({
   };
 
   return (
-    <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+    <Tabs
+      id="activity-details-tabs"
+      value={activeTab}
+      onValueChange={handleTabChange}
+      className="w-full"
+    >
       <TabsList className="w-fit">
         <TabsTrigger value="overview">
           <Info className="h-4 w-4" />

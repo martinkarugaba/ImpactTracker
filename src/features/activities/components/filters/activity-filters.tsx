@@ -242,7 +242,7 @@ export function ActivityFiltersComponent({
               <div className="space-y-2">
                 <label className="text-sm font-medium">Date Range</label>
                 <div className="grid grid-cols-2 gap-2">
-                  <Popover>
+                  <Popover id="activity-filter-start-date">
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
@@ -270,7 +270,7 @@ export function ActivityFiltersComponent({
                       />
                     </PopoverContent>
                   </Popover>
-                  <Popover>
+                  <Popover id="activity-filter-end-date">
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"

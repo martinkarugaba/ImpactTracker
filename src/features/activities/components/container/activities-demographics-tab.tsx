@@ -48,7 +48,11 @@ function DetailedActivityParticipantMetrics({
   }
 
   return (
-    <Tabs defaultValue="demographics" className="w-full border-purple-500">
+    <Tabs
+      id="demographics-tabs"
+      defaultValue="demographics"
+      className="w-full border-purple-500"
+    >
       <TabsList className="grid w-full grid-cols-5">
         <TabsTrigger value="demographics">Demographics</TabsTrigger>
         <TabsTrigger value="youth-employment">Youth in Work</TabsTrigger>
