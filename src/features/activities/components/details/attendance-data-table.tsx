@@ -286,8 +286,10 @@ export function AttendanceDataTable({
 
   return (
     <div className="space-y-4">
-      {selectedRows.size > 0 && (
-        <div className="bg-muted/50 flex items-center justify-between rounded-lg border p-4">
+      {/* Fixed height container to prevent CLS */}
+      <div className="min-h-[72px]">
+        {selectedRows.size > 0 && (
+          <div className="bg-muted/50 flex items-center justify-between rounded-lg border p-4">
           <div className="flex items-center gap-2">
             <Checkbox
               checked={true}
@@ -307,7 +309,8 @@ export function AttendanceDataTable({
             Remove Selected
           </Button>
         </div>
-      )}
+        )}
+      </div>
       <DataTable
         columns={columns}
         data={sessionAttendance}

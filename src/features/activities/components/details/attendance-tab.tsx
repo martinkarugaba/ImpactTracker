@@ -456,6 +456,15 @@ function SessionWithAttendanceCard({
           {/* Action Buttons */}
           <div className="flex items-center gap-2">
             <Button
+              onClick={() => onManageAttendance(session.id)}
+              variant="default"
+              size="sm"
+              className="w-[140px] shadow-sm transition-all hover:shadow"
+            >
+              <UserCheck className="mr-2 h-4 w-4" />
+              Take Attendance
+            </Button>
+            <Button
               variant="outline"
               size="sm"
               onClick={() => setShowAttendance(!showAttendance)}
@@ -573,23 +582,6 @@ function SessionWithAttendanceCard({
             />
           </div>
         )}
-
-        {/* Session Actions */}
-        <div className="mt-4 flex gap-2">
-          <Button
-            onClick={() => onManageAttendance(session.id)}
-            variant="outline"
-            size="sm"
-            className="flex-1"
-          >
-            <UserCheck className="mr-2 h-4 w-4" />
-            Take Attendance
-          </Button>
-          <Button onClick={onEditSession} variant="outline" size="sm">
-            <Edit className="mr-2 h-4 w-4" />
-            Edit
-          </Button>
-        </div>
       </CardContent>
     </Card>
   );
