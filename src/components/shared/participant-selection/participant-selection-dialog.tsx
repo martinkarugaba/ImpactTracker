@@ -21,8 +21,8 @@ import {
 } from "@/features/participants/types/types";
 import {
   type ParticipantFormValues,
-  ParticipantForm,
-} from "@/features/participants/components/participant-form";
+  MultiStepParticipantForm,
+} from "@/features/participants/components/multi-step-participant-form";
 import { useQuery } from "@tanstack/react-query";
 import { getProjects } from "@/features/projects/actions/projects";
 import toast from "react-hot-toast";
@@ -136,11 +136,11 @@ export function ParticipantSelectionDialog({
       const newParticipantData: NewParticipant = {
         firstName: data.firstName,
         lastName: data.lastName,
-        country: data.country,
-        district: data.district,
-        subCounty: data.subCounty,
-        parish: data.parish,
-        village: data.village,
+        country: data.country || null,
+        district: data.district || null,
+        subCounty: data.subCounty || null,
+        parish: data.parish || null,
+        village: data.village || null,
         sex: data.sex,
         age: data.age ? parseInt(data.age) : null,
         dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
@@ -148,9 +148,9 @@ export function ParticipantSelectionDialog({
         disabilityType: data.disabilityType || null,
         isMother: data.isMother,
         isRefugee: data.isRefugee,
-        designation: data.designation,
-        enterprise: data.enterprise,
-        contact: data.contact,
+        designation: data.designation || null,
+        enterprise: data.enterprise || null,
+        contact: data.contact || null,
         project_id: data.project_id,
         cluster_id: data.cluster_id,
         organization_id: data.organization_id,
@@ -190,8 +190,8 @@ export function ParticipantSelectionDialog({
         refugeeLocation: data.refugeeLocation || null,
         isActiveStudent: data.isActiveStudent,
         // VSLA fields
-        isSubscribedToVSLA: data.isSubscribedToVSLA,
-        vslaName: data.vslaName || null,
+        isSubscribedToVSLA: data.vslaId ? "yes" : "no",
+        vslaName: data.vslaId || null,
         // Teen mother
         isTeenMother: data.isTeenMother,
         // Enterprise fields
@@ -281,7 +281,7 @@ export function ParticipantSelectionDialog({
           {showCreateForm ? (
             <div className="h-full max-h-[calc(90vh-8rem)] overflow-y-auto px-1">
               <div className="pb-6">
-                <ParticipantForm
+                <MultiStepParticipantForm
                   onSubmit={handleCreateParticipant}
                   isLoading={createParticipant.isPending}
                   projects={projects}
@@ -340,8 +340,7 @@ export function ParticipantSelectionDialog({
                     refugeeLocation: "",
                     isActiveStudent: "no",
                     // VSLA fields
-                    isSubscribedToVSLA: "no",
-                    vslaName: "",
+                    vslaId: "",
                     // Teen mother
                     isTeenMother: "no",
                     // Enterprise fields
@@ -531,11 +530,25 @@ export function ParticipantSelectionDialog({
                                       : "inactive"}
                                   </Badge>
                                 </div>
-                                <div className="text-muted-foreground flex items-center gap-4 text-sm">
-                                  <span>{participant.contact}</span>
-                                  <span>{participant.sex}</span>
+                                <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
+                                  {participant.contact && (
+                                    <span className="flex items-center gap-1">
+                                      📞 {participant.contact}
+                                    </span>
+                                  )}
+                                  <span className="capitalize">
+                                    {participant.sex}
+                                  </span>
                                   {participant.age && (
-                                    <span>{participant.age} years old</span>
+                                    <span>{participant.age} yrs</span>
+                                  )}
+                                  {participant.districtName && (
+                                    <span className="flex items-center gap-1">
+                                      📍 {participant.districtName}
+                                    </span>
+                                  )}
+                                  {participant.subCountyName && (
+                                    <span>• {participant.subCountyName}</span>
                                   )}
                                 </div>
                               </div>

@@ -8,7 +8,8 @@ import {
 } from "../../hooks/use-activities";
 import { getSessionAttendance } from "../../actions/attendance";
 import { useQuery } from "@tanstack/react-query";
-import { AttendanceAnalyticsStandalone } from "@/components/shared/attendance-analytics";
+import { AttendanceAnalyticsStandalone } from "@/components/shared/attendance-analytics/attendance-analytics-tab";
+import { TabLoadingSkeleton } from "./tab-loading-skeleton";
 import { type AttendanceRecord } from "@/hooks/shared/use-attendance-analytics";
 
 interface AttendanceDemographicsTabProps {
@@ -78,9 +79,10 @@ export function AttendanceDemographicsTab({
 
   if (isLoading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="border-primary h-8 w-8 animate-spin rounded-full border-b-2"></div>
-      </div>
+      <TabLoadingSkeleton
+        type="metrics"
+        message="Loading demographic analytics..."
+      />
     );
   }
 
