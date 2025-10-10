@@ -459,7 +459,7 @@ function SessionWithAttendanceCard({
               onClick={() => onManageAttendance(session.id)}
               variant="default"
               size="sm"
-              className="w-[140px] shadow-sm transition-all hover:shadow"
+              className="w-[160px] shadow-sm transition-all hover:shadow"
             >
               <UserCheck className="mr-2 h-4 w-4" />
               Take Attendance
@@ -485,12 +485,16 @@ function SessionWithAttendanceCard({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={onEditSession}>
+                <DropdownMenuItem
+                  onClick={onEditSession}
+                  className="text-blue-600 focus:text-blue-700 dark:text-blue-400"
+                >
                   <Edit className="mr-2 h-4 w-4" />
                   Edit Session
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => onManageAttendance(session.id)}
+                  className="text-green-600 focus:text-green-700 dark:text-green-400"
                 >
                   <UserPlus className="mr-2 h-4 w-4" />
                   Manage Attendance
@@ -499,6 +503,7 @@ function SessionWithAttendanceCard({
                 <DropdownMenuItem
                   onClick={() => onUpdateSessionStatus(session.id, "completed")}
                   disabled={session.status === "completed"}
+                  className="text-emerald-600 focus:text-emerald-700 dark:text-emerald-400"
                 >
                   <CheckCircle className="mr-2 h-4 w-4" />
                   Mark Complete

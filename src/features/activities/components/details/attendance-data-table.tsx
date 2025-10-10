@@ -186,6 +186,59 @@ export function AttendanceDataTable({
         },
       },
       {
+        accessorKey: "participant.dateOfBirth",
+        header: "Date of Birth",
+        cell: ({ row }) => {
+          const dob = row.original.participant?.dateOfBirth;
+          return (
+            <span className="text-sm">
+              {dob ? (
+                new Date(dob).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })
+              ) : (
+                <span className="text-muted-foreground">-</span>
+              )}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: "participant.employmentStatus",
+        header: "Employment",
+        cell: ({ row }) => {
+          const status = row.original.participant?.employmentStatus;
+          return (
+            <div>
+              {status ? (
+                <Badge
+                  variant="outline"
+                  className="border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300"
+                >
+                  {status.replace("_", " ")}
+                </Badge>
+              ) : (
+                <span className="text-muted-foreground text-sm">-</span>
+              )}
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: "participant.enterprise",
+        header: "Enterprise",
+        cell: ({ row }) => {
+          const enterprise = row.original.participant?.enterprise;
+          return (
+            <span className="text-sm">
+              {enterprise || <span className="text-muted-foreground">-</span>}
+            </span>
+          );
+        },
+      },
+      {
         accessorKey: "participant.district",
         header: "District",
         cell: ({ row }) => {
@@ -290,25 +343,25 @@ export function AttendanceDataTable({
       <div className="min-h-[72px]">
         {selectedRows.size > 0 && (
           <div className="bg-muted/50 flex items-center justify-between rounded-lg border p-4">
-          <div className="flex items-center gap-2">
-            <Checkbox
-              checked={true}
-              onCheckedChange={() => setSelectedRows(new Set())}
-            />
-            <span className="text-sm font-medium">
-              {selectedRows.size} participant(s) selected
-            </span>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                checked={true}
+                onCheckedChange={() => setSelectedRows(new Set())}
+              />
+              <span className="text-sm font-medium">
+                {selectedRows.size} participant(s) selected
+              </span>
+            </div>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleBulkDelete}
+              disabled={isDeleting}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Remove Selected
+            </Button>
           </div>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={handleBulkDelete}
-            disabled={isDeleting}
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Remove Selected
-          </Button>
-        </div>
         )}
       </div>
       <DataTable
