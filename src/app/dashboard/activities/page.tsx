@@ -8,6 +8,9 @@ import { ActivitiesTableSkeleton } from "@/features/activities/components/table/
 import { IconActivity } from "@tabler/icons-react";
 import { getUserClusterId } from "@/features/auth/actions";
 
+// Force dynamic rendering since this page uses authentication
+export const dynamic = "force-dynamic";
+
 // Loading component for the page
 function ActivitiesPageSkeleton() {
   return (

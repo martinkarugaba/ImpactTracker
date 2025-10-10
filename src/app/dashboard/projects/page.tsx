@@ -6,6 +6,9 @@ import { getClusters } from "@/features/clusters/actions/clusters";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Force dynamic rendering since this page uses authentication
+export const dynamic = "force-dynamic";
+
 function ProjectsTableSkeleton() {
   return (
     <div className="space-y-4">
