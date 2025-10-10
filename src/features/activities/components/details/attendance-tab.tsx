@@ -510,40 +510,86 @@ function SessionWithAttendanceCard({
         {showAttendance && sessionAttendance.length > 0 && (
           <div className="mt-6 space-y-3 border-t pt-4">
             <h5 className="font-medium">Attendance Details</h5>
-            <div className="space-y-2">
-              {sessionAttendance.map((participant, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col gap-2 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
-                    <div className="font-medium">
-                      {participant.participant
-                        ? `${participant.participant.firstName} ${participant.participant.lastName}`
-                        : "Unknown Participant"}
-                    </div>
-                    <div className="text-muted-foreground text-sm">
-                      {participant.participant?.contact &&
-                        `• ${participant.participant.contact}`}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={cn(
-                        "inline-flex items-center rounded-full px-2 py-1 text-xs font-medium",
-                        participant.attendance_status === "attended" &&
-                          "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-                        participant.attendance_status === "absent" &&
-                          "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
-                        participant.attendance_status === "late" &&
-                          "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
-                      )}
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b text-left text-sm">
+                    <th className="pb-2 font-medium">Name</th>
+                    <th className="pb-2 font-medium">Contact</th>
+                    <th className="pb-2 font-medium">Sex</th>
+                    <th className="pb-2 font-medium">Age</th>
+                    <th className="pb-2 font-medium">Location</th>
+                    <th className="pb-2 font-medium">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sessionAttendance.map((participant, index) => (
+                    <tr
+                      key={index}
+                      className="hover:bg-muted/50 border-b last:border-0"
                     >
-                      {participant.attendance_status}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                      <td className="py-3">
+                        <div className="font-medium">
+                          {participant.participant
+                            ? `${participant.participant.firstName} ${participant.participant.lastName}`
+                            : "Unknown Participant"}
+                        </div>
+                        {participant.participant?.designation && (
+                          <div className="text-muted-foreground text-xs">
+                            {participant.participant.designation}
+                          </div>
+                        )}
+                      </td>
+                      <td className="py-3">
+                        <div className="text-sm">
+                          {participant.participant?.contact || "-"}
+                        </div>
+                      </td>
+                      <td className="py-3">
+                        <span className="text-sm capitalize">
+                          {participant.participant?.sex || "-"}
+                        </span>
+                      </td>
+                      <td className="py-3">
+                        <span className="text-sm">
+                          {participant.participant?.age || "-"}
+                        </span>
+                      </td>
+                      <td className="py-3">
+                        <div className="text-sm">
+                          {participant.participant?.district && (
+                            <div>{participant.participant.district}</div>
+                          )}
+                          {participant.participant?.subCounty && (
+                            <div className="text-muted-foreground text-xs">
+                              {participant.participant.subCounty}
+                            </div>
+                          )}
+                          {!participant.participant?.district &&
+                            !participant.participant?.subCounty && (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                        </div>
+                      </td>
+                      <td className="py-3">
+                        <span
+                          className={cn(
+                            "inline-flex items-center rounded-full px-2 py-1 text-xs font-medium",
+                            participant.attendance_status === "attended" &&
+                              "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+                            participant.attendance_status === "absent" &&
+                              "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+                            participant.attendance_status === "late" &&
+                              "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
+                          )}
+                        >
+                          {participant.attendance_status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
