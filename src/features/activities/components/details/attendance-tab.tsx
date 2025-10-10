@@ -254,6 +254,7 @@ export function AttendanceTab({
                     onDeleteSession={handleDeleteSession}
                     onUpdateSessionStatus={handleUpdateSessionStatus}
                     onEditParticipant={setEditingParticipant}
+                    onParticipantsDeleted={refetchParticipants}
                   />
                 ))}
               </div>
@@ -349,6 +350,7 @@ interface SessionWithAttendanceCardProps {
   onDeleteSession: (sessionId: string) => void;
   onUpdateSessionStatus: (sessionId: string, status: string) => void;
   onEditParticipant: (participant: ActivityParticipant) => void;
+  onParticipantsDeleted: () => void;
 }
 
 function SessionWithAttendanceCard({
@@ -359,6 +361,7 @@ function SessionWithAttendanceCard({
   onDeleteSession,
   onUpdateSessionStatus,
   onEditParticipant,
+  onParticipantsDeleted,
 }: SessionWithAttendanceCardProps) {
   const [showAttendance, setShowAttendance] = useState(false);
 
@@ -566,6 +569,7 @@ function SessionWithAttendanceCard({
             <AttendanceDataTable
               sessionAttendance={sessionAttendance}
               onEditParticipant={onEditParticipant}
+              onParticipantsDeleted={onParticipantsDeleted}
             />
           </div>
         )}
