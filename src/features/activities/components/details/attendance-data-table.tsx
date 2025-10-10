@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,42 +32,50 @@ export function AttendanceDataTable({
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Handle select all
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedRows(new Set(sessionAttendance.map(p => p.id)));
-    } else {
-      setSelectedRows(new Set());
-    }
-  };
+  const handleSelectAll = useCallback(
+    (checked: boolean) => {
+      if (checked) {
+        setSelectedRows(new Set(sessionAttendance.map(p => p.id)));
+      } else {
+        setSelectedRows(new Set());
+      }
+    },
+    [sessionAttendance]
+  );
 
   // Handle individual row selection
-  const handleSelectRow = (id: string, checked: boolean) => {
-    const newSelected = new Set(selectedRows);
-    if (checked) {
-      newSelected.add(id);
-    } else {
-      newSelected.delete(id);
-    }
-    setSelectedRows(newSelected);
-  };
+  const handleSelectRow = useCallback((id: string, checked: boolean) => {
+    setSelectedRows(prev => {
+      const newSelected = new Set(prev);
+      if (checked) {
+        newSelected.add(id);
+      } else {
+        newSelected.delete(id);
+      }
+      return newSelected;
+    });
+  }, []);
 
   // Handle single delete
-  const handleDeleteSingle = async (id: string) => {
-    try {
-      setIsDeleting(true);
-      const result = await deleteActivityParticipant(id);
-      if (result.success) {
-        toast.success("Participant removed from session");
-        onParticipantsDeleted?.();
-      } else {
-        toast.error(result.error || "Failed to remove participant");
+  const handleDeleteSingle = useCallback(
+    async (id: string) => {
+      try {
+        setIsDeleting(true);
+        const result = await deleteActivityParticipant(id);
+        if (result.success) {
+          toast.success("Participant removed from session");
+          onParticipantsDeleted?.();
+        } else {
+          toast.error(result.error || "Failed to remove participant");
+        }
+      } catch (_error) {
+        toast.error("Failed to remove participant");
+      } finally {
+        setIsDeleting(false);
       }
-    } catch (error) {
-      toast.error("Failed to remove participant");
-    } finally {
-      setIsDeleting(false);
-    }
-  };
+    },
+    [onParticipantsDeleted]
+  );
 
   // Handle bulk delete
   const handleBulkDelete = async () => {
@@ -88,7 +96,7 @@ export function AttendanceDataTable({
       } else {
         toast.error(result.error || "Failed to remove participants");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to remove participants");
     } finally {
       setIsDeleting(false);
@@ -98,7 +106,7 @@ export function AttendanceDataTable({
     () => [
       {
         id: "select",
-        header: ({ table }) => (
+        header: ({ table: _table }) => (
           <Checkbox
             checked={
               selectedRows.size === sessionAttendance.length &&
@@ -334,7 +342,15 @@ export function AttendanceDataTable({
         },
       },
     ],
-    [onEditParticipant, selectedRows, sessionAttendance.length, isDeleting]
+    [
+      onEditParticipant,
+      selectedRows,
+      sessionAttendance.length,
+      isDeleting,
+      handleSelectAll,
+      handleSelectRow,
+      handleDeleteSingle,
+    ]
   );
 
   return (

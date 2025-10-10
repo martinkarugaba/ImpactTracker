@@ -33,7 +33,7 @@ export function ParticipantsTab({
   // Fetch activity participants and sessions
   const {
     data: participantsResponse,
-    isLoading: isLoadingParticipants,
+    isLoading: _isLoadingParticipants,
     error: participantsError,
   } = useActivityParticipants(activity.id);
 

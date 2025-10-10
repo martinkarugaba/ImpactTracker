@@ -21,6 +21,7 @@ interface ActivityDetailsTabsProps {
   onManageAttendance: (sessionId?: string) => void; // Opens dialog to add/edit participants and manage their attendance
   onCreateSession: () => void;
   onEditSession: (sessionId: string) => void;
+  onDuplicateSession?: (sessionId: string) => void;
   refreshKey: number;
   activityReportsRefreshKey: number;
 }
@@ -36,6 +37,7 @@ export function ActivityDetailsTabs({
   onManageAttendance,
   onCreateSession,
   onEditSession,
+  onDuplicateSession,
   refreshKey,
   activityReportsRefreshKey,
 }: ActivityDetailsTabsProps) {
@@ -123,6 +125,7 @@ export function ActivityDetailsTabs({
           onManageAttendance={onManageAttendance}
           onCreateSession={onCreateSession}
           onEditSession={onEditSession}
+          onDuplicateSession={onDuplicateSession}
         />
       </TabsContent>
 

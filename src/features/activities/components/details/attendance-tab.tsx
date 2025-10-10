@@ -17,6 +17,7 @@ import {
   ChevronUp,
   ChevronDown,
   Loader2,
+  Copy,
 } from "lucide-react";
 // import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,6 +52,7 @@ interface AttendanceTabProps {
   onManageAttendance: (sessionId?: string) => void;
   onCreateSession: () => void;
   onEditSession: (sessionId: string) => void;
+  onDuplicateSession?: (sessionId: string) => void;
 }
 
 export function AttendanceTab({
@@ -58,6 +60,7 @@ export function AttendanceTab({
   onManageAttendance,
   onCreateSession,
   onEditSession,
+  onDuplicateSession,
 }: AttendanceTabProps) {
   // Local state
   const [sessionCount, setSessionCount] = useState<number>(5);
@@ -158,6 +161,11 @@ export function AttendanceTab({
     toast.info("Session status update coming soon");
   };
 
+  // Handle edit participant
+  const handleEditParticipant = (participant: ActivityParticipant) => {
+    setEditingParticipant(participant);
+  };
+
   if (isLoadingParticipants || isLoadingSessions) {
     return (
       <TabLoadingSkeleton
@@ -253,8 +261,9 @@ export function AttendanceTab({
                     onManageAttendance={onManageAttendance}
                     onDeleteSession={handleDeleteSession}
                     onUpdateSessionStatus={handleUpdateSessionStatus}
-                    onEditParticipant={setEditingParticipant}
+                    onEditParticipant={handleEditParticipant}
                     onParticipantsDeleted={refetchParticipants}
+                    onDuplicateSession={onDuplicateSession}
                   />
                 ))}
               </div>
@@ -351,6 +360,7 @@ interface SessionWithAttendanceCardProps {
   onUpdateSessionStatus: (sessionId: string, status: string) => void;
   onEditParticipant: (participant: ActivityParticipant) => void;
   onParticipantsDeleted: () => void;
+  onDuplicateSession?: (sessionId: string) => void;
 }
 
 function SessionWithAttendanceCard({
@@ -362,6 +372,7 @@ function SessionWithAttendanceCard({
   onUpdateSessionStatus,
   onEditParticipant,
   onParticipantsDeleted,
+  onDuplicateSession,
 }: SessionWithAttendanceCardProps) {
   const [showAttendance, setShowAttendance] = useState(false);
 
@@ -492,6 +503,15 @@ function SessionWithAttendanceCard({
                   <Edit className="mr-2 h-4 w-4" />
                   Edit Session
                 </DropdownMenuItem>
+                {onDuplicateSession && (
+                  <DropdownMenuItem
+                    onClick={() => onDuplicateSession(session.id)}
+                    className="text-purple-600 focus:text-purple-700 dark:text-purple-400"
+                  >
+                    <Copy className="mr-2 h-4 w-4" />
+                    Duplicate Session
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem
                   onClick={() => onManageAttendance(session.id)}
                   className="text-green-600 focus:text-green-700 dark:text-green-400"

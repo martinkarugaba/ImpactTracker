@@ -2,7 +2,9 @@
 
 ## Problem
 
-Currently, when you add participants to a specific session, they appear in ALL sessions. This is because the `SessionWithAttendanceCard` component is using the wrong data source.
+Currently, when you add participants to a specific session, they appear in ALL
+sessions. This is because the `SessionWithAttendanceCard` component is using the
+wrong data source.
 
 ### Root Cause
 
@@ -16,7 +18,9 @@ const sessionAttendance = participants.filter(
 );
 ```
 
-The `participants` prop contains **activity-level participants** from the `activity_participants` table, not **session-specific attendance** from the `daily_attendance` table.
+The `participants` prop contains **activity-level participants** from the
+`activity_participants` table, not **session-specific attendance** from the
+`daily_attendance` table.
 
 ### Database Schema
 
@@ -37,7 +41,8 @@ The `AttendanceTab` component needs to:
 
 1. **Fetch session-specific attendance** using the `getSessionAttendance` action
 2. **Pass session-specific data** to each `SessionWithAttendanceCard`
-3. **Display only participants** who have `daily_attendance` records for that session
+3. **Display only participants** who have `daily_attendance` records for that
+   session
 
 ### Implementation Steps
 
@@ -50,7 +55,7 @@ const {
   isLoading: isLoadingSessionAttendance,
   refetch: refetchSessionAttendance,
 } = useQuery({
-  queryKey: ['session-attendance', session.id],
+  queryKey: ["session-attendance", session.id],
   queryFn: () => getSessionAttendance(session.id),
   enabled: !!session.id,
 });
@@ -81,11 +86,11 @@ interface SessionWithAttendanceCardProps {
 ```tsx
 function SessionWithAttendanceCard({ session, sessionAttendance, ... }) {
   // No filter needed - sessionAttendance already contains only this session's data
-  
+
   const attendedCount = sessionAttendance.filter(
     p => p.attendance_status === "attended"
   ).length;
-  
+
   // ... rest of logic
 }
 ```
@@ -94,8 +99,10 @@ function SessionWithAttendanceCard({ session, sessionAttendance, ... }) {
 
 The actions are already correct:
 
-✅ `addActivityParticipantsToSession()` - Adds participants to specific session via `markAttendance()`  
-✅ `getSessionAttendance(sessionId)` - Queries `daily_attendance` filtered by `session_id`  
+✅ `addActivityParticipantsToSession()` - Adds participants to specific session
+via `markAttendance()`  
+✅ `getSessionAttendance(sessionId)` - Queries `daily_attendance` filtered by
+`session_id`  
 ✅ `markAttendance()` - Creates/updates `daily_attendance` records
 
 ### Current Behavior
@@ -113,8 +120,10 @@ The actions are already correct:
 
 ### Files to Modify
 
-1. `src/features/activities/components/details/attendance-tab.tsx` (main changes)
-2. `src/features/activities/hooks/use-activities.ts` (add session attendance hook if needed)
+1. `src/features/activities/components/details/attendance-tab.tsx` (main
+   changes)
+2. `src/features/activities/hooks/use-activities.ts` (add session attendance
+   hook if needed)
 3. Possibly create `src/features/activities/hooks/use-session-attendance.ts`
 
 ### Testing After Fix

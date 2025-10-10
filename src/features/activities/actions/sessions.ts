@@ -298,3 +298,71 @@ export async function updateSessionStatus(
     };
   }
 }
+
+/**
+ * Duplicate an existing session
+ * Creates a new session with the same details but incremented session number
+ */
+export async function duplicateActivitySession(
+  sessionId: string
+): Promise<ActivitySessionResponse> {
+  try {
+    // Get the session to duplicate
+    const originalSession = await db.query.activitySessions.findFirst({
+      where: eq(activitySessions.id, sessionId),
+    });
+
+    if (!originalSession) {
+      return {
+        success: false,
+        error: "Session not found",
+      };
+    }
+
+    // Get the highest session number for this activity
+    const allSessions = await db.query.activitySessions.findMany({
+      where: eq(activitySessions.activity_id, originalSession.activity_id),
+      orderBy: [asc(activitySessions.session_number)],
+    });
+
+    const highestSessionNumber = Math.max(
+      ...allSessions.map(s => s.session_number)
+    );
+
+    // Calculate new session date (1 day after the last session)
+    const lastSession = allSessions[allSessions.length - 1];
+    const newDate = new Date(lastSession.session_date);
+    newDate.setDate(newDate.getDate() + 1);
+
+    // Create the duplicated session
+    const [newSession] = await db
+      .insert(activitySessions)
+      .values({
+        activity_id: originalSession.activity_id,
+        session_date: newDate.toISOString().split("T")[0],
+        session_number: highestSessionNumber + 1,
+        title: originalSession.title
+          ? `${originalSession.title} (Copy)`
+          : `Session ${highestSessionNumber + 1}`,
+        start_time: originalSession.start_time,
+        end_time: originalSession.end_time,
+        venue: originalSession.venue,
+        status: "scheduled",
+        notes: originalSession.notes,
+      })
+      .returning();
+
+    revalidatePath(`/dashboard/activities/${originalSession.activity_id}`);
+
+    return {
+      success: true,
+      data: newSession,
+    };
+  } catch (error) {
+    console.error("Error duplicating session:", error);
+    return {
+      success: false,
+      error: "Failed to duplicate session",
+    };
+  }
+}
