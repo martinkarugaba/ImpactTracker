@@ -412,6 +412,47 @@ export async function initializeAllActivityParticipantsInSession(
   }
 }
 
+export async function bulkDeleteActivityParticipants(
+  participantIds: string[]
+): Promise<{ success: boolean; error?: string; message?: string }> {
+  try {
+    if (participantIds.length === 0) {
+      return {
+        success: false,
+        error: "No participants selected for deletion",
+      };
+    }
+
+    // Get the activity_id before deleting for revalidation
+    const firstParticipant = await db.query.activityParticipants.findFirst({
+      where: eq(activityParticipants.id, participantIds[0]),
+      columns: { activity_id: true },
+    });
+
+    // Delete all selected participants
+    await db
+      .delete(activityParticipants)
+      .where(inArray(activityParticipants.id, participantIds));
+
+    // Revalidate paths
+    if (firstParticipant) {
+      revalidatePath(`/dashboard/activities/${firstParticipant.activity_id}`);
+    }
+    revalidatePath("/dashboard/activities");
+
+    return {
+      success: true,
+      message: `Successfully removed ${participantIds.length} participant(s)`,
+    };
+  } catch (error) {
+    console.error("Error bulk deleting activity participants:", error);
+    return {
+      success: false,
+      error: "Failed to remove participants",
+    };
+  }
+}
+
 export async function getAllActivityParticipants(clusterId?: string) {
   try {
     // Get all unique participants from activities

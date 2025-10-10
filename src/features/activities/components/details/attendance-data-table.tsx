@@ -1,27 +1,129 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useCallback } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
-import { Edit } from "lucide-react";
-import type { ActivityParticipant } from "../../types/types";
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import type { DailyAttendance } from "../../types/types";
+import {
+  bulkDeleteDailyAttendance,
+  deleteAttendanceRecord,
+} from "../../actions/attendance";
 
 interface AttendanceDataTableProps {
-  sessionAttendance: ActivityParticipant[];
+  sessionAttendance: DailyAttendance[];
   isLoading?: boolean;
-  onEditParticipant?: (participant: ActivityParticipant) => void;
+  onParticipantsDeleted?: () => void;
 }
 
 export function AttendanceDataTable({
   sessionAttendance,
   isLoading = false,
-  onEditParticipant,
+  onParticipantsDeleted,
 }: AttendanceDataTableProps) {
-  const columns = useMemo<ColumnDef<ActivityParticipant>[]>(
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Handle select all
+  const handleSelectAll = useCallback(
+    (checked: boolean) => {
+      if (checked) {
+        setSelectedRows(new Set(sessionAttendance.map(p => p.id)));
+      } else {
+        setSelectedRows(new Set());
+      }
+    },
+    [sessionAttendance]
+  );
+
+  // Handle individual row selection
+  const handleSelectRow = useCallback((id: string, checked: boolean) => {
+    setSelectedRows(prev => {
+      const newSelected = new Set(prev);
+      if (checked) {
+        newSelected.add(id);
+      } else {
+        newSelected.delete(id);
+      }
+      return newSelected;
+    });
+  }, []);
+
+  // Handle single delete
+  const handleDeleteSingle = useCallback(
+    async (id: string) => {
+      try {
+        setIsDeleting(true);
+        const result = await deleteAttendanceRecord(id);
+        if (result.success) {
+          toast.success("Participant removed from session");
+          onParticipantsDeleted?.();
+        } else {
+          toast.error(result.error || "Failed to remove participant");
+        }
+      } catch (_error) {
+        toast.error("Failed to remove participant");
+      } finally {
+        setIsDeleting(false);
+      }
+    },
+    [onParticipantsDeleted]
+  );
+
+  // Handle bulk delete
+  const handleBulkDelete = async () => {
+    if (selectedRows.size === 0) {
+      toast.error("No participants selected");
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      const result = await bulkDeleteDailyAttendance(Array.from(selectedRows));
+      if (result.success) {
+        toast.success("Participants removed successfully");
+        setSelectedRows(new Set());
+        onParticipantsDeleted?.();
+      } else {
+        toast.error(result.error || "Failed to remove participants");
+      }
+    } catch (_error) {
+      toast.error("Failed to remove participants");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+  const columns = useMemo<ColumnDef<DailyAttendance>[]>(
     () => [
+      {
+        id: "select",
+        header: ({ table: _table }) => (
+          <Checkbox
+            checked={
+              selectedRows.size === sessionAttendance.length &&
+              sessionAttendance.length > 0
+            }
+            onCheckedChange={handleSelectAll}
+            aria-label="Select all"
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={selectedRows.has(row.original.id)}
+            onCheckedChange={checked =>
+              handleSelectRow(row.original.id, checked as boolean)
+            }
+            aria-label="Select row"
+          />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+      },
       {
         accessorKey: "participant.firstName",
         header: "Name",
@@ -83,6 +185,59 @@ export function AttendanceDataTable({
           return (
             <span className="text-sm">
               {age || <span className="text-muted-foreground">-</span>}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: "participant.dateOfBirth",
+        header: "Date of Birth",
+        cell: ({ row }) => {
+          const dob = row.original.participant?.dateOfBirth;
+          return (
+            <span className="text-sm">
+              {dob ? (
+                new Date(dob).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })
+              ) : (
+                <span className="text-muted-foreground">-</span>
+              )}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: "participant.employmentStatus",
+        header: "Employment",
+        cell: ({ row }) => {
+          const status = row.original.participant?.employmentStatus;
+          return (
+            <div>
+              {status ? (
+                <Badge
+                  variant="outline"
+                  className="border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300"
+                >
+                  {status.replace("_", " ")}
+                </Badge>
+              ) : (
+                <span className="text-muted-foreground text-sm">-</span>
+              )}
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: "participant.enterprise",
+        header: "Enterprise",
+        cell: ({ row }) => {
+          const enterprise = row.original.participant?.enterprise;
+          return (
+            <span className="text-sm">
+              {enterprise || <span className="text-muted-foreground">-</span>}
             </span>
           );
         },
@@ -157,31 +312,72 @@ export function AttendanceDataTable({
         header: "Actions",
         cell: ({ row }) => {
           return (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onEditParticipant?.(row.original)}
-              className="h-8 w-8 p-0"
-            >
-              <Edit className="h-4 w-4" />
-              <span className="sr-only">Edit participant</span>
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleDeleteSingle(row.original.id)}
+                className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                disabled={isDeleting}
+              >
+                <Trash2 className="h-4 w-4" />
+                <span className="sr-only">Remove participant</span>
+              </Button>
+            </div>
           );
         },
       },
     ],
-    [onEditParticipant]
+    [
+      selectedRows,
+      sessionAttendance.length,
+      isDeleting,
+      handleSelectAll,
+      handleSelectRow,
+      handleDeleteSingle,
+    ]
   );
 
   return (
-    <DataTable
-      columns={columns}
-      data={sessionAttendance}
-      showToolbar={false}
-      showPagination={sessionAttendance.length > 10}
-      pageSize={10}
-      isLoading={isLoading}
-      loadingText="Loading attendance records..."
-    />
+    <div className="space-y-4">
+      {/* Fixed height container to prevent CLS */}
+      <div className="min-h-[72px]">
+        {selectedRows.size > 0 && (
+          <div className="bg-muted/50 flex items-center justify-between rounded-lg border p-4">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                checked={true}
+                onCheckedChange={() => setSelectedRows(new Set())}
+              />
+              <span className="text-sm font-medium">
+                {selectedRows.size} participant(s) selected
+              </span>
+            </div>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleBulkDelete}
+              disabled={isDeleting}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Remove Selected
+            </Button>
+          </div>
+        )}
+      </div>
+      <DataTable
+        columns={columns}
+        data={sessionAttendance}
+        showToolbar={false}
+        showPagination={sessionAttendance.length > 10}
+        pageSize={10}
+        isLoading={isLoading || isDeleting}
+        loadingText={
+          isDeleting
+            ? "Removing participants..."
+            : "Loading attendance records..."
+        }
+      />
+    </div>
   );
 }

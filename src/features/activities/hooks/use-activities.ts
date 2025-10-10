@@ -24,6 +24,7 @@ import {
   getSessionAttendance,
   markAttendance,
   getActivityAttendanceSummary,
+  getActivitySessionsAttendance,
 } from "../actions/attendance";
 import {
   getActivityParticipants,
@@ -394,6 +395,14 @@ export function useActivityAttendanceSummary(activityId: string) {
   return useQuery({
     queryKey: ["activity-attendance-summary", activityId],
     queryFn: () => getActivityAttendanceSummary(activityId),
+    enabled: !!activityId,
+  });
+}
+
+export function useActivitySessionsAttendance(activityId: string) {
+  return useQuery({
+    queryKey: ["activity-sessions-attendance", activityId],
+    queryFn: () => getActivitySessionsAttendance(activityId),
     enabled: !!activityId,
   });
 }
