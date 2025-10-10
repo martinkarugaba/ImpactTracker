@@ -1,7 +1,6 @@
 "use client";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface TabLoadingSkeletonProps {
@@ -66,12 +65,6 @@ export function TabLoadingSkeleton({
             ))}
           </CardContent>
         </Card>
-
-        {/* Centered spinner */}
-        <div className="flex flex-col items-center justify-center py-12">
-          <Spinner className="text-primary h-8 w-8" />
-          <p className="text-muted-foreground mt-4 text-sm">{message}</p>
-        </div>
       </div>
     );
   }
@@ -91,11 +84,6 @@ export function TabLoadingSkeleton({
               </CardContent>
             </Card>
           ))}
-        </div>
-
-        <div className="flex items-center justify-center py-8">
-          <Spinner className="text-primary h-8 w-8" />
-          <p className="text-muted-foreground ml-3 text-sm">{message}</p>
         </div>
       </div>
     );
@@ -125,11 +113,6 @@ export function TabLoadingSkeleton({
             </div>
           </CardContent>
         </Card>
-
-        <div className="flex items-center justify-center py-8">
-          <Spinner className="text-primary h-8 w-8" />
-          <p className="text-muted-foreground ml-3 text-sm">{message}</p>
-        </div>
       </div>
     );
   }
@@ -149,13 +132,6 @@ export function TabLoadingSkeleton({
             </CardContent>
           </Card>
         ))}
-      </div>
-
-      <div className="flex flex-col items-center justify-center py-12">
-        <Spinner className="text-primary h-10 w-10" />
-        <p className="text-muted-foreground mt-4 text-sm font-medium">
-          {message}
-        </p>
       </div>
     </div>
   );

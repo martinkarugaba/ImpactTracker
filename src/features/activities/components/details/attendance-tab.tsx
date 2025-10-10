@@ -16,6 +16,7 @@ import {
   MoreHorizontal,
   ChevronUp,
   ChevronDown,
+  Loader2,
 } from "lucide-react";
 // import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,7 +44,6 @@ import {
 import { EditParticipantDialog } from "@/features/participants/components/edit-participant-dialog";
 import { ParticipantFeedbackDialog } from "../dialogs/participant-feedback-dialog";
 import { TabLoadingSkeleton } from "./tab-loading-skeleton";
-import { Spinner } from "@/components/ui/spinner";
 import { AttendanceDataTable } from "./attendance-data-table";
 
 interface AttendanceTabProps {
@@ -292,7 +292,7 @@ export function AttendanceTab({
                     variant="outline"
                   >
                     {generateSessions.isPending ? (
-                      <Spinner className="mr-2 h-4 w-4" />
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
                       <Play className="mr-2 h-4 w-4" />
                     )}

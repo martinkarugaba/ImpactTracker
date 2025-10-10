@@ -659,7 +659,8 @@ function EnhancedPaginationControls<TData>({
   });
 
   const selectedCount = table.getFilteredSelectedRowModel().rows.length;
-  const totalCount = serverSideFiltered ?? table.getFilteredRowModel().rows.length;
+  const totalCount =
+    serverSideFiltered ?? table.getFilteredRowModel().rows.length;
 
   return (
     <div className="flex items-center justify-between gap-3 px-2 py-4 max-sm:flex-col">
@@ -674,8 +675,9 @@ function EnhancedPaginationControls<TData>({
           </>
         ) : (
           <>
-            Page <span className="text-foreground font-medium">{currentPage}</span> of{" "}
-            <span className="text-foreground font-medium">{totalPages}</span>
+            Page{" "}
+            <span className="text-foreground font-medium">{currentPage}</span>{" "}
+            of <span className="text-foreground font-medium">{totalPages}</span>
           </>
         )}
       </div>
@@ -787,7 +789,10 @@ function EnhancedPaginationControls<TData>({
       {/* Right section - Results per page selector */}
       <div className="flex flex-1 justify-end">
         <div className="flex items-center gap-2">
-          <Label htmlFor="results-per-page" className="text-sm font-medium whitespace-nowrap hidden sm:block">
+          <Label
+            htmlFor="results-per-page"
+            className="hidden text-sm font-medium whitespace-nowrap sm:block"
+          >
             Rows per page
           </Label>
           <Select
@@ -801,7 +806,7 @@ function EnhancedPaginationControls<TData>({
           >
             <SelectTrigger
               id="results-per-page"
-              className="w-fit whitespace-nowrap h-8"
+              className="h-8 w-fit whitespace-nowrap"
             >
               <SelectValue placeholder="Select number of results" />
             </SelectTrigger>

@@ -366,11 +366,7 @@ export function SessionsTab({
   };
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center py-8">
-        <LoadingSpinner />
-      </div>
-    );
+    return <TabLoadingSkeleton type="table" message="Loading sessions..." />;
   }
 
   return (
@@ -407,7 +403,7 @@ export function SessionsTab({
                 variant="outline"
               >
                 {generateSessions.isPending ? (
-                  <LoadingSpinner className="mr-2 h-4 w-4" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <Play className="mr-2 h-4 w-4" />
                 )}
@@ -509,7 +505,7 @@ export function SessionsTab({
                   variant="outline"
                 >
                   {generateSessions.isPending ? (
-                    <LoadingSpinner className="mr-2 h-4 w-4" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
                     <Play className="mr-2 h-4 w-4" />
                   )}

@@ -206,14 +206,7 @@ export function ParticipantsTab({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {isLoadingParticipants ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin" />
-              <span className="text-muted-foreground ml-2 text-sm">
-                Loading participants...
-              </span>
-            </div>
-          ) : participantsError ? (
+          {participantsError ? (
             <div className="rounded-md border border-red-200 bg-red-50 p-4 text-center dark:border-red-800 dark:bg-red-950/20">
               <p className="text-sm text-red-600 dark:text-red-400">
                 Failed to load participants. Please try again.
