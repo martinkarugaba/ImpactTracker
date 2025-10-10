@@ -10,14 +10,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useState } from "react";
-import { Cluster } from "@/features/clusters/components/clusters-table";
-import { Organization } from "@/features/organizations/types";
-import { Project } from "@/features/projects/types";
+import type { Cluster } from "@/features/clusters/components/clusters-table";
+import type { Organization } from "@/features/organizations/types";
+import type { Project } from "@/features/projects/types";
 import { VSLAForm } from "../forms";
-import { VSLA, type PrimaryBusiness } from "../../types";
+import type { VSLA } from "../../types";
+import { type PrimaryBusiness } from "../../types";
 import { Edit } from "lucide-react";
 
-type EditVSLADialogProps = {
+interface EditVSLADialogProps {
   vsla: VSLA;
   organizations: Organization[];
   clusters: Cluster[];
@@ -26,7 +27,7 @@ type EditVSLADialogProps = {
   isOpen?: boolean;
   onClose?: () => void;
   onSuccess?: () => void | Promise<void>;
-};
+}
 
 export function EditVSLADialog({
   vsla,

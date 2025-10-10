@@ -1,7 +1,7 @@
 "use client";
 
 import { DataTable } from "@/components/ui/data-table";
-import { counties, districts } from "@/lib/db/schema";
+import type { counties, districts } from "@/lib/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";

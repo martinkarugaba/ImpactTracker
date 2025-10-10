@@ -726,9 +726,9 @@ export async function getParticipants(
       projectAcronym: participant.project?.acronym || "UNK",
       clusterName: participant.cluster?.name || "Unknown",
       // We'll pass these values directly to the LocationNameCell component later
-      districtName: participant.district,
-      subCountyName: participant.subCounty,
-      countyName: participant.country,
+      districtName: participant.district ?? undefined,
+      subCountyName: participant.subCounty ?? undefined,
+      countyName: participant.country ?? undefined,
     }));
 
     return {
@@ -1321,9 +1321,9 @@ export async function getAllFilteredParticipantsForExport(
       projectName: participant.project?.name || "Unknown",
       projectAcronym: participant.project?.acronym || "UNK",
       clusterName: participant.cluster?.name || "Unknown",
-      districtName: participant.district,
-      subCountyName: participant.subCounty,
-      countyName: participant.country,
+      districtName: participant.district ?? undefined,
+      subCountyName: participant.subCounty ?? undefined,
+      countyName: participant.country ?? undefined,
     }));
 
     return {

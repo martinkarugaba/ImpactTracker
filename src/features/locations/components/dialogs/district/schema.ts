@@ -1,8 +1,8 @@
 "use client";
 
 import { z } from "zod";
-import { countries } from "@/lib/db/schema";
-import { InferSelectModel } from "drizzle-orm";
+import type { countries } from "@/lib/db/schema";
+import type { InferSelectModel } from "drizzle-orm";
 
 export type Country = InferSelectModel<typeof countries>;
 

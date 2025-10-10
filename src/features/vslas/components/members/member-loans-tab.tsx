@@ -6,10 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plus, DollarSign, Calendar, TrendingUp } from "lucide-react";
 import { DataTable } from "@/components/ui/data-table";
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { formatCurrency } from "../../utils";
-import { VSLAMember } from "../../actions/vsla-members";
-import { VSLALoan, VSLALoanPayment } from "../../schemas/enhanced-vsla-drizzle";
+import type { VSLAMember } from "../../actions/vsla-members";
+import type {
+  VSLALoan,
+  VSLALoanPayment,
+} from "../../schemas/enhanced-vsla-drizzle";
 import {
   getMemberLoans,
   getLoanPayments,

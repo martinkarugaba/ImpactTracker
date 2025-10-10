@@ -1,21 +1,23 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import {
+import type {
   ColumnDef,
   ColumnFiltersState,
   FilterFn,
+  PaginationState,
+  Row,
+  SortingState,
+  VisibilityState,
+} from "@tanstack/react-table";
+import {
   flexRender,
   getCoreRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  PaginationState,
-  Row,
-  SortingState,
   useReactTable,
-  VisibilityState,
 } from "@tanstack/react-table";
 import {
   ChevronDownIcon,
@@ -92,7 +94,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-type Item = {
+interface Item {
   id: string;
   name: string;
   email: string;
@@ -100,7 +102,7 @@ type Item = {
   flag: string;
   status: "Active" | "Inactive" | "Pending";
   balance: number;
-};
+}
 
 // Custom filter function for multi-column searching
 const multiColumnFilterFn: FilterFn<Item> = (row, columnId, filterValue) => {

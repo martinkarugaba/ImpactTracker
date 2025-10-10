@@ -4,7 +4,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Info, Users, UserCheck, TrendingUp } from "lucide-react";
-import { Activity } from "../../types/types";
+import type { Activity } from "../../types/types";
 import { ActivityOverviewTab } from "./activity-overview-tab";
 import { AttendanceTab } from "./attendance-tab";
 import { AttendanceAnalyticsTab } from "./attendance-analytics-tab";

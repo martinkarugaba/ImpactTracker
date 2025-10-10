@@ -7,13 +7,13 @@ import {
   batchGetCountryNames,
 } from "../actions/location-lookup";
 
-export type LocationNames = {
+export interface LocationNames {
   districts: Record<string, string>;
   subCounties: Record<string, string>;
   countries: Record<string, string>;
   isLoading: boolean;
   error: Error | null;
-};
+}
 
 export function useLocationNames(
   districtIds: string[] = [],

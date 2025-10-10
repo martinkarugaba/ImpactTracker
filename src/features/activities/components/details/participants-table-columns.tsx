@@ -1,4 +1,4 @@
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, User, Phone, Edit, MessageSquare } from "lucide-react";
-import { ActivityParticipant } from "../../types/types";
+import type { ActivityParticipant } from "../../types/types";
 
 // Helper function to format phone numbers with leading zero
 const formatPhoneNumber = (phone: string | null | undefined): string => {
@@ -110,7 +110,7 @@ const formatEmploymentStatus = (status: string | null | undefined): string => {
 };
 
 // Extended participant type to handle potentially missing fields
-type ExtendedParticipant = {
+interface ExtendedParticipant {
   id: string;
   firstName: string;
   lastName: string;
@@ -122,7 +122,7 @@ type ExtendedParticipant = {
   enterprise?: string;
   employmentStatus?: string;
   monthlyIncome?: number;
-};
+}
 
 interface ParticipantsTableColumnsProps {
   onEditParticipant?: (participant: ActivityParticipant) => void;

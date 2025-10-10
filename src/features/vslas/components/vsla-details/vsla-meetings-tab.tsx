@@ -6,10 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Calendar, Users, Clock, CheckCircle } from "lucide-react";
 import { DataTable } from "@/components/ui/data-table";
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { formatCurrency } from "@/lib/utils";
-import { VSLA } from "../../types";
-import { VSLAMeeting } from "../../schemas/enhanced-vsla-drizzle";
+import type { VSLA } from "../../types";
+import type { VSLAMeeting } from "../../schemas/enhanced-vsla-drizzle";
 import {
   getVSLAMeetings,
   getMeetingAttendance,

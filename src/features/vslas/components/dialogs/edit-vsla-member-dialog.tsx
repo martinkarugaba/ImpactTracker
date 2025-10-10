@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { EnhancedVSLAMemberForm } from "../forms";
-import { VSLAMember } from "../../actions/vsla-members";
+import type { VSLAMember } from "../../actions/vsla-members";
 
 interface EditVSLAMemberDialogProps {
   member: VSLAMember;

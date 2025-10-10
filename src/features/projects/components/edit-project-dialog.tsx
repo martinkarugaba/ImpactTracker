@@ -2,15 +2,15 @@
 
 import { ProjectForm } from "./project-form";
 import { useState } from "react";
-import { Project } from "../types";
+import type { Project } from "../types";
 import { Modal } from "@/components/ui/modal";
 
-type EditProjectDialogProps = {
+interface EditProjectDialogProps {
   project: Project;
   onSelect?: () => void;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-};
+}
 
 export function EditProjectDialog({
   project,

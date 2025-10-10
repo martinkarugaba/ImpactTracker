@@ -63,6 +63,11 @@ export async function previewOrganizationAssignmentFix(
 
     // Process each participant
     for (const participant of participantsToCheck) {
+      // Skip participants with null subCounty
+      if (!participant.subCounty) {
+        continue;
+      }
+
       const orgKeyword = await mapSubCountyToOrgKeyword(participant.subCounty);
 
       if (orgKeyword) {
@@ -89,7 +94,7 @@ export async function previewOrganizationAssignmentFix(
               id: participant.id,
               firstName: participant.firstName,
               lastName: participant.lastName,
-              subCounty: participant.subCounty,
+              subCounty: participant.subCounty!, // We know it's not null due to the check above
               currentOrganization: currentOrgName,
               suggestedOrganization: suggestedOrg.name,
             });

@@ -1,4 +1,4 @@
-import { Activity } from "../../types/types";
+import type { Activity } from "../../types/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ActivityNotesCardProps {

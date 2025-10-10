@@ -1,7 +1,7 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
-import {
+import type { ColumnDef } from "@tanstack/react-table";
+import type {
   villages,
   parishes,
   subCounties,

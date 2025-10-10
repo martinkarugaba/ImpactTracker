@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { UserCheck } from "lucide-react";
-import { DemographicsProps } from "../types/demographics";
+import type { DemographicsProps } from "../types/demographics";
 
 export function PWDDemographicsSection({ data }: DemographicsProps) {
   return (

@@ -2,7 +2,7 @@
 
 import { columns } from "@/features/locations/components/data-table/villages-columns";
 import { DataTable } from "@/components/ui/data-table";
-import {
+import type {
   villages,
   parishes,
   subCounties,

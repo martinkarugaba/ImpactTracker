@@ -8,17 +8,17 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useState } from "react";
-import { Organization } from "../types";
-import { Cluster } from "@/features/clusters/components/clusters-table";
+import type { Organization } from "../types";
+import type { Cluster } from "@/features/clusters/components/clusters-table";
 import { OrganizationForm } from "./organization-form/organization-form";
 
-type EditOrganizationDialogProps = {
+interface EditOrganizationDialogProps {
   organization: Organization;
   clusters: Cluster[];
   onSelect?: () => void;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-};
+}
 
 export function EditOrganizationDialog({
   organization,

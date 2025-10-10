@@ -1,7 +1,12 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
-import { subCounties, districts, counties, countries } from "@/lib/db/schema";
+import type { ColumnDef } from "@tanstack/react-table";
+import type {
+  subCounties,
+  districts,
+  counties,
+  countries,
+} from "@/lib/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";

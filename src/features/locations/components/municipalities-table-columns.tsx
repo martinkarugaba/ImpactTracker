@@ -1,8 +1,8 @@
 "use client";
 
-import { municipalities } from "@/lib/db/schema";
+import type { municipalities } from "@/lib/db/schema";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import type { InferSelectModel } from "drizzle-orm";
 
 type Municipality = InferSelectModel<typeof municipalities> & {

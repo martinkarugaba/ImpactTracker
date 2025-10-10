@@ -47,8 +47,8 @@ import { DataTable } from "@/components/ui/data-table";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { ColumnDef } from "@tanstack/react-table";
-import { Activity, SessionStatus } from "../../types/types";
+import type { ColumnDef } from "@tanstack/react-table";
+import type { Activity, SessionStatus } from "../../types/types";
 import {
   useActivityParticipants,
   useActivitySessions,

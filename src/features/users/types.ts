@@ -1,6 +1,6 @@
-import { userRole } from "@/lib/db/schema";
+import type { userRole } from "@/lib/db/schema";
 
-export type User = {
+export interface User {
   id: string;
   name: string | null;
   email: string;
@@ -16,4 +16,4 @@ export type User = {
     name: string;
     acronym: string;
   } | null;
-};
+}

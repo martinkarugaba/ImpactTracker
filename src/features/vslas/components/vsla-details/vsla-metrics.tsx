@@ -9,7 +9,7 @@ import {
   IconTrendingUp,
   IconCurrencyDollar,
 } from "@tabler/icons-react";
-import { VSLA } from "../../types";
+import type { VSLA } from "../../types";
 
 interface VSLAMetricsProps {
   vsla: VSLA;

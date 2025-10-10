@@ -128,10 +128,24 @@ export function useActivityContainerState({
     if (filters.organizationId)
       params.set("organization", filters.organizationId);
     if (filters.projectId) params.set("project", filters.projectId);
-    if (filters.startDate)
-      params.set("startDate", filters.startDate.toISOString().split("T")[0]);
-    if (filters.endDate)
-      params.set("endDate", filters.endDate.toISOString().split("T")[0]);
+    if (filters.startDate) {
+      const startDate =
+        filters.startDate instanceof Date
+          ? filters.startDate
+          : new Date(filters.startDate);
+      if (!isNaN(startDate.getTime())) {
+        params.set("startDate", startDate.toISOString().split("T")[0]);
+      }
+    }
+    if (filters.endDate) {
+      const endDate =
+        filters.endDate instanceof Date
+          ? filters.endDate
+          : new Date(filters.endDate);
+      if (!isNaN(endDate.getTime())) {
+        params.set("endDate", endDate.toISOString().split("T")[0]);
+      }
+    }
 
     // Update URL without triggering navigation
     const queryString = params.toString();
@@ -156,10 +170,22 @@ export function useActivityContainerState({
       organization: filters.organizationId || undefined,
       project: filters.projectId || undefined,
       dateFrom: filters.startDate
-        ? new Date(filters.startDate).toISOString()
+        ? (() => {
+            const date =
+              filters.startDate instanceof Date
+                ? filters.startDate
+                : new Date(filters.startDate);
+            return !isNaN(date.getTime()) ? date.toISOString() : undefined;
+          })()
         : undefined,
       dateTo: filters.endDate
-        ? new Date(filters.endDate).toISOString()
+        ? (() => {
+            const date =
+              filters.endDate instanceof Date
+                ? filters.endDate
+                : new Date(filters.endDate);
+            return !isNaN(date.getTime()) ? date.toISOString() : undefined;
+          })()
         : undefined,
     },
     page: pagination.page,

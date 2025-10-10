@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Project } from "../types";
+import type { Project } from "../types";
 import { DatePicker } from "@/components/ui/date-picker";
 
 const formSchema = z.object({
@@ -38,12 +38,12 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-type ProjectFormProps = {
+interface ProjectFormProps {
   initialData?: Project;
   onSuccess?: () => void;
   isLoading?: boolean;
   setIsLoading?: (loading: boolean) => void;
-};
+}
 
 export function ProjectForm({
   initialData,

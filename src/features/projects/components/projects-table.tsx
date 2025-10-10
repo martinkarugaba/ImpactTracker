@@ -3,7 +3,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Project } from "@/features/projects/types";
+import type { Project } from "@/features/projects/types";
 import { CreateProjectDialog } from "./create-project-dialog";
 import { Plus, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ReusableDataTable } from "@/components/ui/reusable-data-table";
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,

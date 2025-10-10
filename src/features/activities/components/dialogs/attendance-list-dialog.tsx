@@ -1,6 +1,6 @@
 "use client";
 
-import { ActivityParticipant } from "../../types/types";
+import type { ActivityParticipant } from "../../types/types";
 import { type Participant } from "@/features/participants/types/types";
 import toast from "react-hot-toast";
 import { ParticipantSelectionDialog } from "@/components/shared/participant-selection/participant-selection-dialog";

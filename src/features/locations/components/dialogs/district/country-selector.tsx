@@ -23,8 +23,8 @@ import {
   CommandInput,
   CommandItem,
 } from "@/components/ui/command";
-import { Country, FormValues } from "./schema";
-import { UseFormReturn } from "react-hook-form";
+import type { Country, FormValues } from "./schema";
+import type { UseFormReturn } from "react-hook-form";
 
 interface CountrySelectorProps {
   form: UseFormReturn<FormValues>;

@@ -3,8 +3,8 @@
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
-import { UseFormReturn } from "react-hook-form";
-import { Country, District, FormValues } from "./schema";
+import type { UseFormReturn } from "react-hook-form";
+import type { Country, District, FormValues } from "./schema";
 import { NameInput } from "./name-input";
 import { CountrySelector } from "./country-selector";
 import { DistrictSelector } from "./district-selector";

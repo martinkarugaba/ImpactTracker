@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { OrganizationMember } from "../../types";
+import type { OrganizationMember } from "../../types";
 import { MembersTable } from "./MembersTable";
 import {
   addOrganizationMember,
@@ -14,7 +14,7 @@ import {
 import { AddMemberDialog } from "./AddMemberDialog";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { userRole } from "@/lib/db/schema";
+import type { userRole } from "@/lib/db/schema";
 
 interface OrganizationMembersProps {
   organizationId: string;

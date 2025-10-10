@@ -10,7 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { User } from "../types";
+import type { User } from "../types";
 import { deleteUser } from "../actions/users";
 import { toast } from "sonner";
 import { useState } from "react";

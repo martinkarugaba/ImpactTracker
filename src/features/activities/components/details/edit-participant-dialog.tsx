@@ -25,11 +25,11 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, User, Briefcase, Heart } from "lucide-react";
-import { ActivityParticipant } from "../../types/types";
+import type { ActivityParticipant } from "../../types/types";
 import { toast } from "react-hot-toast";
 
 // Extended participant type to handle potentially missing fields
-type ExtendedParticipant = {
+interface ExtendedParticipant {
   id: string;
   firstName: string;
   lastName: string;
@@ -41,7 +41,7 @@ type ExtendedParticipant = {
   enterprise?: string;
   employmentStatus?: string;
   monthlyIncome?: number;
-};
+}
 
 interface EditParticipantDialogProps {
   participant: ActivityParticipant | null;

@@ -4,7 +4,7 @@ import { getClusters } from "@/features/clusters/actions/clusters";
 import { getProjects } from "@/features/projects/actions/projects";
 import { getUserClusterId } from "@/features/auth/actions";
 import { VSLAsPageContent } from "./vslas-page-content";
-import { Cluster } from "@/features/clusters/types";
+import type { Cluster } from "@/features/clusters/types";
 
 export async function VSLAsPageWrapper() {
   // Fetch data in parallel, including user's cluster

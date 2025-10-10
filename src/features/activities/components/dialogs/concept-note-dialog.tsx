@@ -34,8 +34,8 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { ConceptNote, NewConceptNote } from "../../types/types";
-import { BudgetItem, NewBudgetItem } from "../../types/budget-item";
+import type { ConceptNote, NewConceptNote } from "../../types/types";
+import type { BudgetItem, NewBudgetItem } from "../../types/budget-item";
 
 const conceptNoteSchema = z.object({
   title: z.string().min(1, "Title is required"),

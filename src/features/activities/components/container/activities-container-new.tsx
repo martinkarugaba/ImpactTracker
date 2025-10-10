@@ -65,59 +65,53 @@ export function ActivitiesContainerNew({
           }
           className="mb-4 w-full"
         >
-          <TabsList className="bg-muted/30 inline-flex h-11 w-auto rounded-lg p-1">
+          <TabsList className="bg-muted">
             <TabsTrigger
               value="activities"
-              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
+              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
             >
               <Calendar className="h-4 w-4" />
-              <span className="hidden sm:inline">Activities</span>
-              <span className="sm:hidden">List</span>
+              Activities
             </TabsTrigger>
             <TabsTrigger
               value="metrics"
-              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
+              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
             >
               <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline">Analytics</span>
-              <span className="sm:hidden">Stats</span>
+              Analytics
             </TabsTrigger>
             {isSuperAdmin && (
               <>
                 <TabsTrigger
                   value="charts"
-                  className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
+                  className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
                 >
                   <PieChart className="h-4 w-4" />
-                  <span className="hidden sm:inline">Charts</span>
-                  <span className="sm:hidden">Visual</span>
+                  Charts
                 </TabsTrigger>
               </>
             )}
             <TabsTrigger
               value="demographics"
-              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
+              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
             >
               <UserCheck className="h-4 w-4" />
-              <span className="hidden sm:inline">Demographics</span>
-              <span className="sm:hidden">Demo</span>
+              Demographics
             </TabsTrigger>
             <TabsTrigger
               value="calendar"
-              className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
+              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
             >
               <CalendarDays className="h-4 w-4" />
-              <span className="hidden sm:inline">Calendar</span>
-              <span className="sm:hidden">Cal</span>
+              Calendar
             </TabsTrigger>
             {isSuperAdmin && (
               <TabsTrigger
                 value="targets"
-                className="data-[state=active]:bg-primary flex items-center gap-2 rounded-md px-3 py-2 transition-all data-[state=active]:text-white data-[state=active]:shadow-sm"
+                className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
               >
                 <Target className="h-4 w-4" />
-                <span className="hidden sm:inline">Targets</span>
-                <span className="sm:hidden">Tgt</span>
+                Targets
               </TabsTrigger>
             )}
           </TabsList>

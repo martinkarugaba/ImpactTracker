@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { ResetPasswordForm } from "@/features/auth/components/ResetPasswordForm";
 import { notFound } from "next/navigation";
 import { verifyResetToken } from "@/features/auth/actions/auth";
@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 };
 
 // Correctly define Props with params as a promise
-type Props = {
+interface Props {
   params: Promise<{ token: string }>;
-};
+}
 
 export default async function Page({ params }: Props) {
   // Await the params promise to get the token

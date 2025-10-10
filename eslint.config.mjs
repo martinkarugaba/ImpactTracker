@@ -75,6 +75,8 @@ const eslintConfig = [
         },
       ],
       "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/consistent-type-imports": "error",
+      "@typescript-eslint/consistent-type-definitions": "error",
       "react-hooks/exhaustive-deps": "error",
       "react/no-unescaped-entities": "off",
       "prettier/prettier": "error",

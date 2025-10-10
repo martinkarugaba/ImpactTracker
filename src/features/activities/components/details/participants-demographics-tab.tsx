@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useAtom } from "jotai";
-import { Activity } from "../../types/types";
+import type { Activity } from "../../types/types";
 import { useActivityParticipants } from "../../hooks/use-activities";
 import { toast } from "sonner";
 import {

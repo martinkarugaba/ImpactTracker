@@ -21,13 +21,13 @@ export type NewParticipant = Omit<
   | "clusterName"
 >;
 
-export type ParticipantResponse = {
+export interface ParticipantResponse {
   success: boolean;
   data?: Participant;
   error?: string;
-};
+}
 
-export type PaginatedParticipantsResponse = {
+export interface PaginatedParticipantsResponse {
   success: boolean;
   data?: {
     data: Participant[];
@@ -41,15 +41,15 @@ export type PaginatedParticipantsResponse = {
     };
   };
   error?: string;
-};
+}
 
 export type ParticipantsResponse = PaginatedParticipantsResponse;
 
-export type CountResult = {
+export interface CountResult {
   count: number;
-};
+}
 
-export type ParticipantMetrics = {
+export interface ParticipantMetrics {
   totalParticipants: number;
   totalFemales: number;
   femalesYouth: number;
@@ -60,15 +60,15 @@ export type ParticipantMetrics = {
   totalPWD: number;
   pwdMale: number;
   pwdFemale: number;
-};
+}
 
-export type ParticipantMetricsResponse = {
+export interface ParticipantMetricsResponse {
   success: boolean;
   data?: ParticipantMetrics;
   error?: string;
-};
+}
 
-export type ParticipantFilters = {
+export interface ParticipantFilters {
   search: string;
   project: string;
   organization: string;
@@ -115,4 +115,4 @@ export type ParticipantFilters = {
   accessedLoans: string;
   individualSaving: string;
   groupSaving: string;
-};
+}

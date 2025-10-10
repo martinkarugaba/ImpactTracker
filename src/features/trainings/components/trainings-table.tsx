@@ -7,13 +7,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Training } from "../types/types";
-import { ColumnDef } from "@tanstack/react-table";
+import type { Training } from "../types/types";
+import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { TrainingFormValues } from "./client/types";
+import type { TrainingFormValues } from "./client/types";
 import {
   Dialog,
   DialogContent,
@@ -30,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Project } from "@/features/projects/types";
+import type { Project } from "@/features/projects/types";
 import { ReusableDataTable } from "@/components/ui/reusable-data-table";
 
 interface TrainingFilters {

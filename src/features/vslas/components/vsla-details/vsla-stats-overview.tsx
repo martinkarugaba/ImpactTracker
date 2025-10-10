@@ -1,7 +1,7 @@
 import { MetricCard } from "@/components/ui/metric-card";
 import { IconTrendingUp, IconUsers } from "@tabler/icons-react";
 import { formatCurrency } from "@/lib/utils";
-import { VSLA } from "../../types";
+import type { VSLA } from "../../types";
 
 interface VSLAStatsOverviewProps {
   vsla: VSLA;

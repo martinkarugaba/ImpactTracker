@@ -9,11 +9,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
-import { Cluster } from "@/features/clusters/components/clusters-table";
+import type { Cluster } from "@/features/clusters/components/clusters-table";
 
-type ClusterSelectorProps = {
+interface ClusterSelectorProps {
   clusters: Cluster[];
-};
+}
 
 export function ClusterSelector({ clusters }: ClusterSelectorProps) {
   const router = useRouter();

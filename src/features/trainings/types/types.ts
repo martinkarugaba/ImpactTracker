@@ -1,4 +1,4 @@
-export type Training = {
+export interface Training {
   id: string;
   name: string;
   description: string | null;
@@ -14,36 +14,36 @@ export type Training = {
   project_id: string;
   created_at: Date;
   updated_at: Date;
-};
+}
 
 export type NewTraining = Omit<
   Training,
   "id" | "created_at" | "updated_at" | "numberOfParticipants"
 >;
 
-export type TrainingParticipant = {
+export interface TrainingParticipant {
   id: string;
   training_id: string;
   participant_id: string;
   attendance_status: string;
   created_at: Date;
   updated_at: Date;
-};
+}
 
-export type TrainingResponse = {
+export interface TrainingResponse {
   success: boolean;
   data?: Training;
   error?: string;
-};
+}
 
-export type TrainingsResponse = {
+export interface TrainingsResponse {
   success: boolean;
   data?: Training[];
   error?: string;
-};
+}
 
-export type TrainingParticipantResponse = {
+export interface TrainingParticipantResponse {
   success: boolean;
   data?: TrainingParticipant;
   error?: string;
-};
+}

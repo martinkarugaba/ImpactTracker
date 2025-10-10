@@ -5,9 +5,9 @@ import {
   IconTargetArrow,
 } from "@tabler/icons-react";
 import { MetricCard } from "@/components/ui/metric-card";
-import { Cluster } from "@/features/clusters/types";
-import { Organization } from "@/features/organizations/types";
-import { Project } from "@/features/projects/types";
+import type { Cluster } from "@/features/clusters/types";
+import type { Organization } from "@/features/organizations/types";
+import type { Project } from "@/features/projects/types";
 
 interface ClusterMetricsProps {
   clusters: Cluster[];

@@ -20,7 +20,7 @@ import {
   Trash2,
   Loader2,
 } from "lucide-react";
-import { VSLA, VSLAMonthlyData as VSLAMonthlyDataType } from "../../types";
+import type { VSLA, VSLAMonthlyData as VSLAMonthlyDataType } from "../../types";
 import { toast } from "sonner";
 import {
   saveVSLAMonthlyData,
