@@ -470,9 +470,9 @@ function SessionWithAttendanceCard({
           <div className="flex items-center gap-2">
             <Button
               onClick={() => onManageAttendance(session.id)}
-              variant="default"
+              variant="outline"
               size="sm"
-              className="w-[160px] shadow-sm transition-all hover:shadow"
+              className="w-auto shadow-sm transition-all hover:shadow"
             >
               <UserCheck className="mr-2 h-4 w-4" />
               Take Attendance
