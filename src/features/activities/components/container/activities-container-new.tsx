@@ -51,6 +51,7 @@ export function ActivitiesContainerNew({
       {/* Enhanced Tabs with Minimal Styling */}
       <div className="mb-4 bg-transparent">
         <Tabs
+          id="activities-main-tabs"
           value={state.activeTab}
           onValueChange={value =>
             state.setActiveTab(

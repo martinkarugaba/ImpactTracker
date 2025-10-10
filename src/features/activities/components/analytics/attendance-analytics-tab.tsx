@@ -56,7 +56,11 @@ function DetailedAttendanceMetrics({
   }
 
   return (
-    <Tabs defaultValue="demographics" className="w-full">
+    <Tabs
+      id="attendance-analytics-tabs"
+      defaultValue="demographics"
+      className="w-full"
+    >
       <TabsList className="grid w-full grid-cols-5">
         <TabsTrigger value="demographics">Demographics</TabsTrigger>
         <TabsTrigger value="youth-employment">Youth in Work</TabsTrigger>

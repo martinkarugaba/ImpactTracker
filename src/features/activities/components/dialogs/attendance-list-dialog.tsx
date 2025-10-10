@@ -40,7 +40,7 @@ export function AttendanceListDialog({
         participant_id: participant.id,
         participantName: `${participant.firstName} ${participant.lastName}`,
         role: "participant",
-        attendance_status: "invited",
+        attendance_status: "attended",
         feedback: undefined,
       }));
 
@@ -72,7 +72,7 @@ export function AttendanceListDialog({
       }
       description={
         sessionId
-          ? "Select participants to add to this specific session. They will be marked as invited to attend."
+          ? "Select participants to add to this specific session. They will be marked as attended."
           : "Select participants to add to this activity. They will be available for all sessions."
       }
     />

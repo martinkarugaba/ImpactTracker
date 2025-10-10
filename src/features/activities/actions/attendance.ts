@@ -12,6 +12,7 @@ import {
   type DailyAttendanceResponse,
   type DailyAttendanceListResponse,
   type DailyAttendanceStatus,
+  type DailyAttendance,
 } from "../types/types";
 
 /**
@@ -223,6 +224,50 @@ export async function bulkMarkAttendance(
 }
 
 /**
+ * Bulk delete daily attendance records
+ */
+export async function bulkDeleteDailyAttendance(
+  attendanceIds: string[]
+): Promise<DailyAttendanceListResponse> {
+  try {
+    if (attendanceIds.length === 0) {
+      return {
+        success: true,
+        data: [],
+      };
+    }
+
+    const deletedRecords = await db
+      .delete(dailyAttendance)
+      .where(inArray(dailyAttendance.id, attendanceIds))
+      .returning();
+
+    // Get activity_id for revalidation from the first deleted record's session
+    if (deletedRecords.length > 0) {
+      const session = await db.query.activitySessions.findFirst({
+        where: eq(activitySessions.id, deletedRecords[0].session_id),
+        columns: { activity_id: true },
+      });
+
+      if (session) {
+        revalidatePath(`/dashboard/activities/${session.activity_id}`);
+      }
+    }
+
+    return {
+      success: true,
+      data: deletedRecords,
+    };
+  } catch (error) {
+    console.error("Error bulk deleting daily attendance:", error);
+    return {
+      success: false,
+      error: "Failed to delete attendance records",
+    };
+  }
+}
+
+/**
  * Initialize attendance records for all activity participants in a session
  */
 export async function initializeSessionAttendance(
@@ -388,6 +433,78 @@ export async function getActivityAttendanceSummary(activityId: string) {
     return {
       success: false,
       error: "Failed to get activity attendance summary",
+    };
+  }
+}
+
+/**
+ * Get all attendance records for an activity's sessions
+ * Returns a map of session_id to attendance records
+ */
+export async function getActivitySessionsAttendance(
+  activityId: string
+): Promise<{
+  success: boolean;
+  data?: Record<string, DailyAttendance[]>;
+  error?: string;
+}> {
+  try {
+    // First get all session IDs for the activity
+    const sessions = await db.query.activitySessions.findMany({
+      where: eq(activitySessions.activity_id, activityId),
+      columns: { id: true },
+    });
+
+    const sessionIds = sessions.map(s => s.id);
+
+    if (sessionIds.length === 0) {
+      return {
+        success: true,
+        data: {},
+      };
+    }
+
+    // Get all attendance records for these sessions
+    const attendanceRecords = await db.query.dailyAttendance.findMany({
+      where: inArray(dailyAttendance.session_id, sessionIds),
+      with: {
+        participant: true,
+        session: true,
+      },
+    });
+
+    // Group by session_id and enhance with participant info
+    const attendanceBySession: Record<string, DailyAttendance[]> = {};
+
+    for (const record of attendanceRecords) {
+      if (!attendanceBySession[record.session_id]) {
+        attendanceBySession[record.session_id] = [];
+      }
+
+      attendanceBySession[record.session_id].push({
+        ...record,
+        participantName: record.participant
+          ? `${record.participant.firstName} ${record.participant.lastName}`
+          : "Unknown",
+        participantEmail: record.participant?.contact || "",
+        // Add participant demographics for the attendance table
+        dateOfBirth: record.participant?.dateOfBirth ?? null,
+        employmentStatus: record.participant?.employmentStatus ?? null,
+        enterprise: record.participant?.enterprise ?? null,
+        district: record.participant?.district ?? null,
+        subCounty: record.participant?.subCounty ?? null,
+      } as DailyAttendance);
+    }
+
+    return {
+      success: true,
+      data: attendanceBySession,
+    };
+  } catch (error) {
+    console.error("Error getting activity sessions attendance:", error);
+    return {
+      success: false,
+      error: "Failed to get sessions attendance",
     };
   }
 }

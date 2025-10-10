@@ -17,6 +17,7 @@ import {
   MoreHorizontal,
   Check,
   MapPin,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +27,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MetricCard } from "@/components/ui/metric-card";
 import { DataTable } from "@/components/ui/data-table";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { TabLoadingSkeleton } from "./tab-loading-skeleton";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -366,11 +367,7 @@ export function SessionsTab({
   };
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center py-8">
-        <LoadingSpinner />
-      </div>
-    );
+    return <TabLoadingSkeleton type="table" message="Loading sessions..." />;
   }
 
   return (
@@ -407,7 +404,7 @@ export function SessionsTab({
                 variant="outline"
               >
                 {generateSessions.isPending ? (
-                  <LoadingSpinner className="mr-2 h-4 w-4" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <Play className="mr-2 h-4 w-4" />
                 )}
@@ -509,7 +506,7 @@ export function SessionsTab({
                   variant="outline"
                 >
                   {generateSessions.isPending ? (
-                    <LoadingSpinner className="mr-2 h-4 w-4" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
                     <Play className="mr-2 h-4 w-4" />
                   )}

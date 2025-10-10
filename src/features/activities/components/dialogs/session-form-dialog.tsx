@@ -43,6 +43,7 @@ import {
   useCreateActivitySession,
   useUpdateActivitySession,
   useActivitySession,
+  useActivitySessions,
 } from "../../hooks/use-activities";
 import {
   SESSION_STATUSES,
@@ -78,8 +79,14 @@ export function SessionFormDialog({
   const isEdit = !!sessionId;
 
   const { data: session } = useActivitySession(sessionId || "");
+  const { data: sessionsResponse } = useActivitySessions(activityId);
   const createSession = useCreateActivitySession();
   const updateSession = useUpdateActivitySession();
+
+  // Calculate next session number
+  const nextSessionNumber = sessionsResponse?.data?.length
+    ? Math.max(...sessionsResponse.data.map(s => s.session_number)) + 1
+    : 1;
 
   const form = useForm({
     resolver: zodResolver(sessionFormSchema),
@@ -110,7 +117,7 @@ export function SessionFormDialog({
       } else {
         form.reset({
           session_date: new Date(),
-          session_number: 1,
+          session_number: nextSessionNumber,
           title: "",
           start_time: "",
           end_time: "",
@@ -119,7 +126,7 @@ export function SessionFormDialog({
         });
       }
     }
-  }, [open, isEdit, session, form]);
+  }, [open, isEdit, session, form, nextSessionNumber]);
 
   const onSubmit = async (data: SessionFormValues) => {
     try {

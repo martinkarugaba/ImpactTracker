@@ -213,6 +213,26 @@ export function ActivityDetailsContainer({
     setIsSessionDialogOpen(true);
   };
 
+  const handleDuplicateSession = async (sessionId: string) => {
+    try {
+      const { duplicateActivitySession } = await import("../actions/sessions");
+      const result = await duplicateActivitySession(sessionId);
+
+      if (result.success) {
+        toast.success("Session duplicated successfully.");
+        // Invalidate sessions cache to refresh the list
+        await queryClient.invalidateQueries({
+          queryKey: ["activity-sessions", activity.id],
+        });
+      } else {
+        toast.error(result.error || "Failed to duplicate session.");
+      }
+    } catch (error) {
+      console.error("Error duplicating session:", error);
+      toast.error("Failed to duplicate session. Please try again.");
+    }
+  };
+
   const handleConceptNoteSubmit = async (data: NewConceptNote) => {
     try {
       if (editingConceptNote) {
@@ -334,6 +354,7 @@ export function ActivityDetailsContainer({
         onManageAttendance={handleManageAttendance}
         onCreateSession={handleCreateSession}
         onEditSession={handleEditSession}
+        onDuplicateSession={handleDuplicateSession}
         refreshKey={refreshKey}
         activityReportsRefreshKey={activityReportsRefreshKey}
       />
