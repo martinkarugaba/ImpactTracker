@@ -48,11 +48,11 @@ function ParticipantsPageContent() {
         setIsLoading(true);
         setError(null);
 
-        // Get user's cluster ID first with proper timeout handling
+        // Get user's cluster ID first with extended timeout (30 seconds)
         const userClusterId = await Promise.race([
           getUserClusterId(),
           new Promise<null>((_, reject) =>
-            setTimeout(() => reject(new Error("Cluster lookup timeout")), 10000)
+            setTimeout(() => reject(new Error("Cluster lookup timeout")), 30000)
           ),
         ]);
 
@@ -97,7 +97,16 @@ function ParticipantsPageContent() {
         setIsLoading(false);
       } catch (err) {
         console.error("Error loading participants page data:", err);
-        setError("load_error");
+        const errorMessage =
+          err instanceof Error ? err.message : "Unknown error";
+        console.error("Error details:", errorMessage);
+
+        // Check if it's a timeout error
+        if (errorMessage.includes("timeout")) {
+          setError("timeout_error");
+        } else {
+          setError("load_error");
+        }
         setIsLoading(false);
       }
     }
@@ -131,6 +140,24 @@ function ParticipantsPageContent() {
           <h3 className="text-lg font-semibold">Error loading participants</h3>
           <p className="text-muted-foreground mt-2">
             Failed to load page data. Please try refreshing the page.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error === "timeout_error") {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold">Connection timeout</h3>
+          <p className="text-muted-foreground mt-2">
+            The request is taking longer than expected. This may be due to a
+            slow database connection.
+          </p>
+          <p className="text-muted-foreground mt-1">
+            Please try refreshing the page or contact support if the issue
+            persists.
           </p>
         </div>
       </div>
