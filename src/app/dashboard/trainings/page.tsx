@@ -6,6 +6,9 @@ import { getProjects } from "@/features/projects/actions/projects";
 import { getUserClusterId } from "@/features/auth/actions";
 import { getClusters } from "@/features/clusters/actions/clusters";
 
+// Force dynamic rendering since this page uses authentication
+export const dynamic = "force-dynamic";
+
 function TrainingsTableSkeleton() {
   return (
     <div className="space-y-4">

@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { format, parseISO, differenceInDays } from "date-fns";
+import { TabLoadingSkeleton } from "./tab-loading-skeleton";
 
 interface AttendanceAnalyticsTabProps {
   activity: Activity;
@@ -111,9 +112,10 @@ export function AttendanceAnalyticsTab({
 
   if (isLoadingParticipants || isLoadingSessions) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="border-primary h-8 w-8 animate-spin rounded-full border-b-2"></div>
-      </div>
+      <TabLoadingSkeleton
+        type="metrics"
+        message="Loading attendance analytics..."
+      />
     );
   }
 

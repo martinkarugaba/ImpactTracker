@@ -5,6 +5,9 @@ import { auth } from "@/features/auth/auth";
 import { ClustersTable } from "@/features/clusters/components/clusters-table";
 import { Card, CardContent } from "@/components/ui/card";
 
+// Force dynamic rendering since this page uses authentication
+export const dynamic = "force-dynamic";
+
 export default async function Page() {
   const session = await auth();
 

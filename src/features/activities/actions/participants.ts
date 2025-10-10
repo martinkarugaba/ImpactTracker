@@ -99,11 +99,18 @@ export async function getActivityParticipants(
         ? `${p.participant.firstName} ${p.participant.lastName}`
         : "Unknown Participant",
       participantEmail: p.participant?.contact || "",
+      participant: p.participant
+        ? {
+            ...p.participant,
+            district: p.participant.district ?? undefined,
+            subCounty: p.participant.subCounty ?? undefined,
+          }
+        : undefined,
     }));
 
     return {
       success: true,
-      data: enhancedParticipants,
+      data: enhancedParticipants as ActivityParticipant[],
     };
   } catch (error) {
     console.error("Error getting activity participants:", error);

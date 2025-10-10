@@ -3,6 +3,9 @@ import { VSLAsPageWrapper } from "@/features/vslas/components/pages/vslas-page-w
 import { VSLAsPageSkeleton } from "@/features/vslas/components/pages/vslas-page-skeleton";
 import { PageTitle } from "@/features/dashboard/components/page-title";
 
+// Force dynamic rendering since this page uses authentication
+export const dynamic = "force-dynamic";
+
 export default function VSLAsPage() {
   return (
     <>
