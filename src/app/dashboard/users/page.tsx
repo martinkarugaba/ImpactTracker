@@ -9,6 +9,9 @@ import {
 } from "@/features/users/actions/users";
 import { UsersClient } from "./page-client";
 
+// Force dynamic rendering since this page uses authentication
+export const dynamic = "force-dynamic";
+
 export default async function Page() {
   const session = await auth();
 

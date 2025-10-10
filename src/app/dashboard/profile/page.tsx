@@ -2,6 +2,9 @@ import { auth } from "@/features/auth/auth";
 import { ProfileContainer } from "@/features/profile/components/profile-container";
 import { redirect } from "next/navigation";
 
+// Force dynamic rendering since this page uses authentication
+export const dynamic = "force-dynamic";
+
 export default async function ProfilePage() {
   const session = await auth();
 

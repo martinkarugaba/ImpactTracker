@@ -19,6 +19,9 @@ import {
 import { auth } from "@/features/auth/auth";
 import { redirect } from "next/navigation";
 
+// Force dynamic rendering since this page uses authentication
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Success Stories | Impact Tracker",
   description: "Inspiring stories from our community members and partners.",
