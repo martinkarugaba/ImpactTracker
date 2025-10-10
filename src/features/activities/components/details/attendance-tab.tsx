@@ -229,6 +229,89 @@ export function AttendanceTab({
           />
         </div>
 
+        {/* Overall Attendance Summary */}
+        {sessions.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Overall Attendance Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="rounded-lg border bg-gradient-to-br from-purple-50 to-purple-100/50 p-4 shadow-sm dark:from-purple-950 dark:to-purple-900/50">
+                  <div className="mb-2 flex items-center gap-2 text-sm font-medium text-purple-700 dark:text-purple-300">
+                    <Users className="h-4 w-4" />
+                    Total Participants
+                  </div>
+                  <div className="text-3xl font-bold text-purple-900 dark:text-purple-100">
+                    {totalParticipants}
+                  </div>
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    Across all sessions
+                  </p>
+                </div>
+                <div className="rounded-lg border bg-gradient-to-br from-green-50 to-green-100/50 p-4 shadow-sm dark:from-green-950 dark:to-green-900/50">
+                  <div className="mb-2 flex items-center gap-2 text-sm font-medium text-green-700 dark:text-green-300">
+                    <CheckCircle className="h-4 w-4" />
+                    Total Attended
+                  </div>
+                  <div className="text-3xl font-bold text-green-900 dark:text-green-100">
+                    {
+                      Object.values(attendanceBySession)
+                        .flat()
+                        .filter(a => a.attendance_status === "attended").length
+                    }
+                  </div>
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    Attendance records
+                  </p>
+                </div>
+                <div className="rounded-lg border bg-gradient-to-br from-red-50 to-red-100/50 p-4 shadow-sm dark:from-red-950 dark:to-red-900/50">
+                  <div className="mb-2 flex items-center gap-2 text-sm font-medium text-red-700 dark:text-red-300">
+                    <Users className="h-4 w-4" />
+                    Total Absent
+                  </div>
+                  <div className="text-3xl font-bold text-red-900 dark:text-red-100">
+                    {
+                      Object.values(attendanceBySession)
+                        .flat()
+                        .filter(a => a.attendance_status === "absent").length
+                    }
+                  </div>
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    Absence records
+                  </p>
+                </div>
+                <div className="rounded-lg border bg-gradient-to-br from-blue-50 to-blue-100/50 p-4 shadow-sm dark:from-blue-950 dark:to-blue-900/50">
+                  <div className="mb-2 flex items-center gap-2 text-sm font-medium text-blue-700 dark:text-blue-300">
+                    <Clock className="h-4 w-4" />
+                    Attendance Rate
+                  </div>
+                  <div className="text-3xl font-bold text-blue-900 dark:text-blue-100">
+                    {(() => {
+                      const allAttendance =
+                        Object.values(attendanceBySession).flat();
+                      const attended = allAttendance.filter(
+                        a => a.attendance_status === "attended"
+                      ).length;
+                      const rate =
+                        allAttendance.length > 0
+                          ? Math.round((attended / allAttendance.length) * 100)
+                          : 0;
+                      return `${rate}%`;
+                    })()}
+                  </div>
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    Overall attendance
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Action Buttons */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -243,10 +326,6 @@ export function AttendanceTab({
             <Button onClick={onCreateSession} variant="outline">
               <Plus className="mr-2 h-4 w-4" />
               Add Session
-            </Button>
-            <Button onClick={() => onManageAttendance()}>
-              <UserPlus className="mr-2 h-4 w-4" />
-              Manage Participants
             </Button>
           </div>
         </div>
