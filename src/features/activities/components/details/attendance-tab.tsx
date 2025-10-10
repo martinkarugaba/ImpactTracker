@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { ActivityParticipant } from "../../types/types";
+import type { ActivityParticipant, DailyAttendance } from "../../types/types";
 import type { Participant } from "@/features/participants/types/types";
 import {
   Users,
@@ -20,6 +20,7 @@ import {
   Copy,
 } from "lucide-react";
 // import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,15 +38,14 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { Activity, ActivitySession } from "../../types/types";
 import {
-  useActivityParticipants,
   useActivitySessions,
   useGenerateActivitySessions,
   useDeleteActivitySession,
+  useActivitySessionsAttendance,
 } from "../../hooks/use-activities";
 import { EditParticipantDialog } from "@/features/participants/components/edit-participant-dialog";
 import { ParticipantFeedbackDialog } from "../dialogs/participant-feedback-dialog";
 import { TabLoadingSkeleton } from "./tab-loading-skeleton";
-import { AttendanceDataTable } from "./attendance-data-table";
 
 interface AttendanceTabProps {
   activity: Activity;
@@ -71,24 +71,34 @@ export function AttendanceTab({
 
   // Data fetching hooks
   const {
-    data: participantsResponse,
-    isLoading: isLoadingParticipants,
-    refetch: refetchParticipants,
-  } = useActivityParticipants(activity.id);
-
-  const {
     data: sessionsResponse,
     isLoading: isLoadingSessions,
     refetch: refetchSessions,
   } = useActivitySessions(activity.id);
+
+  const {
+    data: attendanceResponse,
+    isLoading: _isLoadingAttendance,
+    refetch: refetchAttendance,
+  } = useActivitySessionsAttendance(activity.id);
 
   // Mutations
   const generateSessions = useGenerateActivitySessions();
   const deleteSession = useDeleteActivitySession();
 
   // Extract data from responses
-  const participants = participantsResponse?.data || [];
   const sessions = sessionsResponse?.data || [];
+  const attendanceBySession = attendanceResponse?.data || {};
+
+  // Calculate total unique participants across all sessions
+  const totalParticipants = Object.values(attendanceBySession)
+    .flat()
+    .reduce((acc, attendance) => {
+      if (!acc.has(attendance.participant_id)) {
+        acc.set(attendance.participant_id, true);
+      }
+      return acc;
+    }, new Map()).size;
 
   // Handle feedback submission
   const handleFeedbackSubmit = async (
@@ -162,11 +172,11 @@ export function AttendanceTab({
   };
 
   // Handle edit participant
-  const handleEditParticipant = (participant: ActivityParticipant) => {
+  const _handleEditParticipant = (participant: ActivityParticipant) => {
     setEditingParticipant(participant);
   };
 
-  if (isLoadingParticipants || isLoadingSessions) {
+  if (isLoadingSessions || _isLoadingAttendance) {
     return (
       <TabLoadingSkeleton
         type="attendance"
@@ -210,7 +220,7 @@ export function AttendanceTab({
           />
           <MetricCard
             title="Total Participants"
-            value={participants.length}
+            value={totalParticipants}
             icon={<Users className="h-4 w-4 text-purple-600" />}
             footer={{
               title: "Registered participants",
@@ -256,13 +266,11 @@ export function AttendanceTab({
                   <SessionWithAttendanceCard
                     key={session.id}
                     session={session}
-                    participants={participants}
+                    participants={attendanceBySession[session.id] || []}
                     onEditSession={() => onEditSession(session.id)}
                     onManageAttendance={onManageAttendance}
                     onDeleteSession={handleDeleteSession}
                     onUpdateSessionStatus={handleUpdateSessionStatus}
-                    onEditParticipant={handleEditParticipant}
-                    onParticipantsDeleted={refetchParticipants}
                     onDuplicateSession={onDuplicateSession}
                   />
                 ))}
@@ -328,7 +336,7 @@ export function AttendanceTab({
           }}
           onSuccess={() => {
             setEditingParticipant(null);
-            refetchParticipants();
+            refetchAttendance();
             toast.success("Participant updated successfully");
           }}
         />
@@ -353,13 +361,11 @@ export function AttendanceTab({
 // Combined Session and Attendance Card Component
 interface SessionWithAttendanceCardProps {
   session: ActivitySession;
-  participants: ActivityParticipant[];
+  participants: DailyAttendance[];
   onEditSession: () => void;
   onManageAttendance: (sessionId?: string) => void;
   onDeleteSession: (sessionId: string) => void;
   onUpdateSessionStatus: (sessionId: string, status: string) => void;
-  onEditParticipant: (participant: ActivityParticipant) => void;
-  onParticipantsDeleted: () => void;
   onDuplicateSession?: (sessionId: string) => void;
 }
 
@@ -370,16 +376,12 @@ function SessionWithAttendanceCard({
   onManageAttendance,
   onDeleteSession,
   onUpdateSessionStatus,
-  onEditParticipant,
-  onParticipantsDeleted,
   onDuplicateSession,
 }: SessionWithAttendanceCardProps) {
   const [showAttendance, setShowAttendance] = useState(false);
 
-  // Get attendance data for this session
-  const sessionAttendance = participants.filter(
-    p => p.activity_id === session.activity_id
-  );
+  // Participants are already filtered by session_id from the server
+  const sessionAttendance = participants;
 
   const attendedCount = sessionAttendance.filter(
     p => p.attendance_status === "attended"
@@ -600,11 +602,39 @@ function SessionWithAttendanceCard({
               <Users className="h-4 w-4" />
               <h5 className="font-semibold">Attendance Details</h5>
             </div>
-            <AttendanceDataTable
-              sessionAttendance={sessionAttendance}
-              onEditParticipant={onEditParticipant}
-              onParticipantsDeleted={onParticipantsDeleted}
-            />
+            <div className="space-y-2">
+              {sessionAttendance.map(attendance => (
+                <div
+                  key={attendance.id}
+                  className="flex items-center justify-between rounded-lg border p-3"
+                >
+                  <div className="flex-1">
+                    <div className="font-medium">
+                      {attendance.participantName}
+                    </div>
+                    {attendance.participantEmail && (
+                      <div className="text-muted-foreground text-sm">
+                        {attendance.participantEmail}
+                      </div>
+                    )}
+                  </div>
+                  <Badge
+                    className={cn(
+                      attendance.attendance_status === "attended" &&
+                        "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+                      attendance.attendance_status === "absent" &&
+                        "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+                      attendance.attendance_status === "late" &&
+                        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+                      attendance.attendance_status === "invited" &&
+                        "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+                    )}
+                  >
+                    {attendance.attendance_status}
+                  </Badge>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </CardContent>

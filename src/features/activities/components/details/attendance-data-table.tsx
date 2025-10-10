@@ -7,25 +7,23 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
-import { Edit, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import type { ActivityParticipant } from "../../types/types";
+import type { DailyAttendance } from "../../types/types";
 import {
-  bulkDeleteActivityParticipants,
-  deleteActivityParticipant,
-} from "../../actions/participants";
+  bulkDeleteDailyAttendance,
+  deleteAttendanceRecord,
+} from "../../actions/attendance";
 
 interface AttendanceDataTableProps {
-  sessionAttendance: ActivityParticipant[];
+  sessionAttendance: DailyAttendance[];
   isLoading?: boolean;
-  onEditParticipant?: (participant: ActivityParticipant) => void;
   onParticipantsDeleted?: () => void;
 }
 
 export function AttendanceDataTable({
   sessionAttendance,
   isLoading = false,
-  onEditParticipant,
   onParticipantsDeleted,
 }: AttendanceDataTableProps) {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
@@ -61,7 +59,7 @@ export function AttendanceDataTable({
     async (id: string) => {
       try {
         setIsDeleting(true);
-        const result = await deleteActivityParticipant(id);
+        const result = await deleteAttendanceRecord(id);
         if (result.success) {
           toast.success("Participant removed from session");
           onParticipantsDeleted?.();
@@ -86,11 +84,9 @@ export function AttendanceDataTable({
 
     try {
       setIsDeleting(true);
-      const result = await bulkDeleteActivityParticipants(
-        Array.from(selectedRows)
-      );
+      const result = await bulkDeleteDailyAttendance(Array.from(selectedRows));
       if (result.success) {
-        toast.success(result.message || "Participants removed successfully");
+        toast.success("Participants removed successfully");
         setSelectedRows(new Set());
         onParticipantsDeleted?.();
       } else {
@@ -102,7 +98,7 @@ export function AttendanceDataTable({
       setIsDeleting(false);
     }
   };
-  const columns = useMemo<ColumnDef<ActivityParticipant>[]>(
+  const columns = useMemo<ColumnDef<DailyAttendance>[]>(
     () => [
       {
         id: "select",
@@ -320,16 +316,6 @@ export function AttendanceDataTable({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onEditParticipant?.(row.original)}
-                className="h-8 w-8 p-0"
-                disabled={isDeleting}
-              >
-                <Edit className="h-4 w-4" />
-                <span className="sr-only">Edit participant</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
                 onClick={() => handleDeleteSingle(row.original.id)}
                 className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
                 disabled={isDeleting}
@@ -343,7 +329,6 @@ export function AttendanceDataTable({
       },
     ],
     [
-      onEditParticipant,
       selectedRows,
       sessionAttendance.length,
       isDeleting,

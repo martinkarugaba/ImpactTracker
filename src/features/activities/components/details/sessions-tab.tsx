@@ -17,6 +17,7 @@ import {
   MoreHorizontal,
   Check,
   MapPin,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +27,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MetricCard } from "@/components/ui/metric-card";
 import { DataTable } from "@/components/ui/data-table";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { TabLoadingSkeleton } from "./tab-loading-skeleton";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import type { ColumnDef } from "@tanstack/react-table";

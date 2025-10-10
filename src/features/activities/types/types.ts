@@ -33,8 +33,8 @@ export type ActivityParticipant = InferSelectModel<
     dateOfBirth?: Date | null;
     employmentStatus?: string | null;
     enterprise?: string | null;
-    district?: string;
-    subCounty?: string;
+    district?: string | null;
+    subCounty?: string | null;
   };
 };
 
@@ -238,8 +238,8 @@ export type DailyAttendance = InferSelectModel<typeof dailyAttendance> & {
     dateOfBirth?: Date | null;
     employmentStatus?: string | null;
     enterprise?: string | null;
-    district?: string;
-    subCounty?: string;
+    district?: string | null;
+    subCounty?: string | null;
   };
   session?: {
     session_date: string;

@@ -10,7 +10,7 @@ interface TabLoadingSkeletonProps {
 
 export function TabLoadingSkeleton({
   type = "cards",
-  message = "Loading...",
+  message: _message = "Loading...",
 }: TabLoadingSkeletonProps) {
   if (type === "attendance") {
     return (
