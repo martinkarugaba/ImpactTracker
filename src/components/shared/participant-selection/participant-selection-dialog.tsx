@@ -30,6 +30,14 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Search, Users, X } from "lucide-react";
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldLabel,
+  FieldTitle,
+} from "@/components/ui/field";
+import { cn } from "@/lib/utils";
 
 export interface ParticipantSelectionContext {
   cluster_id: string;
@@ -264,7 +272,7 @@ export function ParticipantSelectionDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex h-[90vh] max-w-4xl flex-col">
+      <DialogContent className="flex h-[90vh] max-w-5xl flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <UserPlus className="h-5 w-5" />
@@ -488,72 +496,98 @@ export function ParticipantSelectionDialog({
                         </div>
                       ) : (
                         <div className="space-y-2">
-                          {availableParticipants.map(participant => (
-                            <div
-                              key={participant.id}
-                              className="hover:bg-muted/50 flex items-center space-x-3 rounded-lg border p-3 transition-colors"
-                            >
-                              <Checkbox
-                                checked={selectedParticipants.some(
-                                  p => p.id === participant.id
+                          {availableParticipants.map(participant => {
+                            const isSelected = selectedParticipants.some(
+                              p => p.id === participant.id
+                            );
+                            const isDisabled =
+                              !!maxSelection &&
+                              selectedParticipants.length >= maxSelection &&
+                              !isSelected;
+
+                            // Format phone number with leading zero
+                            const formattedContact = participant.contact
+                              ? participant.contact.startsWith("0")
+                                ? participant.contact
+                                : `0${participant.contact}`
+                              : null;
+
+                            return (
+                              <FieldLabel
+                                key={participant.id}
+                                htmlFor={`participant-${participant.id}`}
+                                className={cn(
+                                  "cursor-pointer transition-all",
+                                  isDisabled && "cursor-not-allowed opacity-50"
                                 )}
-                                onCheckedChange={checked =>
-                                  handleParticipantToggle(
-                                    participant,
-                                    !!checked
-                                  )
-                                }
-                                disabled={
-                                  !!maxSelection &&
-                                  selectedParticipants.length >= maxSelection &&
-                                  !selectedParticipants.some(
-                                    p => p.id === participant.id
-                                  )
-                                }
-                              />
-                              <div className="flex-1 space-y-1">
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">
-                                    {participant.firstName}{" "}
-                                    {participant.lastName}
-                                  </span>
-                                  <Badge
-                                    variant={
-                                      participant.isActive === "yes"
-                                        ? "default"
-                                        : "secondary"
+                              >
+                                <Field orientation="horizontal">
+                                  <FieldContent>
+                                    <div className="flex items-center gap-2">
+                                      <FieldTitle>
+                                        {participant.firstName}{" "}
+                                        {participant.lastName}
+                                      </FieldTitle>
+                                      <Badge
+                                        variant={
+                                          participant.isActive === "yes"
+                                            ? "default"
+                                            : "secondary"
+                                        }
+                                        className="capitalize"
+                                      >
+                                        {participant.isActive === "yes"
+                                          ? "active"
+                                          : "inactive"}
+                                      </Badge>
+                                    </div>
+                                    <FieldDescription>
+                                      <div className="flex flex-wrap items-center gap-2">
+                                        {formattedContact && (
+                                          <span className="flex items-center gap-1">
+                                            📞 {formattedContact}
+                                          </span>
+                                        )}
+                                        <span className="capitalize">
+                                          {participant.sex}
+                                        </span>
+                                        {participant.age && (
+                                          <span>{participant.age} yrs</span>
+                                        )}
+                                        {participant.districtName && (
+                                          <Badge
+                                            variant="outline"
+                                            className="border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-300"
+                                          >
+                                            📍 {participant.districtName}
+                                          </Badge>
+                                        )}
+                                        {participant.subCountyName && (
+                                          <Badge
+                                            variant="outline"
+                                            className="border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-800 dark:bg-purple-950 dark:text-purple-300"
+                                          >
+                                            {participant.subCountyName}
+                                          </Badge>
+                                        )}
+                                      </div>
+                                    </FieldDescription>
+                                  </FieldContent>
+                                  <Checkbox
+                                    id={`participant-${participant.id}`}
+                                    checked={isSelected}
+                                    onCheckedChange={checked =>
+                                      handleParticipantToggle(
+                                        participant,
+                                        !!checked
+                                      )
                                     }
-                                    className="capitalize"
-                                  >
-                                    {participant.isActive === "yes"
-                                      ? "active"
-                                      : "inactive"}
-                                  </Badge>
-                                </div>
-                                <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
-                                  {participant.contact && (
-                                    <span className="flex items-center gap-1">
-                                      📞 {participant.contact}
-                                    </span>
-                                  )}
-                                  <span className="capitalize">
-                                    {participant.sex}
-                                  </span>
-                                  {participant.age && (
-                                    <span>{participant.age} yrs</span>
-                                  )}
-                                  {participant.districtName && (
-                                    <span className="flex items-center gap-1">
-                                      📍 {participant.districtName}
-                                    </span>
-                                  )}
-                                  {participant.subCountyName && (
-                                    <span>• {participant.subCountyName}</span>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          ))}
+                                    disabled={isDisabled}
+                                  />
+                                </Field>
+                              </FieldLabel>
+                            );
+                          })}
                         </div>
                       )}
                     </div>

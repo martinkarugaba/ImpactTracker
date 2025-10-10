@@ -44,6 +44,7 @@ import { EditParticipantDialog } from "@/features/participants/components/edit-p
 import { ParticipantFeedbackDialog } from "../dialogs/participant-feedback-dialog";
 import { TabLoadingSkeleton } from "./tab-loading-skeleton";
 import { Spinner } from "@/components/ui/spinner";
+import { AttendanceDataTable } from "./attendance-data-table";
 
 interface AttendanceTabProps {
   activity: Activity;
@@ -252,6 +253,7 @@ export function AttendanceTab({
                     onManageAttendance={onManageAttendance}
                     onDeleteSession={handleDeleteSession}
                     onUpdateSessionStatus={handleUpdateSessionStatus}
+                    onEditParticipant={setEditingParticipant}
                   />
                 ))}
               </div>
@@ -346,6 +348,7 @@ interface SessionWithAttendanceCardProps {
   onManageAttendance: (sessionId?: string) => void;
   onDeleteSession: (sessionId: string) => void;
   onUpdateSessionStatus: (sessionId: string, status: string) => void;
+  onEditParticipant: (participant: ActivityParticipant) => void;
 }
 
 function SessionWithAttendanceCard({
@@ -355,6 +358,7 @@ function SessionWithAttendanceCard({
   onManageAttendance,
   onDeleteSession,
   onUpdateSessionStatus,
+  onEditParticipant,
 }: SessionWithAttendanceCardProps) {
   const [showAttendance, setShowAttendance] = useState(false);
 
@@ -385,71 +389,90 @@ function SessionWithAttendanceCard({
   };
 
   return (
-    <Card className="border-l-primary w-full overflow-hidden border-l-4">
-      <CardHeader>
+    <Card className="group border-l-primary w-full overflow-hidden border-l-4 shadow-sm transition-shadow hover:shadow-md">
+      <CardHeader className="from-primary/5 bg-gradient-to-r to-transparent pb-3">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0 flex-1 space-y-1">
+          <div className="min-w-0 flex-1 space-y-2">
+            {/* Session Title and Status */}
             <div className="flex flex-wrap items-center gap-2">
-              <h4 className="truncate font-semibold">
-                Session {session.session_number}
-                {session.title && ` - ${session.title}`}
-              </h4>
+              <div className="flex items-center gap-2">
+                <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold">
+                  {session.session_number}
+                </div>
+                <h4 className="truncate text-lg font-semibold">
+                  {session.title || `Session ${session.session_number}`}
+                </h4>
+              </div>
               <span
                 className={cn(
-                  "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
+                  "inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium shadow-sm",
                   statusColors[session.status as keyof typeof statusColors] ||
                     statusColors.scheduled
                 )}
               >
-                {session.status}
+                {session.status === "completed" && (
+                  <CheckCircle className="h-3 w-3" />
+                )}
+                {session.status === "in_progress" && (
+                  <Clock className="h-3 w-3" />
+                )}
+                {session.status === "scheduled" && (
+                  <Calendar className="h-3 w-3" />
+                )}
+                {session.status.replace("_", " ")}
               </span>
             </div>
+
+            {/* Session Info */}
             <div className="text-muted-foreground flex flex-col gap-2 text-sm sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               {session.session_date && (
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4 flex-shrink-0" />
-                  <span className="truncate">
+                <div className="bg-background flex items-center gap-1.5 rounded-md px-2 py-1">
+                  <Calendar className="h-3.5 w-3.5" />
+                  <span className="truncate font-medium">
                     {format(new Date(session.session_date), "MMM dd, yyyy")}
                   </span>
                 </div>
               )}
               {session.start_time && (
-                <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4 flex-shrink-0" />
-                  <span className="truncate">
+                <div className="bg-background flex items-center gap-1.5 rounded-md px-2 py-1">
+                  <Clock className="h-3.5 w-3.5" />
+                  <span className="truncate font-medium">
                     {session.start_time}
                     {session.end_time && ` - ${session.end_time}`}
                   </span>
                 </div>
               )}
-              <div className="flex items-center gap-1">
-                <Users className="h-4 w-4 flex-shrink-0" />
-                {sessionAttendance.length} participants
+              <div className="bg-background flex items-center gap-1.5 rounded-md px-2 py-1">
+                <Users className="h-3.5 w-3.5" />
+                <span className="font-medium">{sessionAttendance.length}</span>
+                <span>participants</span>
               </div>
             </div>
           </div>
 
+          {/* Action Buttons */}
           <div className="flex items-center gap-2">
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={() => setShowAttendance(!showAttendance)}
+              className="shadow-sm transition-all hover:shadow"
             >
               {showAttendance ? (
-                <ChevronUp className="h-4 w-4" />
+                <ChevronUp className="mr-1 h-4 w-4" />
               ) : (
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown className="mr-1 h-4 w-4" />
               )}
-              {showAttendance ? "Hide" : "Show"} Attendance
+              {showAttendance ? "Hide" : "Show"}
             </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
+                <Button variant="outline" size="sm" className="shadow-sm">
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem onClick={onEditSession}>
                   <Edit className="mr-2 h-4 w-4" />
                   Edit Session
@@ -482,115 +505,68 @@ function SessionWithAttendanceCard({
       </CardHeader>
 
       {/* Quick Attendance Summary */}
-      <CardContent>
-        <div className="grid grid-cols-4 gap-4 text-center">
-          <div className="space-y-1">
-            <div className="text-2xl font-bold text-green-600">
-              {attendedCount}
+      <CardContent className="pt-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="rounded-lg border bg-gradient-to-br from-green-50 to-green-100/50 p-3 text-center shadow-sm dark:from-green-950 dark:to-green-900/50">
+            <div className="mb-1 flex items-center justify-center gap-1">
+              <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                {attendedCount}
+              </div>
             </div>
-            <div className="text-muted-foreground text-xs">Attended</div>
-          </div>
-          <div className="space-y-1">
-            <div className="text-2xl font-bold text-red-600">{absentCount}</div>
-            <div className="text-muted-foreground text-xs">Absent</div>
-          </div>
-          <div className="space-y-1">
-            <div className="text-2xl font-bold text-yellow-600">
-              {lateCount}
+            <div className="text-xs font-medium text-green-700 dark:text-green-300">
+              Attended
             </div>
-            <div className="text-muted-foreground text-xs">Late</div>
           </div>
-          <div className="space-y-1">
-            <div className="text-2xl font-bold">{sessionAttendance.length}</div>
-            <div className="text-muted-foreground text-xs">Total</div>
+
+          <div className="rounded-lg border bg-gradient-to-br from-red-50 to-red-100/50 p-3 text-center shadow-sm dark:from-red-950 dark:to-red-900/50">
+            <div className="mb-1 flex items-center justify-center gap-1">
+              <Users className="h-4 w-4 text-red-600 dark:text-red-400" />
+              <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+                {absentCount}
+              </div>
+            </div>
+            <div className="text-xs font-medium text-red-700 dark:text-red-300">
+              Absent
+            </div>
+          </div>
+
+          <div className="rounded-lg border bg-gradient-to-br from-yellow-50 to-yellow-100/50 p-3 text-center shadow-sm dark:from-yellow-950 dark:to-yellow-900/50">
+            <div className="mb-1 flex items-center justify-center gap-1">
+              <Clock className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+              <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+                {lateCount}
+              </div>
+            </div>
+            <div className="text-xs font-medium text-yellow-700 dark:text-yellow-300">
+              Late
+            </div>
+          </div>
+
+          <div className="rounded-lg border bg-gradient-to-br from-blue-50 to-blue-100/50 p-3 text-center shadow-sm dark:from-blue-950 dark:to-blue-900/50">
+            <div className="mb-1 flex items-center justify-center gap-1">
+              <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                {sessionAttendance.length}
+              </div>
+            </div>
+            <div className="text-xs font-medium text-blue-700 dark:text-blue-300">
+              Total
+            </div>
           </div>
         </div>
 
         {/* Expandable Attendance Details */}
         {showAttendance && sessionAttendance.length > 0 && (
-          <div className="mt-6 space-y-3 border-t pt-4">
-            <h5 className="font-medium">Attendance Details</h5>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b text-left text-sm">
-                    <th className="pb-2 font-medium">Name</th>
-                    <th className="pb-2 font-medium">Contact</th>
-                    <th className="pb-2 font-medium">Sex</th>
-                    <th className="pb-2 font-medium">Age</th>
-                    <th className="pb-2 font-medium">Location</th>
-                    <th className="pb-2 font-medium">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sessionAttendance.map((participant, index) => (
-                    <tr
-                      key={index}
-                      className="hover:bg-muted/50 border-b last:border-0"
-                    >
-                      <td className="py-3">
-                        <div className="font-medium">
-                          {participant.participant
-                            ? `${participant.participant.firstName} ${participant.participant.lastName}`
-                            : "Unknown Participant"}
-                        </div>
-                        {participant.participant?.designation && (
-                          <div className="text-muted-foreground text-xs">
-                            {participant.participant.designation}
-                          </div>
-                        )}
-                      </td>
-                      <td className="py-3">
-                        <div className="text-sm">
-                          {participant.participant?.contact || "-"}
-                        </div>
-                      </td>
-                      <td className="py-3">
-                        <span className="text-sm capitalize">
-                          {participant.participant?.sex || "-"}
-                        </span>
-                      </td>
-                      <td className="py-3">
-                        <span className="text-sm">
-                          {participant.participant?.age || "-"}
-                        </span>
-                      </td>
-                      <td className="py-3">
-                        <div className="text-sm">
-                          {participant.participant?.district && (
-                            <div>{participant.participant.district}</div>
-                          )}
-                          {participant.participant?.subCounty && (
-                            <div className="text-muted-foreground text-xs">
-                              {participant.participant.subCounty}
-                            </div>
-                          )}
-                          {!participant.participant?.district &&
-                            !participant.participant?.subCounty && (
-                              <span className="text-muted-foreground">-</span>
-                            )}
-                        </div>
-                      </td>
-                      <td className="py-3">
-                        <span
-                          className={cn(
-                            "inline-flex items-center rounded-full px-2 py-1 text-xs font-medium",
-                            participant.attendance_status === "attended" &&
-                              "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-                            participant.attendance_status === "absent" &&
-                              "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
-                            participant.attendance_status === "late" &&
-                              "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
-                          )}
-                        >
-                          {participant.attendance_status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <div className="animate-in fade-in-50 slide-in-from-top-2 mt-6 border-t pt-6">
+            <div className="mb-4 flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              <h5 className="font-semibold">Attendance Details</h5>
             </div>
+            <AttendanceDataTable
+              sessionAttendance={sessionAttendance}
+              onEditParticipant={onEditParticipant}
+            />
           </div>
         )}
 
