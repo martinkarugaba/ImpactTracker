@@ -8,8 +8,8 @@ import {
   FormField,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { UseFormReturn } from "react-hook-form";
-import { FormValues } from "./schema";
+import type { UseFormReturn } from "react-hook-form";
+import type { FormValues } from "./schema";
 
 interface NameInputProps {
   form: UseFormReturn<FormValues>;

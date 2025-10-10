@@ -58,8 +58,8 @@ function normalizePhone(phone: string): string {
 function calculateGeographicScore(
   importRow: ParticipantFormValues,
   existingParticipant: {
-    district: string;
-    subCounty: string;
+    district: string | null;
+    subCounty: string | null;
   }
 ): { modifier: number; penalty: number; reason: string } {
   const importDistrict = importRow.district?.toLowerCase().trim() || "";
@@ -117,8 +117,8 @@ function calculateMatch(
     lastName: string;
     contact: string | null;
     dateOfBirth: Date | null;
-    district: string;
-    subCounty: string;
+    district: string | null;
+    subCounty: string | null;
     created_at: Date | null;
   }
 ): { score: number; reasons: string[] } {
@@ -262,8 +262,8 @@ export async function detectDuplicates(
               contact: existing.contact || "",
               dateOfBirth:
                 existing.dateOfBirth?.toISOString().split("T")[0] || null,
-              district: existing.district,
-              subCounty: existing.subCounty,
+              district: existing.district ?? "Unknown",
+              subCounty: existing.subCounty ?? "Unknown",
               created_at:
                 existing.created_at?.toISOString() || new Date().toISOString(),
             },
@@ -282,8 +282,8 @@ export async function detectDuplicates(
                 contact: existing.contact || "",
                 dateOfBirth:
                   existing.dateOfBirth?.toISOString().split("T")[0] || null,
-                district: existing.district,
-                subCounty: existing.subCounty,
+                district: existing.district ?? "Unknown",
+                subCounty: existing.subCounty ?? "Unknown",
                 created_at:
                   existing.created_at?.toISOString() ||
                   new Date().toISOString(),
@@ -406,8 +406,8 @@ export async function detectDuplicatesBatched(
                   contact: existing.contact || "",
                   dateOfBirth:
                     existing.dateOfBirth?.toISOString().split("T")[0] || null,
-                  district: existing.district,
-                  subCounty: existing.subCounty,
+                  district: existing.district ?? "Unknown",
+                  subCounty: existing.subCounty ?? "Unknown",
                   created_at:
                     existing.created_at?.toISOString() ||
                     new Date().toISOString(),

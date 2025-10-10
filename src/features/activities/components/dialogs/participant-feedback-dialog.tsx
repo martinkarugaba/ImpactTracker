@@ -31,7 +31,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageSquare, Star, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { ActivityParticipant } from "../../types/types";
+import type { ActivityParticipant } from "../../types/types";
 
 const feedbackFormSchema = z.object({
   relevance: z.enum(

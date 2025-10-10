@@ -6,17 +6,17 @@ import { conceptNotes } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { type NewConceptNote, type ConceptNote } from "../types/types";
 
-export type ConceptNoteResponse = {
+export interface ConceptNoteResponse {
   success: boolean;
   data?: ConceptNote;
   error?: string;
-};
+}
 
-export type ConceptNotesResponse = {
+export interface ConceptNotesResponse {
   success: boolean;
   data?: ConceptNote[];
   error?: string;
-};
+}
 
 export async function createConceptNote(
   data: NewConceptNote

@@ -17,8 +17,9 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SubCountyForm } from "./subcounty/subcounty-form";
-import { Country, District } from "./subcounty/schema";
-import { FormValues, formSchema } from "./subcounty/schema";
+import type { Country, District } from "./subcounty/schema";
+import type { FormValues } from "./subcounty/schema";
+import { formSchema } from "./subcounty/schema";
 
 interface AddSubCountyDialogProps {
   children: React.ReactNode;

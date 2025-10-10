@@ -2,7 +2,7 @@
 
 import { columns } from "@/features/locations/components/data-table/districts-columns";
 import { DataTable } from "@/components/ui/data-table";
-import { countries, districts } from "@/lib/db/schema";
+import type { countries, districts } from "@/lib/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
 import { AddDistrictDialog } from "@/features/locations/components/dialogs/add-district-dialog";
 import { Button } from "@/components/ui/button";

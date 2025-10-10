@@ -8,7 +8,7 @@ import {
   createOrganization as originalCreate,
   updateOrganization as originalUpdate,
 } from "./organizations";
-import { z } from "zod";
+import type { z } from "zod";
 
 // Import the schema from the schema file
 import { createOrganizationSchema as originalCreateSchema } from "../schemas/organization-schema";

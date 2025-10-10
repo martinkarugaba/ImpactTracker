@@ -5,9 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { Plus, Filter, Download, Trash2 } from "lucide-react";
-import { VSLA } from "../../../types";
+import type { VSLA } from "../../../types";
+import type { VSLAMember } from "../../../actions/vsla-members";
 import {
-  VSLAMember,
   getVSLAMembers,
   deleteVSLAMembers,
 } from "../../../actions/vsla-members";

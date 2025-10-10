@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useState } from "react";
 import { UsersTable } from "@/features/users/components/users-table";
-import { User } from "@/features/users/types";
+import type { User } from "@/features/users/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   updateUserRole,
@@ -14,7 +14,7 @@ import {
 import { toast } from "sonner";
 import { AddUserDialog } from "@/features/users/components/add-user-dialog";
 import { DeleteUserDialog } from "@/features/users/components/delete-user-dialog";
-import { userRole } from "@/lib/db/schema";
+import type { userRole } from "@/lib/db/schema";
 
 interface UsersClientProps {
   users: User[];

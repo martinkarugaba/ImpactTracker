@@ -2,7 +2,12 @@
 
 import { SubCountiesTable } from "../subcounties-table";
 import { useEffect, useState } from "react";
-import { subCounties, districts, counties, countries } from "@/lib/db/schema";
+import type {
+  subCounties,
+  districts,
+  counties,
+  countries,
+} from "@/lib/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
 import { getSubCounties } from "@/features/locations/actions/subcounties";
 

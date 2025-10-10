@@ -11,18 +11,18 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Cluster } from "@/features/clusters/components/clusters-table";
-import { Organization } from "@/features/organizations/types";
-import { Project } from "@/features/projects/types";
+import type { Cluster } from "@/features/clusters/components/clusters-table";
+import type { Organization } from "@/features/organizations/types";
+import type { Project } from "@/features/projects/types";
 import { VSLAForm } from "../forms";
 
-type CreateVSLADialogProps = {
+interface CreateVSLADialogProps {
   organizations: Organization[];
   clusters: Cluster[];
   projects: Project[];
   children?: React.ReactNode;
   onSuccess?: () => void | Promise<void>;
-};
+}
 
 export function CreateVSLADialog({
   organizations,

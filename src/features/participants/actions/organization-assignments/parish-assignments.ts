@@ -59,7 +59,7 @@ export async function assignParticipantsByParish(
     // Get the subcounty that contains this parish
     const subCountyName =
       participantsToUpdate.length > 0
-        ? participantsToUpdate[0].subCounty
+        ? (participantsToUpdate[0].subCounty ?? "Unknown")
         : "Unknown";
 
     console.log(
@@ -94,7 +94,7 @@ export async function assignParticipantsByParish(
           totalParticipantsUpdated: 0,
           results: [
             {
-              subCounty: subCountyName,
+              subCounty: subCountyName || "Unknown",
               participantsFound: participantsToUpdate.length,
               participantsUpdated: 0,
             },
@@ -130,7 +130,7 @@ export async function assignParticipantsByParish(
         totalParticipantsUpdated: participantsNeedingUpdate.length,
         results: [
           {
-            subCounty: subCountyName,
+            subCounty: subCountyName || "Unknown",
             participantsFound: participantsToUpdate.length,
             participantsUpdated: participantsNeedingUpdate.length,
           },

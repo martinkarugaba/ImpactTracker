@@ -5,7 +5,7 @@ import { clusterMembers, organizations, projects } from "@/lib/db/schema";
 import { eq, and, desc, sql, ilike, isNull } from "drizzle-orm";
 import { getUserClusterId } from "@/features/auth/actions";
 
-export type ClusterMember = {
+export interface ClusterMember {
   id: string;
   organization_id: string;
   cluster_id: string;
@@ -24,15 +24,15 @@ export type ClusterMember = {
     name: string;
     acronym: string | null;
   } | null;
-};
+}
 
-export type MembersFilters = {
+export interface MembersFilters {
   search?: string;
   district?: string;
   country?: string;
-};
+}
 
-export type MembersMetrics = {
+export interface MembersMetrics {
   totalMembers: number;
   activeProjects: number;
   totalDistricts: number;
@@ -43,9 +43,9 @@ export type MembersMetrics = {
     districtsChange: number;
     monthlyChange: number;
   };
-};
+}
 
-export type MembersResponse = {
+export interface MembersResponse {
   success: boolean;
   data?: {
     members: ClusterMember[];
@@ -59,27 +59,27 @@ export type MembersResponse = {
     };
   };
   error?: string;
-};
+}
 
-export type MembersMetricsResponse = {
+export interface MembersMetricsResponse {
   success: boolean;
   data?: MembersMetrics;
   error?: string;
-};
+}
 
-export type AvailableOrganization = {
+export interface AvailableOrganization {
   id: string;
   name: string;
   acronym: string | null;
   district: string | null;
   country: string | null;
-};
+}
 
-export type AvailableOrganizationsResponse = {
+export interface AvailableOrganizationsResponse {
   success: boolean;
   data?: AvailableOrganization[];
   error?: string;
-};
+}
 
 export async function getClusterMembers(
   page: number = 1,

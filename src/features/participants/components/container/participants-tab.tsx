@@ -80,6 +80,7 @@ interface ParticipantsTabProps {
   onAddParticipant: () => void;
   onEditParticipant: (data: unknown, id: string) => void;
   onDeleteParticipant: (id: string) => void;
+  onBulkDeleteParticipants?: (ids: string[]) => void;
   onViewParticipant?: (participant: Participant) => void;
   onExportData: (format?: "csv" | "excel") => void;
   onImport: (data: unknown[]) => void;
@@ -105,6 +106,7 @@ export function ParticipantsTab({
   onAddParticipant,
   onEditParticipant,
   onDeleteParticipant,
+  onBulkDeleteParticipants,
   onViewParticipant,
   onExportData,
   onImport,
@@ -281,13 +283,17 @@ export function ParticipantsTab({
               {selectedParticipants.length > 0 && (
                 <>
                   <Button
-                    onClick={() => {
-                      // TODO: Implement bulk delete
-                      toast.success(
-                        `Selected ${selectedParticipants.length} participants for deletion`
-                      );
-                      dataTableRef.current?.clearSelection();
-                      setSelectedParticipants([]);
+                    onClick={async () => {
+                      if (onBulkDeleteParticipants) {
+                        const participantIds = selectedParticipants.map(
+                          p => p.id
+                        );
+                        await onBulkDeleteParticipants(participantIds);
+                        dataTableRef.current?.clearSelection();
+                        setSelectedParticipants([]);
+                      } else {
+                        toast.error("Bulk delete functionality not available");
+                      }
                     }}
                     variant="destructive"
                     size="sm"

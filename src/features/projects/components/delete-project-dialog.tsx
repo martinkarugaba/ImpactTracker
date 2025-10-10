@@ -2,19 +2,19 @@
 
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Project } from "../types";
+import type { Project } from "../types";
 import { deleteProject } from "../actions/projects";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 
-type DeleteProjectDialogProps = {
+interface DeleteProjectDialogProps {
   project: Project;
   onDelete?: () => void;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-};
+}
 
 export function DeleteProjectDialog({
   project,

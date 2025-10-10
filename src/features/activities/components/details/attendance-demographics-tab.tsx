@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Activity } from "../../types/types";
+import type { Activity } from "../../types/types";
 import {
   useActivityParticipants,
   useActivitySessions,

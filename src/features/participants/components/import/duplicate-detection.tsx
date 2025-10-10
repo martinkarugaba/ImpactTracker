@@ -29,8 +29,8 @@ export interface DuplicateMatch {
     lastName: string;
     contact: string;
     dateOfBirth: string | null;
-    district: string;
-    subCounty: string;
+    district: string | null;
+    subCounty: string | null;
     created_at: string;
   };
   matchScore: number;
@@ -382,8 +382,11 @@ export function DuplicateDetection({
                             </div>
                             <div>
                               <strong>Location:</strong>{" "}
-                              {duplicate.existingParticipant.district},{" "}
-                              {duplicate.existingParticipant.subCounty}
+                              {duplicate.existingParticipant.district ??
+                                "Unknown"}
+                              ,{" "}
+                              {duplicate.existingParticipant.subCounty ??
+                                "Unknown"}
                             </div>
                             <div>
                               <strong>Created:</strong>{" "}
@@ -473,8 +476,11 @@ export function DuplicateDetection({
                           </div>
                           <div>
                             <strong>Location:</strong>{" "}
-                            {duplicate.existingParticipant.district},{" "}
-                            {duplicate.existingParticipant.subCounty}
+                            {duplicate.existingParticipant.district ??
+                              "Unknown"}
+                            ,{" "}
+                            {duplicate.existingParticipant.subCounty ??
+                              "Unknown"}
                           </div>
                           <div>
                             <strong>Created:</strong>{" "}

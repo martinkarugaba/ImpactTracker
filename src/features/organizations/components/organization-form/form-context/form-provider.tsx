@@ -10,15 +10,15 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
-import {
+import type {
   OrganizationFormContextType,
   OrganizationFormValues,
-  organizationFormSchema,
   OrganizationData,
   LocationInfo,
 } from "./types";
-import { Project } from "@/features/projects/types";
-import { Cluster } from "@/features/clusters/types";
+import { organizationFormSchema } from "./types";
+import type { Project } from "@/features/projects/types";
+import type { Cluster } from "@/features/clusters/types";
 import { getCountries } from "@/features/locations/actions/countries";
 import { getDistricts } from "@/features/locations/actions/districts";
 import { getSubCounties } from "@/features/locations/actions/subcounties";

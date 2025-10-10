@@ -1,7 +1,8 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { organizationMembers, users, userRole } from "@/lib/db/schema";
+import type { userRole } from "@/lib/db/schema";
+import { organizationMembers, users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/features/auth/auth";

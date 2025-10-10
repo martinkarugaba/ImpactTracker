@@ -2,7 +2,7 @@
 
 import { CountiesTable } from "../counties-table";
 import { useEffect, useState } from "react";
-import { counties, districts } from "@/lib/db/schema";
+import type { counties, districts } from "@/lib/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
 import { getCounties } from "@/features/locations/actions/counties";
 

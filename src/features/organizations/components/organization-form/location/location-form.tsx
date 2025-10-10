@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/form";
 import { useOrganizationForm } from "../form-context/form-provider";
 import { Combobox } from "@/components/ui/combobox";
-import { LocationInfo } from "../form-context/types";
+import type { LocationInfo } from "../form-context/types";
 import { MultiSelectCombobox } from "./MultiSelectCombobox";
 
 export function LocationForm() {

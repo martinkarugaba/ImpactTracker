@@ -6,17 +6,17 @@ import { activityParticipants, activities } from "@/lib/db/schema";
 import { eq, and, inArray } from "drizzle-orm";
 import { type ActivityParticipant } from "../types/types";
 
-export type ActivityParticipantResponse = {
+export interface ActivityParticipantResponse {
   success: boolean;
   data?: ActivityParticipant;
   error?: string;
-};
+}
 
-export type ActivityParticipantsResponse = {
+export interface ActivityParticipantsResponse {
   success: boolean;
   data?: ActivityParticipant[];
   error?: string;
-};
+}
 
 export async function createActivityParticipant(
   data: Omit<ActivityParticipant, "id" | "created_at" | "updated_at">

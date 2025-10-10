@@ -1,5 +1,5 @@
-import { ActivityParticipant } from "../../../../types/types";
-import { DemographicsData } from "../types/demographics";
+import type { ActivityParticipant } from "../../../../types/types";
+import type { DemographicsData } from "../types/demographics";
 
 // Mock data generator for demonstration (to be replaced with real data when database fields are added)
 export const generateMockDemographicsData = (

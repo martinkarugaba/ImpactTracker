@@ -1,6 +1,6 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -22,7 +22,7 @@ import {
   TrendingUp,
   ArrowUpDown,
 } from "lucide-react";
-import { VSLAMember } from "../../../actions/vsla-members";
+import type { VSLAMember } from "../../../actions/vsla-members";
 import { formatCurrency } from "../../../utils";
 
 interface CreateVSLAMembersColumnsProps {

@@ -13,8 +13,8 @@ export interface DuplicateGroup {
     lastName: string;
     contact: string | null;
     dateOfBirth: Date | null;
-    district: string;
-    subCounty: string;
+    district: string | null;
+    subCounty: string | null;
     organizationName: string | null;
     organization_id: string | null;
     created_at: Date | null;

@@ -10,7 +10,7 @@ import {
   IconPercentage,
 } from "@tabler/icons-react";
 import { formatCurrency } from "../../utils";
-import { VSLA } from "../../types";
+import type { VSLA } from "../../types";
 
 interface VSLAMetricsCardsProps {
   vslas: VSLA[];

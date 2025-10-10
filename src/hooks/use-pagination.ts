@@ -1,14 +1,14 @@
-type UsePaginationProps = {
+interface UsePaginationProps {
   currentPage: number;
   totalPages: number;
   paginationItemsToDisplay: number;
-};
+}
 
-type UsePaginationReturn = {
+interface UsePaginationReturn {
   pages: number[];
   showLeftEllipsis: boolean;
   showRightEllipsis: boolean;
-};
+}
 
 export function usePagination({
   currentPage,

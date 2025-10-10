@@ -9,7 +9,7 @@ import {
   vslaMembers,
 } from "@/lib/db/schema";
 import { eq, inArray } from "drizzle-orm";
-import { CreateVSLAInput, UpdateVSLAInput } from "../schemas/vsla-schema";
+import type { CreateVSLAInput, UpdateVSLAInput } from "../schemas/vsla-schema";
 import { getVSLAsFallback, checkVSLASchemaStatus } from "./vslas-fallback";
 
 export async function createVSLA(data: CreateVSLAInput) {

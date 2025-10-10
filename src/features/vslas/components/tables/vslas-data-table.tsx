@@ -7,11 +7,13 @@ import {
   ChevronsLeftIcon,
   ChevronsRightIcon,
 } from "lucide-react";
-import {
+import type {
   ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
+} from "@tanstack/react-table";
+import {
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -33,7 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { VSLA } from "../../types";
+import type { VSLA } from "../../types";
 
 interface VSLAsDataTableProps {
   columns: ColumnDef<VSLA>[];

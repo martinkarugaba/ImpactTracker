@@ -13,7 +13,7 @@ import {
   Target,
   Award,
 } from "lucide-react";
-import { Activity } from "../../types/types";
+import type { Activity } from "../../types/types";
 import { useActivityParticipants } from "../../hooks/use-activities";
 import { MetricCard } from "@/components/ui/metric-card";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,7 +24,7 @@ interface ParticipantsMetricsTabProps {
 }
 
 // Extended participant type to handle potentially missing fields
-type ExtendedParticipant = {
+interface ExtendedParticipant {
   id: string;
   firstName: string;
   lastName: string;
@@ -40,7 +40,7 @@ type ExtendedParticipant = {
   district?: string;
   subCounty?: string;
   village?: string;
-};
+}
 
 export function ParticipantsMetricsTab({
   activity,

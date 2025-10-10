@@ -1,8 +1,8 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
-import { Organization } from "@/features/organizations/types";
-import { Cluster } from "@/features/clusters/components/clusters-table";
+import type { ColumnDef } from "@tanstack/react-table";
+import type { Organization } from "@/features/organizations/types";
+import type { Cluster } from "@/features/clusters/components/clusters-table";
 import { ActionsCell } from "./ActionsCell";
 
 interface GetOrganizationTableColumnsProps {

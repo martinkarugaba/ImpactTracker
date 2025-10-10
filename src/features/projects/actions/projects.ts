@@ -11,7 +11,7 @@ import { eq, sql, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { auth } from "@/features/auth/auth";
-import { Project } from "../types";
+import type { Project } from "../types";
 
 const createProjectSchema = z.object({
   name: z.string().min(1, "Name is required"),

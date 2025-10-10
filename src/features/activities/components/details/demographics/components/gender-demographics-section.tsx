@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users } from "lucide-react";
-import { DemographicsProps } from "../types/demographics";
+import type { DemographicsProps } from "../types/demographics";
 
 export function GenderDemographicsSection({ data }: DemographicsProps) {
   return (

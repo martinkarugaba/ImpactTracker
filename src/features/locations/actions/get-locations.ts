@@ -11,7 +11,7 @@ import {
   clusterUsers,
 } from "@/lib/db/schema";
 import { sql, eq, and } from "drizzle-orm";
-import { LocationData } from "../components/columns";
+import type { LocationData } from "../components/columns";
 import { auth } from "@/features/auth/auth";
 
 export async function getLocations() {

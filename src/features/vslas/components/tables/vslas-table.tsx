@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { createColumns } from "./vsla-table-columns";
 import { VSLAsDataTable } from "./vslas-data-table";
-import { VSLA } from "../../types";
+import type { VSLA } from "../../types";
 import { CreateVSLADialog } from "../dialogs";
 import { ExcelImportDialog } from "@/components/shared/excel-import-dialog";
 import { createVSLAImportConfig } from "../../config/vsla-import-config";

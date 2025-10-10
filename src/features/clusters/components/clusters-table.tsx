@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { CreateClusterDialog } from "./create-cluster-dialog";
 import { ReusableDataTable } from "@/components/ui/reusable-data-table";
 
-export type Cluster = {
+export interface Cluster {
   id: string;
   name: string;
   about: string | null;
@@ -25,7 +25,7 @@ export type Cluster = {
   districts: string[];
   createdAt: Date | null;
   updatedAt: Date | null;
-};
+}
 
 const columns: ColumnDef<Cluster>[] = [
   {

@@ -1,6 +1,6 @@
-import { Cluster } from "@/features/clusters/types";
-import { Project } from "@/features/projects/types";
-import { UseFormReturn } from "react-hook-form";
+import type { Cluster } from "@/features/clusters/types";
+import type { Project } from "@/features/projects/types";
+import type { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
 export const organizationFormSchema = z.object({

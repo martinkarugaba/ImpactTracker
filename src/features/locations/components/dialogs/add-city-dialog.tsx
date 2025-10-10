@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { City } from "../data-table/cities-columns";
+import type { City } from "../data-table/cities-columns";
 import { createCity, updateCity } from "../../actions/cities";
 import {
   getDistricts,
@@ -30,7 +30,7 @@ import { toast } from "sonner";
 import { useCallback, useEffect, useState } from "react";
 
 // Define types without database dependencies to avoid client-side bundling issues
-type District = {
+interface District {
   id: string;
   name: string;
   code: string;
@@ -38,9 +38,9 @@ type District = {
   region?: string | null;
   created_at?: Date | null;
   updated_at?: Date | null;
-};
+}
 
-type County = {
+interface County {
   id: string;
   name: string;
   code: string;
@@ -48,9 +48,9 @@ type County = {
   country_id: string;
   created_at?: Date | null;
   updated_at?: Date | null;
-};
+}
 
-type SubCounty = {
+interface SubCounty {
   id: string;
   name: string;
   code: string;
@@ -59,9 +59,9 @@ type SubCounty = {
   country_id: string;
   created_at?: Date | null;
   updated_at?: Date | null;
-};
+}
 
-type Municipality = {
+interface Municipality {
   id: string;
   name: string;
   code: string;
@@ -70,11 +70,11 @@ type Municipality = {
   country_id: string;
   created_at?: Date | null;
   updated_at?: Date | null;
-};
+}
 
-type Props = {
+interface Props {
   editData?: City | null;
-};
+}
 
 export function AddCityDialog({ editData }: Props) {
   const [open, setOpen] = useState(false);

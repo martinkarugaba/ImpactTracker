@@ -26,6 +26,7 @@ import { type Participant } from "../../types/types";
 import {
   useCreateParticipant,
   useUpdateParticipant,
+  useDeleteParticipant,
 } from "../../hooks/use-participants";
 import { useQuery } from "@tanstack/react-query";
 import { getProjects } from "@/features/projects/actions/projects";
@@ -59,6 +60,7 @@ export function ParticipantDialogs({
 }: ParticipantDialogsProps) {
   const createParticipant = useCreateParticipant();
   const updateParticipant = useUpdateParticipant();
+  const deleteParticipant = useDeleteParticipant(clusterId);
 
   // Fetch projects for the form
   const { data: projectsResponse } = useQuery({
@@ -72,9 +74,28 @@ export function ParticipantDialogs({
 
   const handleCreateSubmit = async (data: ParticipantFormValues) => {
     try {
+      const {
+        country,
+        district,
+        subCounty,
+        parish,
+        village,
+        designation,
+        enterprise,
+        age,
+        ...restData
+      } = data;
       const createData = {
-        ...data,
-        age: data.age ? parseInt(data.age) : null,
+        ...restData,
+        // Convert undefined to null for database compatibility
+        country: country || null,
+        district: district || null,
+        subCounty: subCounty || null,
+        parish: parish || null,
+        village: village || null,
+        designation: designation || null,
+        enterprise: enterprise || null,
+        age: age ? parseInt(age) : null,
         noOfTrainings: parseInt(data.noOfTrainings),
         numberOfChildren: parseInt(data.numberOfChildren),
         monthlyIncome: parseInt(data.monthlyIncome),
@@ -88,7 +109,7 @@ export function ParticipantDialogs({
         sourceOfIncome: data.sourceOfIncome || null,
         populationSegment: data.populationSegment || null,
         refugeeLocation: data.refugeeLocation || null,
-        vslaName: data.vslaName || null,
+        vslaId: data.vslaId && data.vslaId !== "none" ? data.vslaId : null,
         enterpriseName: data.enterpriseName || null,
         enterpriseSector: data.enterpriseSector || null,
         enterpriseSize: data.enterpriseSize || null,
@@ -143,6 +164,12 @@ export function ParticipantDialogs({
         subcounty_id: data.subcounty_id || null,
         parish_id: data.parish_id || null,
         village_id: data.village_id || null,
+        // Legacy VSLA fields for backward compatibility
+        isSubscribedToVSLA:
+          data.vslaId && data.vslaId !== "none" ? "yes" : "no",
+        vslaName: data.vslaId && data.vslaId !== "none" ? data.vslaId : "",
+        // Contact is now optional in both form and database
+        contact: data.contact || null,
       };
 
       const result = await createParticipant.mutateAsync(createData);
@@ -164,9 +191,28 @@ export function ParticipantDialogs({
     if (!editingParticipant) return;
 
     try {
+      const {
+        country,
+        district,
+        subCounty,
+        parish,
+        village,
+        designation,
+        enterprise,
+        age,
+        ...restData
+      } = data;
       const updateData = {
-        ...data,
-        age: data.age ? parseInt(data.age) : null,
+        ...restData,
+        // Convert undefined to null for database compatibility
+        country: country || null,
+        district: district || null,
+        subCounty: subCounty || null,
+        parish: parish || null,
+        village: village || null,
+        designation: designation || null,
+        enterprise: enterprise || null,
+        age: age ? parseInt(age) : null,
         noOfTrainings: parseInt(data.noOfTrainings),
         numberOfChildren: parseInt(data.numberOfChildren),
         monthlyIncome: parseInt(data.monthlyIncome),
@@ -180,7 +226,7 @@ export function ParticipantDialogs({
         sourceOfIncome: data.sourceOfIncome || null,
         populationSegment: data.populationSegment || null,
         refugeeLocation: data.refugeeLocation || null,
-        vslaName: data.vslaName || null,
+        vslaId: data.vslaId && data.vslaId !== "none" ? data.vslaId : null,
         enterpriseName: data.enterpriseName || null,
         enterpriseSector: data.enterpriseSector || null,
         enterpriseSize: data.enterpriseSize || null,
@@ -235,6 +281,12 @@ export function ParticipantDialogs({
         subcounty_id: data.subcounty_id || null,
         parish_id: data.parish_id || null,
         village_id: data.village_id || null,
+        // Legacy VSLA fields for backward compatibility
+        isSubscribedToVSLA:
+          data.vslaId && data.vslaId !== "none" ? "yes" : "no",
+        vslaName: data.vslaId && data.vslaId !== "none" ? data.vslaId : "",
+        // Contact is now optional in both form and database
+        contact: data.contact || null,
       };
 
       const result = await updateParticipant.mutateAsync({
@@ -261,11 +313,11 @@ export function ParticipantDialogs({
   ): ParticipantFormValues => ({
     firstName: participant.firstName,
     lastName: participant.lastName,
-    country: participant.country,
-    district: participant.district,
-    subCounty: participant.subCounty,
-    parish: participant.parish,
-    village: participant.village,
+    country: participant.country || undefined,
+    district: participant.district || undefined,
+    subCounty: participant.subCounty || undefined,
+    parish: participant.parish || undefined,
+    village: participant.village || undefined,
     sex: participant.sex as "male" | "female" | "other",
     age: participant.age ? participant.age.toString() : undefined,
     dateOfBirth: participant.dateOfBirth
@@ -274,9 +326,9 @@ export function ParticipantDialogs({
     isPWD: participant.isPWD as "yes" | "no",
     isMother: participant.isMother as "yes" | "no",
     isRefugee: participant.isRefugee as "yes" | "no",
-    designation: participant.designation,
-    enterprise: participant.enterprise,
-    contact: participant.contact,
+    designation: participant.designation || undefined,
+    enterprise: participant.enterprise || undefined,
+    contact: participant.contact || undefined,
     project_id: participant.project_id,
     cluster_id: participant.cluster_id,
     organization_id: participant.organization_id,
@@ -306,8 +358,7 @@ export function ParticipantDialogs({
     isActiveStudent: "no" as "yes" | "no",
 
     // VSLA Information
-    isSubscribedToVSLA: "no" as "yes" | "no",
-    vslaName: undefined,
+    vslaId: undefined,
 
     // Teen Mother
     isTeenMother: "no" as "yes" | "no",
@@ -342,11 +393,19 @@ export function ParticipantDialogs({
     if (!deletingParticipant) return;
 
     try {
-      // TODO: Implement delete participant action
-      toast.success("Participant deleted successfully.");
-      setDeletingParticipant(null);
-      onSuccess?.();
-    } catch (_error) {
+      const result = await deleteParticipant.mutateAsync({
+        id: deletingParticipant.id,
+      });
+
+      if (result.success) {
+        toast.success("Participant deleted successfully.");
+        setDeletingParticipant(null);
+        onSuccess?.();
+      } else {
+        toast.error(result.error || "Failed to delete participant.");
+      }
+    } catch (error) {
+      console.error("Error deleting participant:", error);
       toast.error("Failed to delete participant. Please try again.");
     }
   };
@@ -363,7 +422,10 @@ export function ParticipantDialogs({
           }
         }}
       >
-        <DialogContent className="max-h-[90vh] w-full max-w-4xl overflow-y-auto">
+        <DialogContent
+          className="max-h-[90vh] overflow-hidden"
+          style={{ width: "90vw", maxWidth: "1000px", minWidth: "800px" }}
+        >
           <DialogHeader>
             <DialogTitle>
               {editingParticipant ? "Edit Participant" : "Add New Participant"}
@@ -375,23 +437,28 @@ export function ParticipantDialogs({
             </DialogDescription>
           </DialogHeader>
 
-          <MultiStepParticipantForm
-            initialData={
-              editingParticipant
-                ? getEditFormData(editingParticipant)
-                : undefined
-            }
-            onSubmit={
-              editingParticipant ? handleUpdateSubmit : handleCreateSubmit
-            }
-            isLoading={
-              editingParticipant
-                ? updateParticipant.isPending
-                : createParticipant.isPending
-            }
-            projects={projects}
-            clusterId={clusterId}
-          />
+          <div
+            className="overflow-x-hidden overflow-y-auto pr-2"
+            style={{ maxHeight: "calc(90vh - 120px)" }}
+          >
+            <MultiStepParticipantForm
+              initialData={
+                editingParticipant
+                  ? getEditFormData(editingParticipant)
+                  : undefined
+              }
+              onSubmit={
+                editingParticipant ? handleUpdateSubmit : handleCreateSubmit
+              }
+              isLoading={
+                editingParticipant
+                  ? updateParticipant.isPending
+                  : createParticipant.isPending
+              }
+              projects={projects}
+              clusterId={clusterId}
+            />
+          </div>
         </DialogContent>
       </Dialog>
 

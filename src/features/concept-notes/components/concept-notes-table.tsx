@@ -106,27 +106,40 @@ export function ConceptNotesTable({
               <TableCell>
                 <div className="font-medium">{conceptNote.title}</div>
                 <div className="text-muted-foreground max-w-[200px] truncate text-sm">
-                  {conceptNote.content.substring(0, 60)}...
+                  {conceptNote.content?.substring(0, 60) || "No content"}...
                 </div>
               </TableCell>
               <TableCell>
-                <div className="font-medium">{conceptNote.activity.title}</div>
+                <div className="font-medium">
+                  {conceptNote.activity?.title || "Unknown Activity"}
+                </div>
                 <div className="text-muted-foreground text-sm">
-                  {formatDate(conceptNote.activity.startDate)} -{" "}
-                  {formatDate(conceptNote.activity.endDate)}
+                  {conceptNote.activity?.startDate
+                    ? formatDate(conceptNote.activity.startDate)
+                    : "Unknown"}{" "}
+                  -{" "}
+                  {conceptNote.activity?.endDate
+                    ? formatDate(conceptNote.activity.endDate)
+                    : "Unknown"}
                 </div>
               </TableCell>
               <TableCell>
-                {getActivityTypeBadge(conceptNote.activity.type)}
+                {conceptNote.activity?.type ? (
+                  getActivityTypeBadge(conceptNote.activity.type)
+                ) : (
+                  <Badge variant="secondary">Unknown</Badge>
+                )}
               </TableCell>
               <TableCell>
                 <div className="font-medium">
-                  {conceptNote.project.acronym || conceptNote.project.name}
+                  {conceptNote.project?.acronym ||
+                    conceptNote.project?.name ||
+                    "Unknown Project"}
                 </div>
               </TableCell>
               <TableCell>
                 <div className="font-medium">
-                  {conceptNote.organization.name}
+                  {conceptNote.organization?.name || "Unknown Organization"}
                 </div>
               </TableCell>
               <TableCell>{formatDate(conceptNote.submission_date)}</TableCell>

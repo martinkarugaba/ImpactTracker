@@ -2,7 +2,7 @@
 
 import { ParishesTable } from "../parishes-table";
 import { useEffect, useState } from "react";
-import {
+import type {
   parishes,
   countries,
   counties,

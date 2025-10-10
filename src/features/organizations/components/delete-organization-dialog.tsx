@@ -10,18 +10,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useState } from "react";
-import { Organization } from "../types";
+import type { Organization } from "../types";
 import { deleteOrganization } from "../actions/organizations";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 
-type DeleteOrganizationDialogProps = {
+interface DeleteOrganizationDialogProps {
   organization: Organization;
   onDelete?: () => void;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-};
+}
 
 export function DeleteOrganizationDialog({
   organization,

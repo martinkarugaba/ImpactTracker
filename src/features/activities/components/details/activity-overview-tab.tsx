@@ -14,7 +14,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { format } from "date-fns";
-import { Activity } from "../../types/types";
+import type { Activity } from "../../types/types";
 import { useActivitySessions } from "../../hooks/use-activities";
 import { ActivityNotesCard } from "../cards/activity-notes-card";
 import { ConceptNotesTable } from "../concept-notes/concept-notes-table";

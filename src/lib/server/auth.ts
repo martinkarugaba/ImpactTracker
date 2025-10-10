@@ -1,7 +1,8 @@
 import { auth } from "@/features/auth/auth";
 import { redirect } from "next/navigation";
-import { hasAnyRole, hasAllRoles, AuthConfig } from "@/lib/auth";
-import { userRole } from "@/lib/db/schema";
+import type { AuthConfig } from "@/lib/auth";
+import { hasAnyRole, hasAllRoles } from "@/lib/auth";
+import type { userRole } from "@/lib/db/schema";
 
 type Role = (typeof userRole.enumValues)[number];
 

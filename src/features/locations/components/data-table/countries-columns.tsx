@@ -1,7 +1,7 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
-import { countries } from "@/lib/db/schema";
+import type { ColumnDef } from "@tanstack/react-table";
+import type { countries } from "@/lib/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";

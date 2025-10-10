@@ -36,7 +36,7 @@ import {
   createVillage,
 } from "../actions/administrative-units";
 import { getParentOptions } from "../actions/get-parent-options";
-import { LocationType } from "./columns";
+import type { LocationType } from "./columns";
 import {
   getDistrictById,
   getSubCountyById,

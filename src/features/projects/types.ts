@@ -1,4 +1,4 @@
-import { Organization } from "../organizations/types";
+import type { Organization } from "../organizations/types";
 
 export interface Project {
   id: string;

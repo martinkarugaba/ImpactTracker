@@ -2,7 +2,7 @@
 
 import { VillagesTable } from "../villages-table";
 import { useEffect, useState } from "react";
-import {
+import type {
   villages,
   parishes,
   subCounties,

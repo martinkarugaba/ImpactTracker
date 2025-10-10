@@ -1,6 +1,6 @@
 "use client";
 
-import { municipalities } from "@/lib/db/schema";
+import type { municipalities } from "@/lib/db/schema";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 import { useState } from "react";

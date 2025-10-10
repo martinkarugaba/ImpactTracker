@@ -1,10 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Organization } from "@/features/organizations/types";
+import type { Organization } from "@/features/organizations/types";
 import { MoreHorizontal, Pencil, Trash2, Users } from "lucide-react";
 import { useState } from "react";
-import { Cluster } from "@/features/clusters/components/clusters-table";
+import type { Cluster } from "@/features/clusters/components/clusters-table";
 import {
   DropdownMenu,
   DropdownMenuContent,

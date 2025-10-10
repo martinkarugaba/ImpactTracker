@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Training, NewTraining } from "../types/types";
+import type { Training, NewTraining } from "../types/types";
 import { createTraining, updateTraining } from "../actions";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";

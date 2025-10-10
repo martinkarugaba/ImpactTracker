@@ -1,6 +1,6 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,7 +15,7 @@ import { deleteCity } from "../../actions/cities";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 
-export type City = {
+export interface City {
   id: string;
   name: string;
   code: string;
@@ -30,7 +30,7 @@ export type City = {
   county_name?: string;
   subcounty_name?: string;
   municipality_name?: string;
-};
+}
 
 export const columns: ColumnDef<City>[] = [
   {
