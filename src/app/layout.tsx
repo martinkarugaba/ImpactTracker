@@ -1,4 +1,4 @@
-import { Inter } from "next/font/google";
+import { IBM_Plex_Sans } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { QueryProvider } from "@/providers/query-provider";
@@ -8,11 +8,11 @@ import { CalendarProvider } from "@/components/event-calendar/calendar-context";
 import type { Metadata } from "next";
 import "./globals.css";
 
-const fontSans = Inter({
+const fontSans = IBM_Plex_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["400", "700"],
   preload: true,
   fallback: ["system-ui", "arial"],
 });
@@ -20,7 +20,7 @@ const fontSans = Inter({
 export const metadata: Metadata = {
   title: "Impact Tracker",
   description:
-    "KPI Edge - Impact tracking platform for development organizations in Uganda/East Africa",
+    "Impact tracking platform for organizations in Uganda/East Africa",
   icons: {
     icon: "/icon.png",
     apple: "/apple-icon.png",

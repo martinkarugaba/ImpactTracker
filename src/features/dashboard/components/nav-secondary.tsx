@@ -52,7 +52,7 @@ export function NavSecondary({
               <SidebarMenuButton
                 asChild
                 tooltip={item.title}
-                className="transition-all duration-200 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20"
+                className="font-medium transition-all duration-200 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20"
               >
                 <Link
                   href={item.url}

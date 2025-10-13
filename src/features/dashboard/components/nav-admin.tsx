@@ -45,7 +45,7 @@ export function NavMain({
           Admin
         </SidebarGroupLabel>
         <SidebarGroupContent>
-          <SidebarMenu>
+          <SidebarMenu className="space-y-1 font-medium">
             {items.map(item => (
               <SidebarMenuItem key={item.title}>
                 <Skeleton className="h-8 w-full" />
@@ -82,7 +82,7 @@ export function NavMain({
                     className="data-[active=true]:from-primary/20 data-[active=true]:to-primary/10 data-[active=true]:text-primary hover:from-primary/10 hover:to-primary/5 transition-all duration-200 hover:bg-gradient-to-r data-[active=true]:bg-gradient-to-r"
                   >
                     <Link
-                      className="flex items-center gap-3 text-lg group-data-[state=closed]/collapsible:mx-4"
+                      className="flex items-center gap-3 text-lg font-medium group-data-[state=closed]/collapsible:mx-4"
                       href={item.url}
                     >
                       {item.icon && <item.icon className="text-primary/80" />}

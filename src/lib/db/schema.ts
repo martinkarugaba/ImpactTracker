@@ -844,8 +844,10 @@ export const activities = pgTable("activities", {
   id: uuid("id").primaryKey().defaultRandom(),
   title: text("title").notNull(),
   description: text("description"),
-  type: text("type").notNull(), // meeting, workshop, field_visit, etc.
-  status: text("status").notNull().default("planned"), // planned, ongoing, completed, cancelled
+  type: text("type").notNull() /* Lines 847-848 omitted */,
+  status: text("status")
+    .notNull()
+    .default("planned") /* Lines 848-849 omitted */,
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date"),
   venue: text("venue").notNull(),
@@ -854,6 +856,7 @@ export const activities = pgTable("activities", {
   numberOfParticipants: integer("number_of_participants").default(0),
   expectedSessions: integer("expected_sessions"),
   objectives: text("objectives").array().default([]),
+  skillCategory: text("skill_category"),
   outcomes: text("outcomes"),
   challenges: text("challenges"),
   recommendations: text("recommendations"),
