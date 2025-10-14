@@ -23,7 +23,8 @@ export default function InterventionsContainer({
 }: InterventionsContainerProps) {
   const [data] = useState<Intervention[]>(initialData || []);
   const [page, setPage] = useState(1);
-  const [limit] = useState(Math.max(25, data.length || 25));
+  // Keep default page size but allow the table controls to change it via onPaginationChange
+  const [limit, setLimit] = useState(Math.max(25, data.length || 25));
 
   // Filters
   const [search, setSearch] = useState("");
@@ -33,12 +34,14 @@ export default function InterventionsContainer({
   const pagination = {
     page,
     limit,
+    // We'll paginate by participant rows (after aggregation)
     total: data.length,
     totalPages: Math.max(1, Math.ceil((data.length || 0) / limit)),
   };
 
   const filteredData = useMemo(() => {
-    return data.filter(d => {
+    // First apply simple filters on flat rows
+    const flat = data.filter(d => {
       if (skillFilter && d.skillCategory !== skillFilter) return false;
       if (sourceFilter && d.source !== sourceFilter) return false;
       if (!search) return true;
@@ -49,13 +52,88 @@ export default function InterventionsContainer({
         (d.skillCategory || "").toLowerCase().includes(q)
       );
     });
+
+    // Aggregate activities per participant so each participant appears once
+    const map = new Map<string, Intervention>();
+    for (const row of flat) {
+      const pid = row.participantId;
+      if (!pid) continue;
+      const existing = map.get(pid);
+      const act = {
+        activityId: row.activityId || "",
+        activityTitle: row.activityTitle ?? null,
+        skillCategory: row.skillCategory ?? null,
+        outcomes: row.outcomes ?? null,
+        source: row.source,
+        attendedAt: row.attendedAt ?? null,
+      };
+
+      if (!existing) {
+        map.set(pid, {
+          participantId: row.participantId,
+          participantName: row.participantName,
+          participantContact: row.participantContact ?? null,
+          // keep top-level single activity fields for backward compatibility
+          activityId: row.activityId,
+          activityTitle: row.activityTitle,
+          skillCategory: row.skillCategory,
+          outcomes: row.outcomes ?? null,
+          activities: [act],
+          source: row.source,
+          attendedAt: row.attendedAt ?? null,
+        });
+      } else {
+        // append activity if unique by activityId (ignore source so multiple
+        // session records for same activity are considered one activity)
+        const exists = existing.activities ?? [];
+        const found = exists.find(a => a.activityId === act.activityId);
+        if (!found) {
+          exists.push(act);
+          existing.activities = exists;
+        } else {
+          // merge missing fields from the new record into the existing activity
+          if (!found.skillCategory && act.skillCategory) {
+            found.skillCategory = act.skillCategory;
+          }
+          if (
+            (!found.outcomes || found.outcomes.length === 0) &&
+            act.outcomes
+          ) {
+            found.outcomes = act.outcomes;
+          } else if (found.outcomes && act.outcomes) {
+            // merge unique outcomes
+            found.outcomes = Array.from(
+              new Set([...found.outcomes, ...act.outcomes])
+            );
+          }
+          if (!found.attendedAt && act.attendedAt) {
+            found.attendedAt = act.attendedAt;
+          }
+          existing.activities = exists;
+        }
+        // ensure top-level metadata prefers existing but can be filled from row
+        existing.source = existing.source || row.source;
+        existing.attendedAt = existing.attendedAt || row.attendedAt || null;
+        if (!existing.skillCategory && row.skillCategory) {
+          existing.skillCategory = row.skillCategory;
+        }
+        if (
+          (!existing.outcomes || existing.outcomes.length === 0) &&
+          row.outcomes
+        ) {
+          existing.outcomes = row.outcomes;
+        }
+        map.set(pid, existing);
+      }
+    }
+
+    return Array.from(map.values());
   }, [data, search, skillFilter, sourceFilter]);
 
   // metrics
   const totalInterventions = filteredData.length;
-  const uniqueParticipants = useMemo(() => {
-    return new Set(filteredData.map(d => d.participantId)).size;
-  }, [filteredData]);
+  // After aggregation filteredData is already one row per participant
+  const uniqueParticipants = useMemo(() => filteredData.length, [filteredData]);
 
   const topSkill = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -99,10 +177,13 @@ export default function InterventionsContainer({
 
           <div>
             <InterventionsDataTable
-              data={filteredData}
-              pagination={pagination}
+              data={filteredData.slice((page - 1) * limit, page * limit)}
+              pagination={{ ...pagination, total: filteredData.length }}
               isLoading={false}
-              onPaginationChange={setPage}
+              onPaginationChange={(p, newLimit) => {
+                setPage(p);
+                setLimit(newLimit);
+              }}
               onPageChange={setPage}
             />
           </div>

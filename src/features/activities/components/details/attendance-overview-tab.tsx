@@ -10,8 +10,14 @@ import {
   BarChart3,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import type { ActivitySession, DailyAttendance } from "../../types/types";
+import type {
+  ActivitySession,
+  DailyAttendance,
+  DailyAttendanceStatus,
+} from "../../types/types";
 import { AttendanceDataTable } from "./attendance-data-table";
+import { useMarkAttendance } from "../../hooks/use-activities";
+import { useCallback } from "react";
 
 interface AttendanceOverviewTabProps {
   sessions: ActivitySession[];
@@ -26,13 +32,38 @@ export function AttendanceOverviewTab({
   isLoading = false,
   onAttendanceRefresh,
 }: AttendanceOverviewTabProps) {
-  // Calculate overall metrics
+  const markAttendance = useMarkAttendance();
+
+  const handleStatusChange = useCallback(
+    async ({
+      attendanceId: _attendanceId,
+      sessionId,
+      participantId,
+      status,
+    }: {
+      attendanceId: string;
+      sessionId: string;
+      participantId: string;
+      status: string;
+    }) => {
+      // markAttendance expects a typed union; cast the incoming string to the known union
+      await markAttendance.mutateAsync({
+        sessionId,
+        participantId,
+        attendanceData: { attendance_status: status as DailyAttendanceStatus },
+      });
+      // refresh parent list
+      onAttendanceRefresh?.();
+    },
+    [markAttendance, onAttendanceRefresh]
+  );
+  // Flatten attendance across all sessions for overview metrics
+  const allAttendance = Object.values(attendanceBySession).flat();
+
   const totalSessions = sessions.length;
   const completedSessions = sessions.filter(
     s => s.status === "completed"
   ).length;
-
-  const allAttendance = Object.values(attendanceBySession).flat();
   const totalParticipants = new Set(allAttendance.map(a => a.participant_id))
     .size;
 
@@ -240,6 +271,7 @@ export function AttendanceOverviewTab({
               sessionAttendance={allAttendance}
               isLoading={isLoading}
               onParticipantsDeleted={onAttendanceRefresh}
+              onStatusChange={handleStatusChange}
             />
           </CardContent>
         </Card>

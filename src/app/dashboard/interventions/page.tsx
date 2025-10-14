@@ -7,7 +7,7 @@ export default async function InterventionsPage() {
   const data = res.success ? (res.data ?? []) : [];
 
   return (
-    <div className="p-4">
+    <div className="p-4 px-6">
       <InterventionsContainer initialData={data} />
     </div>
   );

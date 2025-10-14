@@ -6,7 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+// helper not needed here
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import type { DailyAttendance } from "../../types/types";
@@ -14,11 +21,19 @@ import {
   bulkDeleteDailyAttendance,
   deleteAttendanceRecord,
 } from "../../actions/attendance";
+import { useMarkAttendance } from "../../hooks/use-activities";
+import { DAILY_ATTENDANCE_STATUSES } from "../../types/types";
 
 interface AttendanceDataTableProps {
   sessionAttendance: DailyAttendance[];
   isLoading?: boolean;
   onParticipantsDeleted?: () => void;
+  onStatusChange?: (args: {
+    attendanceId: string;
+    sessionId: string;
+    participantId: string;
+    status: string;
+  }) => Promise<void>;
 }
 
 export function AttendanceDataTable({
@@ -26,6 +41,8 @@ export function AttendanceDataTable({
   isLoading = false,
   onParticipantsDeleted,
 }: AttendanceDataTableProps) {
+  const markAttendanceMutation = useMarkAttendance();
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -289,21 +306,50 @@ export function AttendanceDataTable({
         header: "Status",
         cell: ({ row }) => {
           const status = row.original.attendance_status;
+          const current =
+            // prefer optimistic override while updating
+            updatingId === row.original.id && markAttendanceMutation.variables
+              ? markAttendanceMutation.variables.attendanceData
+                  .attendance_status
+              : status;
+
           return (
-            <Badge
-              variant="outline"
-              className={cn(
-                "font-medium",
-                status === "attended" &&
-                  "border-green-200 bg-green-100 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-300",
-                status === "absent" &&
-                  "border-red-200 bg-red-100 text-red-800 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300",
-                status === "late" &&
-                  "border-yellow-200 bg-yellow-100 text-yellow-800 dark:border-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300"
-              )}
-            >
-              {status}
-            </Badge>
+            <div>
+              <Select
+                value={current}
+                onValueChange={async value => {
+                  // optimistic UI
+                  setUpdatingId(row.original.id);
+                  try {
+                    await markAttendanceMutation.mutateAsync({
+                      sessionId: row.original.session_id,
+                      participantId: row.original.participant_id,
+                      attendanceData: {
+                        attendance_status:
+                          value as (typeof DAILY_ATTENDANCE_STATUSES)[number],
+                      },
+                    });
+                    toast.success("Attendance status updated");
+                  } catch (_err) {
+                    toast.error("Failed to update status");
+                  } finally {
+                    setUpdatingId(null);
+                  }
+                }}
+                disabled={updatingId !== null && updatingId !== row.original.id}
+              >
+                <SelectTrigger className="w-36">
+                  <SelectValue placeholder={current} />
+                </SelectTrigger>
+                <SelectContent side="top">
+                  {DAILY_ATTENDANCE_STATUSES.map(s => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           );
         },
       },
@@ -335,6 +381,8 @@ export function AttendanceDataTable({
       handleSelectAll,
       handleSelectRow,
       handleDeleteSingle,
+      markAttendanceMutation,
+      updatingId,
     ]
   );
 
