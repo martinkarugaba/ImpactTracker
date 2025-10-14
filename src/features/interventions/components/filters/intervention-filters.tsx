@@ -34,14 +34,14 @@ export function InterventionFilters({
   }, [filters, onChange]);
 
   return (
-    <div className="flex max-w-7xl items-center gap-2 border-2">
-      <div className="relative w-80 border-2">
+    <div className="flex max-w-7xl items-center gap-2">
+      <div className="relative w-96">
         <Search className="text-muted-foreground absolute top-2.5 left-3 h-4 w-4" />
         <Input
           placeholder="Search participants, activity or skill"
           value={filters.search ?? ""}
           onChange={e => setFilter("search", e.target.value)}
-          className="w-full max-w-7xl pl-9"
+          className="w-[400px] max-w-7xl pl-9"
         />
       </div>
 
@@ -64,10 +64,22 @@ export function InterventionFilters({
         ]}
       />
 
-      <Button variant="ghost" size="sm" onClick={() => clearFilters()}>
-        <X className="mr-2 h-4 w-4" />
-        Clear
-      </Button>
+      {Object.values(filters).some(value => value) && (
+        <Button variant="ghost" size="sm" onClick={() => clearFilters()}>
+          <X className="mr-2 h-4 w-4" />
+          Clear
+        </Button>
+      )}
+
+      <div className="flex items-center gap-2">
+        {Object.entries(filters)
+          .filter(([_, value]) => value)
+          .map(([key, value]) => (
+            <span key={key} className="text-sm font-medium">
+              {key}: {value}
+            </span>
+          ))}
+      </div>
     </div>
   );
 }

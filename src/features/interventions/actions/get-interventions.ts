@@ -151,3 +151,44 @@ export async function getInterventions(_opts?: {
     return { success: false, error: "Failed to load interventions" };
   }
 }
+
+export async function getAllFilteredInterventionsForExport(
+  clusterId: string,
+  filters?: Record<string, unknown>,
+  search?: string
+): Promise<{ success: boolean; data?: Intervention[]; error?: string }> {
+  try {
+    const interventions = await getInterventions({ clusterId });
+
+    if (!interventions.success || !interventions.data) {
+      return { success: false, error: interventions.error || "No data found" };
+    }
+
+    let filteredData = interventions.data;
+
+    // Apply filters
+    if (filters) {
+      filteredData = filteredData.filter(intervention => {
+        return Object.entries(filters).every(([key, value]) => {
+          return intervention[key as keyof Intervention] === value;
+        });
+      });
+    }
+
+    // Apply search
+    if (search) {
+      const lowerSearch = search.toLowerCase();
+      filteredData = filteredData.filter(intervention => {
+        return (
+          intervention.participantName?.toLowerCase().includes(lowerSearch) ||
+          intervention.activityTitle?.toLowerCase().includes(lowerSearch)
+        );
+      });
+    }
+
+    return { success: true, data: filteredData };
+  } catch (error) {
+    console.error("getAllFilteredInterventionsForExport error", error);
+    return { success: false, error: "Failed to export interventions" };
+  }
+}

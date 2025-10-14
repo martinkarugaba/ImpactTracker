@@ -7,6 +7,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { MetricCard } from "@/components/ui/metric-card";
 import { Badge } from "@/components/ui/badge";
 import { InterventionFilters } from "@/features/interventions/components";
+import { useExportInterventions } from "@/features/interventions/hooks/use-export-interventions";
+import { Button } from "@/components/ui/button";
 
 interface InterventionsContainerProps {
   initialData: Intervention[];
@@ -21,6 +23,22 @@ interface FilterChange {
 export default function InterventionsContainer({
   initialData,
 }: InterventionsContainerProps) {
+  const exportInterventions = useExportInterventions();
+
+  const handleExport = async () => {
+    try {
+      const data = await exportInterventions.mutateAsync({
+        clusterId: "example-cluster-id", // Replace with actual cluster ID
+        filters: { skillCategory: skillFilter, source: sourceFilter },
+        search,
+      });
+      console.log("Exported data:", data);
+      // Add logic to download the data as a file (e.g., CSV or Excel)
+    } catch (error) {
+      console.error("Export failed:", error);
+    }
+  };
+
   const [data] = useState<Intervention[]>(initialData || []);
   const [page, setPage] = useState(1);
   // Keep default page size but allow the table controls to change it via onPaginationChange
@@ -182,28 +200,30 @@ export default function InterventionsContainer({
               />
             </div>
             <div className="flex items-center gap-2">
-              <button className="btn">Export</button>
-              <button className="btn">Import</button>
+              <Button onClick={handleExport} variant="default">
+                Export
+              </Button>
+              <Button variant="secondary">Import</Button>
             </div>
           </div>
 
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <div>
+              <div className="min-w-[150px] text-sm">
                 {selectedItems.length > 0 ? (
-                  <div className="flex items-center gap-3">
-                    <div className="text-sm">
-                      {selectedItems.length} selected
-                    </div>
+                  <>
+                    {selectedItems.length} selected
                     <button
                       type="button"
-                      className="muted-foreground text-sm underline"
+                      className="muted-foreground ml-2 text-sm underline"
                       onClick={clearSelection}
                     >
                       Clear
                     </button>
-                  </div>
-                ) : null}
+                  </>
+                ) : (
+                  <span>&nbsp;</span>
+                )}
               </div>
             </div>
 
