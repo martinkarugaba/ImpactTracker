@@ -10,64 +10,120 @@ export async function getInterventions(_opts?: {
 }): Promise<{ success: boolean; data?: Intervention[]; error?: string }> {
   try {
     // 1) Activity participants marked as attended
-    const ap = await db.query.activityParticipants.findMany({
-      where: eq(activityParticipants.attendance_status, "attended"),
-      with: {
-        participant: true,
-        activity: true,
-      },
-    });
-
-    const apMapped: Intervention[] = (ap || []).map(r => ({
-      participantId: r.participant_id,
-      participantName: r.participant
-        ? `${r.participant.firstName ?? ""} ${r.participant.lastName ?? ""}`.trim()
-        : "Unknown",
-      participantContact: r.participant?.contact ?? null,
-      activityId: r.activity_id,
-      activityTitle: r.activity?.title ?? null,
-      skillCategory: r.activity?.skillCategory ?? null,
-      outcomes: Array.isArray(r.activity?.outcomes)
-        ? (r.activity?.outcomes as string[])
-        : r.activity?.outcomes
-          ? [String(r.activity.outcomes)]
-          : null,
-      source: "activity_participants",
-      attendedAt: null,
-    }));
-
-    // 2) Daily/session attendance records
-    const sa = await db.query.dailyAttendance.findMany({
-      where: eq(dailyAttendance.attendance_status, "attended"),
-      with: {
-        participant: true,
-        session: {
-          with: {
-            activity: true,
+    let apMapped: Intervention[] = [];
+    try {
+      const ap = await db.query.activityParticipants.findMany({
+        where: eq(activityParticipants.attendance_status, "attended"),
+        with: {
+          participant: {
+            columns: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              contact: true,
+              district: true,
+              subCounty: true,
+            },
+          },
+          activity: {
+            columns: {
+              id: true,
+              title: true,
+              skillCategory: true,
+              outcomes: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    const saMapped: Intervention[] = (sa || []).map(r => ({
-      participantId: r.participant_id,
-      participantName: r.participant
-        ? `${r.participant.firstName ?? ""} ${r.participant.lastName ?? ""}`.trim()
-        : "Unknown",
-      participantContact: r.participant?.contact ?? null,
-      activityId: r.session?.activity_id ?? r.session?.activity?.id ?? "",
-      activityTitle: r.session?.activity?.title ?? null,
-      skillCategory: r.session?.activity?.skillCategory ?? null,
-      outcomes: Array.isArray(r.session?.activity?.outcomes)
-        ? (r.session?.activity?.outcomes as string[])
-        : r.session?.activity?.outcomes
-          ? [String(r.session.activity.outcomes)]
+      const cap = (s?: string | null) =>
+        s && s.length > 0
+          ? `${s.charAt(0).toUpperCase()}${s.slice(1)}`
+          : (s ?? "");
+
+      apMapped = (ap || []).map(r => ({
+        participantId: r.participant_id,
+        participantName: r.participant
+          ? `${cap(r.participant.firstName)} ${cap(r.participant.lastName)}`.trim()
+          : "Unknown",
+        participantContact: r.participant?.contact ?? null,
+        activityId: r.activity_id,
+        activityTitle: r.activity?.title ?? null,
+        skillCategory: r.activity?.skillCategory ?? null,
+        outcomes: Array.isArray(r.activity?.outcomes)
+          ? (r.activity?.outcomes as string[])
+          : r.activity?.outcomes
+            ? [String(r.activity.outcomes)]
+            : null,
+        source: "activity_participants",
+        attendedAt: null,
+      }));
+    } catch (err) {
+      console.error("getInterventions: activityParticipants query failed", err);
+      apMapped = [];
+    }
+
+    // 2) Daily/session attendance records
+    let saMapped: Intervention[] = [];
+    try {
+      const sa = await db.query.dailyAttendance.findMany({
+        where: eq(dailyAttendance.attendance_status, "attended"),
+        with: {
+          participant: {
+            columns: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              contact: true,
+            },
+          },
+          session: {
+            columns: {
+              id: true,
+              activity_id: true,
+            },
+            with: {
+              activity: {
+                columns: {
+                  id: true,
+                  title: true,
+                  skillCategory: true,
+                  outcomes: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const cap = (s?: string | null) =>
+        s && s.length > 0
+          ? `${s.charAt(0).toUpperCase()}${s.slice(1)}`
+          : (s ?? "");
+
+      saMapped = (sa || []).map(r => ({
+        participantId: r.participant_id,
+        participantName: r.participant
+          ? `${cap(r.participant.firstName)} ${cap(r.participant.lastName)}`.trim()
+          : "Unknown",
+        participantContact: r.participant?.contact ?? null,
+        activityId: r.session?.activity_id ?? r.session?.activity?.id ?? "",
+        activityTitle: r.session?.activity?.title ?? null,
+        skillCategory: r.session?.activity?.skillCategory ?? null,
+        outcomes: Array.isArray(r.session?.activity?.outcomes)
+          ? (r.session?.activity?.outcomes as string[])
+          : r.session?.activity?.outcomes
+            ? [String(r.session.activity.outcomes)]
+            : null,
+        source: "session_attendance",
+        attendedAt: r.check_in_time
+          ? new Date(r.check_in_time).toISOString()
           : null,
-      source: "session_attendance",
-      attendedAt: r.check_in_time
-        ? new Date(r.check_in_time).toISOString()
-        : null,
-    }));
+      }));
+    } catch (err) {
+      console.error("getInterventions: dailyAttendance query failed", err);
+      saMapped = [];
+    }
 
     // Merge & dedupe
     const map = new Map<string, Intervention>();

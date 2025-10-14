@@ -387,45 +387,44 @@ export function ActivityFormDialog({
               />
             </div>
 
-            {form.watch("type") === "training" && (
-              <FormField
-                control={form.control}
-                name="skillCategory"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Skill Category</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select skill category" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {SKILL_CATEGORIES.map(category => (
-                          <SelectItem key={category} value={category}>
-                            {category
-                              .split("_")
-                              .map(
-                                word =>
-                                  word.charAt(0).toUpperCase() + word.slice(1)
-                              )
-                              .join(" ")}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      Required for training activities - specify the type of
-                      skills to be attained
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+            <FormField
+              control={form.control}
+              name="skillCategory"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Skill Category</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select skill category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {SKILL_CATEGORIES.map(category => (
+                        <SelectItem key={category} value={category}>
+                          {category
+                            .split("_")
+                            .map(
+                              word =>
+                                word.charAt(0).toUpperCase() + word.slice(1)
+                            )
+                            .join(" ")}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Required for training activities — specify the type of
+                    skills to be attained. For non-training activities this
+                    field is optional.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="grid grid-cols-2 gap-4">
               <FormField

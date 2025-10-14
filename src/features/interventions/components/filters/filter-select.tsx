@@ -20,13 +20,18 @@ export function FilterSelect({
   options: Array<{ value: string; label: string }>;
   className?: string;
 }) {
+  const internalValue = value && value !== "" ? value : "all";
+
   return (
-    <Select value={value ?? ""} onValueChange={v => onChange(String(v))}>
+    <Select
+      value={internalValue}
+      onValueChange={v => onChange(String(v === "all" ? "" : v))}
+    >
       <SelectTrigger className={className}>
         <SelectValue placeholder="All" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="">All</SelectItem>
+        <SelectItem value="all">All</SelectItem>
         {options.map(o => (
           <SelectItem key={o.value} value={o.value}>
             {o.label}

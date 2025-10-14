@@ -81,7 +81,7 @@ export default function InterventionsContainer({
 
         <TabsContent value="table">
           <div className="flex items-center justify-between gap-4">
-            <div>
+            <div className="my-6">
               <InterventionFilters
                 initial={{ skillCategory: skillFilter, source: sourceFilter }}
                 onChange={(f: FilterChange) => {
