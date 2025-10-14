@@ -9,6 +9,7 @@ import { capitalizeWords, formatContact } from "@/lib/utils";
 import { calculateAge } from "../../lib/age-calculator";
 import { Phone, Flag } from "lucide-react";
 import { ActionCell } from "./action-cell";
+import Link from "next/link";
 
 interface GetParticipantColumnsProps {
   onEdit: (participant: Participant) => void;
@@ -63,7 +64,11 @@ export function getParticipantColumns({
         return `${firstName} ${lastName}`;
       },
       cell: ({ row }) => (
-        <div className="flex items-center gap-2">
+        <Link
+          href={`/dashboard/participants/${row.original.id}`}
+          className="flex items-center gap-2 hover:underline"
+          onClick={e => e.stopPropagation()}
+        >
           <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium">
             {capitalizeWords(row.original.firstName || "")?.[0]?.toUpperCase()}
             {capitalizeWords(row.original.lastName || "")?.[0]?.toUpperCase()}
@@ -72,7 +77,7 @@ export function getParticipantColumns({
             {capitalizeWords(row.original.firstName || "")}{" "}
             {capitalizeWords(row.original.lastName || "")}
           </div>
-        </div>
+        </Link>
       ),
     },
     {

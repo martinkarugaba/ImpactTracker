@@ -1,13 +1,36 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
 import { LoginForm } from "@/features/auth/components/LoginForm";
-
-export const metadata: Metadata = {
-  title: "Login | KPI Tracking",
-  description: "Login to your account",
-};
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginPageContent />
+    </Suspense>
+  );
+}
+
+function LoginPageContent() {
+  const searchParams = useSearchParams();
+  const errorMessages = {
+    session_expired: "Your session has expired. Please log in again.",
+    database_error: "A database error occurred. Please try logging in again.",
+    auth_error: "Authentication failed. Please try again.",
+  };
+
+  const errorParam = searchParams.get("error");
+  const errorMessage =
+    errorParam && errorParam in errorMessages
+      ? errorMessages[errorParam as keyof typeof errorMessages]
+      : errorParam
+        ? "An error occurred. Please try logging in again."
+        : null;
+
   return (
     <div className="from-background to-muted/50 relative flex min-h-screen items-center justify-center bg-gradient-to-br">
       {/* Background gradient */}
@@ -22,6 +45,14 @@ export default function LoginPage() {
               Sign in to your account to continue
             </p>
           </div>
+
+          {errorMessage && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{errorMessage}</AlertDescription>
+            </Alert>
+          )}
+
           <LoginForm />
           <p className="text-muted-foreground mt-6 text-center text-sm">
             <Link

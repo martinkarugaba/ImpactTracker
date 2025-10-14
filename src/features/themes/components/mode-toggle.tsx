@@ -49,7 +49,7 @@ export function ModeToggle() {
           variant="outline"
           size="sm"
           onClick={toggleTheme}
-          className="relative h-8 overflow-hidden"
+          className="text-foreground hover:bg-accent relative h-8 overflow-hidden border-none bg-transparent shadow-none outline-none"
         >
           <IconBrightness className="h-4 w-4" />
           <span className="sr-only">
@@ -57,7 +57,7 @@ export function ModeToggle() {
           </span>
         </Button>
       </TooltipTrigger>
-      <TooltipContent>
+      <TooltipContent className="bg-primary">
         <p>Switch to {isDark ? "light" : "dark"} mode</p>
       </TooltipContent>
     </Tooltip>
