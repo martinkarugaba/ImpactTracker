@@ -166,10 +166,17 @@ export const PARTICIPANT_ROLES = [
   "moderator",
 ] as const;
 
+export const SKILL_CATEGORIES = [
+  "business_skill",
+  "vocational_skill",
+  "soft_skill",
+] as const;
+
 export type ActivityType = (typeof ACTIVITY_TYPES)[number];
 export type ActivityStatus = (typeof ACTIVITY_STATUSES)[number];
 export type AttendanceStatus = (typeof ATTENDANCE_STATUSES)[number];
 export type ParticipantRole = (typeof PARTICIPANT_ROLES)[number];
+export type SkillCategory = (typeof SKILL_CATEGORIES)[number];
 
 // Activity Report Types from Database Schema
 export type ActivityReport = InferSelectModel<typeof activityReports>;

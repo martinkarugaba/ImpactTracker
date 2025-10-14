@@ -12,7 +12,7 @@ const fontSans = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["400", "500", "700"],
   preload: true,
   fallback: ["system-ui", "arial"],
 });
@@ -20,7 +20,7 @@ const fontSans = Inter({
 export const metadata: Metadata = {
   title: "Impact Tracker",
   description:
-    "KPI Edge - Impact tracking platform for development organizations in Uganda/East Africa",
+    "Impact tracking platform for organizations in Uganda/East Africa",
   icons: {
     icon: "/icon.png",
     apple: "/apple-icon.png",

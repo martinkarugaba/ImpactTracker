@@ -52,7 +52,7 @@ export function TableContent({
   });
 
   return (
-    <div className="from-primary/5 to-card dark:bg-card rounded-lg bg-gradient-to-t shadow-xs">
+    <div className="rounded-lg shadow-xs">
       <DataTable<Activity, unknown>
         columns={columns}
         data={data}

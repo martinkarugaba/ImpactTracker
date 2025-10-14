@@ -134,6 +134,7 @@ export function ActivitiesCalendar({
         recommendations: null,
         attachments: [],
         created_by: "system", // You may want to get this from auth context
+        skillCategory: null,
       };
 
       await createActivityMutation.mutateAsync(newActivity);

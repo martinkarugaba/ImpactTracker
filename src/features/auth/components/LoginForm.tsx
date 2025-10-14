@@ -64,7 +64,7 @@ export function LoginForm({ onSuccess }: LoginFormProps = {}) {
 
         // Add a small delay to ensure session is fully established before redirect
         setTimeout(() => {
-          window.location.href = "/dashboard/user-overview";
+          window.location.href = "/dashboard";
         }, 100);
       } else {
         toast.error(result.error || "Failed to log in. Please try again.");

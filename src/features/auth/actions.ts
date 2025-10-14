@@ -122,30 +122,48 @@ export async function getOrganizationId() {
     }
     console.log("Found user session for user:", session.user.id);
 
-    // Check if user exists in database
-    const user = await db.query.users
-      .findFirst({
+    // Check if user exists in database with better error handling
+    let user = null;
+    try {
+      user = await db.query.users.findFirst({
         where: eq(users.id, session.user.id),
-      })
-      .catch(error => {
-        console.error("Database error while fetching user:", error);
-        return null;
       });
+    } catch (error) {
+      console.error("Database error while fetching user:", error);
+      console.error("Error details:", {
+        message: error instanceof Error ? error.message : "Unknown error",
+        userId: session.user.id,
+      });
+      // Return null to prevent app crash, user will need to re-login
+      return null;
+    }
 
-    // If user doesn't exist, return null
+    // If user doesn't exist, return null and log for debugging
     if (!user) {
       console.warn(
-        `User ${session.user.id} not found in database. Session may be stale.`
+        `User ${session.user.id} not found in database. Session may be stale or user was deleted.`
+      );
+      console.warn(
+        "User should clear cookies and login again to create a valid session."
       );
       return null;
     }
     console.log("Found user in database:", user.id);
 
     console.log("Looking up organization membership...");
-    const [member] = await db
-      .select({ organization_id: organizationMembers.organization_id })
-      .from(organizationMembers)
-      .where(eq(organizationMembers.user_id, session.user.id));
+    let member = null;
+    try {
+      [member] = await db
+        .select({ organization_id: organizationMembers.organization_id })
+        .from(organizationMembers)
+        .where(eq(organizationMembers.user_id, session.user.id));
+    } catch (error) {
+      console.error(
+        "Database error while fetching organization membership:",
+        error
+      );
+      return null;
+    }
 
     if (!member) {
       console.log("No organization membership found for user");
@@ -155,7 +173,7 @@ export async function getOrganizationId() {
     console.log("Found organization membership:", member.organization_id);
     return member.organization_id;
   } catch (error) {
-    console.error("Error getting organization ID:", error);
+    console.error("Unexpected error in getOrganizationId:", error);
     return null;
   }
 }

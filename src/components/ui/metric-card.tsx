@@ -44,18 +44,19 @@ export function MetricCard({
         </CardTitle>
         {trend && (
           <CardAction>
-            <Badge variant="outline">
+            <Badge variant="outline" className="gap-1">
               {icon}
-              {trend.isPositive ? "+" : "-"}
-              {Math.abs(trend.value)}%
+              {trend.isPositive ? "+" : ""}
+              {trend.value}%
             </Badge>
           </CardAction>
         )}
       </CardHeader>
       {footer && (
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            {footer.title} {icon}
+          <div className="line-clamp-1 flex items-center gap-2 font-medium">
+            {footer.title}
+            {icon && <span className="size-4">{icon}</span>}
           </div>
           <div className="text-muted-foreground">{footer.description}</div>
         </CardFooter>

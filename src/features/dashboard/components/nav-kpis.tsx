@@ -54,7 +54,7 @@ export function NavDocuments({
           My KPIs
         </SidebarGroupLabel>
         <SidebarGroupContent>
-          <SidebarMenu>
+          <SidebarMenu className="font-medium">
             {filteredItems.map(item => (
               <SidebarMenuItem key={item.name}>
                 <Skeleton className="h-8 w-full" />
@@ -92,7 +92,7 @@ export function NavDocuments({
                     <Link
                       href={item.url}
                       title={item.name}
-                      className="flex items-center gap-3 group-data-[state=closed]/collapsible:mx-4"
+                      className="flex items-center gap-3 font-medium group-data-[state=closed]/collapsible:mx-4"
                     >
                       {item.icon && <item.icon className="text-primary/80" />}
                       <span className="text-foreground/90 hover:text-foreground">

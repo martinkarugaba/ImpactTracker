@@ -101,6 +101,7 @@ export async function getActivitiesOptimized(
             created_by: activities.created_by,
             created_at: activities.created_at,
             updated_at: activities.updated_at,
+            skillCategory: activities.skillCategory,
             // IDs for relationships
             cluster_id: activities.cluster_id,
             organization_id: activities.organization_id,
@@ -305,6 +306,7 @@ export async function getActivitiesOptimized(
           // Keep the original Activity type structure, just add computed fields
           participantCount: activity.totalParticipants || 0,
           sessionsCount: activity.sessionCount || 0,
+          skillCategory: activity.skillCategory ?? null,
         }));
 
         return {
@@ -372,6 +374,7 @@ export async function getActivityDetailsOptimized(
                 created_by: activities.created_by,
                 created_at: activities.created_at,
                 updated_at: activities.updated_at,
+                skillCategory: activities.skillCategory,
                 cluster_id: activities.cluster_id,
                 organization_id: activities.organization_id,
                 project_id: activities.project_id,
@@ -473,6 +476,7 @@ export async function getActivityDetailsOptimized(
             clusterName: activity.clusterName ?? undefined,
             organizationAcronym: activity.organizationAcronym ?? undefined,
             projectAcronym: activity.projectAcronym ?? undefined,
+            skillCategory: activity.skillCategory ?? null,
             sessions,
             stats: {
               totalParticipants: stats.totalParticipants,
@@ -571,6 +575,7 @@ export async function getActivitiesMetricsOptimized(
             challenges: activities.challenges,
             recommendations: activities.recommendations,
             attachments: activities.attachments,
+            skillCategory: activities.skillCategory,
             cluster_id: activities.cluster_id,
             organization_id: activities.organization_id,
             project_id: activities.project_id,
@@ -596,6 +601,7 @@ export async function getActivitiesMetricsOptimized(
               projectName: undefined,
               clusterName: undefined,
               participantCount: activity.numberOfParticipants || 0,
+              skillCategory: activity.skillCategory ?? null,
             })),
             pagination: {
               page: 1,

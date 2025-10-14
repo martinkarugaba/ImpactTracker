@@ -44,8 +44,10 @@ import {
   type Activity,
   ACTIVITY_TYPES,
   ACTIVITY_STATUSES,
+  SKILL_CATEGORIES,
   type ActivityType,
   type ActivityStatus,
+  type SkillCategory,
 } from "../../types/types";
 import {
   useCreateActivity,
@@ -53,26 +55,41 @@ import {
   useGenerateActivitySessions,
 } from "../../hooks/use-activities";
 
-const activityFormSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
-  type: z.enum(ACTIVITY_TYPES),
-  status: z.enum(ACTIVITY_STATUSES),
-  startDate: z.date({ required_error: "Start date is required" }),
-  endDate: z.date().optional(),
-  venue: z.string().min(1, "Venue is required"),
-  budget: z.number().optional(),
-  objectives: z.string().optional(),
-  activityLead: z.string().min(1, "Activity lead is required"),
-  clusterId: z.string().optional(),
-  projectId: z.string().optional(),
-  // Expected number of sessions
-  sessionCount: z
-    .number()
-    .min(1, "At least 1 session is required")
-    .max(50, "Maximum 50 sessions allowed")
-    .optional(),
-});
+const activityFormSchema = z
+  .object({
+    title: z.string().min(1, "Title is required"),
+    description: z.string().optional(),
+    type: z.enum(ACTIVITY_TYPES),
+    status: z.enum(ACTIVITY_STATUSES),
+    startDate: z.date({ required_error: "Start date is required" }),
+    endDate: z.date().optional(),
+    venue: z.string().min(1, "Venue is required"),
+    budget: z.number().optional(),
+    objectives: z.string().optional(),
+    activityLead: z.string().min(1, "Activity lead is required"),
+    clusterId: z.string().optional(),
+    projectId: z.string().optional(),
+    // Expected number of sessions
+    sessionCount: z
+      .number()
+      .min(1, "At least 1 session is required")
+      .max(50, "Maximum 50 sessions allowed")
+      .optional(),
+    skillCategory: z.enum(SKILL_CATEGORIES).optional(),
+  })
+  .refine(
+    data => {
+      // If activity type is training, skillCategory is required
+      if (data.type === "training" && !data.skillCategory) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Skill category is required for training activities",
+      path: ["skillCategory"],
+    }
+  );
 
 type ActivityFormValues = z.infer<typeof activityFormSchema>;
 
@@ -119,6 +136,7 @@ export function ActivityFormDialog({
       clusterId: "",
       projectId: "",
       sessionCount: undefined,
+      skillCategory: undefined,
     },
   }) as ReturnType<typeof useForm<ActivityFormValues>>;
 
@@ -143,6 +161,9 @@ export function ActivityFormDialog({
           clusterId: activity.cluster_id || "",
           projectId: activity.project_id || "",
           sessionCount: activity.expectedSessions || undefined,
+          skillCategory:
+            (activity as Activity & { skillCategory?: SkillCategory })
+              .skillCategory || undefined,
         });
       } else {
         form.reset({
@@ -157,6 +178,7 @@ export function ActivityFormDialog({
           clusterId: clusterId || "",
           projectId: "",
           sessionCount: undefined,
+          skillCategory: undefined,
         });
       }
     }
@@ -194,6 +216,7 @@ export function ActivityFormDialog({
             project_id: data.projectId || undefined,
             organization_id: organizationId,
             expectedSessions: data.sessionCount || null,
+            skillCategory: data.skillCategory || null,
             created_by: data.activityLead,
           },
         });
@@ -211,6 +234,7 @@ export function ActivityFormDialog({
           project_id: data.projectId || null,
           organization_id: organizationId,
           expectedSessions: data.sessionCount || null,
+          skillCategory: data.skillCategory || null,
           // Provide default values for missing required fields
           actualCost: null,
           numberOfParticipants: 0,
@@ -362,6 +386,45 @@ export function ActivityFormDialog({
                 )}
               />
             </div>
+
+            <FormField
+              control={form.control}
+              name="skillCategory"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Skill Category</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select skill category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {SKILL_CATEGORIES.map(category => (
+                        <SelectItem key={category} value={category}>
+                          {category
+                            .split("_")
+                            .map(
+                              word =>
+                                word.charAt(0).toUpperCase() + word.slice(1)
+                            )
+                            .join(" ")}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Required for training activities — specify the type of
+                    skills to be attained. For non-training activities this
+                    field is optional.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="grid grid-cols-2 gap-4">
               <FormField

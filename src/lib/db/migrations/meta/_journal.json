@@ -15,6 +15,13 @@
       "when": 1759677465213,
       "tag": "0001_dark_colleen_wing",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1760281036984,
+      "tag": "0002_ancient_yellowjacket",
+      "breakpoints": true
     }
   ]
 }
