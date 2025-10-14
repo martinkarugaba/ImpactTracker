@@ -1,2 +1,7 @@
-export { InterventionsTable } from "./interventions-table/interventions-table";
-export { interventionsColumns } from "./interventions-table/interventions-table-columns";
+export { InterventionsDataTable } from "./data-table";
+export { TableContent } from "./data-table";
+export { PaginationControls } from "./data-table";
+export { useTableState } from "./data-table";
+export { InterventionFilters } from "./filters/intervention-filters";
+export { default as InterventionsContainer } from "./container/interventions-container";
+export { getInterventionColumns } from "./table/columns";
