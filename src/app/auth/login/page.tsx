@@ -1,29 +1,29 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
 import { LoginForm } from "@/features/auth/components/LoginForm";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export const metadata: Metadata = {
-  title: "Login | KPI Tracking",
-  description: "Login to your account",
-};
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginPageContent />
+    </Suspense>
+  );
+}
 
-export default function LoginPage({
-  searchParams,
-}: {
-  searchParams?: Record<string, string | string[]>;
-}) {
+function LoginPageContent() {
+  const searchParams = useSearchParams();
   const errorMessages = {
     session_expired: "Your session has expired. Please log in again.",
     database_error: "A database error occurred. Please try logging in again.",
     auth_error: "Authentication failed. Please try again.",
   };
 
-  const errorParamRaw = searchParams?.error;
-  const errorParam = Array.isArray(errorParamRaw)
-    ? errorParamRaw[0]
-    : errorParamRaw;
+  const errorParam = searchParams.get("error");
   const errorMessage =
     errorParam && errorParam in errorMessages
       ? errorMessages[errorParam as keyof typeof errorMessages]
