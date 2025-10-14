@@ -34,14 +34,14 @@ export function InterventionFilters({
   }, [filters, onChange]);
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="relative">
+    <div className="flex max-w-7xl items-center gap-2 border-2">
+      <div className="relative w-32 border-2">
         <Search className="text-muted-foreground absolute top-2.5 left-3 h-4 w-4" />
         <Input
           placeholder="Search participants, activity or skill"
           value={filters.search ?? ""}
           onChange={e => setFilter("search", e.target.value)}
-          className="max-w-sm pl-9"
+          className="w-full max-w-7xl pl-9"
         />
       </div>
 

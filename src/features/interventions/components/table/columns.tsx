@@ -2,23 +2,71 @@
 
 import { type ColumnDef } from "@tanstack/react-table";
 import { type Intervention } from "../../types/types";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 
 export function getInterventionColumns(): ColumnDef<Intervention>[] {
   return [
     {
+      id: "select",
+      header: ({ table }) => (
+        <div className="flex h-10 w-10 items-center justify-center">
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Select all"
+            className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+          />
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="flex h-10 w-10 items-center justify-center">
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={value => row.toggleSelected(!!value)}
+            aria-label="Select row"
+            className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+          />
+        </div>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      size: 40,
+    },
+    {
       accessorKey: "participantName",
       header: "Participant",
       cell: ({ row }) => {
-        return (
-          <div className="text-sm capitalize">
-            {row.getValue("participantName") as string}
-          </div>
-        );
+        const name = (row.getValue("participantName") as string) || "";
+        if (!name) {
+          return <span className="text-muted-foreground text-sm">—</span>;
+        }
+        const title = name
+          .split(" ")
+          .filter(Boolean)
+          .map(w => w[0].toUpperCase() + w.slice(1).toLowerCase())
+          .join(" ");
+
+        return <div className="text-sm font-medium">{title}</div>;
       },
     },
     {
       accessorKey: "participantContact",
       header: "Contact",
+      cell: ({ row }) => {
+        const val = row.getValue("participantContact") as
+          | string
+          | null
+          | undefined;
+        if (!val)
+          return <span className="text-muted-foreground text-sm">—</span>;
+        // Ensure phone numbers have a leading zero if missing
+        const formatted = val.startsWith("0") ? val : `0${val}`;
+        return <div className="text-sm">{formatted}</div>;
+      },
     },
     {
       accessorKey: "activityTitle",
@@ -63,24 +111,24 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
                 : cat === "soft_skill"
                   ? "Soft skill"
                   : cat;
+
           const colorClass =
             cat === "business_skill"
-              ? "border-amber-200 bg-amber-100 text-amber-800"
+              ? "border-amber-200 bg-amber-100 text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400"
               : cat === "vocational_skill"
-                ? "border-purple-200 bg-purple-100 text-purple-800"
+                ? "border-purple-200 bg-purple-100 text-purple-800 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
                 : cat === "soft_skill"
-                  ? "border-teal-200 bg-teal-100 text-teal-800"
-                  : "border-gray-200 bg-gray-100 text-gray-800";
+                  ? "border-teal-200 bg-teal-100 text-teal-800 dark:border-teal-800 dark:bg-teal-900/20 dark:text-teal-400"
+                  : "border-gray-200 bg-gray-100 text-gray-800 dark:border-gray-700 dark:bg-gray-900/20 dark:text-gray-400";
+
           return (
-            <div className="flex items-center" key={cat}>
-              <div
-                className={
-                  "rounded-full border px-2 py-0.5 text-xs " + colorClass
-                }
-              >
-                {label}
-              </div>
-            </div>
+            <Badge
+              variant="outline"
+              className={`${colorClass} px-2 py-0.5 text-xs`}
+              key={cat}
+            >
+              {label}
+            </Badge>
           );
         };
 
@@ -130,21 +178,28 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
         const map: Record<string, { label: string; className: string }> = {
           activity_participants: {
             label: "Activity",
-            className: "bg-blue-100 text-blue-800 border-blue-200",
+            className:
+              "border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
           },
           session_attendance: {
             label: "Session",
-            className: "bg-green-100 text-green-800 border-green-200",
+            className:
+              "border-green-200 bg-green-100 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400",
           },
         };
         const m = map[s] ?? {
           label: s ?? "-",
-          className: "bg-gray-100 text-gray-800 border-gray-200",
+          className:
+            "border-gray-200 bg-gray-100 text-gray-800 dark:border-gray-700 dark:bg-gray-900/20 dark:text-gray-400",
         };
+
         return (
-          <div className={`rounded-md px-2 py-0.5 text-xs ${m.className}`}>
+          <Badge
+            variant="outline"
+            className={`${m.className} px-2 py-0.5 text-xs`}
+          >
             {m.label}
-          </div>
+          </Badge>
         );
       },
     },

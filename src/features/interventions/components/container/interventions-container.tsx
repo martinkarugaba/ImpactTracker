@@ -145,6 +145,18 @@ export default function InterventionsContainer({
     return entries[0]?.[0] ?? "-";
   }, [filteredData]);
 
+  // Selection state: map of row index (string) -> boolean
+  const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
+
+  // derive selected items from current page slice
+  const currentPageData = filteredData.slice((page - 1) * limit, page * limit);
+  const selectedItems: Intervention[] = Object.keys(rowSelection)
+    .filter(k => rowSelection[k])
+    .map(k => currentPageData[Number.parseInt(k)])
+    .filter((v): v is Intervention => Boolean(v));
+
+  const clearSelection = () => setRowSelection({});
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -176,8 +188,27 @@ export default function InterventionsContainer({
           </div>
 
           <div>
+            <div className="mb-3 flex items-center justify-between">
+              <div>
+                {selectedItems.length > 0 ? (
+                  <div className="flex items-center gap-3">
+                    <div className="text-sm">
+                      {selectedItems.length} selected
+                    </div>
+                    <button
+                      type="button"
+                      className="muted-foreground text-sm underline"
+                      onClick={clearSelection}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+
             <InterventionsDataTable
-              data={filteredData.slice((page - 1) * limit, page * limit)}
+              data={currentPageData}
               pagination={{ ...pagination, total: filteredData.length }}
               isLoading={false}
               onPaginationChange={(p, newLimit) => {
@@ -185,6 +216,19 @@ export default function InterventionsContainer({
                 setLimit(newLimit);
               }}
               onPageChange={setPage}
+              onRowSelectionChange={selected => {
+                // Build a selection map keyed by index within currentPageData
+                const map: Record<string, boolean> = {};
+                for (let i = 0; i < currentPageData.length; i++) {
+                  const item = currentPageData[i];
+                  if (
+                    selected.find(s => s.participantId === item.participantId)
+                  ) {
+                    map[i.toString()] = true;
+                  }
+                }
+                setRowSelection(map);
+              }}
             />
           </div>
         </TabsContent>
