@@ -2,6 +2,8 @@ export interface Intervention {
   participantId: string;
   participantName: string;
   participantContact?: string | null;
+  age?: number | null;
+  subcounty?: string | null;
   // If the participant attended multiple activities we may attach
   // an `activities` array and leave the single-activity fields
   // undefined. Consumers should prefer `activities` when present.

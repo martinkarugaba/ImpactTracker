@@ -35,7 +35,7 @@ export function InterventionFilters({
 
   return (
     <div className="flex max-w-7xl items-center gap-2 border-2">
-      <div className="relative w-32 border-2">
+      <div className="relative w-80 border-2">
         <Search className="text-muted-foreground absolute top-2.5 left-3 h-4 w-4" />
         <Input
           placeholder="Search participants, activity or skill"

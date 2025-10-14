@@ -23,6 +23,7 @@ export async function getInterventions(_opts?: {
               contact: true,
               district: true,
               subCounty: true,
+              age: true,
             },
           },
           activity: {
@@ -47,6 +48,8 @@ export async function getInterventions(_opts?: {
           ? `${cap(r.participant.firstName)} ${cap(r.participant.lastName)}`.trim()
           : "Unknown",
         participantContact: r.participant?.contact ?? null,
+        age: r.participant?.age ?? null,
+        subcounty: r.participant?.subCounty ?? null,
         activityId: r.activity_id,
         activityTitle: r.activity?.title ?? null,
         skillCategory: r.activity?.skillCategory ?? null,
@@ -75,6 +78,9 @@ export async function getInterventions(_opts?: {
               firstName: true,
               lastName: true,
               contact: true,
+              district: true,
+              subCounty: true,
+              age: true,
             },
           },
           session: {
@@ -107,6 +113,8 @@ export async function getInterventions(_opts?: {
           ? `${cap(r.participant.firstName)} ${cap(r.participant.lastName)}`.trim()
           : "Unknown",
         participantContact: r.participant?.contact ?? null,
+        age: r.participant?.age ?? null,
+        subcounty: r.participant?.subCounty ?? null,
         activityId: r.session?.activity_id ?? r.session?.activity?.id ?? "",
         activityTitle: r.session?.activity?.title ?? null,
         skillCategory: r.session?.activity?.skillCategory ?? null,

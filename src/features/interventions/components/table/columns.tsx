@@ -54,6 +54,22 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
       },
     },
     {
+      accessorKey: "age",
+      header: "Age",
+      cell: ({ row }) => {
+        const age = row.getValue("age") as number | undefined | null;
+        return <div className="text-sm">{age || age === 0 ? age : "—"}</div>;
+      },
+    },
+    {
+      accessorKey: "subcounty",
+      header: "Subcounty",
+      cell: ({ row }) => {
+        const sc = row.getValue("subcounty") as string | undefined | null;
+        return <div className="text-sm">{sc ? sc : "—"}</div>;
+      },
+    },
+    {
       accessorKey: "participantContact",
       header: "Contact",
       cell: ({ row }) => {
