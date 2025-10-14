@@ -167,9 +167,9 @@ export const PARTICIPANT_ROLES = [
 ] as const;
 
 export const SKILL_CATEGORIES = [
-  "business",
-  "vocational",
-  "soft_skills",
+  "business_skill",
+  "vocational_skill",
+  "soft_skill",
 ] as const;
 
 export type ActivityType = (typeof ACTIVITY_TYPES)[number];

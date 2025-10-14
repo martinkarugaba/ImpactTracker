@@ -138,9 +138,20 @@ function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
+import React from "react";
+
+function FieldDescription({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"p">) {
+  // If children contains a <div>, render a <span> instead of <p> to avoid invalid nesting
+  const hasDiv = React.Children.toArray(children).some(
+    child => React.isValidElement(child) && child.type === "div"
+  );
+  const Tag = hasDiv ? "span" : "p";
   return (
-    <p
+    <Tag
       data-slot="field-description"
       className={cn(
         "text-muted-foreground text-sm leading-normal font-normal group-has-[[data-orientation=horizontal]]/field:text-balance",
@@ -149,7 +160,9 @@ function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
         className
       )}
       {...props}
-    />
+    >
+      {children}
+    </Tag>
   );
 }
 

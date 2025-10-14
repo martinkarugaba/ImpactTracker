@@ -47,7 +47,7 @@ export default async function DashboardLayout({
       <CalendarProvider>
         <SidebarProvider>
           <div
-            className="flex min-h-screen w-full bg-[#FAFAFA] dark:bg-neutral-900"
+            className="flex min-h-screen w-full border-2 bg-[#FAFAFA] dark:bg-neutral-900"
             suppressHydrationWarning
           >
             <AppSidebar className="" />

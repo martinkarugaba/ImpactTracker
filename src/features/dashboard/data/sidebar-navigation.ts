@@ -74,8 +74,8 @@ export const navigationData = {
       icon: IconActivity,
     },
     {
-      name: "Skills",
-      url: "/dashboard/skills",
+      name: "Interventions",
+      url: "/dashboard/interventions",
       icon: IconCertificate,
     },
     {

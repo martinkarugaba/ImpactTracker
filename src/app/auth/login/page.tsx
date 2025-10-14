@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function LoginPage({
   searchParams,
 }: {
-  searchParams: { error?: string };
+  searchParams?: Record<string, string | string[]>;
 }) {
   const errorMessages = {
     session_expired: "Your session has expired. Please log in again.",
@@ -20,10 +20,14 @@ export default function LoginPage({
     auth_error: "Authentication failed. Please try again.",
   };
 
+  const errorParamRaw = searchParams?.error;
+  const errorParam = Array.isArray(errorParamRaw)
+    ? errorParamRaw[0]
+    : errorParamRaw;
   const errorMessage =
-    searchParams.error && searchParams.error in errorMessages
-      ? errorMessages[searchParams.error as keyof typeof errorMessages]
-      : searchParams.error
+    errorParam && errorParam in errorMessages
+      ? errorMessages[errorParam as keyof typeof errorMessages]
+      : errorParam
         ? "An error occurred. Please try logging in again."
         : null;
 

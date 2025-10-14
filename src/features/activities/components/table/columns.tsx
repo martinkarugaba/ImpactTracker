@@ -147,6 +147,39 @@ export function getActivityColumns({
       },
     },
     {
+      accessorKey: "skillCategory",
+      header: "Skill Category",
+      cell: ({ row }) => {
+        const type = row.getValue("type") as string;
+        const skillCategory = row.original.skillCategory as string | undefined;
+        if (type === "training" && skillCategory) {
+          let label = "";
+          switch (skillCategory) {
+            case "business_skill":
+              label = "Business";
+              break;
+            case "vocational_skill":
+              label = "Vocational";
+              break;
+            case "soft_skill":
+              label = "Soft Skill";
+              break;
+            default:
+              label = skillCategory;
+          }
+          return (
+            <Badge
+              variant="secondary"
+              className="border-teal-200 bg-teal-100 text-teal-800 dark:border-teal-800 dark:bg-teal-900/20 dark:text-teal-400"
+            >
+              {label}
+            </Badge>
+          );
+        }
+        return <span className="text-muted-foreground text-xs">—</span>;
+      },
+    },
+    {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
