@@ -9,6 +9,13 @@ import { Badge } from "@/components/ui/badge";
 import { InterventionFilters } from "@/features/interventions/components";
 import { useExportInterventions } from "@/features/interventions/hooks/use-export-interventions";
 import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface InterventionsContainerProps {
   initialData: Intervention[];
@@ -23,19 +30,21 @@ interface FilterChange {
 export default function InterventionsContainer({
   initialData,
 }: InterventionsContainerProps) {
+  const { data: session } = useSession();
+  const isSuperAdmin = session?.user?.role === "super_admin";
   const exportInterventions = useExportInterventions();
 
-  const handleExport = async () => {
+  const handleExport = async (format: "csv" | "excel") => {
     try {
       const data = await exportInterventions.mutateAsync({
         clusterId: "example-cluster-id", // Replace with actual cluster ID
         filters: { skillCategory: skillFilter, source: sourceFilter },
         search,
       });
-      console.log("Exported data:", data);
+      console.log(`Exported data as ${format}:`, data);
       // Add logic to download the data as a file (e.g., CSV or Excel)
     } catch (error) {
-      console.error("Export failed:", error);
+      console.error(`Export as ${format} failed:`, error);
     }
   };
 
@@ -200,29 +209,36 @@ export default function InterventionsContainer({
               />
             </div>
             <div className="flex items-center gap-2">
-              <Button onClick={handleExport} variant="default">
-                Export
-              </Button>
-              <Button variant="secondary">Import</Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="default">Export</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {isSuperAdmin && (
+                    <DropdownMenuItem onClick={() => handleExport("csv")}>
+                      Export as CSV
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onClick={() => handleExport("excel")}>
+                    Export as Excel
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 
           <div>
             <div className="mb-3 flex items-center justify-between">
               <div className="min-w-[150px] text-sm">
-                {selectedItems.length > 0 ? (
-                  <>
-                    {selectedItems.length} selected
-                    <button
-                      type="button"
-                      className="muted-foreground ml-2 text-sm underline"
-                      onClick={clearSelection}
-                    >
-                      Clear
-                    </button>
-                  </>
-                ) : (
-                  <span>&nbsp;</span>
+                {selectedItems.length} selected
+                {selectedItems.length > 0 && (
+                  <button
+                    type="button"
+                    className="muted-foreground ml-2 text-sm underline"
+                    onClick={clearSelection}
+                  >
+                    Clear
+                  </button>
                 )}
               </div>
             </div>

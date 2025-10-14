@@ -128,6 +128,15 @@ export async function getInterventions(_opts?: {
           ? new Date(r.check_in_time).toISOString()
           : null,
       }));
+
+      // Debugging logs
+      saMapped.forEach(r => {
+        console.log("Participant data for dailyAttendance:", {
+          age: r.age,
+          subCounty: r.subcounty,
+        });
+        console.log("Age:", r.age, "Subcounty:", r.subcounty);
+      });
     } catch (err) {
       console.error("getInterventions: dailyAttendance query failed", err);
       saMapped = [];
