@@ -7,6 +7,7 @@ import {
   activitySessions,
   activityParticipants,
 } from "@/lib/db/schema";
+import { activities } from "@/lib/db/schema";
 import { eq, and, inArray } from "drizzle-orm";
 import {
   type DailyAttendanceResponse,
@@ -311,10 +312,27 @@ export async function initializeSessionAttendance(
 
     // Create attendance records for participants who don't have one yet
     if (newParticipantIds.length > 0) {
+      // Check activity status: if activity is completed mark as attended by default
+      const sessionInfo = await db.query.activitySessions.findFirst({
+        where: eq(activitySessions.id, sessionId),
+        columns: { activity_id: true },
+      });
+
+      let defaultStatus: DailyAttendanceStatus = "invited";
+      if (sessionInfo) {
+        const parentActivity = await db.query.activities.findFirst({
+          where: eq(activities.id, sessionInfo.activity_id),
+          columns: { status: true },
+        });
+        if (parentActivity && parentActivity.status === "completed") {
+          defaultStatus = "attended" as DailyAttendanceStatus;
+        }
+      }
+
       const newAttendanceRecords = newParticipantIds.map(participantId => ({
         session_id: sessionId,
         participant_id: participantId,
-        attendance_status: "invited" as DailyAttendanceStatus,
+        attendance_status: defaultStatus,
         recorded_by: "system",
       }));
 

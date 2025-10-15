@@ -3,10 +3,12 @@
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Info, Users, UserCheck, TrendingUp } from "lucide-react";
+import { Info, Users, UserCheck, TrendingUp, Calendar } from "lucide-react";
+import type { DailyAttendance, ActivityWithSessions } from "../../types/types";
 import type { Activity } from "../../types/types";
 import { ActivityOverviewTab } from "./activity-overview-tab";
-import { AttendanceTab } from "./attendance-tab";
+import { AttendanceOverviewTab } from "./attendance-overview-tab";
+import { SessionsManagementTab } from "./sessions-management-tab";
 import { AttendanceAnalyticsTab } from "./attendance-analytics-tab";
 import { AttendanceDemographicsTab } from "./attendance-demographics-tab";
 
@@ -22,6 +24,7 @@ interface ActivityDetailsTabsProps {
   onCreateSession: () => void;
   onEditSession: (sessionId: string) => void;
   onDuplicateSession?: (sessionId: string) => void;
+  attendanceBySession: Record<string, DailyAttendance[]>;
   refreshKey: number;
   activityReportsRefreshKey: number;
 }
@@ -35,9 +38,10 @@ export function ActivityDetailsTabs({
   onEditActivityReport,
   onDeleteActivityReport,
   onManageAttendance,
-  onCreateSession,
+  onCreateSession: _onCreateSession,
   onEditSession,
   onDuplicateSession,
+  attendanceBySession,
   refreshKey,
   activityReportsRefreshKey,
 }: ActivityDetailsTabsProps) {
@@ -51,7 +55,14 @@ export function ActivityDetailsTabs({
     const tab = searchParams.get("tab");
     if (
       tab &&
-      ["overview", "attendance", "demographics", "analytics"].includes(tab)
+      [
+        "overview",
+        "attendance",
+        "attendance-overview",
+        "sessions-management",
+        "demographics",
+        "analytics",
+      ].includes(tab)
     ) {
       setActiveTab(tab);
     }
@@ -88,10 +99,15 @@ export function ActivityDetailsTabs({
           <span className="hidden sm:inline">Overview</span>
           <span className="sm:hidden">Info</span>
         </TabsTrigger>
-        <TabsTrigger value="attendance">
+        <TabsTrigger value="attendance-overview">
           <Users className="h-4 w-4" />
           <span className="hidden sm:inline">Attendance</span>
           <span className="sm:hidden">People</span>
+        </TabsTrigger>
+        <TabsTrigger value="sessions-management">
+          <Calendar className="h-4 w-4" />
+          <span className="hidden sm:inline">Sessions</span>
+          <span className="sm:hidden">Sess</span>
         </TabsTrigger>
         <TabsTrigger value="demographics">
           <UserCheck className="h-4 w-4" />
@@ -119,12 +135,31 @@ export function ActivityDetailsTabs({
         />
       </TabsContent>
 
-      <TabsContent value="attendance" className="mt-6">
-        <AttendanceTab
-          activity={activity}
-          onManageAttendance={onManageAttendance}
-          onCreateSession={onCreateSession}
+      <TabsContent value="attendance-overview" className="mt-6">
+        {(() => {
+          const allAttendance = Object.values(
+            attendanceBySession
+          ).flat() as DailyAttendance[];
+
+          return (
+            <AttendanceOverviewTab
+              allAttendance={allAttendance}
+              isLoading={false}
+            />
+          );
+        })()}
+      </TabsContent>
+
+      <TabsContent value="sessions-management" className="mt-6">
+        <SessionsManagementTab
+          sessions={(activity as ActivityWithSessions).sessions ?? []}
+          attendanceBySession={attendanceBySession}
           onEditSession={onEditSession}
+          onManageAttendance={onManageAttendance}
+          onDeleteSession={id => console.log("delete session", id)}
+          onUpdateSessionStatus={(id, status) =>
+            console.log("update status", id, status)
+          }
           onDuplicateSession={onDuplicateSession}
         />
       </TabsContent>

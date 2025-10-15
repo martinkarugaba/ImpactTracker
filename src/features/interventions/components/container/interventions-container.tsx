@@ -16,6 +16,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { UserCheck } from "lucide-react";
+import { ActivitiesCalendar } from "@/features/activities/components/calendar/activities-calendar";
 
 interface InterventionsContainerProps {
   initialData: Intervention[];
@@ -194,6 +196,10 @@ export default function InterventionsContainer({
         <TabsList>
           <TabsTrigger value="table">Table</TabsTrigger>
           <TabsTrigger value="metrics">Metrics</TabsTrigger>
+          <TabsTrigger value="demographics" className="flex items-center gap-2">
+            <UserCheck className="h-4 w-4" />
+            Demographics
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="table">
@@ -290,6 +296,16 @@ export default function InterventionsContainer({
               <Badge>Vocational</Badge>
               <Badge>Soft skill</Badge>
             </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="demographics">
+          <div className="p-4">
+            <h3 className="text-lg font-medium">Demographics</h3>
+            <ActivitiesCalendar
+              className="w-full"
+              clusterId="example-cluster-id"
+            />
           </div>
         </TabsContent>
       </Tabs>

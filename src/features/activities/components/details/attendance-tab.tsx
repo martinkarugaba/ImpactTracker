@@ -19,7 +19,7 @@ import { MetricCard } from "@/components/ui/metric-card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import type { Activity } from "../../types/types";
+import type { Activity, DailyAttendance } from "../../types/types";
 import {
   useActivitySessions,
   useGenerateActivitySessions,
@@ -258,10 +258,10 @@ export function AttendanceTab({
 
           <TabsContent value="overview" className="mt-6">
             <AttendanceOverviewTab
-              sessions={sessions}
-              attendanceBySession={attendanceBySession}
+              allAttendance={
+                Object.values(attendanceBySession).flat() as DailyAttendance[]
+              }
               isLoading={_isLoadingAttendance}
-              onAttendanceRefresh={refetchAttendance}
             />
           </TabsContent>
         </Tabs>

@@ -7,6 +7,8 @@ import {
   activityParticipants,
   activityReports,
   conceptNotes,
+  activitySessions,
+  dailyAttendance,
 } from "@/lib/db/schema";
 import { eq, and, desc, between, ilike, or, inArray } from "drizzle-orm";
 import {
@@ -16,6 +18,7 @@ import {
   type ActivityMetrics,
   type ActivityMetricsResponse,
 } from "../types/types";
+import type { NewDailyAttendance } from "../types/types";
 
 export async function getActivities(
   clusterId?: string,
@@ -235,6 +238,82 @@ export async function updateActivity(
       .where(eq(activities.id, id))
       .returning();
 
+    // If activity was marked completed, mark all participants as attended for its sessions
+    if (data.status === "completed") {
+      try {
+        // fetch sessions for the activity
+        const sessions = await db.query.activitySessions.findMany({
+          where: eq(activitySessions.activity_id, id),
+          columns: { id: true },
+        });
+
+        const sessionIds = sessions.map(s => s.id);
+
+        // fetch participants for the activity
+        const participants = await db.query.activityParticipants.findMany({
+          where: eq(activityParticipants.activity_id, id),
+          columns: { participant_id: true },
+        });
+
+        const participantIds = participants.map(p => p.participant_id);
+
+        if (sessionIds.length > 0 && participantIds.length > 0) {
+          // Find existing attendance records for these sessions & participants
+          const existing = await db.query.dailyAttendance.findMany({
+            where: and(
+              inArray(dailyAttendance.session_id, sessionIds),
+              inArray(dailyAttendance.participant_id, participantIds)
+            ),
+            columns: { id: true, session_id: true, participant_id: true },
+          });
+
+          const existingSet = new Set(
+            existing.map(e => `${e.session_id}::${e.participant_id}`)
+          );
+
+          // Prepare inserts for missing attendance records
+          const toInsert: NewDailyAttendance[] = [];
+          for (const sid of sessionIds) {
+            for (const pid of participantIds) {
+              const key = `${sid}::${pid}`;
+              if (!existingSet.has(key)) {
+                toInsert.push({
+                  session_id: sid,
+                  participant_id: pid,
+                  attendance_status: "attended",
+                  check_in_time: null,
+                  check_out_time: null,
+                  notes: null,
+                  recorded_by: "system",
+                });
+              }
+            }
+          }
+
+          if (toInsert.length > 0) {
+            // Insert one-by-one to avoid complex Drizzle overload typing for bulk inserts
+            for (const row of toInsert) {
+              await db.insert(dailyAttendance).values(row);
+            }
+          }
+
+          // Update existing records to attended
+          if (existing.length > 0) {
+            await db
+              .update(dailyAttendance)
+              .set({ attendance_status: "attended", updated_at: new Date() })
+              .where(
+                and(
+                  inArray(dailyAttendance.session_id, sessionIds),
+                  inArray(dailyAttendance.participant_id, participantIds)
+                )
+              );
+          }
+        }
+      } catch (err) {
+        console.error("Error marking attendance when activity completed:", err);
+      }
+    }
     revalidatePath(`/dashboard/activities`);
     if (activity.cluster_id) {
       revalidatePath(`/dashboard/clusters/${activity.cluster_id}/activities`);

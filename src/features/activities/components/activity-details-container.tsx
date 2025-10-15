@@ -11,6 +11,7 @@ import type {
 } from "../types/types";
 import { ActivityHeader } from "./details/activity-header";
 import { ActivityDetailsTabs } from "./details/activity-details-tabs";
+import type { DailyAttendance, ActivityWithSessions } from "../types/types";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Calendar } from "lucide-react";
 import { ActivityFormDialog } from "./forms/activity-form-dialog";
@@ -202,6 +203,26 @@ export function ActivityDetailsContainer({
     setIsAttendanceListDialogOpen(true);
   };
 
+  // Prepare attendanceBySession as a map from sessionId -> DailyAttendance[]
+  const sessions: ActivityWithSessions["sessions"] =
+    (activity as ActivityWithSessions).sessions ?? [];
+
+  const attendanceBySession: Record<string, DailyAttendance[]> =
+    sessions.reduce(
+      (acc, s) => {
+        const key = s.id;
+        // sessions may have different shape depending on how they were queried
+        const maybe = s as unknown as {
+          dailyAttendance?: DailyAttendance[];
+          attendance?: DailyAttendance[];
+        };
+        const list = maybe.dailyAttendance ?? maybe.attendance ?? [];
+        acc[key] = list;
+        return acc;
+      },
+      {} as Record<string, DailyAttendance[]>
+    );
+
   // Session handlers
   const handleCreateSession = () => {
     setEditingSessionId(undefined);
@@ -355,6 +376,7 @@ export function ActivityDetailsContainer({
         onCreateSession={handleCreateSession}
         onEditSession={handleEditSession}
         onDuplicateSession={handleDuplicateSession}
+        attendanceBySession={attendanceBySession}
         refreshKey={refreshKey}
         activityReportsRefreshKey={activityReportsRefreshKey}
       />
