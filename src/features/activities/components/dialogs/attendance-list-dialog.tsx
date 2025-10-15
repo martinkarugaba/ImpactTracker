@@ -25,7 +25,7 @@ interface AttendanceListDialogProps {
 export function AttendanceListDialog({
   open,
   onOpenChange,
-  activityId,
+  activityId: _activityId,
   sessionId,
   activity,
   participants: _existingParticipants = [],
@@ -36,11 +36,10 @@ export function AttendanceListDialog({
   ) => {
     try {
       const participantData = selectedParticipants.map(participant => ({
-        activity_id: activityId,
-        participant_id: participant.id,
+        participant_id: String(participant.id), // Ensure always string
         participantName: `${participant.firstName} ${participant.lastName}`,
         role: "participant",
-        attendance_status: "attended",
+        attendance_status: sessionId ? "invited" : "attended", // 'invited' for session add, 'attended' for general
         feedback: undefined,
       }));
 

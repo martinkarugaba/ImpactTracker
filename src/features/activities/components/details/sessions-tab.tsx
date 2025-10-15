@@ -1,7 +1,7 @@
 "use client";
 
 import { useAtom } from "jotai";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { deletingSessionIdAtom } from "../../atoms/activities-atoms";
 import {
   Calendar,
@@ -113,6 +113,11 @@ export function SessionsTab({
     return sessionsResponse?.data || [];
   }, [sessionsResponse]);
 
+  // Log sessions when the tab is accessed
+  useEffect(() => {
+    console.log("Sessions for activity:", activity.id, sessions);
+  }, [activity.id, sessions]);
+
   // Hook for generating new sessions
   const generateSessions = useGenerateActivitySessions();
   // Hook for updating session status
@@ -122,10 +127,12 @@ export function SessionsTab({
   console.log("SessionsTab - sessionsResponse:", sessionsResponse);
 
   if (isLoading) {
+    console.log("Loading sessions for activity:", activity.id);
     return <div>Loading sessions...</div>;
   }
 
   if (error) {
+    console.error("Error loading sessions for activity:", activity.id, error);
     return (
       <div className="flex h-64 items-center justify-center">
         <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center dark:border-red-800 dark:bg-red-950/20">
@@ -138,8 +145,11 @@ export function SessionsTab({
   }
 
   if (sessions.length === 0) {
+    console.log("No sessions available for activity:", activity.id);
     return <div>No sessions available.</div>;
   }
+
+  console.log("Rendering sessions table for activity:", activity.id, sessions);
 
   const handleDeleteSession = async (sessionId: string) => {
     if (

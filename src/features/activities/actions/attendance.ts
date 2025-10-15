@@ -473,6 +473,11 @@ export async function getActivitySessionsAttendance(
   error?: string;
 }> {
   try {
+    console.log(
+      "getActivitySessionsAttendance called with activityId:",
+      activityId
+    );
+
     // First get all session IDs for the activity
     const sessions = await db.query.activitySessions.findMany({
       where: eq(activitySessions.activity_id, activityId),
@@ -519,6 +524,16 @@ export async function getActivitySessionsAttendance(
         subCounty: record.participant?.subCounty ?? null,
       } as DailyAttendance);
     }
+
+    console.log(
+      "getActivitySessionsAttendance returning with data:",
+      attendanceBySession
+    );
+
+    console.log("getActivitySessionsAttendance returning:", {
+      success: true,
+      data: attendanceBySession,
+    });
 
     return {
       success: true,

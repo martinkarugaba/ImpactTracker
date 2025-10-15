@@ -12,11 +12,10 @@ import {
   Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { DailyAttendance, ActivityWithSessions } from "../../types/types";
-import type { Activity } from "../../types/types";
+import type { Activity, DailyAttendance } from "../../types/types";
 import { ActivityOverviewTab } from "./activity-overview-tab";
-import { AttendanceOverviewTab } from "./attendance-overview-tab";
-import { SessionsManagementTab } from "./sessions-management-tab";
+import { AttendanceTab } from "./attendance-tab";
+import { SessionsTab } from "./sessions-tab";
 import { AttendanceAnalyticsTab } from "./attendance-analytics-tab";
 import { AttendanceDemographicsTab } from "./attendance-demographics-tab";
 
@@ -49,7 +48,7 @@ export function ActivityDetailsTabs({
   onCreateSession: _onCreateSession,
   onEditSession,
   onDuplicateSession,
-  attendanceBySession,
+  attendanceBySession: _attendanceBySession,
   refreshKey,
   activityReportsRefreshKey,
 }: ActivityDetailsTabsProps) {
@@ -57,6 +56,8 @@ export function ActivityDetailsTabs({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<string>("overview");
+
+  // Individual tab components handle their own data fetching
 
   // Initialize tab from URL on mount
   useEffect(() => {
@@ -159,18 +160,13 @@ export function ActivityDetailsTabs({
           </Button>
         </div>
 
-        {(() => {
-          const allAttendance = Object.values(
-            attendanceBySession
-          ).flat() as DailyAttendance[];
-
-          return (
-            <AttendanceOverviewTab
-              allAttendance={allAttendance}
-              isLoading={false}
-            />
-          );
-        })()}
+        <AttendanceTab
+          activity={activity}
+          onManageAttendance={onManageAttendance}
+          onCreateSession={_onCreateSession}
+          onEditSession={onEditSession}
+          onDuplicateSession={onDuplicateSession}
+        />
       </TabsContent>
 
       <TabsContent value="sessions-management" className="mt-6">
@@ -189,16 +185,11 @@ export function ActivityDetailsTabs({
           </Button>
         </div>
 
-        <SessionsManagementTab
-          sessions={(activity as ActivityWithSessions).sessions ?? []}
-          attendanceBySession={attendanceBySession}
-          onEditSession={onEditSession}
+        <SessionsTab
+          activity={activity}
           onManageAttendance={onManageAttendance}
-          onDeleteSession={id => console.log("delete session", id)}
-          onUpdateSessionStatus={(id, status) =>
-            console.log("update status", id, status)
-          }
-          onDuplicateSession={onDuplicateSession}
+          onCreateSession={_onCreateSession}
+          onEditSession={onEditSession}
         />
       </TabsContent>
 
