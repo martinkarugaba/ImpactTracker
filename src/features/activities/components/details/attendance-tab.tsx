@@ -3,8 +3,7 @@
 import { useState } from "react";
 import type { ActivityParticipant } from "../../types/types";
 import type { Participant } from "@/features/participants/types/types";
-import { Users, Calendar, CheckCircle, Clock, Plus } from "lucide-react";
-import { MetricCard } from "@/components/ui/metric-card";
+import { Users, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -83,14 +82,6 @@ export function AttendanceTab({
   );
 
   // Calculate total unique participants across all sessions
-  const totalParticipants = Object.values(attendanceBySession)
-    .flat()
-    .reduce((acc, attendance) => {
-      if (!acc.has(attendance.participant_id)) {
-        acc.set(attendance.participant_id, true);
-      }
-      return acc;
-    }, new Map()).size;
 
   // Handle feedback submission
   const handleFeedbackSubmit = async (
@@ -179,56 +170,8 @@ export function AttendanceTab({
 
   return (
     <div className="w-full space-y-6 overflow-x-hidden">
-      {/* Sessions Overview Metrics */}
-      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid w-full gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard
-          title="Total Sessions"
-          value={sessions.length}
-          icon={<Calendar className="h-4 w-4" />}
-          footer={{
-            title: "Session count",
-            description: "Total sessions planned",
-          }}
-        />
-        <MetricCard
-          title="Completed"
-          value={sessions.filter(s => s.status === "completed").length}
-          icon={<CheckCircle className="h-4 w-4 text-green-600" />}
-          footer={{
-            title: "Finished sessions",
-            description: "Successfully completed",
-          }}
-        />
-        <MetricCard
-          title="Scheduled"
-          value={sessions.filter(s => s.status === "scheduled").length}
-          icon={<Clock className="h-4 w-4 text-blue-600" />}
-          footer={{
-            title: "Upcoming sessions",
-            description: "Ready to conduct",
-          }}
-        />
-        <MetricCard
-          title="Total Participants"
-          value={totalParticipants}
-          icon={<Users className="h-4 w-4 text-purple-600" />}
-          footer={{
-            title: "Registered participants",
-            description: "All activity participants",
-          }}
-        />
-      </div>
-
       {/* Action Buttons */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h3 className="text-lg font-semibold">
-            Sessions & Attendance Management
-          </h3>
-          <p className="text-muted-foreground text-sm">
-            Manage sessions and track participant attendance
-          </p>
-        </div>
         <div className="flex flex-wrap gap-2">
           <Button onClick={onCreateSession} variant="outline">
             <Plus className="mr-2 h-4 w-4" />
@@ -242,10 +185,10 @@ export function AttendanceTab({
       </div>
 
       {/* Session Selector Dropdown */}
-      <div className="mb-4 flex flex-row items-center gap-2">
+      <div className="mb-4 flex flex-row items-center gap-2 border">
         <Label htmlFor="session-dropdown">Session:</Label>
         <Select value={selectedSessionId} onValueChange={setSelectedSessionId}>
-          <SelectTrigger className="w-48">
+          <SelectTrigger className="w-48 sm:w-64">
             <SelectValue placeholder="All Sessions" />
           </SelectTrigger>
           <SelectContent>

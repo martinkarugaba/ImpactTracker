@@ -5,6 +5,7 @@ import { QueryProvider } from "@/providers/query-provider";
 import { AuthProvider } from "@/providers/session-provider";
 import { ActiveThemeProvider } from "@/features/themes/components/active-theme";
 import { CalendarProvider } from "@/components/event-calendar/calendar-context";
+import { ClusterProvider } from "@/features/auth/components/cluster-provider";
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -48,7 +49,9 @@ export default function RootLayout({
           <ActiveThemeProvider>
             <AuthProvider>
               <QueryProvider>
-                <CalendarProvider>{children}</CalendarProvider>
+                <CalendarProvider>
+                  <ClusterProvider>{children}</ClusterProvider>
+                </CalendarProvider>
               </QueryProvider>
             </AuthProvider>
           </ActiveThemeProvider>
