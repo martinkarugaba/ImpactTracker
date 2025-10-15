@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PageTitle } from "@/features/dashboard/components/page-title";
 import { ActivitiesTableSkeleton } from "@/features/activities/components/table/activities-table-skeleton";
 import { IconActivity } from "@tabler/icons-react";
-import { getUserClusterId } from "@/features/auth/actions";
+import { auth } from "@/features/auth/auth";
 
 // Force dynamic rendering since this page uses authentication
 export const dynamic = "force-dynamic";
@@ -78,10 +78,10 @@ function ActivitiesPageSkeleton() {
 // Main activities page content
 async function ActivitiesPageContent() {
   try {
-    // Get user's cluster ID first
-    const clusterId = await getUserClusterId();
+    // Get user's session to access cluster information
+    const session = await auth();
 
-    if (!clusterId) {
+    if (!session?.user?.clusterId) {
       return (
         <div className="flex h-96 items-center justify-center">
           <div className="text-center">
@@ -94,7 +94,7 @@ async function ActivitiesPageContent() {
       );
     }
 
-    return <ActivitiesContainerNew clusterId={clusterId} />;
+    return <ActivitiesContainerNew clusterId={session.user.clusterId} />;
   } catch (error) {
     console.error("Error loading activities page data:", error);
 

@@ -2,23 +2,37 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { getClusterUsers } from "@/features/clusters/actions/cluster-users";
+import { useAtom } from "jotai";
+import { clusterAtom } from "@/features/auth/atoms/cluster-atom";
 
 export function useClusterUsers(clusterId?: string) {
-  return useQuery({
-    queryKey: ["cluster-users", clusterId],
-    queryFn: async () => {
-      if (!clusterId) {
-        return { success: true, data: [] };
-      }
+  const [cluster] = useAtom(clusterAtom);
 
-      const result = await getClusterUsers(clusterId);
-      if (!result.success) {
-        throw new Error(result.error || "Failed to fetch cluster users");
-      }
+  const effectiveClusterId = clusterId || cluster?.id;
 
-      return result;
-    },
-    enabled: !!clusterId,
+  const queryKey = ["cluster-users", effectiveClusterId];
+  const queryFn = async () => {
+    if (!effectiveClusterId) {
+      return { success: true, data: [] };
+    }
+
+    const result = await getClusterUsers(effectiveClusterId);
+    if (!result.success) {
+      throw new Error(result.error || "Failed to fetch cluster users");
+    }
+
+    return result;
+  };
+
+  const queryResult = useQuery({
+    queryKey,
+    queryFn,
+    enabled: !!effectiveClusterId,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  return {
+    ...queryResult,
+    isClusterAvailable: !!cluster,
+  };
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useAtom } from "jotai";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { deletingSessionIdAtom } from "../../atoms/activities-atoms";
 import {
   Calendar,
@@ -27,7 +27,6 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MetricCard } from "@/components/ui/metric-card";
 import { DataTable } from "@/components/ui/data-table";
-import { TabLoadingSkeleton } from "./tab-loading-skeleton";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -103,11 +102,54 @@ export function SessionsTab({
   );
   const [sessionCount, setSessionCount] = useState<number>(5);
 
-  const { data: sessions, isLoading } = useActivitySessions(activity.id);
+  const {
+    data: sessionsResponse,
+    isLoading,
+    error,
+  } = useActivitySessions(activity.id);
+
+  // Memoize sessions data
+  const sessions = useMemo(() => {
+    return sessionsResponse?.data || [];
+  }, [sessionsResponse]);
+
+  // Log sessions when the tab is accessed
+  useEffect(() => {
+    console.log("Sessions for activity:", activity.id, sessions);
+  }, [activity.id, sessions]);
+
+  // Hook for generating new sessions
   const generateSessions = useGenerateActivitySessions();
   // Hook for updating session status
   const updateSession = useUpdateActivitySession();
   const deleteSession = useDeleteActivitySession();
+
+  console.log("SessionsTab - sessionsResponse:", sessionsResponse);
+
+  if (isLoading) {
+    console.log("Loading sessions for activity:", activity.id);
+    return <div>Loading sessions...</div>;
+  }
+
+  if (error) {
+    console.error("Error loading sessions for activity:", activity.id, error);
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center dark:border-red-800 dark:bg-red-950/20">
+          <p className="text-sm text-red-600 dark:text-red-400">
+            Failed to load sessions.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (sessions.length === 0) {
+    console.log("No sessions available for activity:", activity.id);
+    return <div>No sessions available.</div>;
+  }
+
+  console.log("Rendering sessions table for activity:", activity.id, sessions);
 
   const handleDeleteSession = async (sessionId: string) => {
     if (
@@ -128,8 +170,6 @@ export function SessionsTab({
       }
     }
   };
-
-  const sessionsData = sessions?.data || [];
 
   // Create columns for DataTable
   const getSessionsColumns = (): ColumnDef<SessionData>[] => {
@@ -366,10 +406,6 @@ export function SessionsTab({
     }
   };
 
-  if (isLoading) {
-    return <TabLoadingSkeleton type="table" message="Loading sessions..." />;
-  }
-
   return (
     <div className="space-y-6">
       {/* Header Actions */}
@@ -381,7 +417,7 @@ export function SessionsTab({
           </p>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-          {(!sessionsData || sessionsData.length === 0) && (
+          {(!sessions || sessions.length === 0) && (
             <div className="flex items-end gap-2">
               <div className="space-y-1">
                 <Label htmlFor="sessionCount" className="text-sm font-medium">
@@ -420,11 +456,11 @@ export function SessionsTab({
       </div>
 
       {/* Sessions Overview Cards */}
-      {sessionsData && sessionsData.length > 0 && (
+      {sessions && sessions.length > 0 && (
         <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-4">
           <MetricCard
             title="Total Sessions"
-            value={sessionsData.length}
+            value={sessions.length}
             icon={<Calendar className="h-4 w-4" />}
             footer={{
               title: "Session count",
@@ -433,7 +469,7 @@ export function SessionsTab({
           />
           <MetricCard
             title="Completed"
-            value={sessionsData.filter(s => s.status === "completed").length}
+            value={sessions.filter(s => s.status === "completed").length}
             icon={<CheckCircle className="h-4 w-4 text-green-600" />}
             footer={{
               title: "Finished sessions",
@@ -442,7 +478,7 @@ export function SessionsTab({
           />
           <MetricCard
             title="Scheduled"
-            value={sessionsData.filter(s => s.status === "scheduled").length}
+            value={sessions.filter(s => s.status === "scheduled").length}
             icon={<Clock className="h-4 w-4 text-blue-600" />}
             footer={{
               title: "Upcoming sessions",
@@ -451,7 +487,7 @@ export function SessionsTab({
           />
           <MetricCard
             title="Cancelled"
-            value={sessionsData.filter(s => s.status === "cancelled").length}
+            value={sessions.filter(s => s.status === "cancelled").length}
             icon={<XCircle className="h-4 w-4 text-red-600" />}
             footer={{
               title: "Cancelled sessions",
@@ -462,10 +498,10 @@ export function SessionsTab({
       )}
 
       {/* Sessions Table */}
-      {sessionsData && sessionsData.length > 0 ? (
+      {sessions && sessions.length > 0 ? (
         <DataTable
           columns={getSessionsColumns()}
-          data={sessionsData as SessionData[]}
+          data={sessions as SessionData[]}
           filterColumn="session_number"
           filterPlaceholder="Search sessions..."
           showColumnToggle={true}

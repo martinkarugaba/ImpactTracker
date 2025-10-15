@@ -4,8 +4,33 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { type Intervention } from "../../types/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { useLocationCache } from "@/features/locations/hooks/use-location-cache";
+import { useEffect, useState } from "react";
 
 export function getInterventionColumns(): ColumnDef<Intervention>[] {
+  // Create a component that uses the location cache
+  function SubCountyCell({
+    subCounty,
+  }: {
+    subCounty: string | null | undefined;
+  }) {
+    const { getSubCountyNamesByCodes } = useLocationCache();
+    const [displayName, setDisplayName] = useState<string>(subCounty || "—");
+
+    useEffect(() => {
+      if (subCounty && !subCounty.includes(" ")) {
+        // It's a code, convert it to name
+        getSubCountyNamesByCodes([subCounty]).then(names => {
+          setDisplayName(names[subCounty] || subCounty);
+        });
+      } else {
+        setDisplayName(subCounty || "—");
+      }
+    }, [subCounty, getSubCountyNamesByCodes]);
+
+    return <div className="text-sm">{displayName}</div>;
+  }
+
   return [
     {
       id: "select",
@@ -66,7 +91,7 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
       header: "Subcounty",
       cell: ({ row }) => {
         const sc = row.getValue("subcounty") as string | undefined | null;
-        return <div className="text-sm">{sc ? sc : "—"}</div>;
+        return <SubCountyCell subCounty={sc} />;
       },
     },
     {

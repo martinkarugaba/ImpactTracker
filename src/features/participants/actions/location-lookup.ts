@@ -7,6 +7,7 @@ import {
   subCounties,
   parishes,
   countries,
+  villages,
 } from "@/lib/db/schema";
 import { eq, sql } from "drizzle-orm";
 
@@ -345,6 +346,46 @@ export async function batchGetParishNames(
     );
   } catch (error) {
     console.error("Error batch fetching parish names:", error);
+    return {};
+  }
+}
+
+export async function batchGetVillageNames(
+  ids: string[]
+): Promise<Record<string, string>> {
+  try {
+    if (!ids.length) return {};
+
+    // Filter out only UUID-like IDs
+    const uuidIds = ids.filter(id => id && id.includes("-"));
+    if (!uuidIds.length) {
+      // Return a map of name:name for non-UUID strings
+      return ids.reduce(
+        (acc: Record<string, string>, id: string) => {
+          if (id) acc[id] = id;
+          return acc;
+        },
+        {} as Record<string, string>
+      );
+    }
+
+    const villagesData = await db.query.villages.findMany({
+      where: sql`${villages.id} IN (${uuidIds.join(",")})`,
+      columns: {
+        id: true,
+        name: true,
+      },
+    });
+
+    return villagesData.reduce(
+      (acc: Record<string, string>, village: { id: string; name: string }) => {
+        acc[village.id] = village.name;
+        return acc;
+      },
+      {} as Record<string, string>
+    );
+  } catch (error) {
+    console.error("Error batch fetching village names:", error);
     return {};
   }
 }

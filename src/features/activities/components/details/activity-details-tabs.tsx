@@ -3,12 +3,19 @@
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Info, Users, UserCheck, TrendingUp, Calendar } from "lucide-react";
-import type { DailyAttendance, ActivityWithSessions } from "../../types/types";
-import type { Activity } from "../../types/types";
+import {
+  Info,
+  Users,
+  UserCheck,
+  TrendingUp,
+  Calendar,
+  Plus,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { Activity, DailyAttendance } from "../../types/types";
 import { ActivityOverviewTab } from "./activity-overview-tab";
-import { AttendanceOverviewTab } from "./attendance-overview-tab";
-import { SessionsManagementTab } from "./sessions-management-tab";
+import { AttendanceTab } from "./attendance-tab";
+import { SessionsTab } from "./sessions-tab";
 import { AttendanceAnalyticsTab } from "./attendance-analytics-tab";
 import { AttendanceDemographicsTab } from "./attendance-demographics-tab";
 
@@ -41,7 +48,7 @@ export function ActivityDetailsTabs({
   onCreateSession: _onCreateSession,
   onEditSession,
   onDuplicateSession,
-  attendanceBySession,
+  attendanceBySession: _attendanceBySession,
   refreshKey,
   activityReportsRefreshKey,
 }: ActivityDetailsTabsProps) {
@@ -49,6 +56,8 @@ export function ActivityDetailsTabs({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<string>("overview");
+
+  // Individual tab components handle their own data fetching
 
   // Initialize tab from URL on mount
   useEffect(() => {
@@ -136,31 +145,51 @@ export function ActivityDetailsTabs({
       </TabsContent>
 
       <TabsContent value="attendance-overview" className="mt-6">
-        {(() => {
-          const allAttendance = Object.values(
-            attendanceBySession
-          ).flat() as DailyAttendance[];
+        <div className="mb-4 flex justify-end">
+          <Button
+            variant="outline"
+            onClick={() => _onCreateSession && _onCreateSession()}
+            className="mr-2"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Create Session
+          </Button>
+          <Button variant="outline" onClick={() => onManageAttendance()}>
+            <Users className="mr-2 h-4 w-4" />
+            Add Participants
+          </Button>
+        </div>
 
-          return (
-            <AttendanceOverviewTab
-              allAttendance={allAttendance}
-              isLoading={false}
-            />
-          );
-        })()}
+        <AttendanceTab
+          activity={activity}
+          onManageAttendance={onManageAttendance}
+          onCreateSession={_onCreateSession}
+          onEditSession={onEditSession}
+          onDuplicateSession={onDuplicateSession}
+        />
       </TabsContent>
 
       <TabsContent value="sessions-management" className="mt-6">
-        <SessionsManagementTab
-          sessions={(activity as ActivityWithSessions).sessions ?? []}
-          attendanceBySession={attendanceBySession}
-          onEditSession={onEditSession}
+        <div className="mb-4 flex justify-end">
+          <Button
+            variant="outline"
+            onClick={() => _onCreateSession && _onCreateSession()}
+            className="mr-2"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Create Session
+          </Button>
+          <Button variant="outline" onClick={() => onManageAttendance()}>
+            <Users className="mr-2 h-4 w-4" />
+            Add Participants
+          </Button>
+        </div>
+
+        <SessionsTab
+          activity={activity}
           onManageAttendance={onManageAttendance}
-          onDeleteSession={id => console.log("delete session", id)}
-          onUpdateSessionStatus={(id, status) =>
-            console.log("update status", id, status)
-          }
-          onDuplicateSession={onDuplicateSession}
+          onCreateSession={_onCreateSession}
+          onEditSession={onEditSession}
         />
       </TabsContent>
 

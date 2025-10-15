@@ -232,9 +232,16 @@ export function useDeleteMultipleActivities() {
 // ========================================
 
 export function useActivitySessions(activityId: string) {
+  console.log("useActivitySessions - activityId:", activityId);
+
   return useQuery({
     queryKey: ["activity-sessions", activityId],
-    queryFn: () => getActivitySessions(activityId),
+    queryFn: async () => {
+      console.log("Fetching activity sessions for activityId:", activityId);
+      const result = await getActivitySessions(activityId);
+      console.log("Fetched activity sessions:", result);
+      return result;
+    },
     enabled: !!activityId,
   });
 }
@@ -253,10 +260,32 @@ export function useCreateActivitySession() {
   return useMutation({
     mutationFn: createActivitySession,
     onSuccess: result => {
+      console.log("useCreateActivitySession - onSuccess result:", result);
       if (result.success && result.data) {
-        queryClient.invalidateQueries({
-          queryKey: ["activity-sessions", result.data.activity_id],
-        });
+        // Update cached sessions list so the UI reflects the new session immediately
+        try {
+          queryClient.setQueryData(
+            ["activity-sessions", result.data.activity_id],
+            (
+              old: { success: boolean; data: NewActivitySession[] } | undefined
+            ) => {
+              console.log("useCreateActivitySession - old cache data:", old);
+              if (!old) {
+                return { success: true, data: [result.data] };
+              }
+              // old is expected to be { success: boolean, data: ActivitySession[] }
+              const existing = Array.isArray(old.data) ? old.data : [];
+              return { ...old, data: [...existing, result.data] };
+            }
+          );
+        } catch (e) {
+          console.error("useCreateActivitySession - setQueryData error:", e);
+          // If setQueryData fails for any reason, fall back to invalidation
+          queryClient.invalidateQueries({
+            queryKey: ["activity-sessions", result.data.activity_id],
+          });
+        }
+
         queryClient.invalidateQueries({
           queryKey: ["activity", result.data.activity_id],
         });

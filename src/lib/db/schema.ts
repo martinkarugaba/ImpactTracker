@@ -37,6 +37,25 @@ export const organizations = pgTable("organizations", {
   updated_at: timestamp("updated_at").defaultNow(),
 });
 
+export const interventions = pgTable("interventions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  participant_id: uuid("participant_id")
+    .references(() => participants.id)
+    .notNull(),
+  activity_id: uuid("activity_id")
+    .references(() => activities.id)
+    .notNull(),
+  session_id: uuid("session_id").references(() => activitySessions.id),
+  source: text("source").notNull().default("activity_participants"),
+  skill_category: text("skill_category"),
+  outcomes: text("outcomes").array().default([]),
+  attended_at: timestamp("attended_at"),
+  notes: text("notes"),
+  created_by: text("created_by"),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
 export const clusters = pgTable("clusters", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
@@ -918,6 +937,21 @@ export const activityParticipantsRelations = relations(
     }),
   })
 );
+
+export const interventionsRelations = relations(interventions, ({ one }) => ({
+  participant: one(participants, {
+    fields: [interventions.participant_id],
+    references: [participants.id],
+  }),
+  activity: one(activities, {
+    fields: [interventions.activity_id],
+    references: [activities.id],
+  }),
+  session: one(activitySessions, {
+    fields: [interventions.session_id],
+    references: [activitySessions.id],
+  }),
+}));
 
 export const conceptNotes = pgTable("concept_notes", {
   id: uuid("id").primaryKey().defaultRandom(),

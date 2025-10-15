@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { activitySessions, dailyAttendance, activities } from "@/lib/db/schema";
-import { eq, asc } from "drizzle-orm";
+import { eq, asc, and } from "drizzle-orm";
 import {
   type NewActivitySession,
   type ActivitySessionResponse,
@@ -17,6 +17,8 @@ export async function getActivitySessions(
   activityId: string
 ): Promise<ActivitySessionsResponse> {
   try {
+    console.log("getActivitySessions - activityId:", activityId);
+
     const sessions = await db.query.activitySessions.findMany({
       where: eq(activitySessions.activity_id, activityId),
       orderBy: [asc(activitySessions.session_number)],
@@ -29,12 +31,17 @@ export async function getActivitySessions(
       },
     });
 
+    console.log(
+      "getActivitySessions - query result:",
+      JSON.stringify(sessions, null, 2)
+    );
+
     return {
       success: true,
       data: sessions,
     };
   } catch (error) {
-    console.error("Error getting activity sessions:", error);
+    console.error("getActivitySessions - error:", error);
     return {
       success: false,
       error: "Failed to get activity sessions",
@@ -49,6 +56,8 @@ export async function getActivitySession(
   sessionId: string
 ): Promise<ActivitySessionResponse> {
   try {
+    console.log("getActivitySession - sessionId:", sessionId);
+
     const session = await db.query.activitySessions.findFirst({
       where: eq(activitySessions.id, sessionId),
       with: {
@@ -60,6 +69,11 @@ export async function getActivitySession(
         },
       },
     });
+
+    console.log(
+      "getActivitySession - query result:",
+      JSON.stringify(session, null, 2)
+    );
 
     if (!session) {
       return {
@@ -88,10 +102,32 @@ export async function createActivitySession(
   data: NewActivitySession
 ): Promise<ActivitySessionResponse> {
   try {
+    console.log("createActivitySession - input data:", data);
+
+    // Prevent inserting a session with the same activity_id + session_date
+    const existing = await db.query.activitySessions.findFirst({
+      where: and(
+        eq(activitySessions.activity_id, data.activity_id),
+        eq(activitySessions.session_date, data.session_date)
+      ),
+      columns: { id: true },
+    });
+
+    if (existing) {
+      console.log("createActivitySession - duplicate session found:", existing);
+      return {
+        success: false,
+        error:
+          "A session for this activity already exists on the provided date",
+      };
+    }
+
     const [session] = await db
       .insert(activitySessions)
       .values(data)
       .returning();
+
+    console.log("createActivitySession - session created:", session);
 
     revalidatePath(`/dashboard/activities/${data.activity_id}`);
 
@@ -100,7 +136,7 @@ export async function createActivitySession(
       data: session,
     };
   } catch (error) {
-    console.error("Error creating activity session:", error);
+    console.error("createActivitySession - error:", error);
     return {
       success: false,
       error: "Failed to create activity session",
@@ -225,9 +261,22 @@ export async function generateActivitySessions(
       const sessionDate = new Date(baseDate);
       sessionDate.setDate(baseDate.getDate() + (i - 1));
 
+      const formattedDate = sessionDate.toISOString().split("T")[0];
+
+      // Skip dates that already have a session for this activity
+      const exists = await db.query.activitySessions.findFirst({
+        where: and(
+          eq(activitySessions.activity_id, activityId),
+          eq(activitySessions.session_date, formattedDate)
+        ),
+        columns: { id: true },
+      });
+
+      if (exists) continue;
+
       sessions.push({
         activity_id: activityId,
-        session_date: sessionDate.toISOString().split("T")[0], // Format as YYYY-MM-DD
+        session_date: formattedDate, // Format as YYYY-MM-DD
         session_number: i,
         title: `Session ${i}`, // Default title based on session number
         start_time: sessionData?.start_time || null,

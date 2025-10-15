@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { districts, subCounties } from "@/lib/db/schema";
 import { eq, inArray } from "drizzle-orm";
+import { retryAsync } from "@/lib/db/retry";
 
 export async function getDistrictNameByCode(code: string): Promise<string> {
   try {
@@ -107,56 +108,28 @@ export async function batchGetSubCountyNamesByCodes(
   codes: string[]
 ): Promise<Record<string, string>> {
   try {
-    if (!codes.length) return {};
+    console.log("Fetching subcounty names for codes:", codes);
 
-    // Filter out codes that look like names already
-    const actualCodes = codes.filter(code => code && !code.includes(" "));
-    const nameMap: Record<string, string> = {};
-
-    // Add names that are already names
-    codes.forEach(code => {
-      if (code && code.includes(" ")) {
-        nameMap[code] = code;
-      }
-    });
-
-    if (!actualCodes.length) return nameMap;
-
-    // Remove duplicates before querying
-    const uniqueCodes = [...new Set(actualCodes)];
-
-    try {
-      const subCountiesData = await db.query.subCounties.findMany({
-        where: inArray(subCounties.code, uniqueCodes),
+    const result = await retryAsync(() =>
+      db.query.subCounties.findMany({
+        where: inArray(subCounties.code, codes),
         columns: {
           code: true,
           name: true,
         },
-      });
+      })
+    );
 
-      // Add the retrieved names
-      subCountiesData.forEach(subCounty => {
-        nameMap[subCounty.code] = subCounty.name;
-      });
-    } catch (dbError) {
-      console.error("Database query error for subcounties:", dbError);
-      // Continue with fallback - use codes as names
-    }
-
-    // Add fallback for codes not found
-    codes.forEach(code => {
-      if (code && !nameMap[code]) {
-        nameMap[code] = code;
+    const subCountyMap: Record<string, string> = {};
+    (result as Array<{ code: string; name: string }>).forEach(
+      ({ code, name }) => {
+        subCountyMap[code] = name;
       }
-    });
+    );
 
-    return nameMap;
+    return subCountyMap;
   } catch (error) {
-    console.error("Error batch fetching subcounty names by codes:", error);
-    // Return fallback map
-    return codes.reduce((acc: Record<string, string>, code: string) => {
-      if (code) acc[code] = code;
-      return acc;
-    }, {});
+    console.error("Error fetching subcounty names:", error);
+    throw error;
   }
 }

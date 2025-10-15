@@ -2,12 +2,15 @@
 
 import { signIn } from "@/features/auth/auth";
 import { db } from "@/lib/db";
-import { users, passwordResetTokens } from "@/lib/db/schema";
+import { users, passwordResetTokens, clusters } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { hash } from "bcryptjs";
 import { nanoid } from "nanoid";
 import { createTransport } from "nodemailer";
+import { getDefaultStore } from "jotai";
+import { clusterAtom } from "../atoms/cluster-atom";
+import { getUserClusterId } from "../actions";
 
 // Email configuration
 const transporter = createTransport({
@@ -92,6 +95,65 @@ export async function login(email: string, password: string) {
       success: false,
       error: "An unexpected error occurred during login",
     };
+  }
+}
+
+export async function loginUser({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) {
+  try {
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Login failed");
+    }
+
+    const user = await response.json();
+
+    // Fetch the user's actual cluster information from the database
+    try {
+      const clusterId = await getUserClusterId();
+      if (clusterId) {
+        // Get cluster details
+        const clusterDetails = await db.query.clusters.findFirst({
+          where: eq(clusters.id, clusterId),
+          columns: { id: true, name: true },
+        });
+
+        if (clusterDetails) {
+          // Store the cluster in the Jotai atom using the default store
+          const store = getDefaultStore();
+          store.set(clusterAtom, {
+            id: clusterDetails.id,
+            name: clusterDetails.name,
+            members: [], // We'll populate this if needed
+            permissions: [], // We'll populate this if needed
+          });
+
+          console.log("Cluster data set in atom:", clusterDetails);
+        }
+      } else {
+        console.warn("No cluster found for user during login");
+      }
+    } catch (clusterError) {
+      console.error(
+        "Error fetching cluster information during login:",
+        clusterError
+      );
+    }
+
+    return user;
+  } catch (error) {
+    console.error("Error logging in user:", error);
+    throw error;
   }
 }
 
