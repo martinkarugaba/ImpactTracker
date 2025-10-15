@@ -8,6 +8,8 @@ import { revalidatePath } from "next/cache";
 import { hash } from "bcryptjs";
 import { nanoid } from "nanoid";
 import { createTransport } from "nodemailer";
+import { getDefaultStore } from "jotai";
+import { clusterAtom } from "../atoms/cluster-atom";
 
 // Email configuration
 const transporter = createTransport({
@@ -92,6 +94,50 @@ export async function login(email: string, password: string) {
       success: false,
       error: "An unexpected error occurred during login",
     };
+  }
+}
+
+export async function loginUser({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) {
+  try {
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Login failed");
+    }
+
+    const user = await response.json();
+
+    // Placeholder for fetching the user's cluster with additional data
+    const cluster = {
+      id: "default-cluster-id",
+      name: "Default Cluster",
+      members: [
+        { id: "1", name: "John Doe", role: "Admin" },
+        { id: "2", name: "Jane Smith", role: "Member" },
+      ],
+      permissions: ["read", "write", "delete"],
+    };
+
+    // Store the cluster in the Jotai atom using the default store
+    const store = getDefaultStore();
+    store.set(clusterAtom, cluster);
+
+    console.log("Cluster data set in atom:", cluster);
+
+    return user;
+  } catch (error) {
+    console.error("Error logging in user:", error);
+    throw error;
   }
 }
 

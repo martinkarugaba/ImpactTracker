@@ -228,6 +228,10 @@ export function AttendanceTab({
             <Plus className="mr-2 h-4 w-4" />
             Add Session
           </Button>
+          <Button onClick={() => onManageAttendance()} variant="outline">
+            <Users className="mr-2 h-4 w-4" />
+            Add Participants
+          </Button>
         </div>
       </div>
 
@@ -305,6 +309,10 @@ export function AttendanceTab({
               <Button onClick={onCreateSession}>
                 <Plus className="mr-2 h-4 w-4" />
                 Create Session
+              </Button>
+              <Button onClick={() => onManageAttendance()} variant="outline">
+                <Users className="mr-2 h-4 w-4" />
+                Add Participants
               </Button>
             </div>
           </CardContent>

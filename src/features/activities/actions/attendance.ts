@@ -9,6 +9,7 @@ import {
 } from "@/lib/db/schema";
 import { activities } from "@/lib/db/schema";
 import { eq, and, inArray } from "drizzle-orm";
+import { retryAsync } from "@/lib/db/retry";
 import {
   type DailyAttendanceResponse,
   type DailyAttendanceListResponse,
@@ -125,29 +126,32 @@ export async function markAttendance(
   }
 ): Promise<DailyAttendanceResponse> {
   try {
-    // Check if attendance record already exists
-    const existingRecord = await db.query.dailyAttendance.findFirst({
-      where: and(
-        eq(dailyAttendance.session_id, sessionId),
-        eq(dailyAttendance.participant_id, participantId)
-      ),
-    });
+    // Perform DB operations with retries to tolerate transient network/DB errors
+    const attendanceRecord = await retryAsync(async () => {
+      // Check if attendance record already exists
+      const existingRecord = await db.query.dailyAttendance.findFirst({
+        where: and(
+          eq(dailyAttendance.session_id, sessionId),
+          eq(dailyAttendance.participant_id, participantId)
+        ),
+      });
 
-    let attendanceRecord;
+      if (existingRecord) {
+        // Update existing record
+        const [updated] = await db
+          .update(dailyAttendance)
+          .set({
+            ...attendanceData,
+            updated_at: new Date(),
+          })
+          .where(eq(dailyAttendance.id, existingRecord.id))
+          .returning();
 
-    if (existingRecord) {
-      // Update existing record
-      [attendanceRecord] = await db
-        .update(dailyAttendance)
-        .set({
-          ...attendanceData,
-          updated_at: new Date(),
-        })
-        .where(eq(dailyAttendance.id, existingRecord.id))
-        .returning();
-    } else {
+        return updated;
+      }
+
       // Create new record
-      [attendanceRecord] = await db
+      const [created] = await db
         .insert(dailyAttendance)
         .values({
           session_id: sessionId,
@@ -155,7 +159,9 @@ export async function markAttendance(
           ...attendanceData,
         })
         .returning();
-    }
+
+      return created;
+    });
 
     // Get session info for revalidation
     const session = await db.query.activitySessions.findFirst({

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
+import { retryAsync } from "@/lib/db/retry";
 import {
   activities,
   activityParticipants,
@@ -141,19 +142,35 @@ export async function getActivities(
 
 export async function getActivity(id: string): Promise<ActivityResponse> {
   try {
-    const activity = await db.query.activities.findFirst({
-      where: eq(activities.id, id),
-      with: {
-        cluster: true,
-        project: true,
-        organization: true,
-        activityParticipants: {
-          with: {
-            participant: true,
+    const activity = await retryAsync(() =>
+      db.query.activities.findFirst({
+        where: eq(activities.id, id),
+        with: {
+          cluster: true,
+          project: true,
+          organization: true,
+          // Only fetch a minimal set of participant fields to avoid large lateral
+          // JSON builds that may reference schema columns that differ between
+          // environments. If you need more participant fields, expand this list
+          // carefully.
+          activityParticipants: {
+            with: {
+              participant: {
+                columns: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  contact: true,
+                  district: true,
+                  subCounty: true,
+                  age: true,
+                },
+              },
+            },
           },
         },
-      },
-    });
+      })
+    );
 
     if (!activity) {
       return {

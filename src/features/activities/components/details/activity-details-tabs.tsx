@@ -3,7 +3,15 @@
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Info, Users, UserCheck, TrendingUp, Calendar } from "lucide-react";
+import {
+  Info,
+  Users,
+  UserCheck,
+  TrendingUp,
+  Calendar,
+  Plus,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { DailyAttendance, ActivityWithSessions } from "../../types/types";
 import type { Activity } from "../../types/types";
 import { ActivityOverviewTab } from "./activity-overview-tab";
@@ -136,6 +144,21 @@ export function ActivityDetailsTabs({
       </TabsContent>
 
       <TabsContent value="attendance-overview" className="mt-6">
+        <div className="mb-4 flex justify-end">
+          <Button
+            variant="outline"
+            onClick={() => _onCreateSession && _onCreateSession()}
+            className="mr-2"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Create Session
+          </Button>
+          <Button variant="outline" onClick={() => onManageAttendance()}>
+            <Users className="mr-2 h-4 w-4" />
+            Add Participants
+          </Button>
+        </div>
+
         {(() => {
           const allAttendance = Object.values(
             attendanceBySession
@@ -151,6 +174,21 @@ export function ActivityDetailsTabs({
       </TabsContent>
 
       <TabsContent value="sessions-management" className="mt-6">
+        <div className="mb-4 flex justify-end">
+          <Button
+            variant="outline"
+            onClick={() => _onCreateSession && _onCreateSession()}
+            className="mr-2"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Create Session
+          </Button>
+          <Button variant="outline" onClick={() => onManageAttendance()}>
+            <Users className="mr-2 h-4 w-4" />
+            Add Participants
+          </Button>
+        </div>
+
         <SessionsManagementTab
           sessions={(activity as ActivityWithSessions).sessions ?? []}
           attendanceBySession={attendanceBySession}

@@ -85,12 +85,19 @@ export async function getActivityParticipants(
   activityId: string
 ): Promise<ActivityParticipantsResponse> {
   try {
+    console.log("getActivityParticipants - activityId:", activityId);
+
     const participants = await db.query.activityParticipants.findMany({
       where: eq(activityParticipants.activity_id, activityId),
       with: {
         participant: true,
       },
     });
+
+    console.log(
+      "getActivityParticipants - query result:",
+      JSON.stringify(participants, null, 2)
+    );
 
     // Enhance with participant names if available
     const enhancedParticipants = participants.map(p => ({

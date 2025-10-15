@@ -29,6 +29,8 @@ import {
   getOrganizationsByCluster,
 } from "@/features/organizations/actions/organizations";
 import { getCurrentUserClusterOrganizations } from "@/features/clusters/actions/cluster-users";
+import { useAtom } from "jotai";
+import { clusterAtom } from "@/features/auth/atoms/cluster-atom";
 import type { Organization } from "@/features/organizations/types";
 
 interface OrganizationsData {
@@ -41,6 +43,7 @@ export function TeamSwitcher() {
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
   const { isMobile } = useSidebar();
+  const [cluster] = useAtom(clusterAtom);
 
   const { data: organizationId, isLoading: isLoadingOrgId } = useQuery({
     queryKey: ["organizationId"],
@@ -56,57 +59,31 @@ export function TeamSwitcher() {
     useQuery<OrganizationsData | null>({
       queryKey: ["organizations", organizationId],
       queryFn: async (): Promise<OrganizationsData | null> => {
-        // console.log(
-        //   "Starting organizations query with organization ID:",
-        //   organizationId
-        // );
         if (!organizationId) {
-          // console.log("No organization ID available, returning null");
           return null;
         }
 
-        // console.log("Fetching current organization with cluster...");
         const currentOrgResult =
           await getCurrentOrganizationWithCluster(organizationId);
-        // console.log("Current org result:", currentOrgResult);
         if (!currentOrgResult.success || !currentOrgResult.data) {
-          // console.log(
-          //   "Failed to get current organization:",
-          //   currentOrgResult.error
-          // );
           return null;
         }
 
         const currentOrg = currentOrgResult.data;
-        // console.log("Current organization:", currentOrg);
 
-        // Fetch organizations from the cluster members table
         let clusterOrgs: Organization[] = [];
         let userClusterOrgs: Organization[] = [];
         let isClustered = false;
 
-        // Get organizations from the current org's cluster if it belongs to one
-        if (currentOrg.cluster_id) {
-          // console.log(
-          //   "Organization belongs to cluster:",
-          //   currentOrg.cluster_id
-          // );
-          const orgsResult = await getOrganizationsByCluster(
-            currentOrg.cluster_id
-          );
-          // console.log("Cluster organizations result:", orgsResult);
+        if (cluster?.id) {
+          const orgsResult = await getOrganizationsByCluster(cluster.id);
           if (orgsResult.success && orgsResult.data) {
             clusterOrgs = orgsResult.data;
             isClustered = true;
           }
-        } else {
-          // console.log("Organization does not belong to any cluster");
         }
 
-        // Get organizations from clusters the user belongs to
-        // console.log("Fetching user cluster organizations...");
         const userOrgsResult = await getCurrentUserClusterOrganizations();
-        // console.log("User cluster organizations result:", userOrgsResult);
         if (
           userOrgsResult.success === true &&
           "data" in userOrgsResult &&
@@ -116,17 +93,14 @@ export function TeamSwitcher() {
           isClustered = isClustered || userClusterOrgs.length > 0;
         }
 
-        // Combine and deduplicate organizations
         const combinedOrgs = [...clusterOrgs];
 
-        // Add organizations from user's clusters if not already included
         for (const org of userClusterOrgs) {
           if (!combinedOrgs.find(existingOrg => existingOrg.id === org.id)) {
             combinedOrgs.push(org);
           }
         }
 
-        // Always include the current organization
         if (!combinedOrgs.find(org => org.id === currentOrg.id)) {
           combinedOrgs.push(currentOrg);
         }
