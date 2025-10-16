@@ -80,11 +80,16 @@ function AttendanceCell({ sessionId }: { sessionId: string }) {
     );
   }
 
+  // Count only participants who actually attended
+  const attendedCount = attendance.data.filter(
+    record => record.attendance_status === "attended"
+  ).length;
+
   return (
     <div className="flex items-center gap-2">
       <Users className="h-4 w-4 text-purple-600 dark:text-purple-400" />
       <span className="font-medium text-purple-700 dark:text-purple-300">
-        {attendance.data.length}
+        {attendedCount}
       </span>
       <span className="text-muted-foreground text-sm">attended</span>
     </div>

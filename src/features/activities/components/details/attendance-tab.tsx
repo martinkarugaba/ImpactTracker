@@ -191,8 +191,14 @@ export function AttendanceTab({
   );
 
   // Handle edit participant
-  const _handleEditParticipant = (participant: ActivityParticipant) => {
-    setEditingParticipant(participant);
+  const _handleEditParticipant = (
+    participant: DailyAttendance["participant"]
+  ) => {
+    if (participant) {
+      setEditingParticipant({
+        participant: participant,
+      } as ActivityParticipant);
+    }
   };
 
   // Initialize attendance for the selected session if needed
@@ -284,6 +290,7 @@ export function AttendanceTab({
                 sessionAttendance={records}
                 isLoading={_isLoadingAttendance}
                 additionalActionButtons={sessionSelector}
+                onEditParticipant={_handleEditParticipant}
               />
             );
           })()
@@ -327,6 +334,7 @@ export function AttendanceTab({
                   sessionAttendance={fallback as unknown as DailyAttendance[]}
                   isLoading={_isLoadingAttendance}
                   additionalActionButtons={sessionSelector}
+                  onEditParticipant={_handleEditParticipant}
                 />
               );
             }
@@ -336,6 +344,7 @@ export function AttendanceTab({
                 sessionAttendance={allRecords}
                 isLoading={_isLoadingAttendance}
                 additionalActionButtons={sessionSelector}
+                onEditParticipant={_handleEditParticipant}
               />
             );
           })()}

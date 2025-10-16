@@ -15,7 +15,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 // helper not needed here
-import { Trash2, ChevronDown } from "lucide-react";
+import {
+  Trash2,
+  ChevronDown,
+  User,
+  Phone,
+  Users,
+  MapPin,
+  Briefcase,
+  Calendar,
+  Edit,
+  MoreHorizontal,
+} from "lucide-react";
 import { toast } from "sonner";
 import type { DailyAttendance } from "../../types/types";
 import {
@@ -43,17 +54,20 @@ function SubcountyCell({ subCounty }: { subCounty?: string }) {
   }, [subCounty, getSubCountyNamesByCodes]);
 
   return (
-    <div>
-      {displayName !== "-" ? (
-        <Badge
-          variant="outline"
-          className="border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-800 dark:bg-purple-950 dark:text-purple-300"
-        >
-          {displayName}
-        </Badge>
-      ) : (
-        <span className="text-muted-foreground text-sm">-</span>
-      )}
+    <div className="flex items-center gap-2">
+      <MapPin className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+      <div>
+        {displayName !== "-" ? (
+          <Badge
+            variant="outline"
+            className="border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-800 dark:bg-purple-950 dark:text-purple-300"
+          >
+            {displayName}
+          </Badge>
+        ) : (
+          <span className="text-muted-foreground text-sm">-</span>
+        )}
+      </div>
     </div>
   );
 }
@@ -68,6 +82,7 @@ interface AttendanceDataTableProps {
     participantId: string;
     status: string;
   }) => Promise<void>;
+  onEditParticipant?: (participant: DailyAttendance["participant"]) => void;
   // Additional action buttons to show alongside bulk actions
   additionalActionButtons?: React.ReactNode;
 }
@@ -113,6 +128,7 @@ export function AttendanceDataTable({
   sessionAttendance,
   isLoading = false,
   onParticipantsDeleted,
+  onEditParticipant,
   additionalActionButtons,
 }: AttendanceDataTableProps) {
   const markAttendanceMutation = useMarkAttendance();
@@ -201,23 +217,27 @@ export function AttendanceDataTable({
       {
         id: "select",
         header: ({ table: _table }) => (
-          <Checkbox
-            checked={
-              selectedRows.size === sessionAttendance.length &&
-              sessionAttendance.length > 0
-            }
-            onCheckedChange={handleSelectAll}
-            aria-label="Select all"
-          />
+          <div className="px-2">
+            <Checkbox
+              checked={
+                selectedRows.size === sessionAttendance.length &&
+                sessionAttendance.length > 0
+              }
+              onCheckedChange={handleSelectAll}
+              aria-label="Select all"
+            />
+          </div>
         ),
         cell: ({ row }) => (
-          <Checkbox
-            checked={selectedRows.has(row.original.id)}
-            onCheckedChange={checked =>
-              handleSelectRow(row.original.id, checked as boolean)
-            }
-            aria-label="Select row"
-          />
+          <div className="px-2">
+            <Checkbox
+              checked={selectedRows.has(row.original.id)}
+              onCheckedChange={checked =>
+                handleSelectRow(row.original.id, checked as boolean)
+              }
+              aria-label="Select row"
+            />
+          </div>
         ),
         enableSorting: false,
         enableHiding: false,
@@ -228,17 +248,20 @@ export function AttendanceDataTable({
         cell: ({ row }) => {
           const participant = row.original.participant;
           return (
-            <div className="space-y-1">
-              <div className="font-medium">
-                {participant
-                  ? `${participant.firstName} ${participant.lastName}`
-                  : "Unknown Participant"}
-              </div>
-              {participant?.designation && (
-                <div className="text-muted-foreground text-xs">
-                  {participant.designation}
+            <div className="flex items-center gap-2">
+              <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <div className="space-y-1">
+                <div className="font-medium">
+                  {participant
+                    ? `${participant.firstName} ${participant.lastName}`
+                    : "Unknown Participant"}
                 </div>
-              )}
+                {participant?.designation && (
+                  <div className="text-muted-foreground text-xs">
+                    {participant.designation}
+                  </div>
+                )}
+              </div>
             </div>
           );
         },
@@ -255,10 +278,13 @@ export function AttendanceDataTable({
               : `0${contact}`
             : null;
           return (
-            <div className="max-w-32 min-w-0 truncate text-sm">
-              {formattedContact || (
-                <span className="text-muted-foreground">-</span>
-              )}
+            <div className="flex items-center gap-2">
+              <Phone className="h-4 w-4 text-green-600 dark:text-green-400" />
+              <div className="max-w-32 min-w-0 truncate text-sm">
+                {formattedContact || (
+                  <span className="text-muted-foreground">-</span>
+                )}
+              </div>
             </div>
           );
         },
@@ -269,9 +295,12 @@ export function AttendanceDataTable({
         cell: ({ row }) => {
           const sex = row.original.participant?.sex;
           return (
-            <span className="text-sm capitalize">
-              {sex || <span className="text-muted-foreground">-</span>}
-            </span>
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+              <span className="text-sm capitalize">
+                {sex || <span className="text-muted-foreground">-</span>}
+              </span>
+            </div>
           );
         },
       },
@@ -281,9 +310,12 @@ export function AttendanceDataTable({
         cell: ({ row }) => {
           const age = row.original.participant?.age;
           return (
-            <span className="text-sm">
-              {age || <span className="text-muted-foreground">-</span>}
-            </span>
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+              <span className="text-sm">
+                {age || <span className="text-muted-foreground">-</span>}
+              </span>
+            </div>
           );
         },
       },
@@ -313,17 +345,20 @@ export function AttendanceDataTable({
         cell: ({ row }) => {
           const status = row.original.participant?.employmentStatus;
           return (
-            <div>
-              {status ? (
-                <Badge
-                  variant="outline"
-                  className="border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300"
-                >
-                  {status.replace("_", " ")}
-                </Badge>
-              ) : (
-                <span className="text-muted-foreground text-sm">-</span>
-              )}
+            <div className="flex items-center gap-2">
+              <Briefcase className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+              <div>
+                {status ? (
+                  <Badge
+                    variant="outline"
+                    className="border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300"
+                  >
+                    {status.replace("_", " ")}
+                  </Badge>
+                ) : (
+                  <span className="text-muted-foreground text-sm">-</span>
+                )}
+              </div>
             </div>
           );
         },
@@ -346,17 +381,20 @@ export function AttendanceDataTable({
         cell: ({ row }) => {
           const district = row.original.participant?.district;
           return (
-            <div>
-              {district ? (
-                <Badge
-                  variant="outline"
-                  className="border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-300"
-                >
-                  📍 {district}
-                </Badge>
-              ) : (
-                <span className="text-muted-foreground text-sm">-</span>
-              )}
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-red-600 dark:text-red-400" />
+              <div>
+                {district ? (
+                  <Badge
+                    variant="outline"
+                    className="border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-300"
+                  >
+                    {district}
+                  </Badge>
+                ) : (
+                  <span className="text-muted-foreground text-sm">-</span>
+                )}
+              </div>
             </div>
           );
         },
@@ -454,18 +492,32 @@ export function AttendanceDataTable({
         header: "Actions",
         cell: ({ row }) => {
           return (
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleDeleteSingle(row.original.id)}
-                className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-                disabled={isDeleting}
-              >
-                <Trash2 className="h-4 w-4" />
-                <span className="sr-only">Remove participant</span>
-              </Button>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => onEditParticipant?.(row.original.participant)}
+                  disabled={!row.original.participant}
+                >
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit Participant
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => handleDeleteSingle(row.original.id)}
+                  className="text-red-600"
+                  disabled={isDeleting}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Remove from Session
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           );
         },
       },
@@ -479,15 +531,14 @@ export function AttendanceDataTable({
       handleDeleteSingle,
       markAttendanceMutation,
       updatingId,
+      onEditParticipant,
     ]
   );
 
-  // Table actions with session filters at start and bulk operations at end
+  // Table actions with bulk operations at start and session filters at end
   const tableActions = (
     <div className="flex w-full items-center justify-between gap-2 max-sm:flex-col max-sm:items-start max-sm:gap-3">
-      {/* Session filters at start */}
-      <div className="min-w-0 flex-shrink-0">{additionalActionButtons}</div>
-      {/* Bulk operations at end */}
+      {/* Bulk operations at start */}
       {selectedRows.size > 0 && (
         <div className="flex min-w-0 flex-shrink-0 items-center gap-2 max-sm:w-full max-sm:justify-between">
           <div className="text-muted-foreground flex items-center gap-2 text-sm max-sm:flex-1 max-sm:justify-center">
@@ -512,6 +563,10 @@ export function AttendanceDataTable({
           </Button>
         </div>
       )}
+      {/* Session filters at end */}
+      <div className="min-w-0 flex-shrink-0 ml-auto">
+        {additionalActionButtons}
+      </div>
     </div>
   );
 
