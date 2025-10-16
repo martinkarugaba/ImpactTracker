@@ -25,12 +25,12 @@ export function MainNavigationMenu() {
               <NavigationMenuLink asChild>
                 <Link
                   href="#features"
-                  className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground block space-y-1 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none"
+                  className="block space-y-1 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                 >
                   <div className="text-sm leading-none font-medium">
                     Features Overview
                   </div>
-                  <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
+                  <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                     Discover all the powerful features of our KPI tracking
                     solution
                   </p>
@@ -39,12 +39,12 @@ export function MainNavigationMenu() {
               <NavigationMenuLink asChild>
                 <Link
                   href="#features"
-                  className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground block space-y-1 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none"
+                  className="block space-y-1 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                 >
                   <div className="text-sm leading-none font-medium">
                     Dashboard & Analytics
                   </div>
-                  <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
+                  <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                     Visualize and analyze your key performance indicators
                   </p>
                 </Link>
@@ -52,12 +52,12 @@ export function MainNavigationMenu() {
               <NavigationMenuLink asChild>
                 <Link
                   href="#features"
-                  className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground block space-y-1 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none"
+                  className="block space-y-1 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                 >
                   <div className="text-sm leading-none font-medium">
                     Integrations & Reporting
                   </div>
-                  <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
+                  <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                     Connect your data sources and generate insights
                   </p>
                 </Link>

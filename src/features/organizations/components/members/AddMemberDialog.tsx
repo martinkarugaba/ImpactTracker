@@ -138,7 +138,7 @@ export function AddMemberDialog({
                           Loading users...
                         </div>
                       ) : users.length === 0 ? (
-                        <div className="text-muted-foreground p-2 text-center">
+                        <div className="p-2 text-center text-muted-foreground">
                           No available users found
                         </div>
                       ) : (
@@ -151,7 +151,7 @@ export function AddMemberDialog({
                     </SelectContent>
                   </Select>
                   {error && (
-                    <p className="text-destructive mt-1 text-sm">{error}</p>
+                    <p className="mt-1 text-sm text-destructive">{error}</p>
                   )}
                   <FormMessage />
                 </FormItem>

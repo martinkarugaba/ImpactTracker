@@ -20,7 +20,7 @@ export default function FixOrganizationsPage() {
         <h1 className="text-3xl font-bold tracking-tight">
           Fix Organization Assignments
         </h1>
-        <p className="text-muted-foreground mt-2">
+        <p className="mt-2 text-muted-foreground">
           Update participant organization assignments based on their subcounty
           location.
         </p>

@@ -50,7 +50,7 @@ const PaginationControls: FC<PaginationControlsProps> = ({
     <div className="flex items-center justify-between gap-3 max-sm:flex-col">
       {/* Page number information */}
       <p
-        className="text-muted-foreground flex-1 text-sm whitespace-nowrap"
+        className="flex-1 text-sm whitespace-nowrap text-muted-foreground"
         aria-live="polite"
       >
         Page <span className="text-foreground">{currentPage}</span> of{" "}

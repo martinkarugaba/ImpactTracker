@@ -165,7 +165,7 @@ export function FeaturesSection() {
   return (
     <section id="features" className="relative scroll-mt-16 py-24 md:py-32">
       {/* Background gradient */}
-      <div className="from-primary/5 via-secondary/5 to-background absolute inset-0 bg-gradient-to-br opacity-70"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-background opacity-70"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,var(--primary)/10,transparent_50%)]"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,var(--secondary)/8,transparent_50%)]"></div>
 
@@ -177,17 +177,17 @@ export function FeaturesSection() {
           transition={{ duration: 0.5 }}
           className="mb-20 text-center"
         >
-          <div className="bg-primary/10 text-primary mx-auto mb-6 inline-flex items-center rounded-full px-4 py-2 text-sm font-medium">
+          <div className="mx-auto mb-6 inline-flex items-center rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
             <span className="relative mr-2 flex h-2 w-2">
-              <span className="bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"></span>
-              <span className="bg-primary relative inline-flex h-2 w-2 rounded-full"></span>
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary"></span>
             </span>
             Powerful Features
           </div>
-          <h2 className="from-foreground via-foreground/90 to-foreground/70 bg-gradient-to-br bg-clip-text text-4xl font-bold tracking-tight text-transparent md:text-5xl lg:text-6xl">
+          <h2 className="bg-gradient-to-br from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-4xl font-bold tracking-tight text-transparent md:text-5xl lg:text-6xl">
             Built for Impact
           </h2>
-          <p className="text-muted-foreground/80 mx-auto mt-6 max-w-3xl text-lg md:text-xl">
+          <p className="mx-auto mt-6 max-w-3xl text-lg text-muted-foreground/80 md:text-xl">
             Everything you need to track participants, manage training programs,
             and monitor VSLAs with comprehensive analytics and reporting
           </p>
@@ -203,9 +203,9 @@ export function FeaturesSection() {
         >
           {/* Large Feature - Participant Tracking */}
           <motion.div variants={item} className="md:col-span-2">
-            <Card className="group from-card/80 via-card/60 to-card/40 hover:shadow-primary/10 relative h-full overflow-hidden border-0 bg-gradient-to-br backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl">
+            <Card className="group relative h-full overflow-hidden border-0 bg-gradient-to-br from-card/80 via-card/60 to-card/40 backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
-              <div className="from-background/50 to-background/20 absolute inset-[1px] rounded-[calc(var(--radius)-1px)] bg-gradient-to-br"></div>
+              <div className="absolute inset-[1px] rounded-[calc(var(--radius)-1px)] bg-gradient-to-br from-background/50 to-background/20"></div>
 
               <CardHeader className="relative z-10 pb-6">
                 <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 text-blue-600 transition-all duration-300 group-hover:scale-110 group-hover:from-blue-500/30 group-hover:to-indigo-500/30">
@@ -216,7 +216,7 @@ export function FeaturesSection() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="relative z-10">
-                <CardDescription className="text-muted-foreground/80 mb-8 text-lg leading-relaxed">
+                <CardDescription className="mb-8 text-lg leading-relaxed text-muted-foreground/80">
                   {features[0].description}
                 </CardDescription>
                 <div className="flex flex-wrap gap-2">
@@ -236,9 +236,9 @@ export function FeaturesSection() {
 
           {/* Medium Feature - Training Management */}
           <motion.div variants={item}>
-            <Card className="group from-card/80 via-card/60 to-card/40 hover:shadow-primary/10 relative h-full overflow-hidden border-0 bg-gradient-to-br backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl">
+            <Card className="group relative h-full overflow-hidden border-0 bg-gradient-to-br from-card/80 via-card/60 to-card/40 backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10">
               <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 via-transparent to-emerald-500/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
-              <div className="from-background/50 to-background/20 absolute inset-[1px] rounded-[calc(var(--radius)-1px)] bg-gradient-to-br"></div>
+              <div className="absolute inset-[1px] rounded-[calc(var(--radius)-1px)] bg-gradient-to-br from-background/50 to-background/20"></div>
 
               <CardHeader className="relative z-10">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 text-green-600 transition-all duration-300 group-hover:scale-110 group-hover:from-green-500/30 group-hover:to-emerald-500/30">
@@ -249,7 +249,7 @@ export function FeaturesSection() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="relative z-10">
-                <CardDescription className="text-muted-foreground/80 text-base leading-relaxed">
+                <CardDescription className="text-base leading-relaxed text-muted-foreground/80">
                   {features[1].description}
                 </CardDescription>
               </CardContent>
@@ -258,12 +258,12 @@ export function FeaturesSection() {
 
           {/* Tall Feature - VSLA Monitoring */}
           <motion.div variants={item} className="md:row-span-2">
-            <Card className="group from-card/80 via-card/60 to-card/40 hover:shadow-primary/10 relative h-full overflow-hidden border-0 bg-gradient-to-br backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl">
-              <div className="from-muted/8 to-muted/4 absolute inset-0 bg-gradient-to-br via-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
-              <div className="from-background/50 to-background/20 absolute inset-[1px] rounded-[calc(var(--radius)-1px)] bg-gradient-to-br"></div>
+            <Card className="group relative h-full overflow-hidden border-0 bg-gradient-to-br from-card/80 via-card/60 to-card/40 backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10">
+              <div className="absolute inset-0 bg-gradient-to-br from-muted/8 via-transparent to-muted/4 opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+              <div className="absolute inset-[1px] rounded-[calc(var(--radius)-1px)] bg-gradient-to-br from-background/50 to-background/20"></div>
 
               <CardHeader className="relative z-10">
-                <div className="bg-muted/20 text-muted-foreground group-hover:bg-muted/30 mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-muted/20 text-muted-foreground transition-all duration-300 group-hover:scale-110 group-hover:bg-muted/30">
                   {features[3].icon}
                 </div>
                 <CardTitle className="text-xl font-semibold">
@@ -271,12 +271,12 @@ export function FeaturesSection() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="relative z-10 space-y-6">
-                <CardDescription className="text-muted-foreground/80 text-base leading-relaxed">
+                <CardDescription className="text-base leading-relaxed text-muted-foreground/80">
                   {features[3].description}
                 </CardDescription>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="bg-muted/20 text-muted-foreground flex h-8 w-8 items-center justify-center rounded-lg">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted/20 text-muted-foreground">
                       <svg
                         className="h-4 w-4"
                         fill="currentColor"
@@ -294,7 +294,7 @@ export function FeaturesSection() {
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="bg-muted/20 text-muted-foreground flex h-8 w-8 items-center justify-center rounded-lg">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted/20 text-muted-foreground">
                       <svg
                         className="h-4 w-4"
                         fill="currentColor"
@@ -312,7 +312,7 @@ export function FeaturesSection() {
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="bg-muted/20 text-muted-foreground flex h-8 w-8 items-center justify-center rounded-lg">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted/20 text-muted-foreground">
                       <svg
                         className="h-4 w-4"
                         fill="currentColor"
@@ -336,12 +336,12 @@ export function FeaturesSection() {
 
           {/* Medium Feature - Real-time Analytics */}
           <motion.div variants={item}>
-            <Card className="group from-card/80 via-card/60 to-card/40 hover:shadow-primary/10 relative h-full overflow-hidden border-0 bg-gradient-to-br backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl">
-              <div className="from-muted/8 to-muted/4 absolute inset-0 bg-gradient-to-br via-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
-              <div className="from-background/50 to-background/20 absolute inset-[1px] rounded-[calc(var(--radius)-1px)] bg-gradient-to-br"></div>
+            <Card className="group relative h-full overflow-hidden border-0 bg-gradient-to-br from-card/80 via-card/60 to-card/40 backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10">
+              <div className="absolute inset-0 bg-gradient-to-br from-muted/8 via-transparent to-muted/4 opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+              <div className="absolute inset-[1px] rounded-[calc(var(--radius)-1px)] bg-gradient-to-br from-background/50 to-background/20"></div>
 
               <CardHeader className="relative z-10">
-                <div className="bg-muted/20 text-muted-foreground group-hover:bg-muted/30 mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-muted/20 text-muted-foreground transition-all duration-300 group-hover:scale-110 group-hover:bg-muted/30">
                   {features[2].icon}
                 </div>
                 <CardTitle className="text-xl font-semibold">
@@ -349,12 +349,12 @@ export function FeaturesSection() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="relative z-10">
-                <CardDescription className="text-muted-foreground/80 mb-6 text-base leading-relaxed">
+                <CardDescription className="mb-6 text-base leading-relaxed text-muted-foreground/80">
                   {features[2].description}
                 </CardDescription>
-                <div className="bg-muted/20 rounded-lg p-4">
-                  <div className="text-foreground text-3xl font-bold">95%</div>
-                  <div className="text-muted-foreground text-xs font-medium">
+                <div className="rounded-lg bg-muted/20 p-4">
+                  <div className="text-3xl font-bold text-foreground">95%</div>
+                  <div className="text-xs font-medium text-muted-foreground">
                     Data Accuracy
                   </div>
                 </div>
@@ -364,12 +364,12 @@ export function FeaturesSection() {
 
           {/* Medium Feature - Impact Reporting */}
           <motion.div variants={item}>
-            <Card className="group from-card/80 via-card/60 to-card/40 hover:shadow-primary/10 relative h-full overflow-hidden border-0 bg-gradient-to-br backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl">
-              <div className="from-muted/8 to-muted/4 absolute inset-0 bg-gradient-to-br via-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
-              <div className="from-background/50 to-background/20 absolute inset-[1px] rounded-[calc(var(--radius)-1px)] bg-gradient-to-br"></div>
+            <Card className="group relative h-full overflow-hidden border-0 bg-gradient-to-br from-card/80 via-card/60 to-card/40 backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10">
+              <div className="absolute inset-0 bg-gradient-to-br from-muted/8 via-transparent to-muted/4 opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+              <div className="absolute inset-[1px] rounded-[calc(var(--radius)-1px)] bg-gradient-to-br from-background/50 to-background/20"></div>
 
               <CardHeader className="relative z-10">
-                <div className="bg-muted/20 text-muted-foreground group-hover:bg-muted/30 mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-muted/20 text-muted-foreground transition-all duration-300 group-hover:scale-110 group-hover:bg-muted/30">
                   {features[4].icon}
                 </div>
                 <CardTitle className="text-xl font-semibold">
@@ -377,7 +377,7 @@ export function FeaturesSection() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="relative z-10">
-                <CardDescription className="text-muted-foreground/80 text-base leading-relaxed">
+                <CardDescription className="text-base leading-relaxed text-muted-foreground/80">
                   {features[4].description}
                 </CardDescription>
               </CardContent>
@@ -386,12 +386,12 @@ export function FeaturesSection() {
 
           {/* Medium Feature - Multi-Organization Support */}
           <motion.div variants={item}>
-            <Card className="group from-card/80 via-card/60 to-card/40 hover:shadow-primary/10 relative h-full overflow-hidden border-0 bg-gradient-to-br backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl">
-              <div className="from-muted/8 to-muted/4 absolute inset-0 bg-gradient-to-br via-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
-              <div className="from-background/50 to-background/20 absolute inset-[1px] rounded-[calc(var(--radius)-1px)] bg-gradient-to-br"></div>
+            <Card className="group relative h-full overflow-hidden border-0 bg-gradient-to-br from-card/80 via-card/60 to-card/40 backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10">
+              <div className="absolute inset-0 bg-gradient-to-br from-muted/8 via-transparent to-muted/4 opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+              <div className="absolute inset-[1px] rounded-[calc(var(--radius)-1px)] bg-gradient-to-br from-background/50 to-background/20"></div>
 
               <CardHeader className="relative z-10">
-                <div className="bg-muted/20 text-muted-foreground group-hover:bg-muted/30 mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-muted/20 text-muted-foreground transition-all duration-300 group-hover:scale-110 group-hover:bg-muted/30">
                   {features[5].icon}
                 </div>
                 <CardTitle className="text-lg font-semibold">
@@ -399,7 +399,7 @@ export function FeaturesSection() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="relative z-10">
-                <CardDescription className="text-muted-foreground/80 text-base leading-relaxed">
+                <CardDescription className="text-base leading-relaxed text-muted-foreground/80">
                   {features[5].description}
                 </CardDescription>
               </CardContent>

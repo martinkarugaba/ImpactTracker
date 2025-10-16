@@ -12,7 +12,7 @@ export function SelectedParishesDisplay({
 }: SelectedParishesDisplayProps) {
   if (selectedParishes.length === 0) {
     return (
-      <div className="text-muted-foreground text-sm">No parishes selected</div>
+      <div className="text-sm text-muted-foreground">No parishes selected</div>
     );
   }
 
@@ -26,7 +26,7 @@ export function SelectedParishesDisplay({
           <Badge
             key={parish}
             variant="secondary"
-            className="hover:bg-destructive hover:text-destructive-foreground cursor-pointer"
+            className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
             onClick={() => onRemoveParish(parish)}
           >
             {parish}

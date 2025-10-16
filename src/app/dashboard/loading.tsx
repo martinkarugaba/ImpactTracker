@@ -5,7 +5,7 @@ import { BarChart3, TrendingUp, Activity } from "lucide-react";
 
 export default function DashboardLoading() {
   return (
-    <div className="from-background via-background to-muted/20 flex min-h-screen w-full items-center justify-center bg-gradient-to-br">
+    <div className="flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
       <div className="flex flex-col items-center space-y-8">
         {/* Main logo with sophisticated animation */}
         <motion.div
@@ -15,7 +15,7 @@ export default function DashboardLoading() {
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
           <motion.div
-            className="from-primary to-primary/80 relative flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br shadow-lg"
+            className="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 shadow-lg"
             animate={{
               boxShadow: [
                 "0 4px 20px rgba(0, 0, 0, 0.1)",
@@ -37,7 +37,7 @@ export default function DashboardLoading() {
                 ease: "linear",
               }}
             >
-              <BarChart3 className="text-primary-foreground h-10 w-10" />
+              <BarChart3 className="h-10 w-10 text-primary-foreground" />
             </motion.div>
           </motion.div>
 
@@ -45,7 +45,7 @@ export default function DashboardLoading() {
           {[...Array(3)].map((_, i) => (
             <motion.div
               key={i}
-              className="bg-primary/60 absolute h-2 w-2 rounded-full"
+              className="absolute h-2 w-2 rounded-full bg-primary/60"
               style={{
                 top: `${20 + i * 15}%`,
                 left: `${85 + i * 5}%`,
@@ -72,7 +72,7 @@ export default function DashboardLoading() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
         >
-          <h1 className="text-foreground mb-2 text-2xl font-semibold tracking-tight">
+          <h1 className="mb-2 text-2xl font-semibold tracking-tight text-foreground">
             Loading Dashboard
           </h1>
           <motion.p
@@ -99,7 +99,7 @@ export default function DashboardLoading() {
             {[...Array(5)].map((_, i) => (
               <motion.div
                 key={i}
-                className="bg-primary/30 h-3 w-3 rounded-full"
+                className="h-3 w-3 rounded-full bg-primary/30"
                 animate={{
                   backgroundColor: [
                     "hsl(var(--primary) / 0.3)",
@@ -133,7 +133,7 @@ export default function DashboardLoading() {
           ].map(({ icon: Icon, delay }, i) => (
             <motion.div
               key={i}
-              className="bg-muted/50 flex h-12 w-12 items-center justify-center rounded-xl backdrop-blur-sm"
+              className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted/50 backdrop-blur-sm"
               animate={{
                 y: [0, -8, 0],
                 opacity: [0.7, 1, 0.7],
@@ -145,20 +145,20 @@ export default function DashboardLoading() {
                 ease: "easeInOut",
               }}
             >
-              <Icon className="text-muted-foreground h-5 w-5" />
+              <Icon className="h-5 w-5 text-muted-foreground" />
             </motion.div>
           ))}
         </motion.div>
 
         {/* Subtle loading bar */}
         <motion.div
-          className="bg-muted/30 w-48 overflow-hidden rounded-full"
+          className="w-48 overflow-hidden rounded-full bg-muted/30"
           initial={{ opacity: 0, width: 0 }}
           animate={{ opacity: 1, width: "12rem" }}
           transition={{ delay: 1.2, duration: 0.8, ease: "easeOut" }}
         >
           <motion.div
-            className="from-primary/60 to-primary h-1 bg-gradient-to-r"
+            className="h-1 bg-gradient-to-r from-primary/60 to-primary"
             animate={{
               x: ["-100%", "100%"],
             }}

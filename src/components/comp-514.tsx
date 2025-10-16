@@ -22,7 +22,7 @@ export default function Component() {
         ))}
       </Stepper>
       <p
-        className="text-muted-foreground mt-2 text-xs"
+        className="mt-2 text-xs text-muted-foreground"
         role="region"
         aria-live="polite"
       >

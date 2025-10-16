@@ -6,14 +6,14 @@ export function DemographicsOverview({ data }: DemographicsProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3 pb-2">
-        <div className="bg-chart-1/10 rounded-lg p-2">
+        <div className="rounded-lg bg-chart-1/10 p-2">
           <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
           <h3 className="text-lg font-semibold text-blue-600 dark:text-blue-400">
             Demographics Overview
           </h3>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             Key participant statistics and breakdowns
           </p>
         </div>

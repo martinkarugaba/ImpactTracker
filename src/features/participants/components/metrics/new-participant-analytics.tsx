@@ -33,7 +33,7 @@ export function NewParticipantAnalytics({
       <div className="space-y-6">
         {/* Education Analytics */}
         <div>
-          <h3 className="text-muted-foreground mb-3 text-sm font-medium">
+          <h3 className="mb-3 text-sm font-medium text-muted-foreground">
             Education Level Distribution
           </h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -55,7 +55,7 @@ export function NewParticipantAnalytics({
 
         {/* VSLA & Financial Inclusion */}
         <div>
-          <h3 className="text-muted-foreground mb-3 text-sm font-medium">
+          <h3 className="mb-3 text-sm font-medium text-muted-foreground">
             VSLA Participation & Financial Inclusion
           </h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -92,7 +92,7 @@ export function NewParticipantAnalytics({
 
         {/* Enterprise & Employment */}
         <div>
-          <h3 className="text-muted-foreground mb-3 text-sm font-medium">
+          <h3 className="mb-3 text-sm font-medium text-muted-foreground">
             Enterprise Ownership & Employment
           </h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -120,7 +120,7 @@ export function NewParticipantAnalytics({
 
         {/* Skills Development */}
         <div>
-          <h3 className="text-muted-foreground mb-3 text-sm font-medium">
+          <h3 className="mb-3 text-sm font-medium text-muted-foreground">
             Skills Development & Training
           </h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -157,7 +157,7 @@ export function NewParticipantAnalytics({
 
         {/* Marital Status Distribution */}
         <div>
-          <h3 className="text-muted-foreground mb-3 text-sm font-medium">
+          <h3 className="mb-3 text-sm font-medium text-muted-foreground">
             Marital Status Distribution
           </h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

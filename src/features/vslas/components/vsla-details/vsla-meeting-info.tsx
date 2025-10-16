@@ -20,10 +20,10 @@ export function VSLAMeetingInfo({ vsla }: VSLAMeetingInfoProps) {
         <div className="grid gap-4 md:grid-cols-3">
           {vsla.meeting_frequency && (
             <div className="flex items-center gap-3">
-              <Calendar className="text-muted-foreground h-5 w-5" />
+              <Calendar className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Frequency</p>
-                <p className="text-muted-foreground text-sm capitalize">
+                <p className="text-sm text-muted-foreground capitalize">
                   {vsla.meeting_frequency}
                 </p>
               </div>
@@ -31,10 +31,10 @@ export function VSLAMeetingInfo({ vsla }: VSLAMeetingInfoProps) {
           )}
           {vsla.meeting_day && (
             <div className="flex items-center gap-3">
-              <Calendar className="text-muted-foreground h-5 w-5" />
+              <Calendar className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Day</p>
-                <p className="text-muted-foreground text-sm capitalize">
+                <p className="text-sm text-muted-foreground capitalize">
                   {vsla.meeting_day}
                 </p>
               </div>
@@ -42,10 +42,10 @@ export function VSLAMeetingInfo({ vsla }: VSLAMeetingInfoProps) {
           )}
           {vsla.meeting_time && (
             <div className="flex items-center gap-3">
-              <Clock className="text-muted-foreground h-5 w-5" />
+              <Clock className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Time</p>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   {vsla.meeting_time}
                 </p>
               </div>

@@ -16,7 +16,7 @@ export function GenderDemographicsSection({ data }: DemographicsProps) {
       <CardContent>
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-4 rounded-lg bg-green-50 p-4 dark:bg-green-950/20">
-            <h4 className="text-foreground flex items-center gap-2 font-semibold">
+            <h4 className="flex items-center gap-2 font-semibold text-foreground">
               <div className="h-2 w-2 rounded-full bg-green-500"></div>
               <span className="text-green-700 dark:text-green-300">
                 Male Participants ({data.maleParticipants})
@@ -39,7 +39,7 @@ export function GenderDemographicsSection({ data }: DemographicsProps) {
           </div>
 
           <div className="space-y-4 rounded-lg bg-pink-50 p-4 dark:bg-pink-950/20">
-            <h4 className="text-foreground flex items-center gap-2 font-semibold">
+            <h4 className="flex items-center gap-2 font-semibold text-foreground">
               <div className="h-2 w-2 rounded-full bg-pink-500"></div>
               <span className="text-pink-700 dark:text-pink-300">
                 Female Participants ({data.femaleParticipants})

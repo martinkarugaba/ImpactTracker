@@ -73,7 +73,7 @@ function AttendanceCell({ sessionId }: { sessionId: string }) {
 
   if (!attendance?.data || attendance.data.length === 0) {
     return (
-      <div className="text-muted-foreground flex items-center gap-2">
+      <div className="flex items-center gap-2 text-muted-foreground">
         <Users className="h-4 w-4 text-gray-400" />
         <span className="text-sm">0 attended</span>
       </div>
@@ -86,7 +86,7 @@ function AttendanceCell({ sessionId }: { sessionId: string }) {
       <span className="font-medium text-purple-700 dark:text-purple-300">
         {attendance.data.length}
       </span>
-      <span className="text-muted-foreground text-sm">attended</span>
+      <span className="text-sm text-muted-foreground">attended</span>
     </div>
   );
 }
@@ -267,7 +267,7 @@ export function SessionsTab({
               ) : (
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-gray-400" />
-                  <span className="text-muted-foreground text-sm italic">
+                  <span className="text-sm text-muted-foreground italic">
                     No venue set
                   </span>
                 </div>
@@ -412,7 +412,7 @@ export function SessionsTab({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold">Activity Sessions</h3>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             Manage individual sessions for this multi-day activity
           </p>
         </div>
@@ -457,7 +457,7 @@ export function SessionsTab({
 
       {/* Sessions Overview Cards */}
       {sessions && sessions.length > 0 && (
-        <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-4">
+        <div className="grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs md:grid-cols-4 dark:*:data-[slot=card]:bg-card">
           <MetricCard
             title="Total Sessions"
             value={sessions.length}
@@ -512,9 +512,9 @@ export function SessionsTab({
       ) : (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <Calendar className="text-muted-foreground/50 h-12 w-12" />
+            <Calendar className="h-12 w-12 text-muted-foreground/50" />
             <h4 className="mt-4 text-lg font-semibold">No sessions found</h4>
-            <p className="text-muted-foreground mt-2 text-center text-sm">
+            <p className="mt-2 text-center text-sm text-muted-foreground">
               This activity doesn&apos;t have any sessions yet. Create sessions
               to track daily attendance for your multi-day activity.
             </p>

@@ -59,7 +59,7 @@ export function CreateVSLADialog({
           <DialogTitle className="text-center text-xl font-semibold">
             Create Village Savings and Loans Association
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground text-sm">
+          <DialogDescription className="text-sm text-muted-foreground">
             Create a new VSLA to track savings and loan activities
           </DialogDescription>
         </DialogHeader>

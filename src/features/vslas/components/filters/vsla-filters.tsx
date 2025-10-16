@@ -75,7 +75,7 @@ export function VSLAFiltersComponent({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Filter className="text-muted-foreground h-4 w-4" />
+          <Filter className="h-4 w-4 text-muted-foreground" />
           <h3 className="text-sm font-medium">Filters</h3>
           {activeFilterCount > 0 && (
             <Badge variant="secondary" className="ml-2">

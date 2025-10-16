@@ -145,14 +145,33 @@ export function AttendanceTab({
     }
   };
 
-  // Handle session status update
-  const _handleUpdateSessionStatus = async (
-    _sessionId: string,
-    _status: string
-  ) => {
-    // TODO: Implement session status update
-    toast.info("Session status update coming soon");
-  };
+  // Session selector for table actions
+  const sessionSelector = (
+    <div className="flex min-w-0 items-center gap-2">
+      <Label
+        htmlFor="session-dropdown"
+        className="hidden text-sm font-medium whitespace-nowrap sm:block"
+      >
+        Session:
+      </Label>
+      <Select value={selectedSessionId} onValueChange={setSelectedSessionId}>
+        <SelectTrigger className="w-32 min-w-0 sm:w-40 md:w-48 lg:w-56">
+          <SelectValue placeholder="All Sessions" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Sessions</SelectItem>
+          {sessions.map(session => (
+            <SelectItem value={session.id} key={session.id}>
+              {session.title
+                ? `${session.session_number || "#"} - ${session.title}`
+                : `Session ${session.session_number || "#"}`}
+              {session.session_date ? ` (${session.session_date})` : null}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
 
   // Handle edit participant
   const _handleEditParticipant = (participant: ActivityParticipant) => {
@@ -169,7 +188,7 @@ export function AttendanceTab({
   }
 
   return (
-    <div className="w-full space-y-6 overflow-x-hidden">
+    <div className="w-full space-y-6">
       {/* Action Buttons */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap gap-2">
@@ -184,27 +203,6 @@ export function AttendanceTab({
         </div>
       </div>
 
-      {/* Session Selector Dropdown */}
-      <div className="mb-4 flex flex-row items-center gap-2 border">
-        <Label htmlFor="session-dropdown">Session:</Label>
-        <Select value={selectedSessionId} onValueChange={setSelectedSessionId}>
-          <SelectTrigger className="w-48 sm:w-64">
-            <SelectValue placeholder="All Sessions" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Sessions</SelectItem>
-            {sessions.map(session => (
-              <SelectItem value={session.id} key={session.id}>
-                {session.title
-                  ? `${session.session_number || "#"} - ${session.title}`
-                  : `Session ${session.session_number || "#"}`}
-                {session.session_date ? ` (${session.session_date})` : null}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
       {/* Attendance Table Section */}
       {selectedSessionId !== "all"
         ? (() => {
@@ -216,6 +214,7 @@ export function AttendanceTab({
               <AttendanceDataTable
                 sessionAttendance={attendanceBySession[selectedSessionId] || []}
                 isLoading={_isLoadingAttendance}
+                additionalActionButtons={sessionSelector}
               />
             );
           })()
@@ -230,6 +229,7 @@ export function AttendanceTab({
                   Object.values(attendanceBySession).flat() as DailyAttendance[]
                 }
                 isLoading={_isLoadingAttendance}
+                additionalActionButtons={sessionSelector}
               />
             );
           })()}

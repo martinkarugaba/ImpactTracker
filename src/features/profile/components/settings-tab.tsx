@@ -73,7 +73,7 @@ export function SettingsTab({ userRole }: SettingsTabProps) {
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <Label>Theme</Label>
-                <p className="text-muted-foreground text-xs">
+                <p className="text-xs text-muted-foreground">
                   Choose your preferred color scheme
                 </p>
               </div>
@@ -106,10 +106,10 @@ export function SettingsTab({ userRole }: SettingsTabProps) {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <IconMail className="text-muted-foreground h-4 w-4" />
+                    <IconMail className="h-4 w-4 text-muted-foreground" />
                     <Label>Email Notifications</Label>
                   </div>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Receive notifications via email
                   </p>
                 </div>
@@ -124,10 +124,10 @@ export function SettingsTab({ userRole }: SettingsTabProps) {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <IconBell className="text-muted-foreground h-4 w-4" />
+                    <IconBell className="h-4 w-4 text-muted-foreground" />
                     <Label>Push Notifications</Label>
                   </div>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Receive browser push notifications
                   </p>
                 </div>
@@ -142,13 +142,13 @@ export function SettingsTab({ userRole }: SettingsTabProps) {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <IconDeviceMobile className="text-muted-foreground h-4 w-4" />
+                    <IconDeviceMobile className="h-4 w-4 text-muted-foreground" />
                     <Label>SMS Notifications</Label>
                     <Badge variant="secondary" className="text-xs">
                       Premium
                     </Badge>
                   </div>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Receive important updates via SMS
                   </p>
                 </div>
@@ -166,7 +166,7 @@ export function SettingsTab({ userRole }: SettingsTabProps) {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <Label>Marketing Emails</Label>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Receive updates about new features
                   </p>
                 </div>
@@ -196,10 +196,10 @@ export function SettingsTab({ userRole }: SettingsTabProps) {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <IconEye className="text-muted-foreground h-4 w-4" />
+                    <IconEye className="h-4 w-4 text-muted-foreground" />
                     <Label>Profile Visibility</Label>
                   </div>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Who can see your profile information
                   </p>
                 </div>
@@ -224,7 +224,7 @@ export function SettingsTab({ userRole }: SettingsTabProps) {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <Label>Data Sharing</Label>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Allow anonymous analytics data sharing
                   </p>
                 </div>
@@ -254,7 +254,7 @@ export function SettingsTab({ userRole }: SettingsTabProps) {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <Label>Language</Label>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Interface language
                   </p>
                 </div>
@@ -278,7 +278,7 @@ export function SettingsTab({ userRole }: SettingsTabProps) {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <Label>Timezone</Label>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Your local timezone
                   </p>
                 </div>
@@ -306,7 +306,7 @@ export function SettingsTab({ userRole }: SettingsTabProps) {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <Label>Auto-save</Label>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Automatically save form changes
                   </p>
                 </div>
@@ -333,7 +333,7 @@ export function SettingsTab({ userRole }: SettingsTabProps) {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <Label>Export Data</Label>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Download a copy of your data
                   </p>
                 </div>
@@ -346,7 +346,7 @@ export function SettingsTab({ userRole }: SettingsTabProps) {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <Label className="text-destructive">Delete Account</Label>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Permanently delete your account and data
                   </p>
                 </div>

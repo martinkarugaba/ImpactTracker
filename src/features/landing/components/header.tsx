@@ -15,7 +15,7 @@ export function Header() {
   const isLoading = status === "loading";
 
   return (
-    <header className="bg-background/95 sticky top-0 z-50 w-full border-b backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
       <Container>
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-6">

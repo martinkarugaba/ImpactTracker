@@ -93,7 +93,7 @@ export function OverviewCharts() {
           <Card key={i} className="@container/card">
             <CardHeader>
               <div className="flex items-center gap-2">
-                <div className="bg-muted h-3 w-3 rounded-full" />
+                <div className="h-3 w-3 rounded-full bg-muted" />
                 <Skeleton className="h-6 w-40" />
               </div>
             </CardHeader>
@@ -108,7 +108,7 @@ export function OverviewCharts() {
 
   if (!trendResponse?.success || !trendResponse.data) {
     return (
-      <div className="text-muted-foreground text-center">
+      <div className="text-center text-muted-foreground">
         {trendResponse?.error || "No trend data available"}
       </div>
     );

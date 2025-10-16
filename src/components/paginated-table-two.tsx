@@ -339,12 +339,12 @@ export default function Component() {
               type="text"
               aria-label="Filter by name or email"
             />
-            <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
+            <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
               <ListFilterIcon size={16} aria-hidden="true" />
             </div>
             {Boolean(table.getColumn("name")?.getFilterValue()) && (
               <button
-                className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-muted-foreground/80 transition-[color,box-shadow] outline-none hover:text-foreground focus:z-10 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Clear filter"
                 onClick={() => {
                   table.getColumn("name")?.setFilterValue("");
@@ -368,7 +368,7 @@ export default function Component() {
                 />
                 Status
                 {selectedStatuses.length > 0 && (
-                  <span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
+                  <span className="-me-1 inline-flex h-5 max-h-full items-center rounded border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
                     {selectedStatuses.length}
                   </span>
                 )}
@@ -376,7 +376,7 @@ export default function Component() {
             </PopoverTrigger>
             <PopoverContent className="w-auto min-w-36 p-3" align="start">
               <div className="space-y-3">
-                <div className="text-muted-foreground text-xs font-medium">
+                <div className="text-xs font-medium text-muted-foreground">
                   Filters
                 </div>
                 <div className="space-y-3">
@@ -394,7 +394,7 @@ export default function Component() {
                         className="flex grow justify-between gap-2 font-normal"
                       >
                         {value}{" "}
-                        <span className="text-muted-foreground ms-2 text-xs">
+                        <span className="ms-2 text-xs text-muted-foreground">
                           {statusCounts.get(value)}
                         </span>
                       </Label>
@@ -451,7 +451,7 @@ export default function Component() {
                     aria-hidden="true"
                   />
                   Delete
-                  <span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
+                  <span className="-me-1 inline-flex h-5 max-h-full items-center rounded border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
                     {table.getSelectedRowModel().rows.length}
                   </span>
                 </Button>
@@ -500,7 +500,7 @@ export default function Component() {
       </div>
 
       {/* Table */}
-      <div className="bg-background overflow-hidden rounded-md border">
+      <div className="overflow-hidden rounded-md border bg-background">
         <Table className="table-fixed">
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
@@ -621,9 +621,9 @@ export default function Component() {
           </Select>
         </div>
         {/* Page number information */}
-        <div className="text-muted-foreground flex grow justify-end text-sm whitespace-nowrap">
+        <div className="flex grow justify-end text-sm whitespace-nowrap text-muted-foreground">
           <p
-            className="text-muted-foreground text-sm whitespace-nowrap"
+            className="text-sm whitespace-nowrap text-muted-foreground"
             aria-live="polite"
           >
             <span className="text-foreground">
@@ -708,10 +708,10 @@ export default function Component() {
           </Pagination>
         </div>
       </div>
-      <p className="text-muted-foreground mt-4 text-center text-sm">
+      <p className="mt-4 text-center text-sm text-muted-foreground">
         Example of a more complex table made with{" "}
         <a
-          className="hover:text-foreground underline"
+          className="underline hover:text-foreground"
           href="https://tanstack.com/table"
           target="_blank"
           rel="noopener noreferrer"

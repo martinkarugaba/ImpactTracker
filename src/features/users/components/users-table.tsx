@@ -120,7 +120,7 @@ export function UsersTable({
                     {currentCluster.name}
                   </Badge>
                 ) : (
-                  <span className="text-muted-foreground text-sm">
+                  <span className="text-sm text-muted-foreground">
                     Not assigned
                   </span>
                 )}
@@ -181,7 +181,7 @@ export function UsersTable({
                     {currentOrganization.acronym}
                   </Badge>
                 ) : (
-                  <span className="text-muted-foreground text-sm">
+                  <span className="text-sm text-muted-foreground">
                     Not assigned
                   </span>
                 )}
@@ -220,7 +220,7 @@ export function UsersTable({
                 >
                   <div className="flex flex-col">
                     <span className="font-medium">{org.acronym}</span>
-                    <span className="text-muted-foreground text-xs">
+                    <span className="text-xs text-muted-foreground">
                       {org.name}
                     </span>
                   </div>

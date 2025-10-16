@@ -13,7 +13,7 @@ export function YouthEmploymentSection({ data }: DemographicsProps) {
             Youth Employment (15-35 years)
           </span>
         </CardTitle>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Employment outcomes for youth participants
         </p>
       </CardHeader>

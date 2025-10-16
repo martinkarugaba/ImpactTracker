@@ -60,7 +60,7 @@ export const columns: ColumnDef<DashboardItem>[] = [
     header: "Section Type",
     cell: ({ row }) => (
       <div className="w-32">
-        <Badge variant="outline" className="text-muted-foreground px-1.5">
+        <Badge variant="outline" className="px-1.5 text-muted-foreground">
           {row.original.type}
         </Badge>
       </div>
@@ -70,7 +70,7 @@ export const columns: ColumnDef<DashboardItem>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => (
-      <Badge variant="outline" className="text-muted-foreground px-1.5">
+      <Badge variant="outline" className="px-1.5 text-muted-foreground">
         {row.original.status === "Done" ? (
           <IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" />
         ) : (

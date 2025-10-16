@@ -65,7 +65,7 @@ export function FaqSection() {
           transition={{ duration: 0.5 }}
           className="mb-16 text-center"
         >
-          <div className="bg-primary/10 text-primary mx-auto mb-6 inline-flex items-center rounded-full px-4 py-2 text-sm font-medium">
+          <div className="mx-auto mb-6 inline-flex items-center rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
             <svg
               className="mr-2 h-4 w-4"
               fill="none"
@@ -81,15 +81,15 @@ export function FaqSection() {
             </svg>
             FAQ
           </div>
-          <h2 className="from-foreground via-foreground/90 to-foreground/70 bg-gradient-to-br bg-clip-text text-4xl font-bold tracking-tight text-transparent md:text-5xl">
+          <h2 className="bg-gradient-to-br from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-4xl font-bold tracking-tight text-transparent md:text-5xl">
             Frequently Asked Questions
           </h2>
-          <p className="text-muted-foreground/80 mx-auto mt-6 max-w-3xl text-lg md:text-xl">
+          <p className="mx-auto mt-6 max-w-3xl text-lg text-muted-foreground/80 md:text-xl">
             Got questions? We've got answers. Can't find what you're looking
             for?{" "}
             <Link
               href="mailto:support@impact-tracker.com"
-              className="text-primary hover:text-primary/80 decoration-primary/30 font-medium underline underline-offset-4 transition-colors"
+              className="font-medium text-primary underline decoration-primary/30 underline-offset-4 transition-colors hover:text-primary/80"
             >
               Reach out to our support team
             </Link>
@@ -106,7 +106,7 @@ export function FaqSection() {
         >
           <div className="relative">
             <svg
-              className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2"
+              className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -142,14 +142,14 @@ export function FaqSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
             >
-              <Card className="border-border/40 bg-card/50 hover:border-border/60 hover:bg-card/70 border backdrop-blur-sm transition-all duration-200">
+              <Card className="border border-border/40 bg-card/50 backdrop-blur-sm transition-all duration-200 hover:border-border/60 hover:bg-card/70">
                 <CardHeader>
                   <CardTitle className="text-lg leading-relaxed font-semibold">
                     {faq.question}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-muted-foreground/90 text-base leading-relaxed">
+                  <CardDescription className="text-base leading-relaxed text-muted-foreground/90">
                     {faq.answer}
                   </CardDescription>
                 </CardContent>
@@ -162,9 +162,9 @@ export function FaqSection() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-muted-foreground py-12 text-center"
+            className="py-12 text-center text-muted-foreground"
           >
-            <div className="bg-muted/20 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted/20">
               <svg
                 className="h-8 w-8"
                 fill="none"

@@ -19,7 +19,7 @@ export function SkillsFilters({ filters, updateFilter }: SkillsFiltersProps) {
     <>
       {/* Vocational Skills */}
       <div className="space-y-1">
-        <label className="text-muted-foreground text-xs font-medium">
+        <label className="text-xs font-medium text-muted-foreground">
           Vocational Skills
         </label>
         <Select
@@ -39,7 +39,7 @@ export function SkillsFilters({ filters, updateFilter }: SkillsFiltersProps) {
 
       {/* Soft Skills */}
       <div className="space-y-1">
-        <label className="text-muted-foreground text-xs font-medium">
+        <label className="text-xs font-medium text-muted-foreground">
           Soft Skills
         </label>
         <Select
@@ -59,7 +59,7 @@ export function SkillsFilters({ filters, updateFilter }: SkillsFiltersProps) {
 
       {/* Business Skills */}
       <div className="space-y-1">
-        <label className="text-muted-foreground text-xs font-medium">
+        <label className="text-xs font-medium text-muted-foreground">
           Business Skills
         </label>
         <Select

@@ -201,7 +201,7 @@ export function ClusterMembersTab({ clusterId }: ClusterMembersTabProps) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                       disabled={isRemoving[member.id]}
                       onClick={() => handleRemoveMember(member.id)}
                     >

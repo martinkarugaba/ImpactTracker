@@ -391,13 +391,13 @@ export function ConceptNoteDialog({
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg font-medium">Budget Items</h3>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   Add budget items for this concept note.
                 </p>
               </div>
 
               <div className="rounded-md border">
-                <div className="bg-muted/50 grid grid-cols-12 gap-2 px-4 py-2">
+                <div className="grid grid-cols-12 gap-2 bg-muted/50 px-4 py-2">
                   <div className="col-span-5 font-medium">Description</div>
                   <div className="col-span-2 font-medium">Quantity</div>
                   <div className="col-span-2 font-medium">Unit Cost (UGX)</div>
@@ -434,12 +434,12 @@ export function ConceptNoteDialog({
                     ))}
                   </div>
                 ) : (
-                  <div className="text-muted-foreground py-8 text-center text-sm">
+                  <div className="py-8 text-center text-sm text-muted-foreground">
                     No budget items added yet.
                   </div>
                 )}
 
-                <div className="bg-muted/20 grid grid-cols-12 gap-2 border-t px-4 py-3">
+                <div className="grid grid-cols-12 gap-2 border-t bg-muted/20 px-4 py-3">
                   <div className="col-span-5">
                     <Input
                       placeholder="Item description"
@@ -496,7 +496,7 @@ export function ConceptNoteDialog({
                 </div>
 
                 {budgetItems.length > 0 && (
-                  <div className="bg-muted/40 flex items-center justify-end gap-2 px-4 py-2 text-sm font-medium">
+                  <div className="flex items-center justify-end gap-2 bg-muted/40 px-4 py-2 text-sm font-medium">
                     <div>Total Budget:</div>
                     <div>
                       {budgetItems

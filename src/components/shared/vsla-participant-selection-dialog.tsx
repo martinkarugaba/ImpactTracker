@@ -117,7 +117,7 @@ export function VSLAParticipantSelectionDialog({
         <div className="space-y-4">
           {/* Search Input */}
           <div className="relative">
-            <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search participants by name or contact..."
               value={searchTerm}
@@ -126,7 +126,7 @@ export function VSLAParticipantSelectionDialog({
             />
             {searchTerm !== debouncedSearchTerm && (
               <div className="absolute top-1/2 right-3 -translate-y-1/2">
-                <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
               </div>
             )}
           </div>
@@ -173,8 +173,8 @@ export function VSLAParticipantSelectionDialog({
               </div>
             ) : filteredParticipants.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8">
-                <Users className="text-muted-foreground mb-4 h-12 w-12" />
-                <div className="text-muted-foreground text-center">
+                <Users className="mb-4 h-12 w-12 text-muted-foreground" />
+                <div className="text-center text-muted-foreground">
                   {searchTerm
                     ? `No participants found matching "${searchTerm}"`
                     : "No participants available"}
@@ -185,7 +185,7 @@ export function VSLAParticipantSelectionDialog({
                 {filteredParticipants.map(participant => (
                   <div
                     key={participant.id}
-                    className="hover:bg-muted/50 flex items-center space-x-3 rounded-lg p-3"
+                    className="flex items-center space-x-3 rounded-lg p-3 hover:bg-muted/50"
                   >
                     <Checkbox
                       checked={selectedParticipants.some(
@@ -218,7 +218,7 @@ export function VSLAParticipantSelectionDialog({
                             : "Inactive"}
                         </Badge>
                       </div>
-                      <div className="text-muted-foreground flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <span>{participant.contact}</span>
                         {participant.designation && (
                           <span>• {participant.designation}</span>

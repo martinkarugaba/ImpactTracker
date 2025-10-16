@@ -451,12 +451,12 @@ export function ParticipantSelectionDialog({
                   <div className="flex flex-1 flex-col items-center justify-center space-y-4 p-8">
                     <div className="text-center">
                       <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-                        <UserPlus className="text-muted-foreground h-6 w-6" />
+                        <UserPlus className="h-6 w-6 text-muted-foreground" />
                       </div>
                       <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
                         No participants found
                       </h3>
-                      <p className="text-muted-foreground mt-1 text-sm">
+                      <p className="mt-1 text-sm text-muted-foreground">
                         No participants match "{debouncedSearchTerm}". Try a
                         different search term.
                       </p>
@@ -478,7 +478,7 @@ export function ParticipantSelectionDialog({
                         <div className="flex items-center justify-center py-12">
                           <div className="text-center">
                             <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600" />
-                            <p className="text-muted-foreground text-sm">
+                            <p className="text-sm text-muted-foreground">
                               Loading participants...
                             </p>
                           </div>
@@ -486,8 +486,8 @@ export function ParticipantSelectionDialog({
                       ) : availableParticipants.length === 0 ? (
                         <div className="flex items-center justify-center py-12">
                           <div className="text-center">
-                            <Users className="text-muted-foreground mx-auto mb-3 h-12 w-12" />
-                            <p className="text-muted-foreground text-sm">
+                            <Users className="mx-auto mb-3 h-12 w-12 text-muted-foreground" />
+                            <p className="text-sm text-muted-foreground">
                               {debouncedSearchTerm
                                 ? "No participants found"
                                 : "No participants available"}

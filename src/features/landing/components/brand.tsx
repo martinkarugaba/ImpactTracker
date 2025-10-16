@@ -5,12 +5,12 @@ import Link from "next/link";
 export function Brand() {
   return (
     <Link href="/" className="flex items-center space-x-2">
-      <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg">
+      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
         <svg
           viewBox="0 0 48 48"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="text-primary-foreground h-5 w-5"
+          className="h-5 w-5 text-primary-foreground"
         >
           <path
             fillRule="evenodd"

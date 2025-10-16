@@ -21,7 +21,7 @@ export function ContactInfoSection({ participant }: ContactInfoSectionProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-3">
-            <Phone className="text-muted-foreground h-4 w-4" />
+            <Phone className="h-4 w-4 text-muted-foreground" />
             <span className="font-mono">{participant.contact}</span>
           </div>
         </CardContent>

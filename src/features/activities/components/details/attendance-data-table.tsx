@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useCallback, useEffect } from "react";
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, VisibilityState } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
@@ -68,6 +68,8 @@ interface AttendanceDataTableProps {
     participantId: string;
     status: string;
   }) => Promise<void>;
+  // Additional action buttons to show alongside bulk actions
+  additionalActionButtons?: React.ReactNode;
 }
 
 // Helper function to get badge styling for attendance status
@@ -111,11 +113,19 @@ export function AttendanceDataTable({
   sessionAttendance,
   isLoading = false,
   onParticipantsDeleted,
+  additionalActionButtons,
 }: AttendanceDataTableProps) {
   const markAttendanceMutation = useMarkAttendance();
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Default column visibility - hide less critical columns on mobile
+  const defaultColumnVisibility: VisibilityState = {
+    "participant.dateOfBirth": false, // Hide date of birth by default
+    "participant.enterprise": false, // Hide enterprise by default
+    "participant.employmentStatus": false, // Hide employment by default
+  };
 
   // Handle select all
   const handleSelectAll = useCallback(
@@ -245,7 +255,7 @@ export function AttendanceDataTable({
               : `0${contact}`
             : null;
           return (
-            <div className="text-sm">
+            <div className="max-w-32 min-w-0 truncate text-sm">
               {formattedContact || (
                 <span className="text-muted-foreground">-</span>
               )}
@@ -324,7 +334,7 @@ export function AttendanceDataTable({
         cell: ({ row }) => {
           const enterprise = row.original.participant?.enterprise;
           return (
-            <span className="text-sm">
+            <span className="max-w-32 min-w-0 truncate text-sm">
               {enterprise || <span className="text-muted-foreground">-</span>}
             </span>
           );
@@ -472,30 +482,36 @@ export function AttendanceDataTable({
     ]
   );
 
-  // Table actions with selected rows info and bulk operations
-  const tableActions =
-    selectedRows.size > 0 ? (
-      <div className="flex items-center gap-4">
-        <div className="text-muted-foreground flex items-center gap-2 text-sm">
-          <Checkbox
-            checked={true}
-            onCheckedChange={() => setSelectedRows(new Set())}
-          />
-          <span className="font-medium">
-            {selectedRows.size} participant(s) selected
-          </span>
+  // Table actions with session filters at start and bulk operations at end
+  const tableActions = (
+    <div className="flex w-full items-center justify-between gap-4">
+      {/* Session filters at extreme start */}
+      <div className="flex-shrink-0">{additionalActionButtons}</div>
+      {/* Bulk operations at extreme end */}
+      {selectedRows.size > 0 && (
+        <div className="flex flex-shrink-0 items-center gap-4">
+          <div className="text-muted-foreground flex items-center gap-2 text-sm">
+            <Checkbox
+              checked={true}
+              onCheckedChange={() => setSelectedRows(new Set())}
+            />
+            <span className="font-medium">
+              {selectedRows.size} participant(s) selected
+            </span>
+          </div>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={handleBulkDelete}
+            disabled={isDeleting}
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Remove Selected
+          </Button>
         </div>
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={handleBulkDelete}
-          disabled={isDeleting}
-        >
-          <Trash2 className="mr-2 h-4 w-4" />
-          Remove Selected
-        </Button>
-      </div>
-    ) : null;
+      )}
+    </div>
+  );
 
   return (
     <div className="space-y-4">
@@ -514,6 +530,7 @@ export function AttendanceDataTable({
           }
           showColumnToggle={true}
           actionButtons={tableActions}
+          columnVisibility={defaultColumnVisibility}
         />
       </div>
     </div>

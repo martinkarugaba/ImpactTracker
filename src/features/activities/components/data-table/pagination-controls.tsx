@@ -38,7 +38,7 @@ export function PaginationControls({
 
   return (
     <div className="flex items-center justify-between">
-      <div className="text-muted-foreground text-sm">
+      <div className="text-sm text-muted-foreground">
         Showing {startItem} to {endItem} of {total} activities
       </div>
 

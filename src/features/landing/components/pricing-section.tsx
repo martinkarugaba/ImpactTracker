@@ -76,7 +76,7 @@ export function PricingSection() {
           <h2 className="mb-4 text-4xl font-bold tracking-tight">
             Simple, Transparent Pricing
           </h2>
-          <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
             Choose the perfect plan for your organization's needs
           </p>
         </div>
@@ -87,14 +87,14 @@ export function PricingSection() {
               key={index}
               className={`relative flex h-full flex-col transition-shadow duration-200 hover:shadow-lg ${
                 tier.featured
-                  ? "border-primary ring-primary/20 shadow-lg ring-1"
+                  ? "border-primary shadow-lg ring-1 ring-primary/20"
                   : "border-border"
               }`}
             >
               {/* Featured badge */}
               {tier.featured && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <div className="bg-primary text-primary-foreground rounded-full px-3 py-1 text-xs font-medium">
+                  <div className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
                     Most Popular
                   </div>
                 </div>
@@ -107,7 +107,7 @@ export function PricingSection() {
                 <div className="mt-4 flex items-baseline justify-center">
                   <span className="text-4xl font-bold">{tier.price}</span>
                   {tier.period && (
-                    <span className="text-muted-foreground ml-1 text-lg">
+                    <span className="ml-1 text-lg text-muted-foreground">
                       {tier.period}
                     </span>
                   )}
@@ -123,7 +123,7 @@ export function PricingSection() {
                     <li key={featureIndex} className="flex items-start">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="text-primary mt-0.5 mr-3 h-4 w-4 flex-shrink-0"
+                        className="mt-0.5 mr-3 h-4 w-4 flex-shrink-0 text-primary"
                         viewBox="0 0 20 20"
                         fill="currentColor"
                       >
@@ -153,7 +153,7 @@ export function PricingSection() {
         </div>
 
         <div className="mt-16 text-center">
-          <p className="text-muted-foreground mb-2 text-lg">
+          <p className="mb-2 text-lg text-muted-foreground">
             Have questions about which plan is right for you?
           </p>
           <Button variant="outline" asChild>

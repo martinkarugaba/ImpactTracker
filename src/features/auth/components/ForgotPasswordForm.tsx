@@ -75,18 +75,18 @@ export function ForgotPasswordForm() {
       <div className="grid w-full max-w-md gap-6">
         <div className="text-center">
           <h2 className="mb-2 text-xl font-semibold">Check your email</h2>
-          <p className="text-muted-foreground mb-4">
+          <p className="mb-4 text-muted-foreground">
             We&apos;ve sent password reset instructions to your email address.
           </p>
 
           {resetToken && (
-            <div className="bg-muted mb-4 rounded-md p-4">
+            <div className="mb-4 rounded-md bg-muted p-4">
               <p className="mb-2 text-sm">
                 If you didn&apos;t receive the email, use this link:
               </p>
               <a
                 href={`/auth/reset-password/${resetToken}`}
-                className="text-primary text-sm break-all hover:underline"
+                className="text-sm break-all text-primary hover:underline"
               >
                 Reset Password
               </a>
@@ -151,7 +151,7 @@ export function ForgotPasswordForm() {
           <div className="text-center">
             <Link
               href="/?auth=login"
-              className="text-primary hover:text-primary/90 text-sm"
+              className="text-sm text-primary hover:text-primary/90"
             >
               Back to login
             </Link>

@@ -75,7 +75,7 @@ export function UltraSimpleFilters({
       <div className="flex items-center gap-3">
         {/* Search - Takes most space */}
         <div className="relative min-w-[200px] flex-1">
-          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search participants by name, contact, or location..."
             value={filters.search}
@@ -142,7 +142,7 @@ export function UltraSimpleFilters({
             <div className="mt-6 space-y-6">
               {/* Organization & Context */}
               <div className="space-y-4">
-                <h4 className="text-muted-foreground text-sm font-medium">
+                <h4 className="text-sm font-medium text-muted-foreground">
                   Organization & Context
                 </h4>
 
@@ -209,7 +209,7 @@ export function UltraSimpleFilters({
 
               {/* Demographics */}
               <div className="space-y-4">
-                <h4 className="text-muted-foreground text-sm font-medium">
+                <h4 className="text-sm font-medium text-muted-foreground">
                   Demographics
                 </h4>
 
@@ -251,7 +251,7 @@ export function UltraSimpleFilters({
 
               {/* Program Participation */}
               <div className="space-y-4">
-                <h4 className="text-muted-foreground text-sm font-medium">
+                <h4 className="text-sm font-medium text-muted-foreground">
                   Program Participation
                 </h4>
 
@@ -315,7 +315,7 @@ export function UltraSimpleFilters({
 
       {/* Active Filters Summary */}
       {activeCount > 0 && (
-        <div className="text-muted-foreground flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span>
             {activeCount} filter{activeCount > 1 ? "s" : ""} applied
           </span>

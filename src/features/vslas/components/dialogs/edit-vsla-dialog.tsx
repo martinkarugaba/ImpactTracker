@@ -105,7 +105,7 @@ export function EditVSLADialog({
           <DialogTitle className="text-center text-xl font-semibold">
             Edit Village Savings and Loans Association
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground text-sm">
+          <DialogDescription className="text-sm text-muted-foreground">
             Update VSLA information and settings
           </DialogDescription>
         </DialogHeader>

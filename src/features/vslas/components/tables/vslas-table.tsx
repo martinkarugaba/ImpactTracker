@@ -129,7 +129,7 @@ export function VSLAsTable({
         {/* Left side - Search and Bulk Actions */}
         <div className="flex items-center gap-2">
           <div className="relative">
-            <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search VSLAs..."
               value={searchValue}

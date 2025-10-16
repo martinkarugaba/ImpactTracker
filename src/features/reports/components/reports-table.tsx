@@ -164,9 +164,9 @@ export function ReportsTable({
       <CardContent>
         {reports.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <FileText className="text-muted-foreground mx-auto h-12 w-12" />
+            <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
             <h3 className="mt-4 text-lg font-semibold">No reports found</h3>
-            <p className="text-muted-foreground mt-2 mb-4 text-sm">
+            <p className="mt-2 mb-4 text-sm text-muted-foreground">
               Get started by creating your first activity report.
             </p>
             <Button onClick={onCreateReport} className="gap-2">
@@ -194,7 +194,7 @@ export function ReportsTable({
                   <TableCell>
                     <div className="space-y-1">
                       <div className="font-medium">{report.title}</div>
-                      <div className="text-muted-foreground text-sm">
+                      <div className="text-sm text-muted-foreground">
                         By {report.team_leader}
                       </div>
                     </div>
@@ -202,7 +202,7 @@ export function ReportsTable({
                   <TableCell>
                     <div className="space-y-1">
                       <div className="font-medium">{report.activity_title}</div>
-                      <div className="text-muted-foreground text-sm">
+                      <div className="text-sm text-muted-foreground">
                         {report.project_name}
                       </div>
                     </div>

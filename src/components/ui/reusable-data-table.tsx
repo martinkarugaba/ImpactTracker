@@ -380,7 +380,7 @@ export function ReusableDataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className={onRowClick ? "hover:bg-muted cursor-pointer" : ""}
+                  className={onRowClick ? "cursor-pointer hover:bg-muted" : ""}
                   onClick={() =>
                     onRowClick && onRowClick(row.original as TData)
                   }
@@ -410,7 +410,7 @@ export function ReusableDataTable<TData, TValue>({
       </div>
       {showPagination && (
         <div className="flex items-center justify-between px-4">
-          <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
+          <div className="hidden flex-1 text-sm text-muted-foreground lg:flex">
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
             {table.getFilteredRowModel().rows.length} row(s) selected.
           </div>

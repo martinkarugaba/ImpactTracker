@@ -46,7 +46,7 @@ export function ParticipantHeader({
                   src={profilePhoto || undefined}
                   alt={`${participant.firstName} ${participant.lastName}`}
                 />
-                <AvatarFallback className="bg-primary/10 text-primary text-2xl font-semibold">
+                <AvatarFallback className="bg-primary/10 text-2xl font-semibold text-primary">
                   {getInitials(participant.firstName, participant.lastName)}
                 </AvatarFallback>
               </Avatar>

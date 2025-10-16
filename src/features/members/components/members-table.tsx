@@ -39,7 +39,7 @@ export function MembersTable({
       <div className="space-y-4">
         <div className="animate-pulse space-y-2">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="bg-muted h-16 rounded"></div>
+            <div key={i} className="h-16 rounded bg-muted"></div>
           ))}
         </div>
       </div>
@@ -49,7 +49,7 @@ export function MembersTable({
   if (members.length === 0) {
     return (
       <div className="rounded-lg border p-8 text-center">
-        <Users className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+        <Users className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
         <h3 className="mb-2 text-lg font-semibold">No members found</h3>
         <p className="text-muted-foreground">
           No cluster members match your current filters.
@@ -87,12 +87,12 @@ export function MembersTable({
               <TableCell>
                 <div className="font-medium">{member.organization.name}</div>
                 {member.organization.acronym && (
-                  <div className="text-muted-foreground text-sm">
+                  <div className="text-sm text-muted-foreground">
                     {member.organization.acronym}
                   </div>
                 )}
                 {member.organization.address && (
-                  <div className="text-muted-foreground mt-1 text-xs">
+                  <div className="mt-1 text-xs text-muted-foreground">
                     {member.organization.address}
                   </div>
                 )}
@@ -105,7 +105,7 @@ export function MembersTable({
                     </div>
                     {member.project.acronym &&
                       member.project.name !== member.project.acronym && (
-                        <div className="text-muted-foreground text-sm">
+                        <div className="text-sm text-muted-foreground">
                           {member.project.name}
                         </div>
                       )}

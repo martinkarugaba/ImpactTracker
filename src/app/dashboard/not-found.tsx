@@ -25,20 +25,20 @@ const DashboardNotFound = () => {
       <div className="mx-auto w-full max-w-3xl">
         <Card className="border-border/50 shadow-lg">
           <CardHeader className="pb-8 text-center">
-            <div className="bg-destructive/10 mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
-              <AlertTriangle className="text-destructive h-10 w-10" />
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-destructive/10">
+              <AlertTriangle className="h-10 w-10 text-destructive" />
             </div>
-            <CardTitle className="text-foreground text-4xl font-bold tracking-tight">
+            <CardTitle className="text-4xl font-bold tracking-tight text-foreground">
               Dashboard Page Not Found
             </CardTitle>
-            <CardDescription className="text-muted-foreground mt-2 text-xl">
+            <CardDescription className="mt-2 text-xl text-muted-foreground">
               The dashboard page you're looking for doesn't exist.
             </CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-8">
             <div className="text-center">
-              <p className="text-muted-foreground mb-6">
+              <p className="mb-6 text-muted-foreground">
                 This section of the dashboard might have been moved, renamed, or
                 is temporarily unavailable. Try one of the options below to
                 continue.
@@ -47,7 +47,7 @@ const DashboardNotFound = () => {
 
             {/* Dashboard Navigation Grid */}
             <div className="space-y-4">
-              <h3 className="text-foreground mb-4 text-lg font-semibold">
+              <h3 className="mb-4 text-lg font-semibold text-foreground">
                 Available Dashboard Sections
               </h3>
 
@@ -55,7 +55,7 @@ const DashboardNotFound = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-border/50 hover:border-border hover:bg-accent/50 h-12 justify-start gap-3"
+                  className="h-12 justify-start gap-3 border-border/50 hover:border-border hover:bg-accent/50"
                 >
                   <Link href="/dashboard">
                     <Home className="h-4 w-4" />
@@ -66,7 +66,7 @@ const DashboardNotFound = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-border/50 hover:border-border hover:bg-accent/50 h-12 justify-start gap-3"
+                  className="h-12 justify-start gap-3 border-border/50 hover:border-border hover:bg-accent/50"
                 >
                   <Link href="/dashboard/participants">
                     <Users className="h-4 w-4" />
@@ -77,7 +77,7 @@ const DashboardNotFound = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-border/50 hover:border-border hover:bg-accent/50 h-12 justify-start gap-3"
+                  className="h-12 justify-start gap-3 border-border/50 hover:border-border hover:bg-accent/50"
                 >
                   <Link href="/dashboard/projects">
                     <BarChart3 className="h-4 w-4" />
@@ -88,7 +88,7 @@ const DashboardNotFound = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-border/50 hover:border-border hover:bg-accent/50 h-12 justify-start gap-3"
+                  className="h-12 justify-start gap-3 border-border/50 hover:border-border hover:bg-accent/50"
                 >
                   <Link href="/dashboard/activities">
                     <Calendar className="h-4 w-4" />
@@ -99,7 +99,7 @@ const DashboardNotFound = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-border/50 hover:border-border hover:bg-accent/50 h-12 justify-start gap-3"
+                  className="h-12 justify-start gap-3 border-border/50 hover:border-border hover:bg-accent/50"
                 >
                   <Link href="/dashboard/organizations">
                     <Building2 className="h-4 w-4" />
@@ -110,7 +110,7 @@ const DashboardNotFound = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-border/50 hover:border-border hover:bg-accent/50 h-12 justify-start gap-3"
+                  className="h-12 justify-start gap-3 border-border/50 hover:border-border hover:bg-accent/50"
                 >
                   <Link href="/dashboard/clusters">
                     <BarChart3 className="h-4 w-4" />
@@ -121,7 +121,7 @@ const DashboardNotFound = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-border/50 hover:border-border hover:bg-accent/50 h-12 justify-start gap-3"
+                  className="h-12 justify-start gap-3 border-border/50 hover:border-border hover:bg-accent/50"
                 >
                   <Link href="/dashboard/locations">
                     <MapPin className="h-4 w-4" />
@@ -132,7 +132,7 @@ const DashboardNotFound = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-border/50 hover:border-border hover:bg-accent/50 h-12 justify-start gap-3"
+                  className="h-12 justify-start gap-3 border-border/50 hover:border-border hover:bg-accent/50"
                 >
                   <Link href="/dashboard/trainings">
                     <UserCheck className="h-4 w-4" />
@@ -143,7 +143,7 @@ const DashboardNotFound = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-border/50 hover:border-border hover:bg-accent/50 h-12 justify-start gap-3"
+                  className="h-12 justify-start gap-3 border-border/50 hover:border-border hover:bg-accent/50"
                 >
                   <Link href="/dashboard/vslas">
                     <Coins className="h-4 w-4" />
@@ -154,7 +154,7 @@ const DashboardNotFound = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-border/50 hover:border-border hover:bg-accent/50 h-12 justify-start gap-3"
+                  className="h-12 justify-start gap-3 border-border/50 hover:border-border hover:bg-accent/50"
                 >
                   <Link href="/dashboard/users">
                     <Users className="h-4 w-4" />
@@ -165,7 +165,7 @@ const DashboardNotFound = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-border/50 hover:border-border hover:bg-accent/50 h-12 justify-start gap-3"
+                  className="h-12 justify-start gap-3 border-border/50 hover:border-border hover:bg-accent/50"
                 >
                   <Link href="/dashboard/overview">
                     <BarChart3 className="h-4 w-4" />
@@ -193,8 +193,8 @@ const DashboardNotFound = () => {
             </div>
 
             {/* Help Text */}
-            <div className="border-border/50 border-t pt-4">
-              <p className="text-muted-foreground text-center text-sm">
+            <div className="border-t border-border/50 pt-4">
+              <p className="text-center text-sm text-muted-foreground">
                 If you expected to find a page here, please check the URL or
                 contact support.
               </p>

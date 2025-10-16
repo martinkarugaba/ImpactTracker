@@ -133,7 +133,7 @@ export function ExportOptionsDialog({
                     >
                       Combined Name (Recommended)
                     </Label>
-                    <p className="text-muted-foreground text-sm">
+                    <p className="text-sm text-muted-foreground">
                       Single "Name" column containing full names (e.g., "John
                       Doe")
                     </p>
@@ -155,7 +155,7 @@ export function ExportOptionsDialog({
                     >
                       Separate Name Columns
                     </Label>
-                    <p className="text-muted-foreground text-sm">
+                    <p className="text-sm text-muted-foreground">
                       Separate "First Name" and "Last Name" columns
                     </p>
 

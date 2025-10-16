@@ -435,7 +435,7 @@ export function ActivityReportDialog({
               </div>
 
               {followUpActions.length === 0 ? (
-                <div className="text-muted-foreground py-8 text-center">
+                <div className="py-8 text-center text-muted-foreground">
                   <p>No follow-up actions added yet.</p>
                   <p className="mt-1 text-sm">
                     Click "Add Action" to create follow-up actions with action,
@@ -502,7 +502,7 @@ export function ActivityReportDialog({
                           variant="ghost"
                           size="sm"
                           onClick={() => handleRemoveFollowUpAction(action.id)}
-                          className="text-destructive hover:text-destructive ml-2"
+                          className="ml-2 text-destructive hover:text-destructive"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

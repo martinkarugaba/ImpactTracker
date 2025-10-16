@@ -134,14 +134,14 @@ export function AttendanceAnalyticsTab({
   return (
     <div className="space-y-8">
       {/* Header Section */}
-      <div className="dark:via-background relative overflow-hidden rounded-xl border bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8 dark:from-blue-950/20 dark:to-indigo-950/20">
+      <div className="relative overflow-hidden rounded-xl border bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-8 dark:from-blue-950/20 dark:via-background dark:to-indigo-950/20">
         <div className="relative z-10">
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 Attendance Analytics
               </h2>
-              <p className="text-muted-foreground mt-2">
+              <p className="mt-2 text-muted-foreground">
                 Comprehensive attendance tracking and participation insights for
                 multi-day activities
               </p>
@@ -337,14 +337,14 @@ export function AttendanceAnalyticsTab({
                       className="flex items-center justify-between rounded-lg border p-3"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="bg-muted flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-medium">
                           {session.session_number}
                         </div>
                         <div>
                           <p className="text-sm font-medium">
                             Session {session.session_number}
                           </p>
-                          <p className="text-muted-foreground text-xs">
+                          <p className="text-xs text-muted-foreground">
                             {format(parseISO(session.session_date), "MMM dd")}
                           </p>
                         </div>

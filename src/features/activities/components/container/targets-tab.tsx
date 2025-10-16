@@ -140,7 +140,7 @@ export function TargetsTab({
         <Card className="flex flex-col">
           <CardHeader className="items-center pb-0">
             <CardTitle className="flex items-center gap-2">
-              <Calendar className="text-muted-foreground h-5 w-5" />
+              <Calendar className="h-5 w-5 text-muted-foreground" />
               Total Activities
             </CardTitle>
             <CardDescription>Target: {target.toLocaleString()}</CardDescription>
@@ -203,7 +203,7 @@ export function TargetsTab({
               {activitiesPercentage.toFixed(1)}% of target{" "}
               <TrendingUp className="h-4 w-4" />
             </div>
-            <div className="text-muted-foreground leading-none">
+            <div className="leading-none text-muted-foreground">
               {(target - total).toLocaleString()} more to reach target
             </div>
           </CardFooter>
@@ -213,7 +213,7 @@ export function TargetsTab({
         <Card className="flex flex-col">
           <CardHeader className="items-center pb-0">
             <CardTitle className="flex items-center gap-2">
-              <CheckCircle className="text-muted-foreground h-5 w-5" />
+              <CheckCircle className="h-5 w-5 text-muted-foreground" />
               Completion %
             </CardTitle>
             <CardDescription>Target: {completionTarget}%</CardDescription>
@@ -276,7 +276,7 @@ export function TargetsTab({
               {completedCount.toLocaleString()} completed{" "}
               <TrendingUp className="h-4 w-4" />
             </div>
-            <div className="text-muted-foreground leading-none">
+            <div className="leading-none text-muted-foreground">
               {completionPercentage >= completionTarget
                 ? "Target achieved!"
                 : `${(completionTarget - completionPercentage).toFixed(1)}% to reach target`}
@@ -288,7 +288,7 @@ export function TargetsTab({
         <Card className="flex flex-col">
           <CardHeader className="items-center pb-0">
             <CardTitle className="flex items-center gap-2">
-              <Users className="text-muted-foreground h-5 w-5" />
+              <Users className="h-5 w-5 text-muted-foreground" />
               Participants
             </CardTitle>
             <CardDescription>
@@ -353,7 +353,7 @@ export function TargetsTab({
               {participantsPercentage.toFixed(1)}% of target{" "}
               <TrendingUp className="h-4 w-4" />
             </div>
-            <div className="text-muted-foreground leading-none">
+            <div className="leading-none text-muted-foreground">
               {(participantsTarget - totalParticipants).toLocaleString()} more
               to reach target
             </div>
@@ -364,7 +364,7 @@ export function TargetsTab({
         <Card className="flex flex-col">
           <CardHeader className="items-center pb-0">
             <CardTitle className="flex items-center gap-2">
-              <GraduationCap className="text-muted-foreground h-5 w-5" />
+              <GraduationCap className="h-5 w-5 text-muted-foreground" />
               Training Sessions
             </CardTitle>
             <CardDescription>
@@ -429,7 +429,7 @@ export function TargetsTab({
               {trainingPercentage.toFixed(1)}% of target{" "}
               <TrendingUp className="h-4 w-4" />
             </div>
-            <div className="text-muted-foreground leading-none">
+            <div className="leading-none text-muted-foreground">
               {(trainingTarget - trainingActivities).toLocaleString()} more to
               reach target
             </div>

@@ -46,7 +46,7 @@ export function ConceptNotesTable({
       <div className="space-y-4">
         <div className="animate-pulse space-y-2">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="bg-muted h-16 rounded"></div>
+            <div key={i} className="h-16 rounded bg-muted"></div>
           ))}
         </div>
       </div>
@@ -56,7 +56,7 @@ export function ConceptNotesTable({
   if (conceptNotes.length === 0) {
     return (
       <div className="rounded-lg border p-8 text-center">
-        <FileText className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+        <FileText className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
         <h3 className="mb-2 text-lg font-semibold">No concept notes found</h3>
         <p className="text-muted-foreground">
           No concept notes match your current filters.
@@ -105,7 +105,7 @@ export function ConceptNotesTable({
             <TableRow key={conceptNote.id}>
               <TableCell>
                 <div className="font-medium">{conceptNote.title}</div>
-                <div className="text-muted-foreground max-w-[200px] truncate text-sm">
+                <div className="max-w-[200px] truncate text-sm text-muted-foreground">
                   {conceptNote.content?.substring(0, 60) || "No content"}...
                 </div>
               </TableCell>
@@ -113,7 +113,7 @@ export function ConceptNotesTable({
                 <div className="font-medium">
                   {conceptNote.activity?.title || "Unknown Activity"}
                 </div>
-                <div className="text-muted-foreground text-sm">
+                <div className="text-sm text-muted-foreground">
                   {conceptNote.activity?.startDate
                     ? formatDate(conceptNote.activity.startDate)
                     : "Unknown"}{" "}

@@ -88,7 +88,7 @@ export function getActivityColumns({
             }
             onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
             aria-label="Select all"
-            className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+            className="data-[state=checked]:border-primary data-[state=checked]:bg-primary"
           />
         </div>
       ),
@@ -98,7 +98,7 @@ export function getActivityColumns({
             checked={row.getIsSelected()}
             onCheckedChange={value => row.toggleSelected(!!value)}
             aria-label="Select row"
-            className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+            className="data-[state=checked]:border-primary data-[state=checked]:bg-primary"
           />
         </div>
       ),
@@ -176,7 +176,7 @@ export function getActivityColumns({
             </Badge>
           );
         }
-        return <span className="text-muted-foreground text-xs">—</span>;
+        return <span className="text-xs text-muted-foreground">—</span>;
       },
     },
     {
@@ -201,7 +201,7 @@ export function getActivityColumns({
 
         return (
           <div className="flex items-center space-x-2">
-            <Calendar className="text-muted-foreground h-4 w-4" />
+            <Calendar className="h-4 w-4 text-muted-foreground" />
             <div className="text-sm">
               <div>{format(new Date(startDate), "MMM dd, yyyy")}</div>
               {endDate && (
@@ -221,7 +221,7 @@ export function getActivityColumns({
         const venue = row.getValue("venue") as string;
         return (
           <div className="flex items-center space-x-2">
-            <MapPin className="text-muted-foreground h-4 w-4" />
+            <MapPin className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm">{venue}</span>
           </div>
         );
@@ -266,7 +266,7 @@ export function getActivityColumns({
       cell: ({ row }) => {
         const budget = row.getValue("budget") as number;
         if (!budget)
-          return <span className="text-muted-foreground text-sm">Not set</span>;
+          return <span className="text-sm text-muted-foreground">Not set</span>;
 
         return (
           <span className="text-sm font-medium text-green-700 dark:text-green-400">

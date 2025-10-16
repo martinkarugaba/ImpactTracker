@@ -168,7 +168,7 @@ export function ReportsContainer() {
         <Card>
           <CardContent className="flex items-center justify-between p-6">
             <div className="flex items-center gap-2">
-              <span className="text-muted-foreground text-sm">
+              <span className="text-sm text-muted-foreground">
                 Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
                 {Math.min(pagination.page * pagination.limit, pagination.total)}{" "}
                 of {pagination.total} reports
@@ -178,7 +178,7 @@ export function ReportsContainer() {
             <div className="flex items-center gap-4">
               {/* Page Size Selector */}
               <div className="flex items-center gap-2">
-                <span className="text-muted-foreground text-sm">Show:</span>
+                <span className="text-sm text-muted-foreground">Show:</span>
                 <Select
                   value={pagination.limit.toString()}
                   onValueChange={handlePageSizeChange}
@@ -207,7 +207,7 @@ export function ReportsContainer() {
                   Previous
                 </Button>
 
-                <span className="text-muted-foreground text-sm">
+                <span className="text-sm text-muted-foreground">
                   Page {pagination.page} of {pagination.totalPages}
                 </span>
 

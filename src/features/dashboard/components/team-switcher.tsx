@@ -124,14 +124,14 @@ export function TeamSwitcher() {
     return (
       <Button
         variant="ghost"
-        className="from-muted/50 to-muted/30 hover:from-primary/10 hover:to-primary/5 w-full justify-between bg-gradient-to-r px-2 transition-all duration-200"
+        className="w-full justify-between bg-gradient-to-r from-muted/50 to-muted/30 px-2 transition-all duration-200 hover:from-primary/10 hover:to-primary/5"
         size="sm"
       >
         <div className="flex items-center gap-2">
-          <Building2 className="text-primary/70 h-4 w-4 animate-pulse" />
-          <span className="text-muted-foreground truncate">Loading...</span>
+          <Building2 className="h-4 w-4 animate-pulse text-primary/70" />
+          <span className="truncate text-muted-foreground">Loading...</span>
         </div>
-        <ChevronDown className="text-muted-foreground h-4 w-4 animate-pulse" />
+        <ChevronDown className="h-4 w-4 animate-pulse text-muted-foreground" />
       </Button>
     );
   }
@@ -150,16 +150,16 @@ export function TeamSwitcher() {
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
                 size="lg"
-                className="from-primary/15 via-primary/8 to-primary/3 data-[state=open]:from-primary/25 data-[state=open]:via-primary/15 data-[state=open]:to-primary/8 hover:from-primary/20 hover:via-primary/12 hover:to-primary/5 hover:border-primary/20 border border-transparent bg-gradient-to-br transition-all duration-200 data-[state=open]:bg-gradient-to-br"
+                className="border border-transparent bg-gradient-to-br from-primary/15 via-primary/8 to-primary/3 transition-all duration-200 hover:border-primary/20 hover:from-primary/20 hover:via-primary/12 hover:to-primary/5 data-[state=open]:bg-gradient-to-br data-[state=open]:from-primary/25 data-[state=open]:via-primary/15 data-[state=open]:to-primary/8"
               >
-                <div className="from-primary to-primary/80 text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br shadow-sm">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-sm">
                   <Building2 className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">
                     {currentOrg.acronym}
                   </span>
-                  <span className="text-muted-foreground truncate text-xs">
+                  <span className="truncate text-xs text-muted-foreground">
                     {currentOrg.cluster?.name
                       ? `${currentOrg.cluster.name} | `
                       : ""}
@@ -175,7 +175,7 @@ export function TeamSwitcher() {
               side={isMobile ? "bottom" : "right"}
               sideOffset={4}
             >
-              <DropdownMenuLabel className="text-muted-foreground text-xs">
+              <DropdownMenuLabel className="text-xs text-muted-foreground">
                 Organizations
               </DropdownMenuLabel>
               {organizations.map((org, index) => (
@@ -208,10 +208,10 @@ export function TeamSwitcher() {
               ))}
               <DropdownMenuSeparator />
               <DropdownMenuItem className="gap-2 p-2">
-                <div className="bg-background flex size-6 items-center justify-center rounded-md border">
+                <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                   <Plus className="size-4" />
                 </div>
-                <div className="text-muted-foreground font-medium">
+                <div className="font-medium text-muted-foreground">
                   Add organization
                 </div>
               </DropdownMenuItem>

@@ -15,24 +15,24 @@ export function HeroSection() {
             transition={{ duration: 0.5 }}
             className="flex flex-col items-center space-y-8 text-center"
           >
-            <div className="border-primary/20 from-primary/10 via-primary/5 to-primary/10 text-primary inline-flex items-center rounded-full border bg-gradient-to-r px-6 py-2 text-sm font-medium backdrop-blur-sm">
+            <div className="inline-flex items-center rounded-full border border-primary/20 bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 px-6 py-2 text-sm font-medium text-primary backdrop-blur-sm">
               <span className="relative mr-3 flex h-2 w-2">
-                <span className="bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"></span>
-                <span className="bg-primary relative inline-flex h-2 w-2 rounded-full"></span>
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary"></span>
               </span>
               Now with advanced analytics
             </div>
             <h1 className="max-w-5xl text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl">
               Track your Impact with{" "}
               <span className="relative">
-                <span className="from-primary via-primary/90 to-primary/70 bg-gradient-to-br bg-clip-text text-transparent">
+                <span className="bg-gradient-to-br from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent">
                   Precision
                 </span>
               </span>
             </h1>
-            <p className="text-muted-foreground/80 max-w-4xl text-lg md:text-xl lg:text-2xl">
+            <p className="max-w-4xl text-lg text-muted-foreground/80 md:text-xl lg:text-2xl">
               Empower your non-profit with{" "}
-              <span className="text-foreground font-semibold">
+              <span className="font-semibold text-foreground">
                 Impact Tracker
               </span>
               , the all-in-one platform for participant tracking, training
@@ -42,7 +42,7 @@ export function HeroSection() {
             <div className="flex flex-col gap-6 pt-8 sm:flex-row">
               <Button
                 size="lg"
-                className="group shadow-primary/25 hover:shadow-primary/30 h-14 px-8 text-base font-semibold shadow-lg transition-all hover:shadow-xl"
+                className="group h-14 px-8 text-base font-semibold shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:shadow-primary/30"
                 asChild
               >
                 <Link href="/signup">
@@ -69,7 +69,7 @@ export function HeroSection() {
               <Button
                 size="lg"
                 variant="outline"
-                className="group border-border/50 bg-background/50 hover:bg-background/80 h-14 px-8 text-base font-semibold backdrop-blur-sm"
+                className="group h-14 border-border/50 bg-background/50 px-8 text-base font-semibold backdrop-blur-sm hover:bg-background/80"
                 asChild
               >
                 <Link href="#demo">
@@ -94,20 +94,20 @@ export function HeroSection() {
               </Button>
             </div>
             <div className="pt-8">
-              <p className="text-muted-foreground/60 mb-4 text-sm font-medium">
+              <p className="mb-4 text-sm font-medium text-muted-foreground/60">
                 Trusted by NGOs and development organizations
               </p>
               <div className="flex flex-wrap items-center justify-center gap-8 opacity-60">
-                <div className="from-primary/60 to-primary/40 bg-gradient-to-r bg-clip-text text-xl font-bold text-transparent">
+                <div className="bg-gradient-to-r from-primary/60 to-primary/40 bg-clip-text text-xl font-bold text-transparent">
                   Organization Alpha
                 </div>
-                <div className="from-primary/60 to-primary/40 bg-gradient-to-r bg-clip-text text-xl font-bold text-transparent">
+                <div className="bg-gradient-to-r from-primary/60 to-primary/40 bg-clip-text text-xl font-bold text-transparent">
                   NGO Partner Beta
                 </div>
-                <div className="from-primary/60 to-primary/40 bg-gradient-to-r bg-clip-text text-xl font-bold text-transparent">
+                <div className="bg-gradient-to-r from-primary/60 to-primary/40 bg-clip-text text-xl font-bold text-transparent">
                   Client Organization
                 </div>
-                <div className="from-primary/60 to-primary/40 bg-gradient-to-r bg-clip-text text-xl font-bold text-transparent">
+                <div className="bg-gradient-to-r from-primary/60 to-primary/40 bg-clip-text text-xl font-bold text-transparent">
                   Development Partner
                 </div>
               </div>
@@ -121,15 +121,15 @@ export function HeroSection() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="w-full max-w-6xl"
           >
-            <div className="border-border/50 from-card/80 via-card/60 to-card/40 relative h-[300px] overflow-hidden rounded-3xl border bg-gradient-to-br p-6 shadow-2xl backdrop-blur-xl md:h-[400px] lg:h-[500px]">
-              <div className="from-primary/5 to-secondary/5 absolute inset-0 bg-gradient-to-br via-transparent"></div>
-              <div className="from-background/50 to-background/20 absolute inset-[1px] rounded-[calc(1.5rem-1px)] bg-gradient-to-br"></div>
+            <div className="relative h-[300px] overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-br from-card/80 via-card/60 to-card/40 p-6 shadow-2xl backdrop-blur-xl md:h-[400px] lg:h-[500px]">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+              <div className="absolute inset-[1px] rounded-[calc(1.5rem-1px)] bg-gradient-to-br from-background/50 to-background/20"></div>
               <div className="relative z-10 flex h-full items-center justify-center">
                 <div className="text-center">
-                  <div className="text-muted-foreground/60 text-2xl font-semibold md:text-3xl">
+                  <div className="text-2xl font-semibold text-muted-foreground/60 md:text-3xl">
                     Dashboard Preview
                   </div>
-                  <div className="text-muted-foreground/40 mt-2 text-sm">
+                  <div className="mt-2 text-sm text-muted-foreground/40">
                     Coming Soon
                   </div>
                 </div>
@@ -139,7 +139,7 @@ export function HeroSection() {
         </div>
       </Container>
       <div className="absolute inset-0 -z-10">
-        <div className="from-primary/10 via-background to-secondary/10 absolute inset-0 bg-gradient-to-br"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-secondary/10"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,var(--primary)/15,transparent_50%)]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,var(--secondary)/10,transparent_50%)]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--primary)/5,transparent_70%)]"></div>

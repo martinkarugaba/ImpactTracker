@@ -45,7 +45,7 @@ export function EmploymentSection({
 
   return (
     <div className="space-y-3">
-      <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
+      <h5 className="border-b pb-1 text-sm font-medium text-muted-foreground">
         Employment
       </h5>
       <div className="grid grid-cols-4 gap-3">

@@ -114,10 +114,10 @@ export function ActivitiesDemographicsTab({
   ) {
     return (
       <TabsContent value="demographics" className="mt-6">
-        <div className="bg-card rounded-xl border p-8 text-center">
-          <UserCheck className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+        <div className="rounded-xl border bg-card p-8 text-center">
+          <UserCheck className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
           <h3 className="text-lg font-semibold">Error Loading Demographics</h3>
-          <p className="text-muted-foreground mx-auto mt-2 max-w-md">
+          <p className="mx-auto mt-2 max-w-md text-muted-foreground">
             Failed to load participant demographics data. Please try refreshing
             the page.
           </p>
@@ -144,12 +144,12 @@ export function ActivitiesDemographicsTab({
           />
         </div>
       ) : (
-        <div className="bg-card rounded-xl border p-8 text-center">
-          <UserCheck className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+        <div className="rounded-xl border bg-card p-8 text-center">
+          <UserCheck className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
           <h3 className="text-lg font-semibold">
             {loading ? "Loading Demographics..." : "No Activity Participants"}
           </h3>
-          <p className="text-muted-foreground mx-auto mt-2 max-w-md">
+          <p className="mx-auto mt-2 max-w-md text-muted-foreground">
             {loading
               ? "Loading demographic analysis of participants across all activities..."
               : "No participants found across activities. Start by creating activities and adding participants to see demographic analytics."}

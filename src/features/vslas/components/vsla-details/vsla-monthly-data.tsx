@@ -158,10 +158,10 @@ export function VSLAMonthlyData({ vsla }: VSLAMonthlyDataProps) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Calendar className="text-primary h-5 w-5" />
+          <Calendar className="h-5 w-5 text-primary" />
           Monthly Data Collection
         </CardTitle>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Record total loans, savings, and meetings for a specific month
         </p>
       </CardHeader>
@@ -229,7 +229,7 @@ export function VSLAMonthlyData({ vsla }: VSLAMonthlyDataProps) {
                 }
                 className="text-right"
               />
-              <p className="text-muted-foreground text-xs">
+              <p className="text-xs text-muted-foreground">
                 Number of loans disbursed
               </p>
             </div>
@@ -253,7 +253,7 @@ export function VSLAMonthlyData({ vsla }: VSLAMonthlyDataProps) {
                 }
                 className="text-right"
               />
-              <p className="text-muted-foreground text-xs">
+              <p className="text-xs text-muted-foreground">
                 Total savings amount
               </p>
             </div>
@@ -280,7 +280,7 @@ export function VSLAMonthlyData({ vsla }: VSLAMonthlyDataProps) {
                 }
                 className="text-right"
               />
-              <p className="text-muted-foreground text-xs">
+              <p className="text-xs text-muted-foreground">
                 Number of meetings held
               </p>
             </div>
@@ -335,12 +335,12 @@ export function VSLAMonthlyData({ vsla }: VSLAMonthlyDataProps) {
             </div>
 
             {isLoading ? (
-              <div className="text-muted-foreground flex items-center justify-center gap-2 rounded-md border border-dashed p-8 text-center text-sm">
+              <div className="flex items-center justify-center gap-2 rounded-md border border-dashed p-8 text-center text-sm text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Loading monthly data...
               </div>
             ) : historicalData.length === 0 ? (
-              <div className="text-muted-foreground rounded-md border border-dashed p-8 text-center text-sm">
+              <div className="rounded-md border border-dashed p-8 text-center text-sm text-muted-foreground">
                 No monthly data recorded yet. Submit the form above to add your
                 first entry.
               </div>
@@ -386,7 +386,7 @@ export function VSLAMonthlyData({ vsla }: VSLAMonthlyDataProps) {
                             size="sm"
                             onClick={() => handleDelete(record.id)}
                           >
-                            <Trash2 className="text-destructive h-4 w-4" />
+                            <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </TableCell>
                       </TableRow>

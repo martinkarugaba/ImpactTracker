@@ -6,7 +6,7 @@ export function ParticipantsPageSkeleton() {
   return (
     <div className="space-y-4">
       {/* Tab Navigation */}
-      <div className="bg-muted flex items-center space-x-1 rounded-lg p-1">
+      <div className="flex items-center space-x-1 rounded-lg bg-muted p-1">
         <div className="flex-1">
           <Skeleton className="h-8 w-full rounded-md" />
         </div>

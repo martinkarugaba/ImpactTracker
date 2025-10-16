@@ -54,7 +54,7 @@ export function MembersTable({
           <TableRow>
             <TableCell
               colSpan={6}
-              className="text-muted-foreground py-6 text-center"
+              className="py-6 text-center text-muted-foreground"
             >
               No members found. Add members to get started.
             </TableCell>

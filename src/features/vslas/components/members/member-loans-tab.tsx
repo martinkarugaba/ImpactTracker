@@ -185,11 +185,11 @@ export function MemberLoansTab({ member }: MemberLoansTabProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Loans</CardTitle>
-            <DollarSign className="text-muted-foreground h-4 w-4" />
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{activeLoans.length}</div>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               {formatCurrency(totalActiveAmount)} total
             </p>
           </CardContent>
@@ -200,13 +200,13 @@ export function MemberLoansTab({ member }: MemberLoansTabProps) {
             <CardTitle className="text-sm font-medium">
               Outstanding Balance
             </CardTitle>
-            <TrendingUp className="text-muted-foreground h-4 w-4" />
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">
               {formatCurrency(totalBalance)}
             </div>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               Across {activeLoans.length} loans
             </p>
           </CardContent>
@@ -217,11 +217,11 @@ export function MemberLoansTab({ member }: MemberLoansTabProps) {
             <CardTitle className="text-sm font-medium">
               Total Payments
             </CardTitle>
-            <Calendar className="text-muted-foreground h-4 w-4" />
+            <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{payments.length}</div>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               {formatCurrency(
                 payments.reduce((sum, p) => sum + p.payment_amount, 0)
               )}{" "}
@@ -253,7 +253,7 @@ export function MemberLoansTab({ member }: MemberLoansTabProps) {
         </CardHeader>
         <CardContent>
           {activeLoans.length === 0 ? (
-            <div className="text-muted-foreground py-8 text-center">
+            <div className="py-8 text-center text-muted-foreground">
               No active loans found
             </div>
           ) : (
@@ -275,7 +275,7 @@ export function MemberLoansTab({ member }: MemberLoansTabProps) {
         </CardHeader>
         <CardContent>
           {payments.length === 0 ? (
-            <div className="text-muted-foreground py-8 text-center">
+            <div className="py-8 text-center text-muted-foreground">
               No payments recorded
             </div>
           ) : (

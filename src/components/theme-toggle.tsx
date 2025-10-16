@@ -40,7 +40,7 @@ export default function ThemeToggle() {
         aria-label="Toggle dark mode"
       />
       <label
-        className="text-muted-foreground/80 hover:text-foreground/80 peer-focus-visible:border-ring peer-focus-visible:ring-ring/50 relative inline-flex size-8 cursor-pointer items-center justify-center rounded transition-[color,box-shadow] outline-none peer-focus-visible:ring-[3px]"
+        className="relative inline-flex size-8 cursor-pointer items-center justify-center rounded text-muted-foreground/80 transition-[color,box-shadow] outline-none peer-focus-visible:border-ring peer-focus-visible:ring-[3px] peer-focus-visible:ring-ring/50 hover:text-foreground/80"
         htmlFor={id}
         aria-hidden="true"
       >

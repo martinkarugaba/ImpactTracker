@@ -205,7 +205,7 @@ export function ParticipantFilters({
             </div>
           </Button>
         </CollapsibleTrigger>
-        <CollapsibleContent className="data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-hidden px-3 pb-3">
+        <CollapsibleContent className="overflow-hidden px-3 pb-3 data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
           <div className="grid grid-cols-2 gap-3 pt-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {section.component}
           </div>
@@ -306,7 +306,7 @@ export function ParticipantFilters({
                 </div>
               </Button>
             </CollapsibleTrigger>
-            <CollapsibleContent className="data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down space-y-2 pt-2">
+            <CollapsibleContent className="space-y-2 pt-2 data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
               {advancedFilters.map(section => (
                 <FilterSectionComponent key={section.id} section={section} />
               ))}

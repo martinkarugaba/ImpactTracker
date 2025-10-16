@@ -54,7 +54,7 @@ export function Footer() {
                     <li key={link.name}>
                       <Link
                         href={link.href}
-                        className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                        className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                       >
                         {link.name}
                       </Link>
@@ -70,14 +70,14 @@ export function Footer() {
           <div className="flex items-center space-x-2">
             <span className="text-lg font-bold">Impact Tracker</span>
           </div>
-          <p className="text-muted-foreground mt-4 text-sm md:mt-0">
+          <p className="mt-4 text-sm text-muted-foreground md:mt-0">
             &copy; {new Date().getFullYear()} Impact Tracker. All rights
             reserved.
           </p>
           <div className="mt-4 flex space-x-4 md:mt-0">
             <Link
               href="#"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground transition-colors hover:text-foreground"
               aria-label="Twitter"
             >
               <svg
@@ -97,7 +97,7 @@ export function Footer() {
             </Link>
             <Link
               href="#"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground transition-colors hover:text-foreground"
               aria-label="LinkedIn"
             >
               <svg
@@ -119,7 +119,7 @@ export function Footer() {
             </Link>
             <Link
               href="#"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground transition-colors hover:text-foreground"
               aria-label="GitHub"
             >
               <svg

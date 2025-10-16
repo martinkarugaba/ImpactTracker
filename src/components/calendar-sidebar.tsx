@@ -61,7 +61,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               />
             </svg>
           </Link>
-          <SidebarTrigger className="text-muted-foreground/80 hover:text-foreground/80 hover:bg-transparent!" />
+          <SidebarTrigger className="text-muted-foreground/80 hover:bg-transparent! hover:text-foreground/80" />
         </div>
       </SidebarHeader>
       <SidebarContent className="mt-3 gap-0 border-t pt-3">
@@ -78,7 +78,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton
                     asChild
-                    className="has-focus-visible:border-ring has-focus-visible:ring-ring/50 relative justify-between rounded-md has-focus-visible:ring-[3px] [&>svg]:size-auto"
+                    className="relative justify-between rounded-md has-focus-visible:border-ring has-focus-visible:ring-[3px] has-focus-visible:ring-ring/50 [&>svg]:size-auto"
                   >
                     <span>
                       <span className="flex items-center justify-between gap-3 font-medium">

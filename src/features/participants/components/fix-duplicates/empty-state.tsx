@@ -11,11 +11,11 @@ export function EmptyState() {
 
   return (
     <div className="flex flex-col items-center justify-center py-12">
-      <div className="bg-muted flex h-16 w-16 items-center justify-center rounded-full">
+      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
         <UserX className="h-8 w-8 text-green-600" />
       </div>
       <h3 className="mt-4 text-lg font-medium">No Duplicates Found</h3>
-      <p className="text-muted-foreground mt-2 text-center text-sm">
+      <p className="mt-2 text-center text-sm text-muted-foreground">
         All participants appear to be unique based on their name and contact
         information.
       </p>

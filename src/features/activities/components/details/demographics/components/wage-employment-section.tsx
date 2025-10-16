@@ -19,7 +19,7 @@ export function WageEmploymentSection({ data }: DemographicsProps) {
         {/* Gender Breakdown */}
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-4">
-            <h4 className="text-foreground font-semibold">
+            <h4 className="font-semibold text-foreground">
               Male Wage Employment
             </h4>
             <div className="space-y-2">
@@ -43,7 +43,7 @@ export function WageEmploymentSection({ data }: DemographicsProps) {
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-foreground font-semibold">
+            <h4 className="font-semibold text-foreground">
               Female Wage Employment
             </h4>
             <div className="space-y-2">
@@ -81,7 +81,7 @@ export function WageEmploymentSection({ data }: DemographicsProps) {
             >
               {data.wageEmploymentUrban}
             </div>
-            <div className="text-muted-foreground text-sm">Urban Setting</div>
+            <div className="text-sm text-muted-foreground">Urban Setting</div>
           </div>
           <div
             className="rounded-lg p-3 text-center"
@@ -93,7 +93,7 @@ export function WageEmploymentSection({ data }: DemographicsProps) {
             >
               {data.wageEmploymentRural}
             </div>
-            <div className="text-muted-foreground text-sm">Rural Setting</div>
+            <div className="text-sm text-muted-foreground">Rural Setting</div>
           </div>
           <div
             className="rounded-lg p-3 text-center"
@@ -105,7 +105,7 @@ export function WageEmploymentSection({ data }: DemographicsProps) {
             >
               {data.wageEmploymentFemalePWDs}
             </div>
-            <div className="text-muted-foreground text-sm">Female PWDs</div>
+            <div className="text-sm text-muted-foreground">Female PWDs</div>
           </div>
           <div
             className="rounded-lg p-3 text-center"
@@ -117,7 +117,7 @@ export function WageEmploymentSection({ data }: DemographicsProps) {
             >
               {data.wageEmploymentMalePWDs}
             </div>
-            <div className="text-muted-foreground text-sm">Male PWDs</div>
+            <div className="text-sm text-muted-foreground">Male PWDs</div>
           </div>
         </div>
 
@@ -166,17 +166,17 @@ export function WageEmploymentSection({ data }: DemographicsProps) {
                         {sector.total}
                       </span>
                     </div>
-                    <div className="text-muted-foreground flex justify-between">
+                    <div className="flex justify-between text-muted-foreground">
                       <span>New:</span>
                       <span className="font-medium">{sector.newJobs}</span>
                     </div>
-                    <div className="text-muted-foreground flex justify-between">
+                    <div className="flex justify-between text-muted-foreground">
                       <span>Sustained:</span>
                       <span className="font-medium">
                         {sector.sustainedJobs}
                       </span>
                     </div>
-                    <div className="text-muted-foreground flex justify-between">
+                    <div className="flex justify-between text-muted-foreground">
                       <span>Improved:</span>
                       <span className="font-medium">{sector.improvedJobs}</span>
                     </div>

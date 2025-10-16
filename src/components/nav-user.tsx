@@ -45,41 +45,41 @@ export function NavUser({
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
               </div>
-              <RiExpandUpDownLine className="text-muted-foreground/80 ml-auto size-5" />
+              <RiExpandUpDownLine className="ml-auto size-5 text-muted-foreground/80" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="dark bg-sidebar w-(--radix-dropdown-menu-trigger-width)"
+            className="dark w-(--radix-dropdown-menu-trigger-width) bg-sidebar"
             side="bottom"
             align="end"
             sideOffset={4}
           >
             <DropdownMenuGroup>
-              <DropdownMenuItem className="focus:bg-sidebar-accent gap-3">
+              <DropdownMenuItem className="gap-3 focus:bg-sidebar-accent">
                 <RiUserLine
                   size={20}
-                  className="text-muted-foreground/80 size-5"
+                  className="size-5 text-muted-foreground/80"
                 />
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem className="focus:bg-sidebar-accent gap-3">
+              <DropdownMenuItem className="gap-3 focus:bg-sidebar-accent">
                 <RiGroupLine
                   size={20}
-                  className="text-muted-foreground/80 size-5"
+                  className="size-5 text-muted-foreground/80"
                 />
                 Accounts
               </DropdownMenuItem>
-              <DropdownMenuItem className="focus:bg-sidebar-accent gap-3">
+              <DropdownMenuItem className="gap-3 focus:bg-sidebar-accent">
                 <RiSparklingLine
                   size={20}
-                  className="text-muted-foreground/80 size-5"
+                  className="size-5 text-muted-foreground/80"
                 />
                 Upgrade
               </DropdownMenuItem>
-              <DropdownMenuItem className="focus:bg-sidebar-accent gap-3">
+              <DropdownMenuItem className="gap-3 focus:bg-sidebar-accent">
                 <RiLogoutCircleLine
                   size={20}
-                  className="text-muted-foreground/80 size-5"
+                  className="size-5 text-muted-foreground/80"
                 />
                 Logout
               </DropdownMenuItem>

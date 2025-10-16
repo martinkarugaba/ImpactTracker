@@ -119,7 +119,7 @@ export function getOrganizationTableColumns({
                 )}
               </div>
             ) : (
-              <div className="text-muted-foreground text-xs">
+              <div className="text-xs text-muted-foreground">
                 No subcounties specified
               </div>
             )}

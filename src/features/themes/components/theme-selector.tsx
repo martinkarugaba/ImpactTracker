@@ -26,8 +26,8 @@ export function ThemeSelector() {
 
   return (
     <Select value={activeTheme} onValueChange={setActiveTheme}>
-      <SelectTrigger className="text-foreground h-8 w-auto border bg-transparent">
-        <span className="text-muted-foreground hidden sm:block">
+      <SelectTrigger className="h-8 w-auto border bg-transparent text-foreground">
+        <span className="hidden text-muted-foreground sm:block">
           Select a theme:
         </span>
         <SelectValue placeholder="Select a theme:" />

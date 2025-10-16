@@ -142,9 +142,9 @@ function DragHandle({ id }: { id: number }) {
       {...listeners}
       variant="ghost"
       size="icon"
-      className="text-muted-foreground size-7 hover:bg-transparent"
+      className="size-7 text-muted-foreground hover:bg-transparent"
     >
-      <IconGripVertical className="text-muted-foreground size-3" />
+      <IconGripVertical className="size-3 text-muted-foreground" />
       <span className="sr-only">Drag to reorder</span>
     </Button>
   );
@@ -195,7 +195,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     header: "Section Type",
     cell: ({ row }) => (
       <div className="w-32">
-        <Badge variant="outline" className="text-muted-foreground px-1.5">
+        <Badge variant="outline" className="px-1.5 text-muted-foreground">
           {row.original.type}
         </Badge>
       </div>
@@ -205,7 +205,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => (
-      <Badge variant="outline" className="text-muted-foreground px-1.5">
+      <Badge variant="outline" className="px-1.5 text-muted-foreground">
         {row.original.status === "Done" ? (
           <IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" />
         ) : (
@@ -233,7 +233,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
           Target
         </Label>
         <Input
-          className="hover:bg-input/30 focus-visible:bg-background dark:hover:bg-input/30 dark:focus-visible:bg-input/30 h-8 w-16 border-transparent bg-transparent text-right shadow-none focus-visible:border dark:bg-transparent"
+          className="h-8 w-16 border-transparent bg-transparent text-right shadow-none hover:bg-input/30 focus-visible:border focus-visible:bg-background dark:bg-transparent dark:hover:bg-input/30 dark:focus-visible:bg-input/30"
           defaultValue={row.original.target}
           id={`${row.original.id}-target`}
         />
@@ -258,7 +258,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
           Limit
         </Label>
         <Input
-          className="hover:bg-input/30 focus-visible:bg-background dark:hover:bg-input/30 dark:focus-visible:bg-input/30 h-8 w-16 border-transparent bg-transparent text-right shadow-none focus-visible:border dark:bg-transparent"
+          className="h-8 w-16 border-transparent bg-transparent text-right shadow-none hover:bg-input/30 focus-visible:border focus-visible:bg-background dark:bg-transparent dark:hover:bg-input/30 dark:focus-visible:bg-input/30"
           defaultValue={row.original.limit}
           id={`${row.original.id}-limit`}
         />
@@ -305,7 +305,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+            className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
             size="icon"
           >
             <IconDotsVertical />
@@ -483,7 +483,7 @@ export function DataTable<TData, TValue>({
           <div className="flex items-center gap-2">
             {filterColumn && (
               <div className="relative max-w-sm">
-                <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder={filterPlaceholder}
                   value={searchValue ?? ""}
@@ -603,10 +603,10 @@ export function DataTable<TData, TValue>({
             </TableBody>
           </Table>
           {isLoading && (
-            <div className="bg-background/80 absolute inset-0 flex items-center justify-center backdrop-blur-sm">
+            <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-muted-foreground text-sm">
+                <span className="text-sm text-muted-foreground">
                   {loadingText}
                 </span>
               </div>
@@ -665,7 +665,7 @@ function EnhancedPaginationControls<TData>({
   return (
     <div className="flex items-center justify-between gap-3 px-2 py-4 max-sm:flex-col">
       {/* Left section - Row selection info or page info */}
-      <div className="text-muted-foreground flex-1 text-sm whitespace-nowrap">
+      <div className="flex-1 text-sm whitespace-nowrap text-muted-foreground">
         {showRowSelection ? (
           <>
             {selectedCount} of {totalCount} row(s) selected
@@ -676,8 +676,8 @@ function EnhancedPaginationControls<TData>({
         ) : (
           <>
             Page{" "}
-            <span className="text-foreground font-medium">{currentPage}</span>{" "}
-            of <span className="text-foreground font-medium">{totalPages}</span>
+            <span className="font-medium text-foreground">{currentPage}</span>{" "}
+            of <span className="font-medium text-foreground">{totalPages}</span>
           </>
         )}
       </div>
@@ -850,7 +850,7 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
   return (
     <Drawer direction={isMobile ? "bottom" : "right"}>
       <DrawerTrigger asChild>
-        <Button variant="link" className="text-foreground w-fit px-0 text-left">
+        <Button variant="link" className="w-fit px-0 text-left text-foreground">
           {item.header}
         </Button>
       </DrawerTrigger>
