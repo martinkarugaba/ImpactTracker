@@ -54,7 +54,7 @@ export function NavDocuments({
           My KPIs
         </SidebarGroupLabel>
         <SidebarGroupContent>
-          <SidebarMenu className="font-medium">
+          <SidebarMenu className="">
             {filteredItems.map(item => (
               <SidebarMenuItem key={item.name}>
                 <Skeleton className="h-8 w-full" />
@@ -87,12 +87,12 @@ export function NavDocuments({
                   <SidebarMenuButton
                     asChild
                     tooltip={item.name}
-                    className="hover:from-primary/10 hover:to-primary/5 transition-all duration-200 hover:bg-gradient-to-r"
+                    className="hover:from-primary/10 hover:to-primary/5 text-black transition-all duration-200 hover:bg-gradient-to-r"
                   >
                     <Link
                       href={item.url}
                       title={item.name}
-                      className="flex items-center gap-3 font-medium group-data-[state=closed]/collapsible:mx-4"
+                      className="flex items-center gap-3 font-normal group-data-[state=closed]/collapsible:mx-4"
                     >
                       {item.icon && <item.icon className="text-primary/80" />}
                       <span className="text-foreground/90 hover:text-foreground">

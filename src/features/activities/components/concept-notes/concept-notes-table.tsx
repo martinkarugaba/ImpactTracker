@@ -71,13 +71,13 @@ export function ConceptNotesTable({
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <FileText className="text-muted-foreground h-6 w-6" />
+            <FileText className="h-6 w-6 text-muted-foreground" />
             {/* <CardTitle className="text-xl">Concept Notes</CardTitle> */}
           </div>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <div className="text-muted-foreground text-base">
+            <div className="text-base text-muted-foreground">
               Loading concept notes...
             </div>
           </div>
@@ -91,13 +91,13 @@ export function ConceptNotesTable({
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <FileText className="text-muted-foreground h-6 w-6" />
+            <FileText className="h-6 w-6 text-muted-foreground" />
             <CardTitle className="text-xl">Concept Notes</CardTitle>
           </div>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <div className="text-destructive text-base">{error}</div>
+            <div className="text-base text-destructive">{error}</div>
           </div>
         </CardContent>
       </Card>
@@ -110,7 +110,7 @@ export function ConceptNotesTable({
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <FileText className="text-muted-foreground h-6 w-6" />
+              <FileText className="h-6 w-6 text-muted-foreground" />
               <CardTitle className="text-xl">Concept Notes</CardTitle>
             </div>
             {onCreateConceptNote && (
@@ -123,10 +123,10 @@ export function ConceptNotesTable({
         </CardHeader>
         <CardContent>
           <div className="py-8 text-center">
-            <div className="bg-muted mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
-              <FileText className="text-muted-foreground h-6 w-6" />
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+              <FileText className="h-6 w-6 text-muted-foreground" />
             </div>
-            <p className="text-muted-foreground mb-4 text-base">
+            <p className="mb-4 text-base text-muted-foreground">
               No concept notes have been created for this activity yet.
             </p>
             {onCreateConceptNote && (

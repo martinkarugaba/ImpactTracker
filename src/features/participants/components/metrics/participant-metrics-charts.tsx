@@ -54,7 +54,7 @@ const BarTooltipContent = ({ active, payload, label }: TooltipProps) => {
     const total = payload.reduce((sum: number, entry) => sum + entry.value, 0);
 
     return (
-      <div className="bg-background rounded-lg border p-3 shadow-md">
+      <div className="rounded-lg border bg-background p-3 shadow-md">
         <div className="mb-2 font-medium">{label}</div>
         {payload.map((entry, index: number) => {
           const percentage =
@@ -125,7 +125,7 @@ export function ParticipantMetricsCharts({
               <CardDescription>Fetching chart data...</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="bg-muted h-[300px] animate-pulse rounded"></div>
+              <div className="h-[300px] animate-pulse rounded bg-muted"></div>
             </CardContent>
           </Card>
         ))}

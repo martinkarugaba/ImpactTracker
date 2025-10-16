@@ -40,14 +40,14 @@ export function NavUser() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:from-primary/20 data-[state=open]:to-primary/10 hover:from-primary/10 hover:to-primary/5 hover:border-primary/20 border border-transparent transition-all duration-200 hover:bg-gradient-to-r data-[state=open]:bg-gradient-to-r"
+              className="border border-transparent transition-all duration-200 hover:border-primary/20 hover:bg-gradient-to-r hover:from-primary/10 hover:to-primary/5 data-[state=open]:bg-gradient-to-r data-[state=open]:from-primary/20 data-[state=open]:to-primary/10"
             >
-              <Avatar className="ring-primary/20 hover:ring-primary/40 h-8 w-8 rounded-lg ring-2 transition-all duration-200">
+              <Avatar className="h-8 w-8 rounded-lg ring-2 ring-primary/20 transition-all duration-200 hover:ring-primary/40">
                 <AvatarImage
                   src={session?.user?.image || ""}
                   alt={session?.user?.name || ""}
                 />
-                <AvatarFallback className="from-primary/20 to-primary/10 text-primary border-primary/20 rounded-lg border bg-gradient-to-br">
+                <AvatarFallback className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/20 to-primary/10 text-primary">
                   {session?.user?.name ? session.user.name.charAt(0) : "U"}
                 </AvatarFallback>
               </Avatar>
@@ -55,7 +55,7 @@ export function NavUser() {
                 <span className="truncate font-medium">
                   {session?.user?.name || "User"}
                 </span>
-                <span className="text-muted-foreground truncate text-xs">
+                <span className="truncate text-xs text-muted-foreground">
                   {session?.user?.email || ""}
                 </span>
               </div>
@@ -83,7 +83,7 @@ export function NavUser() {
                   <span className="truncate font-medium">
                     {session?.user?.name || "User"}
                   </span>
-                  <span className="text-muted-foreground truncate text-xs">
+                  <span className="truncate text-xs text-muted-foreground">
                     {session?.user?.email || ""}
                   </span>
                 </div>

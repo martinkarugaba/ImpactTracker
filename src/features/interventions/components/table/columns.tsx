@@ -43,7 +43,7 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
             }
             onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
             aria-label="Select all"
-            className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+            className="data-[state=checked]:border-primary data-[state=checked]:bg-primary"
           />
         </div>
       ),
@@ -53,7 +53,7 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
             checked={row.getIsSelected()}
             onCheckedChange={value => row.toggleSelected(!!value)}
             aria-label="Select row"
-            className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+            className="data-[state=checked]:border-primary data-[state=checked]:bg-primary"
           />
         </div>
       ),
@@ -67,7 +67,7 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
       cell: ({ row }) => {
         const name = (row.getValue("participantName") as string) || "";
         if (!name) {
-          return <span className="text-muted-foreground text-sm">—</span>;
+          return <span className="text-sm text-muted-foreground">—</span>;
         }
         const title = name
           .split(" ")
@@ -103,7 +103,7 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
           | null
           | undefined;
         if (!val)
-          return <span className="text-muted-foreground text-sm">—</span>;
+          return <span className="text-sm text-muted-foreground">—</span>;
         // Ensure phone numbers have a leading zero if missing
         const formatted = val.startsWith("0") ? val : `0${val}`;
         return <div className="text-sm">{formatted}</div>;
@@ -143,7 +143,7 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
         const list = original.activities;
         const renderBadge = (cat?: string | null) => {
           if (!cat)
-            return <span className="text-muted-foreground text-xs">—</span>;
+            return <span className="text-xs text-muted-foreground">—</span>;
           const label =
             cat === "business_skill"
               ? "Business"
@@ -179,7 +179,7 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
             new Set(list.map(a => a.skillCategory).filter(Boolean))
           );
           if (cats.length === 0)
-            return <span className="text-muted-foreground text-xs">—</span>;
+            return <span className="text-xs text-muted-foreground">—</span>;
           return (
             <div className="flex items-center gap-2">
               {cats.map(c => renderBadge(c as string))}

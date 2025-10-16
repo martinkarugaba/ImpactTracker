@@ -100,7 +100,7 @@ export function CountriesTable({ initialData }: CountriesTableProps) {
 
   const debugUI = React.useMemo(
     () => (
-      <div className="bg-muted mb-4 rounded-2xl p-4 text-xs">
+      <div className="mb-4 rounded-2xl bg-muted p-4 text-xs">
         <div>
           Current Page: {page}, Page Size: {pageSize}
         </div>

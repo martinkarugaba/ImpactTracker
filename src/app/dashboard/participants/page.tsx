@@ -125,7 +125,7 @@ function ParticipantsPageContent() {
       <div className="flex h-96 items-center justify-center">
         <div className="text-center">
           <h3 className="text-lg font-semibold">No cluster assigned</h3>
-          <p className="text-muted-foreground mt-2">
+          <p className="mt-2 text-muted-foreground">
             Please contact an administrator to assign you to a cluster.
           </p>
         </div>
@@ -138,7 +138,7 @@ function ParticipantsPageContent() {
       <div className="flex h-96 items-center justify-center">
         <div className="text-center">
           <h3 className="text-lg font-semibold">Error loading participants</h3>
-          <p className="text-muted-foreground mt-2">
+          <p className="mt-2 text-muted-foreground">
             Failed to load page data. Please try refreshing the page.
           </p>
         </div>
@@ -151,11 +151,11 @@ function ParticipantsPageContent() {
       <div className="flex h-96 items-center justify-center">
         <div className="text-center">
           <h3 className="text-lg font-semibold">Connection timeout</h3>
-          <p className="text-muted-foreground mt-2">
+          <p className="mt-2 text-muted-foreground">
             The request is taking longer than expected. This may be due to a
             slow database connection.
           </p>
-          <p className="text-muted-foreground mt-1">
+          <p className="mt-1 text-muted-foreground">
             Please try refreshing the page or contact support if the issue
             persists.
           </p>
@@ -169,7 +169,7 @@ function ParticipantsPageContent() {
       <div className="flex h-96 items-center justify-center">
         <div className="text-center">
           <h3 className="text-lg font-semibold">Not authenticated</h3>
-          <p className="text-muted-foreground mt-2">
+          <p className="mt-2 text-muted-foreground">
             Please sign in to view participants.
           </p>
         </div>
@@ -184,7 +184,7 @@ function ParticipantsPageContent() {
           <h3 className="text-lg font-semibold">
             Loading cluster assignment...
           </h3>
-          <p className="text-muted-foreground mt-2">
+          <p className="mt-2 text-muted-foreground">
             Verifying your cluster access...
           </p>
         </div>

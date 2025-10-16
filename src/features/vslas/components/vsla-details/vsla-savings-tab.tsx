@@ -35,7 +35,7 @@ const createVSLASavingsColumns = (): ColumnDef<SavingWithMember>[] => [
           {row.original.member_name || "Unknown"}
         </div>
         {row.original.member_phone && (
-          <div className="text-muted-foreground text-sm">
+          <div className="text-sm text-muted-foreground">
             {row.original.member_phone}
           </div>
         )}
@@ -168,13 +168,13 @@ export function VSLASavingsTab({ vsla }: VSLASavingsTabProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Savings</CardTitle>
-            <PiggyBank className="text-muted-foreground h-4 w-4" />
+            <PiggyBank className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
               {formatCurrency(totalSavingsAmount)}
             </div>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               {savings.length} contributions
             </p>
           </CardContent>
@@ -183,11 +183,11 @@ export function VSLASavingsTab({ vsla }: VSLASavingsTabProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Savers</CardTitle>
-            <Users className="text-muted-foreground h-4 w-4" />
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{uniqueMembers}</div>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               Contributing members
             </p>
           </CardContent>
@@ -196,11 +196,11 @@ export function VSLASavingsTab({ vsla }: VSLASavingsTabProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">This Month</CardTitle>
-            <Calendar className="text-muted-foreground h-4 w-4" />
+            <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{recentSavings.length}</div>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               {formatCurrency(
                 recentSavings.reduce((sum, s) => sum + s.amount, 0)
               )}{" "}
@@ -212,13 +212,13 @@ export function VSLASavingsTab({ vsla }: VSLASavingsTabProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Average</CardTitle>
-            <TrendingUp className="text-muted-foreground h-4 w-4" />
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {formatCurrency(averageSaving)}
             </div>
-            <p className="text-muted-foreground text-xs">Per contribution</p>
+            <p className="text-xs text-muted-foreground">Per contribution</p>
           </CardContent>
         </Card>
       </div>
@@ -245,7 +245,7 @@ export function VSLASavingsTab({ vsla }: VSLASavingsTabProps) {
         </CardHeader>
         <CardContent>
           {savings.length === 0 ? (
-            <div className="text-muted-foreground py-8 text-center">
+            <div className="py-8 text-center text-muted-foreground">
               No savings found for this VSLA
             </div>
           ) : (

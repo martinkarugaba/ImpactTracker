@@ -84,7 +84,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
           <h2 className="mb-2 text-xl font-semibold">
             Password Reset Successful
           </h2>
-          <p className="text-muted-foreground mb-4">
+          <p className="mb-4 text-muted-foreground">
             Your password has been reset. Redirecting you to login...
           </p>
         </div>
@@ -96,7 +96,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     <div className="grid w-full max-w-md gap-6">
       <div className="mb-2 text-center">
         <h2 className="text-xl font-semibold">Reset your password</h2>
-        <p className="text-muted-foreground mt-1">
+        <p className="mt-1 text-muted-foreground">
           Enter your new password below.
         </p>
       </div>

@@ -21,7 +21,7 @@ export function ActivitiesCalendarSidebar() {
   const { isColorVisible, toggleColorVisibility } = useCalendarContext();
 
   return (
-    <div className="bg-background border-l" style={{ width: "280px" }}>
+    <div className="border-l bg-background" style={{ width: "280px" }}>
       <SidebarContent className="mt-3 gap-0 border-t pt-3">
         <SidebarGroup className="px-1">
           <SidebarCalendar />
@@ -36,7 +36,7 @@ export function ActivitiesCalendarSidebar() {
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton
                     asChild
-                    className="has-focus-visible:border-ring has-focus-visible:ring-ring/50 relative justify-between rounded-md has-focus-visible:ring-[3px] [&>svg]:size-auto"
+                    className="relative justify-between rounded-md has-focus-visible:border-ring has-focus-visible:ring-[3px] has-focus-visible:ring-ring/50 [&>svg]:size-auto"
                   >
                     <span>
                       <span className="flex items-center justify-between gap-3 font-medium">

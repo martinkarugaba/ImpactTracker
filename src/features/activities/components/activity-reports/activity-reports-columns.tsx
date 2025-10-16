@@ -104,7 +104,7 @@ export const activityReportsColumns: ColumnDef<ActivityReport>[] = [
     cell: ({ row }) => {
       const createdAt = row.getValue("created_at") as Date;
       return (
-        <div className="text-muted-foreground text-sm">
+        <div className="text-sm text-muted-foreground">
           {format(new Date(createdAt), "MMM dd, yyyy")}
         </div>
       );

@@ -27,12 +27,12 @@ export function LoadingSpinner({
         className
       )}
     >
-      <div className="text-primary animate-spin">
+      <div className="animate-spin text-primary">
         <Loader2 className={sizeClasses[size]} />
       </div>
 
       {text && (
-        <p className="text-muted-foreground animate-pulse text-sm">{text}</p>
+        <p className="animate-pulse text-sm text-muted-foreground">{text}</p>
       )}
     </div>
   );

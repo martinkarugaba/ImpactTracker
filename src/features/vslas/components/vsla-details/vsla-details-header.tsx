@@ -57,7 +57,7 @@ export function VSLADetailsHeader({ vsla }: VSLADetailsHeaderProps) {
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">{vsla.name}</h1>
-          <div className="text-muted-foreground flex items-center gap-2">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <span>{vsla.code}</span>
             {vsla.village && (
               <>

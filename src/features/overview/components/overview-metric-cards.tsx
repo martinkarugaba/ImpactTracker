@@ -25,11 +25,11 @@ export function OverviewMetricCards() {
 
   if (isLoading) {
     return (
-      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4 dark:*:data-[slot=card]:bg-card">
         {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
           <div
             key={i}
-            className="from-primary/5 to-card space-y-3 rounded-lg border bg-gradient-to-t p-6 shadow-xs"
+            className="space-y-3 rounded-lg border bg-gradient-to-t from-primary/5 to-card p-6 shadow-xs"
           >
             <Skeleton className="h-4 w-24" />
             <Skeleton className="h-8 w-16" />
@@ -45,7 +45,7 @@ export function OverviewMetricCards() {
 
   if (!response?.success || !response.data) {
     return (
-      <div className="text-muted-foreground text-center">
+      <div className="text-center text-muted-foreground">
         {response?.error || "No data available"}
       </div>
     );
@@ -54,7 +54,7 @@ export function OverviewMetricCards() {
   const data = response.data;
 
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4 dark:*:data-[slot=card]:bg-card">
       <MetricCard
         title="Total Participants"
         value={data.participants.total.toLocaleString()}
@@ -69,7 +69,7 @@ export function OverviewMetricCards() {
         }}
         icon={
           <div className="flex items-center gap-2">
-            <IconUsers className="text-primary h-4 w-4" />
+            <IconUsers className="h-4 w-4 text-primary" />
             {data.participants.growth > 0 ? (
               <IconTrendingUp className="h-4 w-4" />
             ) : (
@@ -93,7 +93,7 @@ export function OverviewMetricCards() {
         }}
         icon={
           <div className="flex items-center gap-2">
-            <IconCalendarEvent className="text-primary h-4 w-4" />
+            <IconCalendarEvent className="h-4 w-4 text-primary" />
             {data.activities.growth > 0 ? (
               <IconTrendingUp className="h-4 w-4" />
             ) : (
@@ -117,7 +117,7 @@ export function OverviewMetricCards() {
         }}
         icon={
           <div className="flex items-center gap-2">
-            <IconBuildingBank className="text-primary h-4 w-4" />
+            <IconBuildingBank className="h-4 w-4 text-primary" />
             {data.vslas.growth > 0 ? (
               <IconTrendingUp className="h-4 w-4" />
             ) : (
@@ -141,7 +141,7 @@ export function OverviewMetricCards() {
         }}
         icon={
           <div className="flex items-center gap-2">
-            <IconFileText className="text-primary h-4 w-4" />
+            <IconFileText className="h-4 w-4 text-primary" />
             {data.conceptNotes.growth > 0 ? (
               <IconTrendingUp className="h-4 w-4" />
             ) : (
@@ -165,7 +165,7 @@ export function OverviewMetricCards() {
         }}
         icon={
           <div className="flex items-center gap-2">
-            <IconSchool className="text-primary h-4 w-4" />
+            <IconSchool className="h-4 w-4 text-primary" />
             {data.trainings.growth > 0 ? (
               <IconTrendingUp className="h-4 w-4" />
             ) : (
@@ -189,7 +189,7 @@ export function OverviewMetricCards() {
         }}
         icon={
           <div className="flex items-center gap-2">
-            <IconReport className="text-primary h-4 w-4" />
+            <IconReport className="h-4 w-4 text-primary" />
             {data.activityReports.growth > 0 ? (
               <IconTrendingUp className="h-4 w-4" />
             ) : (
@@ -213,7 +213,7 @@ export function OverviewMetricCards() {
         }}
         icon={
           <div className="flex items-center gap-2">
-            <IconTarget className="text-primary h-4 w-4" />
+            <IconTarget className="h-4 w-4 text-primary" />
             {data.projects.growth > 0 ? (
               <IconTrendingUp className="h-4 w-4" />
             ) : (
@@ -237,7 +237,7 @@ export function OverviewMetricCards() {
         }}
         icon={
           <div className="flex items-center gap-2">
-            <IconBuilding className="text-primary h-4 w-4" />
+            <IconBuilding className="h-4 w-4 text-primary" />
             {data.clusters.growth > 0 ? (
               <IconTrendingUp className="h-4 w-4" />
             ) : (

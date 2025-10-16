@@ -270,7 +270,7 @@ export function ExcelImportDialog<T>({
               <div className="flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-medium">Download Template</p>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-sm text-muted-foreground">
                     Get the Excel template with the correct format
                   </p>
                 </div>
@@ -294,7 +294,7 @@ export function ExcelImportDialog<T>({
                     type="file"
                     accept=".xlsx,.xls"
                     onChange={handleFileChange}
-                    className="file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:px-4 file:py-2 file:text-sm file:font-semibold"
+                    className="block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-primary-foreground hover:file:bg-primary/90"
                   />
                   {file && (
                     <Button
@@ -336,7 +336,7 @@ export function ExcelImportDialog<T>({
                       ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-sm text-muted-foreground">
                     This file contains {availableSheets.length} sheets. Select
                     the sheet you want to import.
                   </p>
@@ -409,7 +409,7 @@ export function ExcelImportDialog<T>({
                 <div className="rounded-lg border">
                   <div className="max-h-[500px] overflow-auto">
                     <table className="w-full text-sm">
-                      <thead className="bg-muted sticky top-0 z-10">
+                      <thead className="sticky top-0 z-10 bg-muted">
                         <tr>
                           <th className="border-b px-4 py-2 text-left font-medium">
                             #
@@ -431,9 +431,9 @@ export function ExcelImportDialog<T>({
                         {importData.slice(0, 100).map((row, index) => (
                           <tr
                             key={index}
-                            className="hover:bg-muted/50 border-b last:border-0"
+                            className="border-b last:border-0 hover:bg-muted/50"
                           >
-                            <td className="text-muted-foreground px-4 py-2">
+                            <td className="px-4 py-2 text-muted-foreground">
                               {index + 1}
                             </td>
                             {Object.entries(row as object).map(
@@ -453,7 +453,7 @@ export function ExcelImportDialog<T>({
                     </table>
                   </div>
                   {importData.length > 100 && (
-                    <div className="text-muted-foreground bg-muted border-t px-4 py-2 text-center text-sm">
+                    <div className="border-t bg-muted px-4 py-2 text-center text-sm text-muted-foreground">
                       Showing first 100 of {importData.length} records
                     </div>
                   )}
@@ -483,12 +483,12 @@ export function ExcelImportDialog<T>({
             <div className="space-y-4">
               <div className="flex items-center justify-center py-12">
                 <div className="text-center">
-                  <div className="border-primary mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-t-transparent" />
-                  <p className="text-muted-foreground text-sm">
+                  <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                  <p className="text-sm text-muted-foreground">
                     Importing {importData.length}{" "}
                     {config.featureName.toLowerCase()}(s)...
                   </p>
-                  <p className="text-muted-foreground mt-2 text-xs">
+                  <p className="mt-2 text-xs text-muted-foreground">
                     This may take a few moments
                   </p>
                 </div>

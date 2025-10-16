@@ -30,7 +30,7 @@ export function ActionCell({
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="hover:bg-accent h-8 w-8 p-0 transition-colors"
+          className="h-8 w-8 p-0 transition-colors hover:bg-accent"
           onClick={e => {
             e.stopPropagation();
           }}
@@ -40,7 +40,7 @@ export function ActionCell({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]" sideOffset={5}>
-        <DropdownMenuLabel className="text-muted-foreground text-xs font-medium">
+        <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
           Actions
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

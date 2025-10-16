@@ -29,9 +29,9 @@ const PasswordInput = React.forwardRef<
         tabIndex={-1}
       >
         {showPassword ? (
-          <EyeOffIcon className="text-muted-foreground hover:text-foreground h-4 w-4" />
+          <EyeOffIcon className="h-4 w-4 text-muted-foreground hover:text-foreground" />
         ) : (
-          <EyeIcon className="text-muted-foreground hover:text-foreground h-4 w-4" />
+          <EyeIcon className="h-4 w-4 text-muted-foreground hover:text-foreground" />
         )}
         <span className="sr-only">
           {showPassword ? "Hide password" : "Show password"}

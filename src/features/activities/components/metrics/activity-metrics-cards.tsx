@@ -30,7 +30,7 @@ export function ActivityMetricsCards({
 }: ActivityMetricsCardsProps) {
   if (isLoading) {
     return (
-      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4 dark:*:data-[slot=card]:bg-card">
         {Array.from({ length: 8 }).map((_, i) => (
           <MetricCard
             key={i}
@@ -48,7 +48,7 @@ export function ActivityMetricsCards({
   }
 
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4 dark:*:data-[slot=card]:bg-card">
       <MetricCard
         title="Total Activities"
         value={metrics.totalActivities}
@@ -192,8 +192,8 @@ export function ActivityStatusOverview({
           <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className="flex items-center justify-between">
-                <div className="bg-muted h-4 w-20 animate-pulse rounded" />
-                <div className="bg-muted h-4 w-8 animate-pulse rounded" />
+                <div className="h-4 w-20 animate-pulse rounded bg-muted" />
+                <div className="h-4 w-8 animate-pulse rounded bg-muted" />
               </div>
             ))}
           </div>
@@ -275,8 +275,8 @@ export function ActivityTypeOverview({
           <div className="space-y-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="flex items-center justify-between">
-                <div className="bg-muted h-4 w-24 animate-pulse rounded" />
-                <div className="bg-muted h-4 w-8 animate-pulse rounded" />
+                <div className="h-4 w-24 animate-pulse rounded bg-muted" />
+                <div className="h-4 w-8 animate-pulse rounded bg-muted" />
               </div>
             ))}
           </div>

@@ -90,7 +90,7 @@ export default async function OrganizationDetailsPage({
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground text-sm font-medium">
+                          <span className="text-sm font-medium text-muted-foreground">
                             Name
                           </span>
                           <span className="font-medium">
@@ -98,7 +98,7 @@ export default async function OrganizationDetailsPage({
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground text-sm font-medium">
+                          <span className="text-sm font-medium text-muted-foreground">
                             Acronym
                           </span>
                           <span className="font-medium">
@@ -106,7 +106,7 @@ export default async function OrganizationDetailsPage({
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground text-sm font-medium">
+                          <span className="text-sm font-medium text-muted-foreground">
                             Country
                           </span>
                           <span className="font-medium">
@@ -114,7 +114,7 @@ export default async function OrganizationDetailsPage({
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground text-sm font-medium">
+                          <span className="text-sm font-medium text-muted-foreground">
                             District
                           </span>
                           <span className="font-medium">
@@ -124,7 +124,7 @@ export default async function OrganizationDetailsPage({
                       </div>
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground text-sm font-medium">
+                          <span className="text-sm font-medium text-muted-foreground">
                             Sub-county
                           </span>
                           <span className="font-medium">
@@ -132,7 +132,7 @@ export default async function OrganizationDetailsPage({
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground text-sm font-medium">
+                          <span className="text-sm font-medium text-muted-foreground">
                             Parish
                           </span>
                           <span className="font-medium">
@@ -140,7 +140,7 @@ export default async function OrganizationDetailsPage({
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground text-sm font-medium">
+                          <span className="text-sm font-medium text-muted-foreground">
                             Village
                           </span>
                           <span className="font-medium">
@@ -148,7 +148,7 @@ export default async function OrganizationDetailsPage({
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground text-sm font-medium">
+                          <span className="text-sm font-medium text-muted-foreground">
                             Address
                           </span>
                           <span className="font-medium">

@@ -228,11 +228,11 @@ export function VSLALoansTab({ vsla }: VSLALoansTabProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Loans</CardTitle>
-            <DollarSign className="text-muted-foreground h-4 w-4" />
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{loans.length}</div>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               {activeLoans.length} active
             </p>
           </CardContent>
@@ -241,39 +241,39 @@ export function VSLALoansTab({ vsla }: VSLALoansTabProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Amount</CardTitle>
-            <TrendingUp className="text-muted-foreground h-4 w-4" />
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {formatCurrency(totalLoanAmount)}
             </div>
-            <p className="text-muted-foreground text-xs">All time loans</p>
+            <p className="text-xs text-muted-foreground">All time loans</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Outstanding</CardTitle>
-            <AlertCircle className="text-muted-foreground h-4 w-4" />
+            <AlertCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">
               {formatCurrency(totalOutstanding)}
             </div>
-            <p className="text-muted-foreground text-xs">To be repaid</p>
+            <p className="text-xs text-muted-foreground">To be repaid</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Completed</CardTitle>
-            <Users className="text-muted-foreground h-4 w-4" />
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
               {completedLoans.length}
             </div>
-            <p className="text-muted-foreground text-xs">Fully repaid</p>
+            <p className="text-xs text-muted-foreground">Fully repaid</p>
           </CardContent>
         </Card>
       </div>
@@ -300,7 +300,7 @@ export function VSLALoansTab({ vsla }: VSLALoansTabProps) {
         </CardHeader>
         <CardContent>
           {loans.length === 0 ? (
-            <div className="text-muted-foreground py-8 text-center">
+            <div className="py-8 text-center text-muted-foreground">
               No loans found for this VSLA
             </div>
           ) : (

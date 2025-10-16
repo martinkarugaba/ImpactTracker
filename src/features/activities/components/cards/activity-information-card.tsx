@@ -24,7 +24,7 @@ export function ActivityInformationCard({
       <CardContent className="space-y-4">
         <div className="grid gap-4">
           <div>
-            <label className="text-muted-foreground text-base font-medium">
+            <label className="text-base font-medium text-muted-foreground">
               Type
             </label>
             <div className="mt-1">
@@ -36,7 +36,7 @@ export function ActivityInformationCard({
 
           {activity.projectName && (
             <div>
-              <label className="text-muted-foreground text-base font-medium">
+              <label className="text-base font-medium text-muted-foreground">
                 Project
               </label>
               <p className="mt-1 text-base">{activity.projectName}</p>
@@ -45,7 +45,7 @@ export function ActivityInformationCard({
 
           {activity.clusterName && (
             <div>
-              <label className="text-muted-foreground text-base font-medium">
+              <label className="text-base font-medium text-muted-foreground">
                 Cluster
               </label>
               <p className="mt-1 text-base">{activity.clusterName}</p>
@@ -54,7 +54,7 @@ export function ActivityInformationCard({
 
           {activity.budget && (
             <div>
-              <label className="text-muted-foreground text-base font-medium">
+              <label className="text-base font-medium text-muted-foreground">
                 Budget
               </label>
               <p className="mt-1 text-base">
@@ -65,7 +65,7 @@ export function ActivityInformationCard({
 
           {activity.actualCost && (
             <div>
-              <label className="text-muted-foreground text-base font-medium">
+              <label className="text-base font-medium text-muted-foreground">
                 Actual Cost
               </label>
               <p className="mt-1 text-base">
@@ -76,7 +76,7 @@ export function ActivityInformationCard({
 
           {activity.objectives && (
             <div>
-              <label className="text-muted-foreground text-base font-medium">
+              <label className="text-base font-medium text-muted-foreground">
                 Objectives
               </label>
               <p className="mt-1 text-base">{activity.objectives}</p>

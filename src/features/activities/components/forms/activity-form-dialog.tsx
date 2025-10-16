@@ -595,7 +595,7 @@ export function ActivityFormDialog({
                         <SelectItem key={user.id} value={user.id}>
                           {user.name} ({user.email})
                           {user.organization_name && (
-                            <span className="text-muted-foreground ml-2 text-xs">
+                            <span className="ml-2 text-xs text-muted-foreground">
                               - {user.organization_name}
                             </span>
                           )}

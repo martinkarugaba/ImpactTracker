@@ -61,7 +61,7 @@ export function MultiClusterSelect({
             disabled={disabled}
           >
             Select clusters
-            <span className="bg-primary/10 ml-2 rounded-md px-1.5 py-0.5 text-xs font-semibold">
+            <span className="ml-2 rounded-md bg-primary/10 px-1.5 py-0.5 text-xs font-semibold">
               {selectedClusterIds.length} selected
             </span>
           </Button>
@@ -80,7 +80,7 @@ export function MultiClusterSelect({
                 >
                   <div>{cluster.name}</div>
                   {selectedClusterIds.includes(cluster.id) && (
-                    <Check className="text-primary h-4 w-4" />
+                    <Check className="h-4 w-4 text-primary" />
                   )}
                 </CommandItem>
               ))}
@@ -104,7 +104,7 @@ export function MultiClusterSelect({
                   <button
                     type="button"
                     onClick={() => removeCluster(clusterId)}
-                    className="focus:ring-primary ml-1 rounded-full outline-none focus:ring-2"
+                    className="ml-1 rounded-full outline-none focus:ring-2 focus:ring-primary"
                     disabled={disabled}
                   >
                     <X className="h-3 w-3" />

@@ -62,7 +62,7 @@ export function NavSecondary({
                   {item.icon && (
                     <item.icon className="text-purple-600 dark:text-purple-400" />
                   )}
-                  <span className="text-muted-foreground hover:text-foreground transition-colors">
+                  <span className="text-muted-foreground transition-colors hover:text-foreground">
                     {item.title}
                   </span>
                 </Link>
@@ -76,7 +76,7 @@ export function NavSecondary({
             >
               <label className="flex cursor-pointer items-center gap-3">
                 <IconBrightness className="text-amber-600 dark:text-amber-400" />
-                <span className="text-muted-foreground hover:text-foreground transition-colors">
+                <span className="text-muted-foreground transition-colors hover:text-foreground">
                   Dark Mode
                 </span>
                 {mounted ? (

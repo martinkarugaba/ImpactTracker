@@ -121,7 +121,7 @@ export function JotaiParticipantFilters({
                   e.stopPropagation();
                   handleFilterUpdate(key, "all");
                 }}
-                className="hover:text-destructive flex h-3 w-3 cursor-pointer items-center justify-center"
+                className="flex h-3 w-3 cursor-pointer items-center justify-center hover:text-destructive"
               >
                 <X className="h-3 w-3" />
               </motion.button>
@@ -137,7 +137,7 @@ export function JotaiParticipantFilters({
       <div className="flex flex-wrap items-center gap-3">
         {/* Search */}
         <div className="relative min-w-[250px] flex-1">
-          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search participants..."
             value={searchValue}
@@ -197,7 +197,7 @@ export function JotaiParticipantFilters({
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-muted-foreground text-sm"
+                className="text-sm text-muted-foreground"
               >
                 Active filters:
               </motion.span>

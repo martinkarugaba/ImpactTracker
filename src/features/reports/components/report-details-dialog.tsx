@@ -134,7 +134,7 @@ export function ReportDetailsDialog({
               <CardContent className="space-y-3">
                 <div>
                   <span className="text-sm font-medium">Activity:</span>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-sm text-muted-foreground">
                     {report.activity_title}
                   </p>
                 </div>
@@ -146,13 +146,13 @@ export function ReportDetailsDialog({
                 </div>
                 <div>
                   <span className="text-sm font-medium">Project:</span>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-sm text-muted-foreground">
                     {report.project_name || "Not specified"}
                   </p>
                 </div>
                 <div>
                   <span className="text-sm font-medium">Organization:</span>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-sm text-muted-foreground">
                     {report.organization_name || "Not specified"}
                   </p>
                 </div>
@@ -169,25 +169,25 @@ export function ReportDetailsDialog({
               <CardContent className="space-y-3">
                 <div>
                   <span className="text-sm font-medium">Date:</span>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-sm text-muted-foreground">
                     {formatDate(report.execution_date)}
                   </p>
                 </div>
                 <div>
                   <span className="text-sm font-medium">Venue:</span>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-sm text-muted-foreground">
                     {report.venue}
                   </p>
                 </div>
                 <div>
                   <span className="text-sm font-medium">Cluster:</span>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-sm text-muted-foreground">
                     {report.cluster_name}
                   </p>
                 </div>
                 <div>
                   <span className="text-sm font-medium">Team Leader:</span>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-sm text-muted-foreground">
                     {report.team_leader}
                   </p>
                 </div>
@@ -201,7 +201,7 @@ export function ReportDetailsDialog({
               <CardContent className="flex items-center p-6">
                 <Users className="h-8 w-8 text-blue-600" />
                 <div className="ml-4">
-                  <p className="text-muted-foreground text-sm font-medium">
+                  <p className="text-sm font-medium text-muted-foreground">
                     Participants
                   </p>
                   <p className="text-2xl font-bold">
@@ -215,7 +215,7 @@ export function ReportDetailsDialog({
               <CardContent className="flex items-center p-6">
                 <DollarSign className="h-8 w-8 text-green-600" />
                 <div className="ml-4">
-                  <p className="text-muted-foreground text-sm font-medium">
+                  <p className="text-sm font-medium text-muted-foreground">
                     Actual Cost
                   </p>
                   <p className="text-2xl font-bold">
@@ -304,7 +304,7 @@ export function ReportDetailsDialog({
                     <div className="space-y-2">
                       {report.follow_up_actions.map((action, index) => (
                         <div key={index} className="flex items-start gap-2">
-                          <div className="bg-primary mt-1.5 h-2 w-2 rounded-full" />
+                          <div className="mt-1.5 h-2 w-2 rounded-full bg-primary" />
                           <p className="text-sm leading-relaxed">{action}</p>
                         </div>
                       ))}
@@ -327,13 +327,13 @@ export function ReportDetailsDialog({
             <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
                 <span className="text-sm font-medium">Created by:</span>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   {report.created_by}
                 </p>
               </div>
               <div>
                 <span className="text-sm font-medium">Created on:</span>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   {report.created_at
                     ? formatDate(report.created_at)
                     : "Not available"}
@@ -342,7 +342,7 @@ export function ReportDetailsDialog({
               {report.updated_at && (
                 <div>
                   <span className="text-sm font-medium">Last updated:</span>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-sm text-muted-foreground">
                     {formatDate(report.updated_at)}
                   </p>
                 </div>

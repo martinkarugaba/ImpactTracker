@@ -44,7 +44,7 @@ export function PaginationControls({
   return (
     <div className="flex items-center justify-between px-4">
       {position === "bottom" && (
-        <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
+        <div className="hidden flex-1 text-sm text-muted-foreground lg:flex">
           {isLoading ? (
             <div className="flex items-center gap-2">
               <Loader2 className="h-3 w-3 animate-spin" />

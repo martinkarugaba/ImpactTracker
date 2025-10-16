@@ -11,24 +11,24 @@ import { AlertTriangle, Home, LogIn, ArrowLeft } from "lucide-react";
 
 const NotFound = () => {
   return (
-    <div className="bg-background flex min-h-screen items-center justify-center p-4">
+    <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="mx-auto w-full max-w-2xl">
         <Card className="border-border/50 shadow-lg">
           <CardHeader className="pb-8 text-center">
-            <div className="bg-destructive/10 mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
-              <AlertTriangle className="text-destructive h-10 w-10" />
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-destructive/10">
+              <AlertTriangle className="h-10 w-10 text-destructive" />
             </div>
-            <CardTitle className="text-foreground text-4xl font-bold tracking-tight">
+            <CardTitle className="text-4xl font-bold tracking-tight text-foreground">
               404
             </CardTitle>
-            <CardDescription className="text-muted-foreground mt-2 text-xl">
+            <CardDescription className="mt-2 text-xl text-muted-foreground">
               Oops! The page you're looking for doesn't exist.
             </CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-8">
             <div className="text-center">
-              <p className="text-muted-foreground mb-6">
+              <p className="mb-6 text-muted-foreground">
                 The page you requested could not be found. It might have been
                 moved, deleted, or you may have mistyped the URL.
               </p>
@@ -36,7 +36,7 @@ const NotFound = () => {
 
             {/* Public Navigation Options */}
             <div className="space-y-4">
-              <h3 className="text-foreground mb-4 text-lg font-semibold">
+              <h3 className="mb-4 text-lg font-semibold text-foreground">
                 Where would you like to go?
               </h3>
 
@@ -44,7 +44,7 @@ const NotFound = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-border/50 hover:border-border hover:bg-accent/50 h-12 justify-start gap-3"
+                  className="h-12 justify-start gap-3 border-border/50 hover:border-border hover:bg-accent/50"
                 >
                   <Link href="/">
                     <Home className="h-4 w-4" />
@@ -55,7 +55,7 @@ const NotFound = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-border/50 hover:border-border hover:bg-accent/50 h-12 justify-start gap-3"
+                  className="h-12 justify-start gap-3 border-border/50 hover:border-border hover:bg-accent/50"
                 >
                   <Link href="/auth/login">
                     <LogIn className="h-4 w-4" />
@@ -66,7 +66,7 @@ const NotFound = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-border/50 hover:border-border hover:bg-accent/50 h-12 justify-start gap-3"
+                  className="h-12 justify-start gap-3 border-border/50 hover:border-border hover:bg-accent/50"
                 >
                   <Link href="/dashboard">
                     <Home className="h-4 w-4" />
@@ -77,7 +77,7 @@ const NotFound = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-border/50 hover:border-border hover:bg-accent/50 h-12 justify-start gap-3"
+                  className="h-12 justify-start gap-3 border-border/50 hover:border-border hover:bg-accent/50"
                 >
                   <Link href="/auth/register">
                     <LogIn className="h-4 w-4" />
@@ -105,8 +105,8 @@ const NotFound = () => {
             </div>
 
             {/* Help Text */}
-            <div className="border-border/50 border-t pt-4">
-              <p className="text-muted-foreground text-center text-sm">
+            <div className="border-t border-border/50 pt-4">
+              <p className="text-center text-sm text-muted-foreground">
                 If you believe this is an error, please contact support or try
                 refreshing the page.
               </p>

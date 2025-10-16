@@ -290,7 +290,7 @@ export function EventCalendar({
             <div className="flex items-center gap-1.5">
               <SidebarTrigger
                 data-state={open ? "invisible" : "visible"}
-                className="peer text-muted-foreground/80 hover:text-foreground/80 size-7 transition-opacity duration-200 ease-in-out hover:bg-transparent! sm:-ms-1.5 lg:data-[state=invisible]:pointer-events-none lg:data-[state=invisible]:opacity-0"
+                className="peer size-7 text-muted-foreground/80 transition-opacity duration-200 ease-in-out hover:bg-transparent! hover:text-foreground/80 sm:-ms-1.5 lg:data-[state=invisible]:pointer-events-none lg:data-[state=invisible]:opacity-0"
                 isOutsideSidebar
               />
               <h2 className="text-xl font-semibold transition-transform duration-300 ease-in-out lg:peer-data-[state=invisible]:-translate-x-7.5">

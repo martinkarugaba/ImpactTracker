@@ -141,7 +141,7 @@ export function TargetsTab({
         <Card className="flex flex-col">
           <CardHeader className="items-center pb-0">
             <CardTitle className="flex items-center gap-2">
-              <Users className="text-muted-foreground h-5 w-5" />
+              <Users className="h-5 w-5 text-muted-foreground" />
               Total Enrollment
             </CardTitle>
             <CardDescription>Target: {target.toLocaleString()}</CardDescription>
@@ -204,7 +204,7 @@ export function TargetsTab({
               {enrollmentPercentage.toFixed(1)}% of target{" "}
               <TrendingUp className="h-4 w-4" />
             </div>
-            <div className="text-muted-foreground leading-none">
+            <div className="leading-none text-muted-foreground">
               {(target - total).toLocaleString()} more to reach target
             </div>
           </CardFooter>
@@ -214,7 +214,7 @@ export function TargetsTab({
         <Card className="flex flex-col">
           <CardHeader className="items-center pb-0">
             <CardTitle className="flex items-center gap-2">
-              <UserCircle className="text-muted-foreground h-5 w-5" />
+              <UserCircle className="h-5 w-5 text-muted-foreground" />
               Female %
             </CardTitle>
             <CardDescription>Target: {femaleTarget}%</CardDescription>
@@ -277,7 +277,7 @@ export function TargetsTab({
               {femaleCount.toLocaleString()} female participants{" "}
               <TrendingUp className="h-4 w-4" />
             </div>
-            <div className="text-muted-foreground leading-none">
+            <div className="leading-none text-muted-foreground">
               {femalePercentage >= femaleTarget
                 ? "Target achieved!"
                 : `${(femaleTarget - femalePercentage).toFixed(1)}% to reach target`}
@@ -289,7 +289,7 @@ export function TargetsTab({
         <Card className="flex flex-col">
           <CardHeader className="items-center pb-0">
             <CardTitle className="flex items-center gap-2">
-              <Briefcase className="text-muted-foreground h-5 w-5" />
+              <Briefcase className="h-5 w-5 text-muted-foreground" />
               Employment %
             </CardTitle>
             <CardDescription>Target: {employmentTarget}%</CardDescription>
@@ -352,7 +352,7 @@ export function TargetsTab({
               {employedCount.toLocaleString()} employed{" "}
               <TrendingUp className="h-4 w-4" />
             </div>
-            <div className="text-muted-foreground leading-none">
+            <div className="leading-none text-muted-foreground">
               {employmentPercentage >= employmentTarget
                 ? "Target achieved!"
                 : `${(employmentTarget - employmentPercentage).toFixed(1)}% to reach target`}
@@ -364,7 +364,7 @@ export function TargetsTab({
         <Card className="flex flex-col">
           <CardHeader className="items-center pb-0">
             <CardTitle className="flex items-center gap-2">
-              <Building className="text-muted-foreground h-5 w-5" />
+              <Building className="h-5 w-5 text-muted-foreground" />
               Youth %
             </CardTitle>
             <CardDescription>Target: {youthTarget}%</CardDescription>
@@ -427,7 +427,7 @@ export function TargetsTab({
               {youthCount.toLocaleString()} youth (15-35){" "}
               <TrendingUp className="h-4 w-4" />
             </div>
-            <div className="text-muted-foreground leading-none">
+            <div className="leading-none text-muted-foreground">
               {youthPercentage >= youthTarget
                 ? "Target achieved!"
                 : `${(youthTarget - youthPercentage).toFixed(1)}% to reach target`}

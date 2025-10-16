@@ -12,7 +12,7 @@ function ReportsPageSkeleton() {
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="from-primary/5 to-card bg-gradient-to-t p-6 shadow-xs"
+            className="bg-gradient-to-t from-primary/5 to-card p-6 shadow-xs"
           >
             <div className="flex items-center justify-between">
               <Skeleton className="h-4 w-24" />

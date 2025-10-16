@@ -65,8 +65,8 @@ export function ActivityOverviewTab({
             {/* Activity Title */}
             <div className="rounded-lg border border-gray-100 bg-gradient-to-r from-gray-50/50 to-slate-50/50 p-3 dark:border-gray-800 dark:from-gray-900/50 dark:to-slate-900/50">
               <div className="flex items-center gap-2">
-                <div className="bg-muted rounded-md p-1">
-                  <FileText className="text-muted-foreground h-3.5 w-3.5" />
+                <div className="rounded-md bg-muted p-1">
+                  <FileText className="h-3.5 w-3.5 text-muted-foreground" />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
@@ -133,17 +133,17 @@ export function ActivityOverviewTab({
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {activity.projectName && (
-                          <div className="bg-muted flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs shadow-sm">
-                            <Building className="text-muted-foreground h-3 w-3" />
-                            <span className="text-foreground font-medium">
+                          <div className="flex items-center gap-1.5 rounded-md border bg-muted px-2 py-1 text-xs shadow-sm">
+                            <Building className="h-3 w-3 text-muted-foreground" />
+                            <span className="font-medium text-foreground">
                               {activity.projectName}
                             </span>
                           </div>
                         )}
                         {activity.clusterName && (
-                          <div className="bg-muted flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs shadow-sm">
-                            <Users className="text-muted-foreground h-3 w-3" />
-                            <span className="text-foreground font-medium">
+                          <div className="flex items-center gap-1.5 rounded-md border bg-muted px-2 py-1 text-xs shadow-sm">
+                            <Users className="h-3 w-3 text-muted-foreground" />
+                            <span className="font-medium text-foreground">
                               {activity.clusterName}
                             </span>
                           </div>
@@ -172,8 +172,8 @@ export function ActivityOverviewTab({
 
                     {hasMultipleSessions && (
                       <div className="flex items-center gap-2">
-                        <div className="bg-muted rounded-md p-1">
-                          <Calendar className="text-muted-foreground h-3.5 w-3.5" />
+                        <div className="rounded-md bg-muted p-1">
+                          <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
                         </div>
                         <div className="flex-1">
                           <p className="text-xs font-medium text-gray-900 dark:text-gray-100">
@@ -203,13 +203,13 @@ export function ActivityOverviewTab({
           <Card className="border-0">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base font-medium">
-                <div className="bg-muted rounded-md p-1.5">
-                  <FileText className="text-muted-foreground h-3.5 w-3.5" />
+                <div className="rounded-md bg-muted p-1.5">
+                  <FileText className="h-3.5 w-3.5 text-muted-foreground" />
                 </div>
                 <span className="text-gray-900 dark:text-gray-100">
                   Concept Notes
                 </span>
-                <div className="bg-muted text-muted-foreground ml-auto rounded-full px-2 py-0.5 text-xs font-medium">
+                <div className="ml-auto rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
                   Planning
                 </div>
               </CardTitle>
@@ -232,13 +232,13 @@ export function ActivityOverviewTab({
           <Card className="border-0">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base font-medium">
-                <div className="bg-muted rounded-md p-1.5">
-                  <ClipboardList className="text-muted-foreground h-3.5 w-3.5" />
+                <div className="rounded-md bg-muted p-1.5">
+                  <ClipboardList className="h-3.5 w-3.5 text-muted-foreground" />
                 </div>
                 <span className="text-gray-900 dark:text-gray-100">
                   Activity Reports
                 </span>
-                <div className="bg-muted text-muted-foreground ml-auto rounded-full px-2 py-0.5 text-xs font-medium">
+                <div className="ml-auto rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
                   Documentation
                 </div>
               </CardTitle>

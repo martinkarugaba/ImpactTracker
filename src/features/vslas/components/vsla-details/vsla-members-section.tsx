@@ -37,7 +37,7 @@ export async function VSLAMembersSection({ vsla }: VSLAMembersSectionProps) {
       <CardContent>
         {members.length === 0 ? (
           <div className="py-8 text-center">
-            <Users className="text-muted-foreground mx-auto h-12 w-12" />
+            <Users className="mx-auto h-12 w-12 text-muted-foreground" />
             <h3 className="mt-4 text-lg font-semibold">No members yet</h3>
             <p className="text-muted-foreground">
               Start by adding new members or existing participants to this VSLA.
@@ -60,7 +60,7 @@ export async function VSLAMembersSection({ vsla }: VSLAMembersSectionProps) {
             {members.map(member => (
               <div
                 key={member.id}
-                className="hover:bg-muted/50 rounded-lg border p-4 transition-colors"
+                className="rounded-lg border p-4 transition-colors hover:bg-muted/50"
               >
                 <div className="flex items-start justify-between">
                   <div className="space-y-2">
@@ -93,7 +93,7 @@ export async function VSLAMembersSection({ vsla }: VSLAMembersSectionProps) {
                         {member.status}
                       </Badge>
                     </div>
-                    <div className="text-muted-foreground flex items-center gap-4 text-sm">
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       {member.phone && (
                         <div className="flex items-center gap-1">
                           <Phone className="h-4 w-4" />

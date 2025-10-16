@@ -19,7 +19,7 @@ export function SelfEmploymentSection({ data }: DemographicsProps) {
         {/* Gender Breakdown */}
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-4">
-            <h4 className="text-foreground font-semibold">
+            <h4 className="font-semibold text-foreground">
               Male Self Employment
             </h4>
             <div className="space-y-2">
@@ -43,7 +43,7 @@ export function SelfEmploymentSection({ data }: DemographicsProps) {
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-foreground font-semibold">
+            <h4 className="font-semibold text-foreground">
               Female Self Employment
             </h4>
             <div className="space-y-2">
@@ -180,17 +180,17 @@ export function SelfEmploymentSection({ data }: DemographicsProps) {
                     <span>Total:</span>
                     <span className="font-medium">{sector.total}</span>
                   </div>
-                  <div className="text-muted-foreground flex justify-between">
+                  <div className="flex justify-between text-muted-foreground">
                     <span>New:</span>
                     <span className="font-medium">{sector.newBusinesses}</span>
                   </div>
-                  <div className="text-muted-foreground flex justify-between">
+                  <div className="flex justify-between text-muted-foreground">
                     <span>Sustained:</span>
                     <span className="font-medium">
                       {sector.sustainedBusinesses}
                     </span>
                   </div>
-                  <div className="text-muted-foreground flex justify-between">
+                  <div className="flex justify-between text-muted-foreground">
                     <span>Improved:</span>
                     <span className="font-medium">
                       {sector.improvedBusinesses}

@@ -196,10 +196,10 @@ export function OverviewDashboard() {
 
       {/* Tabbed Interface */}
       <Tabs defaultValue="metrics" className="space-y-8">
-        <TabsList className="bg-muted/30 border-border/50 grid h-10 w-full grid-cols-3 border">
+        <TabsList className="grid h-10 w-full grid-cols-3 border border-border/50 bg-muted/30">
           <TabsTrigger
             value="metrics"
-            className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border-border flex items-center gap-2 transition-all duration-200 data-[state=active]:shadow-sm"
+            className="flex items-center gap-2 transition-all duration-200 data-[state=active]:border-border data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
           >
             <IconTarget className="h-4 w-4" />
             <span className="hidden sm:inline">Metrics</span>
@@ -207,7 +207,7 @@ export function OverviewDashboard() {
           </TabsTrigger>
           <TabsTrigger
             value="trends"
-            className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border-border flex items-center gap-2 transition-all duration-200 data-[state=active]:shadow-sm"
+            className="flex items-center gap-2 transition-all duration-200 data-[state=active]:border-border data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
           >
             <IconChartAreaLine className="h-4 w-4" />
             <span className="hidden sm:inline">Trends</span>
@@ -215,7 +215,7 @@ export function OverviewDashboard() {
           </TabsTrigger>
           <TabsTrigger
             value="insights"
-            className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border-border flex items-center gap-2 transition-all duration-200 data-[state=active]:shadow-sm"
+            className="flex items-center gap-2 transition-all duration-200 data-[state=active]:border-border data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
           >
             <IconTrendingUp className="h-4 w-4" />
             Insights
@@ -229,7 +229,7 @@ export function OverviewDashboard() {
               <h2 className="mb-2 text-lg font-semibold">
                 Key Performance Indicators
               </h2>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-sm text-muted-foreground">
                 Current metrics across all your key performance areas
               </p>
             </div>
@@ -244,7 +244,7 @@ export function OverviewDashboard() {
           <div className="space-y-4">
             <div>
               <h2 className="mb-2 text-lg font-semibold">Performance Trends</h2>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-sm text-muted-foreground">
                 Historical data and trends over the past 6 months
               </p>
             </div>

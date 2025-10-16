@@ -125,7 +125,7 @@ export default async function SuccessStoriesPage() {
             <h1 className="text-3xl font-bold tracking-tight">
               Success Stories
             </h1>
-            <p className="text-muted-foreground mt-2">
+            <p className="mt-2 text-muted-foreground">
               Discover inspiring stories of transformation and impact from our
               community programs.
             </p>
@@ -143,13 +143,13 @@ export default async function SuccessStoriesPage() {
           <Card key={index}>
             <CardContent className="p-6">
               <div className="flex items-center space-x-4">
-                <div className="bg-primary/10 rounded-lg p-2">
-                  <metric.icon className="text-primary h-6 w-6" />
+                <div className="rounded-lg bg-primary/10 p-2">
+                  <metric.icon className="h-6 w-6 text-primary" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{metric.value}</p>
                   <p className="text-sm font-medium">{metric.title}</p>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     {metric.description}
                   </p>
                 </div>
@@ -168,7 +168,7 @@ export default async function SuccessStoriesPage() {
           </div>
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {featuredStories.map(story => (
-              <Card key={story.id} className="border-l-primary border-l-4">
+              <Card key={story.id} className="border-l-4 border-l-primary">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <Badge variant="secondary" className="mb-2">
@@ -184,7 +184,7 @@ export default async function SuccessStoriesPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="text-muted-foreground flex items-center justify-between text-sm">
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center space-x-1">
                         <IconUser className="h-4 w-4" />
@@ -201,7 +201,7 @@ export default async function SuccessStoriesPage() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="text-primary text-sm font-medium">
+                    <div className="text-sm font-medium text-primary">
                       Impact: {story.impact}
                     </div>
                     <Button variant="outline" size="sm">
@@ -229,7 +229,7 @@ export default async function SuccessStoriesPage() {
                 <CardDescription>{story.excerpt}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="text-muted-foreground space-y-2 text-sm">
+                <div className="space-y-2 text-sm text-muted-foreground">
                   <div className="flex items-center space-x-1">
                     <IconUser className="h-4 w-4" />
                     <span>{story.author}</span>
@@ -244,7 +244,7 @@ export default async function SuccessStoriesPage() {
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <div className="text-primary text-sm font-medium">
+                  <div className="text-sm font-medium text-primary">
                     {story.impact}
                   </div>
                   <Button variant="outline" size="sm">
@@ -263,7 +263,7 @@ export default async function SuccessStoriesPage() {
           <h3 className="text-2xl font-semibold">
             Have a Success Story to Share?
           </h3>
-          <p className="text-muted-foreground mx-auto max-w-2xl">
+          <p className="mx-auto max-w-2xl text-muted-foreground">
             We love hearing about the positive impact our programs have on
             communities. Share your story and inspire others to take action.
           </p>

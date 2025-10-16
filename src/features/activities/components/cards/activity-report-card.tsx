@@ -15,7 +15,7 @@ export function ActivityReportCard({ activity }: ActivityReportCardProps) {
     <Card>
       <CardHeader>
         <div className="flex items-center gap-2">
-          <FileText className="text-muted-foreground h-6 w-6" />
+          <FileText className="h-6 w-6 text-muted-foreground" />
           <CardTitle className="text-xl">Reports & Attachments</CardTitle>
         </div>
       </CardHeader>
@@ -23,7 +23,7 @@ export function ActivityReportCard({ activity }: ActivityReportCardProps) {
         {hasAttachments ? (
           <div className="space-y-4">
             <div>
-              <label className="text-muted-foreground text-base font-medium">
+              <label className="text-base font-medium text-muted-foreground">
                 Attachments ({activity.attachments?.length})
               </label>
               <div className="mt-2 space-y-2">
@@ -33,7 +33,7 @@ export function ActivityReportCard({ activity }: ActivityReportCardProps) {
                     className="flex items-center justify-between rounded border p-2"
                   >
                     <div className="flex items-center gap-2">
-                      <FileText className="text-muted-foreground h-5 w-5" />
+                      <FileText className="h-5 w-5 text-muted-foreground" />
                       <span className="text-base">{attachment}</span>
                     </div>
                     <Button variant="ghost" size="sm">
@@ -46,10 +46,10 @@ export function ActivityReportCard({ activity }: ActivityReportCardProps) {
           </div>
         ) : (
           <div className="text-center">
-            <div className="bg-muted mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
-              <FileText className="text-muted-foreground h-6 w-6" />
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+              <FileText className="h-6 w-6 text-muted-foreground" />
             </div>
-            <p className="text-muted-foreground mb-4 text-base">
+            <p className="mb-4 text-base text-muted-foreground">
               No reports or attachments have been uploaded for this activity
               yet.
             </p>

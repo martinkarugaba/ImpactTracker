@@ -247,7 +247,7 @@ export function ClusterUsersTab({ clusterId }: { clusterId: string }) {
                         </FormControl>
                         <SelectContent>
                           {availableUsers.length === 0 ? (
-                            <div className="text-muted-foreground px-2 py-2 text-sm">
+                            <div className="px-2 py-2 text-sm text-muted-foreground">
                               No available users
                             </div>
                           ) : (
@@ -321,12 +321,12 @@ export function ClusterUsersTab({ clusterId }: { clusterId: string }) {
       <CardContent>
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : error ? (
-          <div className="text-destructive py-8 text-center">{error}</div>
+          <div className="py-8 text-center text-destructive">{error}</div>
         ) : users.length === 0 ? (
-          <div className="text-muted-foreground py-8 text-center">
+          <div className="py-8 text-center text-muted-foreground">
             No users have been added to this cluster yet.
           </div>
         ) : (
@@ -363,7 +363,7 @@ export function ClusterUsersTab({ clusterId }: { clusterId: string }) {
                       {loadingStates[user.id] ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        <UserX className="text-destructive h-4 w-4" />
+                        <UserX className="h-4 w-4 text-destructive" />
                       )}
                     </Button>
                   </TableCell>

@@ -62,7 +62,7 @@ export function ContactSection() {
             <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
               Get in Touch
             </h2>
-            <p className="text-muted-foreground mb-6 text-lg">
+            <p className="mb-6 text-lg text-muted-foreground">
               Have questions about our KPI tracking solution? We&apos;d love to
               hear from you. Our team is here to help and answer any questions
               you may have.
@@ -93,7 +93,7 @@ export function ContactSection() {
             </div>
           </div>
 
-          <div className="bg-card rounded-lg border p-6 shadow-sm">
+          <div className="rounded-lg border bg-card p-6 shadow-sm">
             {submitted ? (
               <Alert>
                 <CheckCircle2 className="h-4 w-4" />

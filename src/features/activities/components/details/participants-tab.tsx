@@ -63,7 +63,7 @@ export function ParticipantsTab({
   return (
     <div className="space-y-6">
       {/* Session-Based Attendance Stats */}
-      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-4">
+      <div className="grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs md:grid-cols-4 dark:*:data-[slot=card]:bg-card">
         <MetricCard
           title="Total Participants"
           value={stats.total}
@@ -198,7 +198,7 @@ export function ParticipantsTab({
               <Users className="h-5 w-5" />
               Participants & Attendance
             </div>
-            <div className="text-muted-foreground text-sm font-normal">
+            <div className="text-sm font-normal text-muted-foreground">
               {participants.length} participant
               {participants.length !== 1 ? "s" : ""}
             </div>

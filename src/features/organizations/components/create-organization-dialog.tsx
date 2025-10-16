@@ -47,7 +47,7 @@ export function CreateOrganizationDialog({
           <DialogTitle className="text-center text-xl font-semibold">
             Create Organization
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground text-sm"></DialogDescription>
+          <DialogDescription className="text-sm text-muted-foreground"></DialogDescription>
         </DialogHeader>
         {/* <Separator /> */}
         <OrganizationForm

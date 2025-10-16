@@ -69,7 +69,7 @@ export function getParticipantColumns({
           className="flex items-center gap-2 hover:underline"
           onClick={e => e.stopPropagation()}
         >
-          <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
             {capitalizeWords(row.original.firstName || "")?.[0]?.toUpperCase()}
             {capitalizeWords(row.original.lastName || "")?.[0]?.toUpperCase()}
           </div>
@@ -219,7 +219,7 @@ export function getParticipantColumns({
 
         return (
           <div className="flex items-center gap-2 font-mono text-sm">
-            <Phone className="text-muted-foreground h-3 w-3" />
+            <Phone className="h-3 w-3 text-muted-foreground" />
             {formattedContact}
           </div>
         );
@@ -422,7 +422,7 @@ export function getParticipantColumns({
           );
         }
 
-        return <span className="text-muted-foreground text-sm">—</span>;
+        return <span className="text-sm text-muted-foreground">—</span>;
       },
     },
 
@@ -609,7 +609,7 @@ export function getParticipantColumns({
           );
         }
 
-        return <span className="text-muted-foreground text-sm">—</span>;
+        return <span className="text-sm text-muted-foreground">—</span>;
       },
     },
     {
@@ -623,7 +623,7 @@ export function getParticipantColumns({
           row.original.vocationalSkillsParticipations || [];
 
         if (participations.length === 0) {
-          return <span className="text-muted-foreground text-sm">—</span>;
+          return <span className="text-sm text-muted-foreground">—</span>;
         }
 
         return (
@@ -650,7 +650,7 @@ export function getParticipantColumns({
         const completions = row.original.vocationalSkillsCompletions || [];
 
         if (completions.length === 0) {
-          return <span className="text-muted-foreground text-sm">—</span>;
+          return <span className="text-sm text-muted-foreground">—</span>;
         }
 
         return (
@@ -685,7 +685,7 @@ export function getParticipantColumns({
           row.original.vocationalSkillsCertifications || [];
 
         if (certifications.length === 0) {
-          return <span className="text-muted-foreground text-sm">—</span>;
+          return <span className="text-sm text-muted-foreground">—</span>;
         }
 
         return (
@@ -720,7 +720,7 @@ export function getParticipantColumns({
         const participations = row.original.softSkillsParticipations || [];
 
         if (participations.length === 0) {
-          return <span className="text-muted-foreground text-sm">—</span>;
+          return <span className="text-sm text-muted-foreground">—</span>;
         }
 
         return (
@@ -755,7 +755,7 @@ export function getParticipantColumns({
         const completions = row.original.softSkillsCompletions || [];
 
         if (completions.length === 0) {
-          return <span className="text-muted-foreground text-sm">—</span>;
+          return <span className="text-sm text-muted-foreground">—</span>;
         }
 
         return (
@@ -789,7 +789,7 @@ export function getParticipantColumns({
         const certifications = row.original.softSkillsCertifications || [];
 
         if (certifications.length === 0) {
-          return <span className="text-muted-foreground text-sm">—</span>;
+          return <span className="text-sm text-muted-foreground">—</span>;
         }
 
         return (
@@ -854,7 +854,7 @@ export function getParticipantColumns({
               </Badge>
               {disabilityType && (
                 <div
-                  className="text-muted-foreground max-w-[100px] truncate text-xs"
+                  className="max-w-[100px] truncate text-xs text-muted-foreground"
                   title={disabilityType}
                 >
                   {capitalizeWords(disabilityType)}

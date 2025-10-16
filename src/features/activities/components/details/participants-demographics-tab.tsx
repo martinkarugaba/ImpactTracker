@@ -91,7 +91,7 @@ export function ParticipantsDemographicsTab({
           <h2 className="mb-1 text-xl font-semibold text-blue-600 dark:text-blue-400">
             Basic Demographics
           </h2>
-          <p className="text-muted-foreground mb-6 text-sm">
+          <p className="mb-6 text-sm text-muted-foreground">
             Core participant demographics including gender and disability status
           </p>
         </div>
@@ -111,7 +111,7 @@ export function ParticipantsDemographicsTab({
           <h2 className="mb-1 text-xl font-semibold text-green-600 dark:text-green-400">
             Employment Analytics
           </h2>
-          <p className="text-muted-foreground mb-6 text-sm">
+          <p className="mb-6 text-sm text-muted-foreground">
             Employment patterns and opportunities across different categories
           </p>
         </div>

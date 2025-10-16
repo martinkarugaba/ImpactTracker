@@ -38,7 +38,7 @@ const createVSLAMeetingColumns = (): ColumnDef<MeetingWithAttendance>[] => [
         <div className="font-medium">
           {new Date(row.original.meeting_date).toLocaleDateString()}
         </div>
-        <div className="text-muted-foreground text-sm">
+        <div className="text-sm text-muted-foreground">
           {new Date(row.original.meeting_date).toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
@@ -62,7 +62,7 @@ const createVSLAMeetingColumns = (): ColumnDef<MeetingWithAttendance>[] => [
     cell: ({ row }) => (
       <div className="space-y-1">
         <div className="font-medium">{row.original.attendees_count || 0}</div>
-        <div className="text-muted-foreground text-sm">
+        <div className="text-sm text-muted-foreground">
           {row.original.attendance_rate || 0}% rate
         </div>
       </div>
@@ -256,11 +256,11 @@ export function VSLAMeetingsTab({ vsla }: VSLAMeetingsTabProps) {
             <CardTitle className="text-sm font-medium">
               Total Meetings
             </CardTitle>
-            <Calendar className="text-muted-foreground h-4 w-4" />
+            <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{meetings.length}</div>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               {completedMeetings.length} completed
             </p>
           </CardContent>
@@ -269,37 +269,37 @@ export function VSLAMeetingsTab({ vsla }: VSLAMeetingsTabProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Collections</CardTitle>
-            <CheckCircle className="text-muted-foreground h-4 w-4" />
+            <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
               {formatCurrency(totalCollections)}
             </div>
-            <p className="text-muted-foreground text-xs">Total collected</p>
+            <p className="text-xs text-muted-foreground">Total collected</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Attendance</CardTitle>
-            <Users className="text-muted-foreground h-4 w-4" />
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {Math.round(averageAttendance)}%
             </div>
-            <p className="text-muted-foreground text-xs">Average rate</p>
+            <p className="text-xs text-muted-foreground">Average rate</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Upcoming</CardTitle>
-            <Clock className="text-muted-foreground h-4 w-4" />
+            <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{upcomingMeetings.length}</div>
-            <p className="text-muted-foreground text-xs">Scheduled meetings</p>
+            <p className="text-xs text-muted-foreground">Scheduled meetings</p>
           </CardContent>
         </Card>
       </div>
@@ -326,7 +326,7 @@ export function VSLAMeetingsTab({ vsla }: VSLAMeetingsTabProps) {
         </CardHeader>
         <CardContent>
           {meetings.length === 0 ? (
-            <div className="text-muted-foreground py-8 text-center">
+            <div className="py-8 text-center text-muted-foreground">
               No meetings found for this VSLA
             </div>
           ) : (
