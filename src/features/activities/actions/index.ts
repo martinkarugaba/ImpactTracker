@@ -10,6 +10,7 @@ import {
   conceptNotes,
   activitySessions,
   dailyAttendance,
+  interventions,
 } from "@/lib/db/schema";
 import { eq, and, desc, between, ilike, or, inArray } from "drizzle-orm";
 import {
@@ -352,15 +353,23 @@ export async function updateActivity(
 export async function deleteActivity(id: string): Promise<ActivityResponse> {
   try {
     // Delete all related records first (in order of dependencies)
-    // 1. Delete activity participants
+    // 1. Delete interventions (references activities and sessions)
+    await db.delete(interventions).where(eq(interventions.activity_id, id));
+
+    // 2. Delete activity sessions (references activities, will cascade to daily attendance)
+    await db
+      .delete(activitySessions)
+      .where(eq(activitySessions.activity_id, id));
+
+    // 3. Delete activity participants
     await db
       .delete(activityParticipants)
       .where(eq(activityParticipants.activity_id, id));
 
-    // 2. Delete activity reports
+    // 4. Delete activity reports
     await db.delete(activityReports).where(eq(activityReports.activity_id, id));
 
-    // 3. Delete concept notes
+    // 5. Delete concept notes
     await db.delete(conceptNotes).where(eq(conceptNotes.activity_id, id));
 
     // Finally delete the activity itself
@@ -392,17 +401,30 @@ export async function deleteMultipleActivities(
 ): Promise<{ success: boolean; deletedCount: number; error?: string }> {
   try {
     // Delete all related records first (in order of dependencies)
-    // 1. Delete activity participants
+    // 1. Delete interventions (references activities and sessions)
+    await db
+      .delete(interventions)
+      .where(inArray(interventions.activity_id, ids));
+
+    // 2. Delete daily attendance (references sessions, will be deleted when sessions are deleted)
+    // Note: This will be handled by cascade delete when sessions are deleted
+
+    // 3. Delete activity sessions (references activities, will cascade to daily attendance)
+    await db
+      .delete(activitySessions)
+      .where(inArray(activitySessions.activity_id, ids));
+
+    // 4. Delete activity participants
     await db
       .delete(activityParticipants)
       .where(inArray(activityParticipants.activity_id, ids));
 
-    // 2. Delete activity reports
+    // 5. Delete activity reports
     await db
       .delete(activityReports)
       .where(inArray(activityReports.activity_id, ids));
 
-    // 3. Delete concept notes
+    // 6. Delete concept notes
     await db.delete(conceptNotes).where(inArray(conceptNotes.activity_id, ids));
 
     // Finally delete the activities
@@ -412,6 +434,12 @@ export async function deleteMultipleActivities(
       .returning();
 
     revalidatePath(`/dashboard/activities`);
+    // Also revalidate cluster-specific paths for deleted activities
+    deleted.forEach(activity => {
+      if (activity.cluster_id) {
+        revalidatePath(`/dashboard/clusters/${activity.cluster_id}/activities`);
+      }
+    });
 
     return {
       success: true,

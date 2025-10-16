@@ -217,11 +217,32 @@ export function useDeleteMultipleActivities() {
   return useMutation({
     mutationFn: ({ ids }: { ids: string[] }) => deleteMultipleActivities(ids),
     onSuccess: () => {
+      // Invalidate all activities queries including cluster-specific ones
       queryClient.invalidateQueries({
         queryKey: ["activities"],
       });
       queryClient.invalidateQueries({
         queryKey: ["activity-metrics"],
+      });
+      // Also invalidate activity-related queries that might be cached
+      queryClient.invalidateQueries({
+        queryKey: ["activity"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["activity-participants"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["activity-sessions"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["session-attendance"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["activity-attendance-summary"],
+      });
+      // Clear any cached interventions data
+      queryClient.invalidateQueries({
+        queryKey: ["interventions"],
       });
     },
   });
