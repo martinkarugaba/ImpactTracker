@@ -484,18 +484,18 @@ export function AttendanceDataTable({
 
   // Table actions with session filters at start and bulk operations at end
   const tableActions = (
-    <div className="flex w-full items-center justify-between gap-4">
-      {/* Session filters at extreme start */}
-      <div className="flex-shrink-0">{additionalActionButtons}</div>
-      {/* Bulk operations at extreme end */}
+    <div className="flex w-full items-center justify-between gap-2 max-sm:flex-col max-sm:items-start max-sm:gap-3">
+      {/* Session filters at start */}
+      <div className="min-w-0 flex-shrink-0">{additionalActionButtons}</div>
+      {/* Bulk operations at end */}
       {selectedRows.size > 0 && (
-        <div className="flex flex-shrink-0 items-center gap-4">
-          <div className="text-muted-foreground flex items-center gap-2 text-sm">
+        <div className="flex min-w-0 flex-shrink-0 items-center gap-2 max-sm:w-full max-sm:justify-between">
+          <div className="text-muted-foreground flex items-center gap-2 text-sm max-sm:flex-1 max-sm:justify-center">
             <Checkbox
               checked={true}
               onCheckedChange={() => setSelectedRows(new Set())}
             />
-            <span className="font-medium">
+            <span className="truncate font-medium">
               {selectedRows.size} participant(s) selected
             </span>
           </div>
@@ -504,9 +504,11 @@ export function AttendanceDataTable({
             size="sm"
             onClick={handleBulkDelete}
             disabled={isDeleting}
+            className="flex-shrink-0"
           >
             <Trash2 className="mr-2 h-4 w-4" />
-            Remove Selected
+            <span className="hidden sm:inline">Remove Selected</span>
+            <span className="sm:hidden">Remove</span>
           </Button>
         </div>
       )}
