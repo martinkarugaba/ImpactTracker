@@ -3,6 +3,7 @@ export interface Intervention {
   participantName: string;
   participantContact?: string | null;
   age?: number | null;
+  sex?: string | null;
   subcounty?: string | null;
   // If the participant attended multiple activities we may attach
   // an `activities` array and leave the single-activity fields

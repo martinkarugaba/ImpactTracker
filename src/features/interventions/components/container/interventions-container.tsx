@@ -102,6 +102,9 @@ export default function InterventionsContainer({
           participantId: row.participantId,
           participantName: row.participantName,
           participantContact: row.participantContact ?? null,
+          age: row.age ?? null,
+          sex: row.sex ?? null,
+          subcounty: row.subcounty ?? null,
           // keep top-level single activity fields for backward compatibility
           activityId: row.activityId,
           activityTitle: row.activityTitle,
@@ -151,6 +154,16 @@ export default function InterventionsContainer({
           row.outcomes
         ) {
           existing.outcomes = row.outcomes;
+        }
+        // Preserve participant demographic data
+        if (existing.age === null || existing.age === undefined) {
+          existing.age = row.age ?? null;
+        }
+        if (existing.sex === null || existing.sex === undefined) {
+          existing.sex = row.sex ?? null;
+        }
+        if (existing.subcounty === null || existing.subcounty === undefined) {
+          existing.subcounty = row.subcounty ?? null;
         }
         map.set(pid, existing);
       }

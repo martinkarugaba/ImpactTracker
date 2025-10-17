@@ -272,7 +272,7 @@ export function ParticipantSelectionDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex h-[90vh] max-w-5xl flex-col">
+      <DialogContent className="flex h-[90vh] w-full max-w-6xl flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <UserPlus className="h-5 w-5" />

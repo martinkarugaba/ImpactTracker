@@ -50,8 +50,8 @@ export default async function DashboardLayout({
             className="flex min-h-screen w-full bg-[#FAFAFA] dark:bg-neutral-900"
             suppressHydrationWarning
           >
-            <AppSidebar className="w-[90%] lg:w-[20%]" />
-            <SidebarInset className="lg:w-[80%] lg:max-w-[80%]">
+            <AppSidebar className="" />
+            <SidebarInset className="">
               <div className="flex flex-1 flex-col rounded-2xl bg-white dark:bg-[#0a0a0a] ">
                 <SiteHeader />
                 <main className="flex-1 rounded-b-2xl bg-transparent px-2 pt-0 pb-2 md:px-3 md:pb-3 lg:px-0 overflow-hidden">
