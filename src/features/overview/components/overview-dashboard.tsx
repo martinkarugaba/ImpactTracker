@@ -196,7 +196,7 @@ export function OverviewDashboard() {
 
       {/* Tabbed Interface */}
       <Tabs defaultValue="metrics" className="space-y-8">
-        <TabsList className="grid h-10 w-full grid-cols-3 border border-border/50 bg-muted/30">
+        <TabsList className="grid h-10 grid-cols-3 border border-border/50 bg-muted/30 w-fit">
           <TabsTrigger
             value="metrics"
             className="flex items-center gap-2 transition-all duration-200 data-[state=active]:border-border data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"

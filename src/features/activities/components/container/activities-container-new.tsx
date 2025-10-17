@@ -1,15 +1,9 @@
 "use client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  BarChart3,
-  Calendar,
-  CalendarDays,
-  PieChart,
-  UserCheck,
-  Target,
-} from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BarChart3, Calendar, PieChart, UserCheck, Target } from "lucide-react";
 import { useSession } from "next-auth/react";
+import type { Session } from "next-auth";
 import { useActivityContainerState } from "./use-activity-container-state";
 import { MetricsTab } from "./metrics-tab";
 import { ChartsTab } from "./charts-tab";
@@ -17,8 +11,6 @@ import { ActivitiesTab } from "./activities-tab";
 import { ActivitiesDemographicsTab } from "./activities-demographics-tab";
 import { TargetsTab } from "./targets-tab";
 import { ActivityDialogs } from "./activity-dialogs";
-import { ActivitiesCalendar } from "../calendar";
-import { CalendarProvider } from "@/components/event-calendar/calendar-context";
 
 interface ActivitiesContainerProps {
   clusterId?: string;
@@ -29,7 +21,7 @@ export function ActivitiesContainerNew({
 }: ActivitiesContainerProps) {
   const state = useActivityContainerState({ clusterId });
   const { data: session } = useSession();
-  const isSuperAdmin = session?.user?.role === "super_admin";
+  const isSuperAdmin = (session as Session)?.user?.role === "super_admin";
 
   if (state.activitiesError || state.metricsError) {
     return (
@@ -60,7 +52,6 @@ export function ActivitiesContainerNew({
                 | "metrics"
                 | "charts"
                 | "demographics"
-                | "calendar"
                 | "targets"
             )
           }
@@ -99,13 +90,6 @@ export function ActivitiesContainerNew({
               <UserCheck className="h-4 w-4" />
               Demographics
             </TabsTrigger>
-            <TabsTrigger
-              value="calendar"
-              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-blue-500"
-            >
-              <CalendarDays className="h-4 w-4" />
-              Calendar
-            </TabsTrigger>
             {isSuperAdmin && (
               <TabsTrigger
                 value="targets"
@@ -137,15 +121,6 @@ export function ActivitiesContainerNew({
             isLoading={state.isActivitiesLoading}
             clusterId={clusterId}
           />
-
-          <TabsContent
-            value="calendar"
-            className="mt-0 flex h-full min-h-[800px]"
-          >
-            <CalendarProvider>
-              <ActivitiesCalendar className="w-full" clusterId={clusterId} />
-            </CalendarProvider>
-          </TabsContent>
 
           {isSuperAdmin && (
             <TargetsTab

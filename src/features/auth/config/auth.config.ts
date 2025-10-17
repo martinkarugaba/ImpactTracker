@@ -285,7 +285,7 @@ export const authConfig: NextAuthConfig = {
           }
 
           // Get location data for the user's organization/cluster
-          let locationData = null;
+          let locationData = undefined;
           if (organizationId) {
             try {
               locationData = await getOrganizationLocationData(organizationId);
@@ -316,9 +316,9 @@ export const authConfig: NextAuthConfig = {
             email: user.email,
             role: user.role,
             accessToken: `token_${user.id}`,
-            clusterId: clusterInfo?.id || null,
-            clusterName: clusterInfo?.name || null,
-            locationData: locationData,
+            clusterId: clusterInfo?.id || undefined,
+            clusterName: clusterInfo?.name || undefined,
+            locationData: locationData || undefined,
           };
 
           console.log("Returning user object:", {
