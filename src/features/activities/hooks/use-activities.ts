@@ -428,8 +428,65 @@ export function useMarkAttendance() {
         recorded_by?: string;
       };
     }) => markAttendance(sessionId, participantId, attendanceData),
+    onMutate: async variables => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: ["session-attendance", variables.sessionId],
+      });
+
+      // Snapshot the previous value
+      const previousAttendance = queryClient.getQueryData([
+        "session-attendance",
+        variables.sessionId,
+      ]);
+
+      // Optimistically update the cache
+      queryClient.setQueryData(
+        ["session-attendance", variables.sessionId],
+        (old: { success: boolean; data?: DailyAttendance[] } | undefined) => {
+          if (!old || !old.success || !old.data) return old;
+
+          return {
+            ...old,
+            data: old.data.map(record =>
+              record.participant_id === variables.participantId
+                ? {
+                    ...record,
+                    attendance_status:
+                      variables.attendanceData.attendance_status,
+                    check_in_time:
+                      variables.attendanceData.check_in_time ||
+                      record.check_in_time,
+                    check_out_time:
+                      variables.attendanceData.check_out_time ||
+                      record.check_out_time,
+                    notes: variables.attendanceData.notes || record.notes,
+                    recorded_by:
+                      variables.attendanceData.recorded_by ||
+                      record.recorded_by,
+                    updated_at: new Date().toISOString(),
+                  }
+                : record
+            ),
+          };
+        }
+      );
+
+      // Return a context object with the snapshotted value
+      return { previousAttendance };
+    },
+    onError: (err, variables, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousAttendance) {
+        queryClient.setQueryData(
+          ["session-attendance", variables.sessionId],
+          context.previousAttendance
+        );
+      }
+    },
     onSuccess: (result, variables) => {
       if (result.success) {
+        // Invalidate to ensure we have the latest data from server
         queryClient.invalidateQueries({
           queryKey: ["session-attendance", variables.sessionId],
         });

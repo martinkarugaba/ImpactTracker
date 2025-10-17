@@ -75,23 +75,21 @@ function AttendanceCell({ sessionId }: { sessionId: string }) {
     return (
       <div className="text-muted-foreground flex items-center gap-2">
         <Users className="h-4 w-4 text-gray-400" />
-        <span className="text-sm">0 attended</span>
+        <span className="text-sm">0 registered</span>
       </div>
     );
   }
 
-  // Count only participants who actually attended
-  const attendedCount = attendance.data.filter(
-    record => record.attendance_status === "attended"
-  ).length;
+  // Count all participants registered for the session (any status)
+  const registeredCount = attendance.data.length;
 
   return (
     <div className="flex items-center gap-2">
       <Users className="h-4 w-4 text-purple-600 dark:text-purple-400" />
       <span className="font-medium text-purple-700 dark:text-purple-300">
-        {attendedCount}
+        {registeredCount}
       </span>
-      <span className="text-muted-foreground text-sm">attended</span>
+      <span className="text-muted-foreground text-sm">registered</span>
     </div>
   );
 }

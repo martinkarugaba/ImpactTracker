@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +19,6 @@ import {
 import {
   Trash2,
   ChevronDown,
-  User,
   Phone,
   Users,
   MapPin,
@@ -132,7 +132,6 @@ export function AttendanceDataTable({
   additionalActionButtons,
 }: AttendanceDataTableProps) {
   const markAttendanceMutation = useMarkAttendance();
-  const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -247,13 +246,23 @@ export function AttendanceDataTable({
         header: "Name",
         cell: ({ row }) => {
           const participant = row.original.participant;
+          const firstName = participant?.firstName || "";
+          const lastName = participant?.lastName || "";
+          const initials =
+            `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+
           return (
-            <div className="flex items-center gap-2">
-              <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <div className="flex items-center gap-3">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={undefined} alt={`${firstName} ${lastName}`} />
+                <AvatarFallback className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 text-xs">
+                  {initials || "?"}
+                </AvatarFallback>
+              </Avatar>
               <div className="space-y-1">
                 <div className="font-medium">
                   {participant
-                    ? `${participant.firstName} ${participant.lastName}`
+                    ? `${firstName} ${lastName}`
                     : "Unknown Participant"}
                 </div>
                 {participant?.designation && (
@@ -413,14 +422,7 @@ export function AttendanceDataTable({
         header: "Status",
         cell: ({ row }) => {
           const status = row.original.attendance_status;
-          const current =
-            // prefer optimistic override while updating
-            updatingId === row.original.id && markAttendanceMutation.variables
-              ? markAttendanceMutation.variables.attendanceData
-                  .attendance_status
-              : status;
-
-          const badgeStyle = getAttendanceStatusBadge(current);
+          const badgeStyle = getAttendanceStatusBadge(status);
 
           return (
             <DropdownMenu>
@@ -428,15 +430,13 @@ export function AttendanceDataTable({
                 <Button
                   variant="ghost"
                   className="flex h-8 w-32 items-center justify-between gap-1 px-2"
-                  disabled={
-                    updatingId !== null && updatingId !== row.original.id
-                  }
+                  disabled={markAttendanceMutation.isPending}
                 >
                   <Badge
                     variant={badgeStyle.variant}
                     className={badgeStyle.className}
                   >
-                    {current.replace("_", " ")}
+                    {status.replace("_", " ")}
                   </Badge>
                   <ChevronDown className="h-4 w-4 opacity-50" />
                 </Button>
@@ -450,8 +450,6 @@ export function AttendanceDataTable({
                     <DropdownMenuItem
                       key={s}
                       onClick={async () => {
-                        // optimistic UI
-                        setUpdatingId(row.original.id);
                         try {
                           await markAttendanceMutation.mutateAsync({
                             sessionId: row.original.session_id,
@@ -464,14 +462,10 @@ export function AttendanceDataTable({
                           toast.success("Attendance status updated");
                         } catch (_err) {
                           toast.error("Failed to update status");
-                        } finally {
-                          setUpdatingId(null);
                         }
                       }}
-                      className={current === s ? "bg-muted" : ""}
-                      disabled={
-                        updatingId !== null && updatingId !== row.original.id
-                      }
+                      className={status === s ? "bg-muted" : ""}
+                      disabled={markAttendanceMutation.isPending}
                     >
                       <Badge
                         variant={itemBadgeStyle.variant}
@@ -530,7 +524,6 @@ export function AttendanceDataTable({
       handleSelectRow,
       handleDeleteSingle,
       markAttendanceMutation,
-      updatingId,
       onEditParticipant,
     ]
   );
