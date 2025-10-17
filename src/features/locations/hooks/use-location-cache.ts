@@ -47,44 +47,92 @@ export function useLocationCache() {
     if (session?.user?.locationData) {
       const locationData = session.user.locationData as LocationData;
 
-      // Initialize code caches
-      setDistrictCodeCache(locationData.districtCodes || {});
-      setSubCountyCodeCache(locationData.subCountyCodes || {});
-      setParishCodeCache(locationData.parishCodes || {});
-      setVillageCodeCache(locationData.villageCodes || {});
+      try {
+        // Initialize code caches with safe fallbacks
+        setDistrictCodeCache(locationData.districtCodes || {});
+        setSubCountyCodeCache(locationData.subCountyCodes || {});
+        setParishCodeCache(locationData.parishCodes || {});
+        setVillageCodeCache(locationData.villageCodes || {});
 
-      // Initialize ID caches from arrays
-      const districtIds: Record<string, string> = {};
-      locationData.districts?.forEach(d => {
-        districtIds[d.id] = d.name;
-      });
-      setDistrictIdCache(districtIds);
+        // Initialize ID caches from arrays with safe fallbacks
+        const districtIds: Record<string, string> = {};
+        if (locationData.districts && Array.isArray(locationData.districts)) {
+          locationData.districts.forEach(d => {
+            if (d && typeof d === "object" && d.id && d.name) {
+              districtIds[d.id] = d.name;
+            }
+          });
+        }
+        setDistrictIdCache(districtIds);
 
-      const subCountyIds: Record<string, string> = {};
-      locationData.subCounties?.forEach(sc => {
-        subCountyIds[sc.id] = sc.name;
-      });
-      setSubCountyIdCache(subCountyIds);
+        const subCountyIds: Record<string, string> = {};
+        if (
+          locationData.subCounties &&
+          Array.isArray(locationData.subCounties)
+        ) {
+          locationData.subCounties.forEach(sc => {
+            if (sc && typeof sc === "object" && sc.id && sc.name) {
+              subCountyIds[sc.id] = sc.name;
+            }
+          });
+        }
+        setSubCountyIdCache(subCountyIds);
 
-      const parishIds: Record<string, string> = {};
-      locationData.parishes?.forEach(p => {
-        parishIds[p.id] = p.name;
-      });
-      setParishIdCache(parishIds);
+        const parishIds: Record<string, string> = {};
+        if (locationData.parishes && Array.isArray(locationData.parishes)) {
+          locationData.parishes.forEach(p => {
+            if (p && typeof p === "object" && p.id && p.name) {
+              parishIds[p.id] = p.name;
+            }
+          });
+        }
+        setParishIdCache(parishIds);
 
-      const villageIds: Record<string, string> = {};
-      locationData.villages?.forEach(v => {
-        villageIds[v.id] = v.name;
-      });
-      setVillageIdCache(villageIds);
+        const villageIds: Record<string, string> = {};
+        if (locationData.villages && Array.isArray(locationData.villages)) {
+          locationData.villages.forEach(v => {
+            if (v && typeof v === "object" && v.id && v.name) {
+              villageIds[v.id] = v.name;
+            }
+          });
+        }
+        setVillageIdCache(villageIds);
 
-      const countryIds: Record<string, string> = {};
-      locationData.countries?.forEach(c => {
-        countryIds[c.id] = c.name;
-      });
-      setCountryIdCache(countryIds);
+        const countryIds: Record<string, string> = {};
+        if (locationData.countries && Array.isArray(locationData.countries)) {
+          locationData.countries.forEach(c => {
+            if (c && typeof c === "object" && c.id && c.name) {
+              countryIds[c.id] = c.name;
+            }
+          });
+        }
+        setCountryIdCache(countryIds);
+      } catch (error) {
+        console.error("Error initializing location caches:", error);
+        // Reset caches to empty state on error
+        setDistrictCodeCache({});
+        setSubCountyCodeCache({});
+        setParishCodeCache({});
+        setVillageCodeCache({});
+        setDistrictIdCache({});
+        setSubCountyIdCache({});
+        setParishIdCache({});
+        setVillageIdCache({});
+        setCountryIdCache({});
+      }
     }
-  });
+  }, [
+    session?.user?.locationData,
+    setCountryIdCache,
+    setDistrictCodeCache,
+    setDistrictIdCache,
+    setParishCodeCache,
+    setParishIdCache,
+    setSubCountyCodeCache,
+    setSubCountyIdCache,
+    setVillageCodeCache,
+    setVillageIdCache,
+  ]);
 
   // Cached batch lookup for district codes
   const getDistrictNamesByCodes = async (

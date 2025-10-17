@@ -477,7 +477,7 @@ export function DataTable<TData, TValue>({
   const showHeader = filterColumn || showColumnToggle || actionButtons;
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-full">
       {showHeader && (
         <div className="mt-4 mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -504,8 +504,8 @@ export function DataTable<TData, TValue>({
         </div>
       )}
       <div className="overflow-hidden rounded-md border">
-        <div className="relative">
-          <Table>
+        <div className="relative overflow-x-auto">
+          <Table className="min-w-full">
             <TableHeader className="bg-muted text-muted-foreground">
               {table.getHeaderGroups().map(headerGroup => (
                 <TableRow key={headerGroup.id}>

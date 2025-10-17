@@ -1,11 +1,11 @@
-"use client";
-
 import { type ColumnDef } from "@tanstack/react-table";
 import { type Intervention } from "../../types/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useLocationCache } from "@/features/locations/hooks/use-location-cache";
 import { useEffect, useState } from "react";
+import { User, MapPin, Phone, Zap, Trophy, Server } from "lucide-react";
 
 export function getInterventionColumns(): ColumnDef<Intervention>[] {
   // Create a component that uses the location cache
@@ -28,7 +28,50 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
       }
     }, [subCounty, getSubCountyNamesByCodes]);
 
-    return <div className="text-sm">{displayName}</div>;
+    // Generate consistent color for the same subcounty
+    const getSubCountyColor = (name: string) => {
+      const colors = [
+        "border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+        "border-green-200 bg-green-100 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400",
+        "border-purple-200 bg-purple-100 text-purple-800 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400",
+        "border-orange-200 bg-orange-100 text-orange-800 dark:border-orange-800 dark:bg-orange-900/20 dark:text-orange-400",
+        "border-pink-200 bg-pink-100 text-pink-800 dark:border-pink-800 dark:bg-pink-900/20 dark:text-pink-400",
+        "border-indigo-200 bg-indigo-100 text-indigo-800 dark:border-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400",
+        "border-teal-200 bg-teal-100 text-teal-800 dark:border-teal-800 dark:bg-teal-900/20 dark:text-teal-400",
+        "border-cyan-200 bg-cyan-100 text-cyan-800 dark:border-cyan-800 dark:bg-cyan-900/20 dark:text-cyan-400",
+        "border-lime-200 bg-lime-100 text-lime-800 dark:border-lime-800 dark:bg-lime-900/20 dark:text-lime-400",
+        "border-amber-200 bg-amber-100 text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400",
+      ];
+
+      // Simple hash function to get consistent color for the same subcounty
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) {
+        hash = ((hash << 5) - hash + name.charCodeAt(i)) & 0xffffffff;
+      }
+      return colors[Math.abs(hash) % colors.length];
+    };
+
+    if (displayName === "—") {
+      return (
+        <div className="flex items-center space-x-2">
+          <MapPin className="h-4 w-4 text-gray-400" />
+          <span className="text-sm text-muted-foreground">—</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex items-center space-x-2">
+        <MapPin className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+        <Badge
+          variant="outline"
+          className={`${getSubCountyColor(displayName)} px-2 py-0.5 text-xs`}
+        >
+          {displayName.charAt(0).toUpperCase() +
+            displayName.slice(1).toLowerCase()}
+        </Badge>
+      </div>
+    );
   }
 
   return [
@@ -75,7 +118,24 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
           .map(w => w[0].toUpperCase() + w.slice(1).toLowerCase())
           .join(" ");
 
-        return <div className="text-sm font-medium">{title}</div>;
+        // Get initials for avatar
+        const initials = name
+          .split(" ")
+          .filter(Boolean)
+          .map(w => w[0].toUpperCase())
+          .slice(0, 2)
+          .join("");
+
+        return (
+          <div className="flex items-center space-x-3">
+            <Avatar className="h-8 w-8">
+              <AvatarFallback className="bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400 text-xs">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <div className="text-sm font-medium">{title}</div>
+          </div>
+        );
       },
     },
     {
@@ -83,7 +143,25 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
       header: "Age",
       cell: ({ row }) => {
         const age = row.getValue("age") as number | undefined | null;
-        return <div className="text-sm">{age || age === 0 ? age : "—"}</div>;
+        return (
+          <div className="flex items-center space-x-2">
+            <User className="h-4 w-4 text-green-600 dark:text-green-400" />
+            <div className="text-sm">{age || age === 0 ? age : "—"}</div>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "sex",
+      header: "Sex",
+      cell: ({ row }) => {
+        const sex = row.getValue("sex") as string | undefined | null;
+        return (
+          <div className="flex items-center space-x-2">
+            <User className="h-4 w-4 text-pink-600 dark:text-pink-400" />
+            <div className="text-sm capitalize">{sex || "—"}</div>
+          </div>
+        );
       },
     },
     {
@@ -103,10 +181,20 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
           | null
           | undefined;
         if (!val)
-          return <span className="text-sm text-muted-foreground">—</span>;
+          return (
+            <div className="flex items-center space-x-2">
+              <Phone className="h-4 w-4 text-gray-400" />
+              <span className="text-sm text-muted-foreground">—</span>
+            </div>
+          );
         // Ensure phone numbers have a leading zero if missing
         const formatted = val.startsWith("0") ? val : `0${val}`;
-        return <div className="text-sm">{formatted}</div>;
+        return (
+          <div className="flex items-center space-x-2">
+            <Phone className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+            <div className="text-sm">{formatted}</div>
+          </div>
+        );
       },
     },
     {
@@ -118,19 +206,25 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
         const list = original.activities;
         if (list && list.length > 0) {
           return (
-            <div className="flex flex-col text-sm">
-              {list.map((a, idx) => (
-                <div key={`${a.activityId}_${idx}`} className="truncate">
-                  {a.activityTitle ?? a.activityId}
-                </div>
-              ))}
+            <div className="flex items-start space-x-2">
+              <Zap className="h-4 w-4 text-indigo-600 dark:text-indigo-400 mt-0.5" />
+              <div className="flex flex-col text-sm">
+                {list.map((a, idx) => (
+                  <div key={`${a.activityId}_${idx}`} className="truncate">
+                    {a.activityTitle ?? a.activityId}
+                  </div>
+                ))}
+              </div>
             </div>
           );
         }
 
         return (
-          <div className="text-sm">
-            {row.getValue("activityTitle") as string}
+          <div className="flex items-center space-x-2">
+            <Zap className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+            <div className="text-sm">
+              {row.getValue("activityTitle") as string}
+            </div>
           </div>
         );
       },
@@ -179,35 +273,28 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
             new Set(list.map(a => a.skillCategory).filter(Boolean))
           );
           if (cats.length === 0)
-            return <span className="text-xs text-muted-foreground">—</span>;
+            return (
+              <div className="flex items-center space-x-2">
+                <Trophy className="h-4 w-4 text-gray-400" />
+                <span className="text-xs text-muted-foreground">—</span>
+              </div>
+            );
           return (
-            <div className="flex items-center gap-2">
-              {cats.map(c => renderBadge(c as string))}
+            <div className="flex items-center space-x-2">
+              <Trophy className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+              <div className="flex items-center gap-2">
+                {cats.map(c => renderBadge(c as string))}
+              </div>
             </div>
           );
         }
 
         const cat = row.getValue("skillCategory") as string | undefined;
-        return renderBadge(cat ?? undefined);
-      },
-    },
-    {
-      accessorKey: "outcomes",
-      header: "Outcomes",
-      cell: ({ row }) => {
-        const original = row.original;
-        if (original.activities && original.activities.length > 0) {
-          const all = original.activities
-            .flatMap(a => a.outcomes ?? [])
-            .filter(Boolean) as string[];
-          const uniq = Array.from(new Set(all));
-          return (
-            <div className="text-sm">{uniq.length ? uniq.join(", ") : "-"}</div>
-          );
-        }
-        const outcomes = original.outcomes;
         return (
-          <div className="text-sm">{outcomes ? outcomes.join(", ") : "-"}</div>
+          <div className="flex items-center space-x-2">
+            <Trophy className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+            {renderBadge(cat ?? undefined)}
+          </div>
         );
       },
     },
@@ -235,12 +322,15 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
         };
 
         return (
-          <Badge
-            variant="outline"
-            className={`${m.className} px-2 py-0.5 text-xs`}
-          >
-            {m.label}
-          </Badge>
+          <div className="flex items-center space-x-2">
+            <Server className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
+            <Badge
+              variant="outline"
+              className={`${m.className} px-2 py-0.5 text-xs`}
+            >
+              {m.label}
+            </Badge>
+          </div>
         );
       },
     },

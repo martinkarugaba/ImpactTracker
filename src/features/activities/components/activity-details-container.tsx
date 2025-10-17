@@ -289,25 +289,122 @@ export function ActivityDetailsContainer({
   ) => {
     try {
       if (sessionId) {
-        // If sessionId is provided, use the new function that adds to both activity and session
+        // Optimistic update: Add participants to session attendance cache
+        const previousAttendance = queryClient.getQueryData([
+          "session-attendance",
+          sessionId,
+        ]);
+
+        // Optimistically update the cache with new participants marked as "invited"
+        queryClient.setQueryData(
+          ["session-attendance", sessionId],
+          (old: { success: boolean; data?: DailyAttendance[] } | undefined) => {
+            if (!old || !old.success) {
+              // If no existing data, create new structure with the participants
+              const validParticipants = participants.filter(
+                p => p.participant_id
+              );
+              return {
+                success: true,
+                data: validParticipants.map(p => ({
+                  id: `temp-${p.participant_id}-${Date.now()}`, // Temporary ID
+                  session_id: sessionId,
+                  participant_id: p.participant_id!,
+                  attendance_status: "invited", // Match server action status
+                  participant: p.participant || {
+                    id: p.participant_id!,
+                    firstName: p.participantName?.split(" ")[0] || "",
+                    lastName:
+                      p.participantName?.split(" ").slice(1).join(" ") || "",
+                    contact: p.participantEmail || "",
+                  },
+                  participantName: p.participantName,
+                  participantEmail: p.participantEmail,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                  notes: null,
+                  check_in_time: null,
+                  check_out_time: null,
+                  recorded_by: "system",
+                })),
+              };
+            }
+
+            // Add new participants to existing data, avoiding duplicates
+            const existingParticipantIds = new Set(
+              old.data?.map(record => record.participant_id) || []
+            );
+
+            const validParticipants = participants.filter(
+              p => p.participant_id
+            );
+            const newRecords = validParticipants
+              .filter(p => !existingParticipantIds.has(p.participant_id!))
+              .map(p => ({
+                id: `temp-${p.participant_id!}-${Date.now()}`, // Temporary ID
+                session_id: sessionId,
+                participant_id: p.participant_id!,
+                attendance_status: "invited", // Match server action status
+                participant: p.participant || {
+                  id: p.participant_id!,
+                  firstName: p.participantName?.split(" ")[0] || "",
+                  lastName:
+                    p.participantName?.split(" ").slice(1).join(" ") || "",
+                  contact: p.participantEmail || "",
+                },
+                participantName: p.participantName,
+                participantEmail: p.participantEmail,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                notes: null,
+                check_in_time: null,
+                check_out_time: null,
+                recorded_by: "system",
+              }));
+
+            return {
+              ...old,
+              data: [...(old.data || []), ...newRecords],
+            };
+          }
+        );
+
+        // Call the server action
         const { addActivityParticipantsToSession } = await import(
           "../actions/participants"
         );
-        await addActivityParticipantsToSession(
+        const validParticipants = participants.filter(p => p.participant_id);
+        const result = await addActivityParticipantsToSession(
           activity.id,
           sessionId,
-          participants as Parameters<typeof addActivityParticipantsToSession>[2]
+          validParticipants as Array<{
+            participant_id: string;
+            participantName: string;
+            role: string;
+            attendance_status: string;
+            feedback?: string;
+          }>
         );
 
-        // Invalidate relevant React Query caches
-        await queryClient.invalidateQueries({
-          queryKey: ["session-attendance", sessionId],
-        });
-        await queryClient.invalidateQueries({
-          queryKey: ["activity-participants", activity.id],
-        });
+        if (result.success) {
+          // Success - keep the optimistic update and invalidate to get fresh data
+          await queryClient.invalidateQueries({
+            queryKey: ["session-attendance", sessionId],
+          });
+          await queryClient.invalidateQueries({
+            queryKey: ["activity-participants", activity.id],
+          });
 
-        toast.success("Participants added to session successfully.");
+          toast.success("Participants added to session successfully.");
+        } else {
+          // Error - rollback the optimistic update
+          queryClient.setQueryData(
+            ["session-attendance", sessionId],
+            previousAttendance
+          );
+          toast.error(result.error || "Failed to add participants to session.");
+          return;
+        }
       } else {
         // Use the existing function for general activity participant addition
         await addActivityParticipants.mutateAsync({
@@ -326,7 +423,19 @@ export function ActivityDetailsContainer({
       }
       setIsAttendanceListDialogOpen(false); // Close the dialog
       setSelectedSessionId(undefined); // Reset session selection
-    } catch (_error) {
+    } catch (error) {
+      // Error - rollback optimistic update if sessionId was provided
+      if (sessionId) {
+        const previousAttendance = queryClient.getQueryData([
+          "session-attendance",
+          sessionId,
+        ]);
+        queryClient.setQueryData(
+          ["session-attendance", sessionId],
+          previousAttendance
+        );
+      }
+      console.error("Error adding participants:", error);
       toast.error("Failed to add participants. Please try again.");
     }
   };

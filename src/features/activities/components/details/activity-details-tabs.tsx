@@ -3,15 +3,7 @@
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Info,
-  Users,
-  UserCheck,
-  TrendingUp,
-  Calendar,
-  Plus,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Info, Users, UserCheck, TrendingUp, Calendar } from "lucide-react";
 import type { Activity, DailyAttendance } from "../../types/types";
 import { ActivityOverviewTab } from "./activity-overview-tab";
 import { AttendanceTab } from "./attendance-tab";
@@ -108,15 +100,15 @@ export function ActivityDetailsTabs({
           <span className="hidden sm:inline">Overview</span>
           <span className="sm:hidden">Info</span>
         </TabsTrigger>
-        <TabsTrigger value="attendance-overview">
-          <Users className="h-4 w-4" />
-          <span className="hidden sm:inline">Attendance</span>
-          <span className="sm:hidden">People</span>
-        </TabsTrigger>
         <TabsTrigger value="sessions-management">
           <Calendar className="h-4 w-4" />
           <span className="hidden sm:inline">Sessions</span>
           <span className="sm:hidden">Sess</span>
+        </TabsTrigger>
+        <TabsTrigger value="attendance-overview">
+          <Users className="h-4 w-4" />
+          <span className="hidden sm:inline">Attendance</span>
+          <span className="sm:hidden">People</span>
         </TabsTrigger>
         <TabsTrigger value="demographics">
           <UserCheck className="h-4 w-4" />
@@ -144,52 +136,20 @@ export function ActivityDetailsTabs({
         />
       </TabsContent>
 
-      <TabsContent value="attendance-overview" className="mt-6">
-        <div className="mb-4 flex justify-end">
-          <Button
-            variant="outline"
-            onClick={() => _onCreateSession && _onCreateSession()}
-            className="mr-2"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Create Session
-          </Button>
-          <Button variant="outline" onClick={() => onManageAttendance()}>
-            <Users className="mr-2 h-4 w-4" />
-            Add Participants
-          </Button>
-        </div>
-
-        <AttendanceTab
-          activity={activity}
-          onManageAttendance={onManageAttendance}
-          onCreateSession={_onCreateSession}
-          onEditSession={onEditSession}
-          onDuplicateSession={onDuplicateSession}
-        />
-      </TabsContent>
-
       <TabsContent value="sessions-management" className="mt-6">
-        <div className="mb-4 flex justify-end">
-          <Button
-            variant="outline"
-            onClick={() => _onCreateSession && _onCreateSession()}
-            className="mr-2"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Create Session
-          </Button>
-          <Button variant="outline" onClick={() => onManageAttendance()}>
-            <Users className="mr-2 h-4 w-4" />
-            Add Participants
-          </Button>
-        </div>
-
         <SessionsTab
           activity={activity}
           onManageAttendance={onManageAttendance}
           onCreateSession={_onCreateSession}
           onEditSession={onEditSession}
+        />
+      </TabsContent>
+
+      <TabsContent value="attendance-overview" className="mt-6">
+        <AttendanceTab
+          activity={activity}
+          onEditSession={onEditSession}
+          onDuplicateSession={onDuplicateSession}
         />
       </TabsContent>
 

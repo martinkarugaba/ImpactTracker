@@ -2,9 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { activityParticipants, activities } from "@/lib/db/schema";
+import {
+  activityParticipants,
+  activities,
+  activitySessions,
+} from "@/lib/db/schema";
 import { eq, and, inArray } from "drizzle-orm";
 import { type ActivityParticipant } from "../types/types";
+import { type DailyAttendanceStatus } from "../types/types";
 
 export interface ActivityParticipantResponse {
   success: boolean;
@@ -208,6 +213,26 @@ export async function addActivityParticipants(
       });
     }
 
+    // After successfully adding participants, initialize attendance for all existing sessions
+    if (newParticipants.length > 0) {
+      try {
+        // Get all existing sessions for this activity
+        const sessions = await db.query.activitySessions.findMany({
+          where: eq(activitySessions.activity_id, activityId),
+          columns: { id: true },
+        });
+
+        // Initialize attendance for each session
+        const { initializeSessionAttendance } = await import("./attendance");
+        for (const session of sessions) {
+          await initializeSessionAttendance(session.id, activityId);
+        }
+      } catch (initError) {
+        console.error("Error initializing attendance for sessions:", initError);
+        // Don't fail the entire operation if attendance initialization fails
+      }
+    }
+
     revalidatePath(`/dashboard/activities/${activityId}`);
     revalidatePath("/dashboard/activities");
 
@@ -350,7 +375,8 @@ export async function addActivityParticipantsToSession(
       if (sessionId) {
         const { markAttendance } = await import("./attendance");
         await markAttendance(sessionId, participant.participant_id, {
-          attendance_status: "invited",
+          attendance_status:
+            participant.attendance_status as DailyAttendanceStatus,
           recorded_by: "system",
         });
       }

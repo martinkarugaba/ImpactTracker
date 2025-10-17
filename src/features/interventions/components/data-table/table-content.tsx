@@ -2,7 +2,7 @@
 
 import { DataTable } from "@/components/ui/data-table";
 import { type Intervention } from "../../types/types";
-import { getInterventionColumns } from "../table/columns";
+import { getInterventionColumns } from "./columns";
 import { type VisibilityState } from "@tanstack/react-table";
 
 interface TableContentProps {

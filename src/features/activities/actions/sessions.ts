@@ -9,6 +9,7 @@ import {
   type ActivitySessionResponse,
   type ActivitySessionsResponse,
 } from "../types/types";
+import { initializeSessionAttendance } from "./attendance";
 
 /**
  * Get all sessions for a specific activity
@@ -128,6 +129,9 @@ export async function createActivitySession(
       .returning();
 
     console.log("createActivitySession - session created:", session);
+
+    // Initialize attendance records for the new session
+    await initializeSessionAttendance(session.id, data.activity_id);
 
     revalidatePath(`/dashboard/activities/${data.activity_id}`);
 
@@ -293,6 +297,11 @@ export async function generateActivitySessions(
       .values(sessions)
       .returning();
 
+    // Initialize attendance records for all newly created sessions
+    for (const session of createdSessions) {
+      await initializeSessionAttendance(session.id, activityId);
+    }
+
     revalidatePath(`/dashboard/activities/${activityId}`);
 
     return {
@@ -400,6 +409,12 @@ export async function duplicateActivitySession(
         notes: originalSession.notes,
       })
       .returning();
+
+    // Initialize attendance records for the duplicated session
+    await initializeSessionAttendance(
+      newSession.id,
+      originalSession.activity_id
+    );
 
     revalidatePath(`/dashboard/activities/${originalSession.activity_id}`);
 

@@ -69,24 +69,36 @@ interface SessionData {
 
 // Attendance display component to avoid React Hook usage in columns
 function AttendanceCell({ sessionId }: { sessionId: string }) {
-  const { data: attendance } = useSessionAttendance(sessionId);
+  const { data: attendance, isLoading } = useSessionAttendance(sessionId);
+
+  if (isLoading) {
+    return (
+      <div className="text-muted-foreground flex items-center gap-2">
+        <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+        <span className="text-sm">Loading...</span>
+      </div>
+    );
+  }
 
   if (!attendance?.data || attendance.data.length === 0) {
     return (
-      <div className="flex items-center gap-2 text-muted-foreground">
+      <div className="text-muted-foreground flex items-center gap-2">
         <Users className="h-4 w-4 text-gray-400" />
         <span className="text-sm">0 attended</span>
       </div>
     );
   }
 
+  // Count all participants registered for the session (any status)
+  const attendedCount = attendance.data.length;
+
   return (
     <div className="flex items-center gap-2">
       <Users className="h-4 w-4 text-purple-600 dark:text-purple-400" />
       <span className="font-medium text-purple-700 dark:text-purple-300">
-        {attendance.data.length}
+        {attendedCount}
       </span>
-      <span className="text-sm text-muted-foreground">attended</span>
+      <span className="text-muted-foreground text-sm">attended</span>
     </div>
   );
 }
@@ -267,7 +279,7 @@ export function SessionsTab({
               ) : (
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-gray-400" />
-                  <span className="text-sm text-muted-foreground italic">
+                  <span className="text-muted-foreground text-sm italic">
                     No venue set
                   </span>
                 </div>
@@ -329,11 +341,36 @@ export function SessionsTab({
 
           const handleMarkComplete = async () => {
             try {
+              // First mark all participants in this session as attended
+              const { bulkMarkAttendance, getSessionAttendance } = await import(
+                "../../actions/attendance"
+              );
+
+              // Get current attendance for this session
+              const attendanceResult = await getSessionAttendance(session.id);
+
+              if (
+                attendanceResult.success &&
+                attendanceResult.data &&
+                attendanceResult.data.length > 0
+              ) {
+                const attendanceUpdates = attendanceResult.data.map(record => ({
+                  participant_id: record.participant_id,
+                  attendance_status: "attended" as const,
+                  recorded_by: "system",
+                }));
+
+                await bulkMarkAttendance(session.id, attendanceUpdates);
+              }
+
+              // Then mark the session as completed
               await updateSession.mutateAsync({
                 id: session.id,
                 data: { status: "completed" },
               });
-              toast.success("Session marked as completed");
+              toast.success(
+                "Session marked as completed and all participants marked as attended"
+              );
             } catch (_error) {
               toast.error("Failed to update session status");
             }
@@ -408,56 +445,9 @@ export function SessionsTab({
 
   return (
     <div className="space-y-6">
-      {/* Header Actions */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h3 className="text-lg font-semibold">Activity Sessions</h3>
-          <p className="text-sm text-muted-foreground">
-            Manage individual sessions for this multi-day activity
-          </p>
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-          {(!sessions || sessions.length === 0) && (
-            <div className="flex items-end gap-2">
-              <div className="space-y-1">
-                <Label htmlFor="sessionCount" className="text-sm font-medium">
-                  Number of Sessions
-                </Label>
-                <Input
-                  id="sessionCount"
-                  type="number"
-                  min="1"
-                  max="50"
-                  value={sessionCount}
-                  onChange={e => setSessionCount(parseInt(e.target.value) || 1)}
-                  className="w-24"
-                  placeholder="5"
-                />
-              </div>
-              <Button
-                onClick={handleGenerateSessions}
-                disabled={generateSessions.isPending || sessionCount < 1}
-                variant="outline"
-              >
-                {generateSessions.isPending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Play className="mr-2 h-4 w-4" />
-                )}
-                Generate {sessionCount} Sessions
-              </Button>
-            </div>
-          )}
-          <Button onClick={onCreateSession}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Session
-          </Button>
-        </div>
-      </div>
-
       {/* Sessions Overview Cards */}
       {sessions && sessions.length > 0 && (
-        <div className="grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs md:grid-cols-4 dark:*:data-[slot=card]:bg-card">
+        <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-4">
           <MetricCard
             title="Total Sessions"
             value={sessions.length}
@@ -508,13 +498,19 @@ export function SessionsTab({
           showPagination={true}
           showRowSelection={true}
           pageSize={10}
+          actionButtons={
+            <Button onClick={onCreateSession} size="sm">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Session
+            </Button>
+          }
         />
       ) : (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <Calendar className="h-12 w-12 text-muted-foreground/50" />
+            <Calendar className="text-muted-foreground/50 h-12 w-12" />
             <h4 className="mt-4 text-lg font-semibold">No sessions found</h4>
-            <p className="mt-2 text-center text-sm text-muted-foreground">
+            <p className="text-muted-foreground mt-2 text-center text-sm">
               This activity doesn&apos;t have any sessions yet. Create sessions
               to track daily attendance for your multi-day activity.
             </p>

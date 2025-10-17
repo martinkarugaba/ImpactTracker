@@ -4,8 +4,6 @@ import React, { useMemo, useState } from "react";
 import { InterventionsDataTable } from "@/features/interventions/components/data-table";
 import type { Intervention } from "@/features/interventions/types/types";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { MetricCard } from "@/components/ui/metric-card";
-import { Badge } from "@/components/ui/badge";
 import { InterventionFilters } from "@/features/interventions/components";
 import { useExportInterventions } from "@/features/interventions/hooks/use-export-interventions";
 import { Button } from "@/components/ui/button";
@@ -18,6 +16,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { UserCheck } from "lucide-react";
 import { ActivitiesCalendar } from "@/features/activities/components/calendar/activities-calendar";
+import { DetailedParticipantMetrics } from "@/components/shared/detailed-metrics";
+import type { LocationData } from "@/features/locations/actions/location-data";
 
 interface InterventionsContainerProps {
   initialData: Intervention[];
@@ -29,11 +29,20 @@ interface FilterChange {
   search?: string;
 }
 
+interface ExtendedUser {
+  id: string;
+  role: string;
+  clusterId?: string;
+  clusterName?: string;
+  locationData?: LocationData;
+  accessToken?: string;
+}
+
 export default function InterventionsContainer({
   initialData,
 }: InterventionsContainerProps) {
   const { data: session } = useSession();
-  const isSuperAdmin = session?.user?.role === "super_admin";
+  const isSuperAdmin = (session?.user as ExtendedUser)?.role === "super_admin";
   const exportInterventions = useExportInterventions();
 
   const handleExport = async (format: "csv" | "excel") => {
@@ -102,6 +111,9 @@ export default function InterventionsContainer({
           participantId: row.participantId,
           participantName: row.participantName,
           participantContact: row.participantContact ?? null,
+          age: row.age ?? null,
+          sex: row.sex ?? null,
+          subcounty: row.subcounty ?? null,
           // keep top-level single activity fields for backward compatibility
           activityId: row.activityId,
           activityTitle: row.activityTitle,
@@ -152,6 +164,16 @@ export default function InterventionsContainer({
         ) {
           existing.outcomes = row.outcomes;
         }
+        // Preserve participant demographic data
+        if (existing.age === null || existing.age === undefined) {
+          existing.age = row.age ?? null;
+        }
+        if (existing.sex === null || existing.sex === undefined) {
+          existing.sex = row.sex ?? null;
+        }
+        if (existing.subcounty === null || existing.subcounty === undefined) {
+          existing.subcounty = row.subcounty ?? null;
+        }
         map.set(pid, existing);
       }
     }
@@ -160,11 +182,14 @@ export default function InterventionsContainer({
   }, [data, search, skillFilter, sourceFilter]);
 
   // metrics
-  const totalInterventions = filteredData.length;
+  const _totalInterventions = filteredData.length;
   // After aggregation filteredData is already one row per participant
-  const uniqueParticipants = useMemo(() => filteredData.length, [filteredData]);
+  const _uniqueParticipants = useMemo(
+    () => filteredData.length,
+    [filteredData]
+  );
 
-  const topSkill = useMemo(() => {
+  const _topSkill = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const d of filteredData) {
       const k = d.skillCategory ?? "Unknown";
@@ -276,27 +301,11 @@ export default function InterventionsContainer({
         </TabsContent>
 
         <TabsContent value="metrics">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <MetricCard
-              title="Total interventions"
-              value={totalInterventions}
-            />
-            <MetricCard
-              title="Unique participants"
-              value={uniqueParticipants}
-            />
-            <MetricCard title="Top skill" value={topSkill} />
-          </div>
-
-          <div className="mt-4">
-            <h3 className="text-sm font-medium">Top skills breakdown</h3>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {/* show badges for top skills */}
-              <Badge>Business</Badge>
-              <Badge>Vocational</Badge>
-              <Badge>Soft skill</Badge>
-            </div>
-          </div>
+          <DetailedParticipantMetrics
+            data={filteredData}
+            dataType="interventions"
+            isLoading={false}
+          />
         </TabsContent>
 
         <TabsContent value="demographics">
