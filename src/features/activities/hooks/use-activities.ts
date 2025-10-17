@@ -36,6 +36,7 @@ import {
   type NewActivity,
   type NewActivitySession,
   type DailyAttendanceStatus,
+  type DailyAttendance,
 } from "../types/types";
 
 export function useActivities(

@@ -301,15 +301,18 @@ export function ActivityDetailsContainer({
           (old: { success: boolean; data?: DailyAttendance[] } | undefined) => {
             if (!old || !old.success) {
               // If no existing data, create new structure with the participants
+              const validParticipants = participants.filter(
+                p => p.participant_id
+              );
               return {
                 success: true,
-                data: participants.map(p => ({
+                data: validParticipants.map(p => ({
                   id: `temp-${p.participant_id}-${Date.now()}`, // Temporary ID
                   session_id: sessionId,
-                  participant_id: p.participant_id,
+                  participant_id: p.participant_id!,
                   attendance_status: "invited", // Match server action status
                   participant: p.participant || {
-                    id: p.participant_id,
+                    id: p.participant_id!,
                     firstName: p.participantName?.split(" ")[0] || "",
                     lastName:
                       p.participantName?.split(" ").slice(1).join(" ") || "",
@@ -332,15 +335,18 @@ export function ActivityDetailsContainer({
               old.data?.map(record => record.participant_id) || []
             );
 
-            const newRecords = participants
-              .filter(p => !existingParticipantIds.has(p.participant_id))
+            const validParticipants = participants.filter(
+              p => p.participant_id
+            );
+            const newRecords = validParticipants
+              .filter(p => !existingParticipantIds.has(p.participant_id!))
               .map(p => ({
-                id: `temp-${p.participant_id}-${Date.now()}`, // Temporary ID
+                id: `temp-${p.participant_id!}-${Date.now()}`, // Temporary ID
                 session_id: sessionId,
-                participant_id: p.participant_id,
+                participant_id: p.participant_id!,
                 attendance_status: "invited", // Match server action status
                 participant: p.participant || {
-                  id: p.participant_id,
+                  id: p.participant_id!,
                   firstName: p.participantName?.split(" ")[0] || "",
                   lastName:
                     p.participantName?.split(" ").slice(1).join(" ") || "",
@@ -367,10 +373,17 @@ export function ActivityDetailsContainer({
         const { addActivityParticipantsToSession } = await import(
           "../actions/participants"
         );
+        const validParticipants = participants.filter(p => p.participant_id);
         const result = await addActivityParticipantsToSession(
           activity.id,
           sessionId,
-          participants as Parameters<typeof addActivityParticipantsToSession>[2]
+          validParticipants as Array<{
+            participant_id: string;
+            participantName: string;
+            role: string;
+            attendance_status: string;
+            feedback?: string;
+          }>
         );
 
         if (result.success) {
