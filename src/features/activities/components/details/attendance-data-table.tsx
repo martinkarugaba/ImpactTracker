@@ -35,6 +35,7 @@ import {
 } from "../../actions/attendance";
 import { useMarkAttendance } from "../../hooks/use-activities";
 import { DAILY_ATTENDANCE_STATUSES } from "../../types/types";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocationCache } from "@/features/locations/hooks/use-location-cache";
 
 // Separate component for Subcounty cell to properly use hooks
@@ -134,12 +135,15 @@ export function AttendanceDataTable({
   const markAttendanceMutation = useMarkAttendance();
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
+  const isMobile = useIsMobile();
 
   // Default column visibility - hide less critical columns on mobile
   const defaultColumnVisibility: VisibilityState = {
     "participant.dateOfBirth": false, // Hide date of birth by default
     "participant.enterprise": false, // Hide enterprise by default
     "participant.employmentStatus": false, // Hide employment by default
+    "participant.age": isMobile, // Hide age on mobile
+    "participant.sex": isMobile, // Hide sex on mobile
   };
 
   // Handle select all
@@ -287,8 +291,8 @@ export function AttendanceDataTable({
               : `0${contact}`
             : null;
           return (
-            <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-green-600 dark:text-green-400" />
+            <div className="flex items-center gap-2 min-w-0">
+              <Phone className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
               <div className="max-w-32 min-w-0 truncate text-sm">
                 {formattedContact || (
                   <span className="text-muted-foreground">-</span>
@@ -378,7 +382,7 @@ export function AttendanceDataTable({
         cell: ({ row }) => {
           const enterprise = row.original.participant?.enterprise;
           return (
-            <span className="max-w-32 min-w-0 truncate text-sm">
+            <span className="max-w-40 min-w-0 truncate text-sm">
               {enterprise || <span className="text-muted-foreground">-</span>}
             </span>
           );
@@ -429,7 +433,7 @@ export function AttendanceDataTable({
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="flex h-8 w-32 items-center justify-between gap-1 px-2"
+                  className="flex h-8 w-28 sm:w-32 items-center justify-between gap-1 px-2"
                   disabled={markAttendanceMutation.isPending}
                 >
                   <Badge
@@ -441,7 +445,7 @@ export function AttendanceDataTable({
                   <ChevronDown className="h-4 w-4 opacity-50" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-32">
+              <DropdownMenuContent align="start" className="w-28 sm:w-32">
                 <DropdownMenuLabel>Change Status</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {DAILY_ATTENDANCE_STATUSES.map(s => {
@@ -565,24 +569,22 @@ export function AttendanceDataTable({
 
   return (
     <div className="space-y-4">
-      <div className="w-full">
-        <DataTable
-          columns={columns}
-          data={sessionAttendance}
-          showToolbar={false}
-          showPagination={sessionAttendance.length > 10}
-          pageSize={10}
-          isLoading={isLoading || isDeleting}
-          loadingText={
-            isDeleting
-              ? "Removing participants..."
-              : "Loading attendance records..."
-          }
-          showColumnToggle={true}
-          actionButtons={tableActions}
-          columnVisibility={defaultColumnVisibility}
-        />
-      </div>
+      <DataTable
+        columns={columns}
+        data={sessionAttendance}
+        showToolbar={false}
+        showPagination={sessionAttendance.length > 10}
+        pageSize={10}
+        isLoading={isLoading || isDeleting}
+        loadingText={
+          isDeleting
+            ? "Removing participants..."
+            : "Loading attendance records..."
+        }
+        showColumnToggle={true}
+        actionButtons={tableActions}
+        columnVisibility={defaultColumnVisibility}
+      />
     </div>
   );
 }

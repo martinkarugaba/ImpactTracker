@@ -278,76 +278,78 @@ export function AttendanceTab({
   }
 
   return (
-    <div className="w-full space-y-6 overflow-hidden">
+    <div className="w-full max-w-full space-y-6 overflow-hidden">
       {/* Attendance Table Section */}
-      {selectedSessionId !== "all"
-        ? (() => {
-            const records = attendanceBySession[selectedSessionId] || [];
-            console.log("Rendering AttendanceDataTable with:", records);
-
-            return (
-              <AttendanceDataTable
-                sessionAttendance={records}
-                isLoading={_isLoadingAttendance}
-                additionalActionButtons={sessionSelector}
-                onEditParticipant={_handleEditParticipant}
-              />
-            );
-          })()
-        : (() => {
-            const allRecords = Object.values(
-              attendanceBySession
-            ).flat() as DailyAttendance[];
-            console.log(
-              "Rendering AttendanceDataTable with all sessions:",
-              allRecords
-            );
-
-            // If there are no attendance records at all but we have activity
-            // participants, show a participants-based fallback so the user sees
-            // the expected rows (they can initialize per-session if needed).
-            if (allRecords.length === 0 && participants.length > 0) {
-              const fallback = participants.map(p => ({
-                id: `pseudo-${p.participant_id || p.id}`,
-                // use the nested participant object (if available) to match DailyAttendance.participant
-                participant: p.participant || undefined,
-                participantName:
-                  p.participantName ||
-                  (p.participant
-                    ? `${p.participant.firstName} ${p.participant.lastName}`
-                    : undefined),
-                participantEmail:
-                  p.participantEmail || p.participant?.contact || "",
-                participant_id: p.participant_id || p.participant?.id || "",
-                session_id: "",
-                attendance_status: "invited",
-                created_at: null,
-                updated_at: null,
-                notes: null,
-                check_in_time: null,
-                check_out_time: null,
-                recorded_by: null,
-              }));
+      <div className="w-full max-w-full overflow-hidden">
+        {selectedSessionId !== "all"
+          ? (() => {
+              const records = attendanceBySession[selectedSessionId] || [];
+              console.log("Rendering AttendanceDataTable with:", records);
 
               return (
                 <AttendanceDataTable
-                  sessionAttendance={fallback as unknown as DailyAttendance[]}
+                  sessionAttendance={records}
                   isLoading={_isLoadingAttendance}
                   additionalActionButtons={sessionSelector}
                   onEditParticipant={_handleEditParticipant}
                 />
               );
-            }
+            })()
+          : (() => {
+              const allRecords = Object.values(
+                attendanceBySession
+              ).flat() as DailyAttendance[];
+              console.log(
+                "Rendering AttendanceDataTable with all sessions:",
+                allRecords
+              );
 
-            return (
-              <AttendanceDataTable
-                sessionAttendance={allRecords}
-                isLoading={_isLoadingAttendance}
-                additionalActionButtons={sessionSelector}
-                onEditParticipant={_handleEditParticipant}
-              />
-            );
-          })()}
+              // If there are no attendance records at all but we have activity
+              // participants, show a participants-based fallback so the user sees
+              // the expected rows (they can initialize per-session if needed).
+              if (allRecords.length === 0 && participants.length > 0) {
+                const fallback = participants.map(p => ({
+                  id: `pseudo-${p.participant_id || p.id}`,
+                  // use the nested participant object (if available) to match DailyAttendance.participant
+                  participant: p.participant || undefined,
+                  participantName:
+                    p.participantName ||
+                    (p.participant
+                      ? `${p.participant.firstName} ${p.participant.lastName}`
+                      : undefined),
+                  participantEmail:
+                    p.participantEmail || p.participant?.contact || "",
+                  participant_id: p.participant_id || p.participant?.id || "",
+                  session_id: "",
+                  attendance_status: "invited",
+                  created_at: null,
+                  updated_at: null,
+                  notes: null,
+                  check_in_time: null,
+                  check_out_time: null,
+                  recorded_by: null,
+                }));
+
+                return (
+                  <AttendanceDataTable
+                    sessionAttendance={fallback as unknown as DailyAttendance[]}
+                    isLoading={_isLoadingAttendance}
+                    additionalActionButtons={sessionSelector}
+                    onEditParticipant={_handleEditParticipant}
+                  />
+                );
+              }
+
+              return (
+                <AttendanceDataTable
+                  sessionAttendance={allRecords}
+                  isLoading={_isLoadingAttendance}
+                  additionalActionButtons={sessionSelector}
+                  onEditParticipant={_handleEditParticipant}
+                />
+              );
+            })()}
+      </div>
 
       {/* Edit Participant Dialog */}
       {editingParticipant?.participant && (

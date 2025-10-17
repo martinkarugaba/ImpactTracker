@@ -504,8 +504,8 @@ export function DataTable<TData, TValue>({
         </div>
       )}
       <div className="overflow-hidden rounded-md border">
-        <div className="relative">
-          <Table>
+        <div className="relative overflow-x-auto">
+          <Table className="min-w-full">
             <TableHeader className="bg-muted text-muted-foreground">
               {table.getHeaderGroups().map(headerGroup => (
                 <TableRow key={headerGroup.id}>
