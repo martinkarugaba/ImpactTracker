@@ -32,14 +32,15 @@ export function AttendanceListDialog({
   onSubmit,
 }: AttendanceListDialogProps) {
   const handleAddExistingParticipants = async (
-    selectedParticipants: Participant[]
+    selectedParticipants: Participant[],
+    attendanceStatus: "invited" | "attended"
   ) => {
     try {
       const participantData = selectedParticipants.map(participant => ({
         participant_id: String(participant.id), // Ensure always string
         participantName: `${participant.firstName} ${participant.lastName}`,
         role: "participant",
-        attendance_status: sessionId ? "invited" : "attended", // 'invited' for session add, 'attended' for general
+        attendance_status: attendanceStatus, // Use the selected attendance status
         feedback: undefined,
       }));
 
@@ -71,9 +72,11 @@ export function AttendanceListDialog({
       }
       description={
         sessionId
-          ? "Select participants to add to this specific session. They will be marked as attended."
+          ? "Select participants to add to this specific session. Choose whether they were invited or have attended."
           : "Select participants to add to this activity. They will be available for all sessions."
       }
+      showAttendanceStatus={!!sessionId} // Only show attendance status selection for sessions
+      defaultAttendanceStatus="invited" // Default to "invited" for sessions
     />
   );
 }

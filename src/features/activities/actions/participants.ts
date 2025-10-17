@@ -9,6 +9,7 @@ import {
 } from "@/lib/db/schema";
 import { eq, and, inArray } from "drizzle-orm";
 import { type ActivityParticipant } from "../types/types";
+import { type DailyAttendanceStatus } from "../types/types";
 
 export interface ActivityParticipantResponse {
   success: boolean;
@@ -374,7 +375,8 @@ export async function addActivityParticipantsToSession(
       if (sessionId) {
         const { markAttendance } = await import("./attendance");
         await markAttendance(sessionId, participant.participant_id, {
-          attendance_status: "invited",
+          attendance_status:
+            participant.attendance_status as DailyAttendanceStatus,
           recorded_by: "system",
         });
       }

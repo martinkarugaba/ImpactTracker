@@ -26,12 +26,14 @@ import {
   Calendar,
   Edit,
   MoreHorizontal,
+  CheckCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { DailyAttendance } from "../../types/types";
 import {
   bulkDeleteDailyAttendance,
   deleteAttendanceRecord,
+  bulkMarkAttendance,
 } from "../../actions/attendance";
 import { useMarkAttendance } from "../../hooks/use-activities";
 import { DAILY_ATTENDANCE_STATUSES } from "../../types/types";
@@ -211,6 +213,50 @@ export function AttendanceDataTable({
       }
     } catch (_error) {
       toast.error("Failed to remove participants");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Handle bulk mark as attended
+  const handleBulkMarkAttended = async () => {
+    if (selectedRows.size === 0) {
+      toast.error("No participants selected");
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+
+      // Find the selected attendance records to get session_id and participant_ids
+      const selectedRecords = sessionAttendance.filter(record =>
+        selectedRows.has(record.id)
+      );
+
+      if (selectedRecords.length === 0) {
+        toast.error("Selected records not found");
+        return;
+      }
+
+      // All selected records should be from the same session
+      const sessionId = selectedRecords[0].session_id;
+      const attendanceUpdates = selectedRecords.map(record => ({
+        participant_id: record.participant_id,
+        attendance_status: "attended" as const,
+        recorded_by: "system",
+      }));
+
+      const result = await bulkMarkAttendance(sessionId, attendanceUpdates);
+
+      if (result.success) {
+        toast.success("Participants marked as attended");
+        setSelectedRows(new Set());
+        onParticipantsDeleted?.(); // Refresh the data
+      } else {
+        toast.error(result.error || "Failed to mark participants as attended");
+      }
+    } catch (_error) {
+      toast.error("Failed to mark participants as attended");
     } finally {
       setIsDeleting(false);
     }
@@ -557,6 +603,17 @@ export function AttendanceDataTable({
             <Trash2 className="mr-2 h-4 w-4" />
             <span className="hidden sm:inline">Remove Selected</span>
             <span className="sm:hidden">Remove</span>
+          </Button>
+          <Button
+            variant="default"
+            size="sm"
+            onClick={handleBulkMarkAttended}
+            disabled={isDeleting}
+            className="flex-shrink-0"
+          >
+            <CheckCircle className="mr-2 h-4 w-4" />
+            <span className="hidden sm:inline">Mark as Attended</span>
+            <span className="sm:hidden">Mark Attended</span>
           </Button>
         </div>
       )}
