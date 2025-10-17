@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { retryAsync } from "@/lib/db/retry";
 import {
   activities,
   activityParticipants,
@@ -11,8 +10,22 @@ import {
   activitySessions,
   dailyAttendance,
   interventions,
+  users,
+  organizations,
+  clusters,
+  projects,
 } from "@/lib/db/schema";
-import { eq, and, desc, between, ilike, or, inArray } from "drizzle-orm";
+import {
+  eq,
+  and,
+  desc,
+  between,
+  ilike,
+  or,
+  inArray,
+  count,
+  sql,
+} from "drizzle-orm";
 import {
   type NewActivity,
   type ActivityResponse,
@@ -21,6 +34,20 @@ import {
   type ActivityMetricsResponse,
 } from "../types/types";
 import type { NewDailyAttendance } from "../types/types";
+
+// Temporary debug function to check all activities
+export async function debugGetAllActivities() {
+  try {
+    console.log("🔍 DEBUG: Fetching ALL activities without any filters");
+    const allActivities = await db.select().from(activities).limit(10);
+    console.log("🔍 DEBUG: Found activities:", allActivities.length);
+    console.log("🔍 DEBUG: Sample activities:", allActivities.slice(0, 3));
+    return allActivities;
+  } catch (error) {
+    console.error("🔍 DEBUG: Error fetching all activities:", error);
+    return [];
+  }
+}
 
 export async function getActivities(
   clusterId?: string,
@@ -39,6 +66,12 @@ export async function getActivities(
   }
 ): Promise<ActivitiesResponse> {
   try {
+    console.log("🔍 getActivities - clusterId:", clusterId);
+    console.log("🔍 getActivities - params:", params);
+
+    // Debug: Check all activities first
+    await debugGetAllActivities();
+
     const page = params?.page || 1;
     const limit = params?.limit || 10;
     const offset = (page - 1) * limit;
@@ -46,7 +79,12 @@ export async function getActivities(
     const whereConditions = [];
 
     if (clusterId) {
+      console.log("🔍 getActivities - Adding cluster filter:", clusterId);
       whereConditions.push(eq(activities.cluster_id, clusterId));
+    } else {
+      console.log(
+        "🔍 getActivities - No clusterId provided, will fetch all activities"
+      );
     }
 
     // Add filter conditions
@@ -88,35 +126,104 @@ export async function getActivities(
       );
     }
 
-    const [activitiesData, totalCount] = await Promise.all([
-      db.query.activities.findMany({
-        where: whereConditions.length > 0 ? and(...whereConditions) : undefined,
-        limit,
-        offset,
-        orderBy: [desc(activities.created_at)],
-        with: {
-          cluster: true,
-          project: true,
-          organization: true,
-          activityParticipants: true,
-        },
-      }),
-      db.query.activities.findMany({
-        where: whereConditions.length > 0 ? and(...whereConditions) : undefined,
-        columns: {
-          id: true,
-        },
-      }),
-    ]);
+    // Get activities with user information for activity lead
+    const activitiesWithUsers = await db
+      .select({
+        // Activity fields
+        id: activities.id,
+        title: activities.title,
+        description: activities.description,
+        type: activities.type,
+        status: activities.status,
+        startDate: activities.startDate,
+        endDate: activities.endDate,
+        venue: activities.venue,
+        budget: activities.budget,
+        actualCost: activities.actualCost,
+        numberOfParticipants: activities.numberOfParticipants,
+        expectedSessions: activities.expectedSessions,
+        objectives: activities.objectives,
+        skillCategory: activities.skillCategory,
+        outcomes: activities.outcomes,
+        challenges: activities.challenges,
+        recommendations: activities.recommendations,
+        attachments: activities.attachments,
+        organization_id: activities.organization_id,
+        cluster_id: activities.cluster_id,
+        project_id: activities.project_id,
+        created_by: activities.created_by,
+        created_at: activities.created_at,
+        updated_at: activities.updated_at,
+        // User fields for activity lead (use email as fallback when name is missing)
+        activityLeadName: sql<string>`COALESCE(${users.name}, ${users.email})`,
+        // Organization fields
+        organizationName: organizations.name,
+        // Cluster fields
+        clusterName: clusters.name,
+        // Project fields
+        projectName: projects.name,
+        projectAcronym: projects.acronym,
+      })
+      .from(activities)
+      .leftJoin(users, eq(activities.created_by, users.id))
+      .leftJoin(organizations, eq(activities.organization_id, organizations.id))
+      .leftJoin(clusters, eq(activities.cluster_id, clusters.id))
+      .leftJoin(projects, eq(activities.project_id, projects.id))
+      .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
+      .orderBy(desc(activities.created_at))
+      .limit(limit)
+      .offset(offset);
+
+    // Get participant counts separately - join with activities to apply filters
+    const participantCounts = await db
+      .select({
+        activity_id: activityParticipants.activity_id,
+        count: count(),
+      })
+      .from(activityParticipants)
+      .innerJoin(
+        activities,
+        eq(activityParticipants.activity_id, activities.id)
+      )
+      .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
+      .groupBy(activityParticipants.activity_id);
+
+    // Combine the data
+    const activitiesData = activitiesWithUsers.map(activity => {
+      const participantCount =
+        participantCounts.find(pc => pc.activity_id === activity.id)?.count ||
+        0;
+
+      return {
+        ...activity,
+        participantCount,
+      };
+    });
+
+    const totalCount = await db
+      .select({ count: count() })
+      .from(activities)
+      .where(whereConditions.length > 0 ? and(...whereConditions) : undefined);
+
+    console.log(
+      "🔍 getActivities - activitiesWithUsers count:",
+      activitiesWithUsers.length
+    );
+    console.log("🔍 getActivities - totalCount:", totalCount[0]?.count || 0);
+    console.log("🔍 getActivities - whereConditions:", whereConditions.length);
 
     // Enhance activity data with organization names and participant counts
     const data = activitiesData.map(activity => ({
       ...activity,
-      organizationName: activity.organization?.name || "Unknown",
-      projectName: activity.project?.name || "Unknown",
-      clusterName: activity.cluster?.name || "Unknown",
-      participantCount: activity.activityParticipants?.length || 0,
+      organizationName: activity.organizationName || "Unknown",
+      projectName: activity.projectName || "Unknown",
+      clusterName: activity.clusterName || "Unknown",
+      participantCount: activity.participantCount || 0,
+      activityLeadName: activity.activityLeadName || "Not assigned",
     }));
+
+    console.log("🔍 getActivities - Final data count:", data.length);
+    console.log("🔍 getActivities - Final data sample:", data.slice(0, 2));
 
     return {
       success: true,
@@ -125,9 +232,9 @@ export async function getActivities(
         pagination: {
           page,
           limit,
-          total: totalCount.length,
-          totalPages: Math.ceil(totalCount.length / limit),
-          hasNext: page * limit < totalCount.length,
+          total: totalCount[0]?.count || 0,
+          totalPages: Math.ceil((totalCount[0]?.count || 0) / limit),
+          hasNext: page * limit < (totalCount[0]?.count || 0),
           hasPrev: page > 1,
         },
       },
@@ -143,49 +250,75 @@ export async function getActivities(
 
 export async function getActivity(id: string): Promise<ActivityResponse> {
   try {
-    const activity = await retryAsync(() =>
-      db.query.activities.findFirst({
-        where: eq(activities.id, id),
-        with: {
-          cluster: true,
-          project: true,
-          organization: true,
-          // Only fetch a minimal set of participant fields to avoid large lateral
-          // JSON builds that may reference schema columns that differ between
-          // environments. If you need more participant fields, expand this list
-          // carefully.
-          activityParticipants: {
-            with: {
-              participant: {
-                columns: {
-                  id: true,
-                  firstName: true,
-                  lastName: true,
-                  contact: true,
-                  district: true,
-                  subCounty: true,
-                  age: true,
-                },
-              },
-            },
-          },
-        },
+    const activityData = await db
+      .select({
+        // Activity fields
+        id: activities.id,
+        title: activities.title,
+        description: activities.description,
+        type: activities.type,
+        status: activities.status,
+        startDate: activities.startDate,
+        endDate: activities.endDate,
+        venue: activities.venue,
+        budget: activities.budget,
+        actualCost: activities.actualCost,
+        numberOfParticipants: activities.numberOfParticipants,
+        expectedSessions: activities.expectedSessions,
+        objectives: activities.objectives,
+        skillCategory: activities.skillCategory,
+        outcomes: activities.outcomes,
+        challenges: activities.challenges,
+        recommendations: activities.recommendations,
+        attachments: activities.attachments,
+        organization_id: activities.organization_id,
+        cluster_id: activities.cluster_id,
+        project_id: activities.project_id,
+        created_by: activities.created_by,
+        created_at: activities.created_at,
+        updated_at: activities.updated_at,
+        // User fields for activity lead (use email as fallback when name is missing)
+        activityLeadName: sql<string>`COALESCE(${users.name}, ${users.email})`,
+        // Organization fields
+        organizationName: organizations.name,
+        // Cluster fields
+        clusterName: clusters.name,
+        // Project fields
+        projectName: projects.name,
+        projectAcronym: projects.acronym,
       })
-    );
+      .from(activities)
+      .leftJoin(users, eq(activities.created_by, users.id))
+      .leftJoin(organizations, eq(activities.organization_id, organizations.id))
+      .leftJoin(clusters, eq(activities.cluster_id, clusters.id))
+      .leftJoin(projects, eq(activities.project_id, projects.id))
+      .where(eq(activities.id, id))
+      .limit(1);
 
-    if (!activity) {
+    if (!activityData || activityData.length === 0) {
       return {
         success: false,
         error: "Activity not found",
       };
     }
 
+    const activity = activityData[0];
+
+    // Get participant count
+    const participantCountResult = await db
+      .select({ count: count() })
+      .from(activityParticipants)
+      .where(eq(activityParticipants.activity_id, id));
+
+    const participantCount = participantCountResult[0]?.count || 0;
+
     const enhancedActivity = {
       ...activity,
-      organizationName: activity.organization?.name || "Unknown",
-      projectName: activity.project?.name || "Unknown",
-      clusterName: activity.cluster?.name || "Unknown",
-      participantCount: activity.activityParticipants?.length || 0,
+      organizationName: activity.organizationName || "Unknown",
+      projectName: activity.projectName || "Unknown",
+      clusterName: activity.clusterName || "Unknown",
+      participantCount,
+      activityLeadName: activity.activityLeadName || "Not assigned",
     };
 
     return {

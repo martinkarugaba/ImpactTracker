@@ -82,7 +82,7 @@ export function NavMain({
                     className="hover:from-primary/10 hover:to-primary/5 data-[active=true]:from-primary/20 data-[active=true]:to-primary/10 data-[active=true]:text-primary transition-all duration-200 hover:bg-gradient-to-r data-[active=true]:bg-gradient-to-r"
                   >
                     <Link
-                      className="flex items-center gap-3 text-lg font-normal text-black group-data-[state=closed]/collapsible:mx-4"
+                      className="flex items-center gap-3 text-lg font-normal group-data-[state=closed]/collapsible:mx-4"
                       href={item.url}
                     >
                       {item.icon && <item.icon className="text-primary/80" />}

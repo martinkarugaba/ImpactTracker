@@ -157,6 +157,11 @@ export function useActivityContainerState({
     }
   }, [activeTab, searchValue, filters, pathname, router]);
 
+  // Debug logging
+  console.log("🔍 useActivityContainerState - clusterId:", clusterId);
+  console.log("🔍 useActivityContainerState - filters:", filters);
+  console.log("🔍 useActivityContainerState - searchValue:", searchValue);
+
   // Fetch activities with filters for the table
   const {
     data: activitiesData,
@@ -191,6 +196,17 @@ export function useActivityContainerState({
     page: pagination.page,
     limit: pagination.limit,
   });
+
+  // Debug logging for activities data
+  console.log("🔍 useActivityContainerState - activitiesData:", activitiesData);
+  console.log(
+    "🔍 useActivityContainerState - isActivitiesLoading:",
+    isActivitiesLoading
+  );
+  console.log(
+    "🔍 useActivityContainerState - activitiesError:",
+    activitiesError
+  );
 
   // Fetch metrics with current filters
   const {

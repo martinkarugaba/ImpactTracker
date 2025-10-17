@@ -112,7 +112,8 @@ export async function getActivitiesOptimized(
             projectName: projects.name,
             projectAcronym: projects.acronym,
             clusterName: clusters.name,
-            activityLeadName: users.name,
+            // Use email as fallback when user name is not available
+            activityLeadName: sql<string>`COALESCE(${users.name}, ${users.email})`,
             // Aggregated counts (conditional)
             ...(includeSessionCounts && {
               sessionCount: sql<number>`COALESCE(session_counts.session_count, 0)`,

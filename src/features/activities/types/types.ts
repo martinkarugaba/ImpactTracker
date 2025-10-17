@@ -11,9 +11,10 @@ import {
 export type Activity = InferSelectModel<typeof activities> & {
   organizationName?: string;
   projectName?: string;
-  projectAcronym?: string;
+  projectAcronym?: string | null; // Allow null since it comes from DB
   clusterName?: string;
   participantCount?: number;
+  activityLeadName?: string | null; // Allow null since COALESCE can return null
 };
 
 export type ActivityParticipant = InferSelectModel<
