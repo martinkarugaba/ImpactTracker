@@ -565,7 +565,7 @@ export function AttendanceDataTable({
 
   return (
     <div className="space-y-4">
-      <div className="w-full overflow-x-auto">
+      <div className="w-full">
         <DataTable
           columns={columns}
           data={sessionAttendance}
