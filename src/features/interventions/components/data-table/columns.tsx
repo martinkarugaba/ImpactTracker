@@ -28,7 +28,50 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
       }
     }, [subCounty, getSubCountyNamesByCodes]);
 
-    return <div className="text-sm">{displayName}</div>;
+    // Generate consistent color for the same subcounty
+    const getSubCountyColor = (name: string) => {
+      const colors = [
+        "border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+        "border-green-200 bg-green-100 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400",
+        "border-purple-200 bg-purple-100 text-purple-800 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400",
+        "border-orange-200 bg-orange-100 text-orange-800 dark:border-orange-800 dark:bg-orange-900/20 dark:text-orange-400",
+        "border-pink-200 bg-pink-100 text-pink-800 dark:border-pink-800 dark:bg-pink-900/20 dark:text-pink-400",
+        "border-indigo-200 bg-indigo-100 text-indigo-800 dark:border-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400",
+        "border-teal-200 bg-teal-100 text-teal-800 dark:border-teal-800 dark:bg-teal-900/20 dark:text-teal-400",
+        "border-cyan-200 bg-cyan-100 text-cyan-800 dark:border-cyan-800 dark:bg-cyan-900/20 dark:text-cyan-400",
+        "border-lime-200 bg-lime-100 text-lime-800 dark:border-lime-800 dark:bg-lime-900/20 dark:text-lime-400",
+        "border-amber-200 bg-amber-100 text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400",
+      ];
+
+      // Simple hash function to get consistent color for the same subcounty
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) {
+        hash = ((hash << 5) - hash + name.charCodeAt(i)) & 0xffffffff;
+      }
+      return colors[Math.abs(hash) % colors.length];
+    };
+
+    if (displayName === "—") {
+      return (
+        <div className="flex items-center space-x-2">
+          <MapPin className="h-4 w-4 text-gray-400" />
+          <span className="text-sm text-muted-foreground">—</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex items-center space-x-2">
+        <MapPin className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+        <Badge
+          variant="outline"
+          className={`${getSubCountyColor(displayName)} px-2 py-0.5 text-xs`}
+        >
+          {displayName.charAt(0).toUpperCase() +
+            displayName.slice(1).toLowerCase()}
+        </Badge>
+      </div>
+    );
   }
 
   return [
@@ -126,12 +169,7 @@ export function getInterventionColumns(): ColumnDef<Intervention>[] {
       header: "Subcounty",
       cell: ({ row }) => {
         const sc = row.getValue("subcounty") as string | undefined | null;
-        return (
-          <div className="flex items-center space-x-2">
-            <MapPin className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-            <SubCountyCell subCounty={sc} />
-          </div>
-        );
+        return <SubCountyCell subCounty={sc} />;
       },
     },
     {
