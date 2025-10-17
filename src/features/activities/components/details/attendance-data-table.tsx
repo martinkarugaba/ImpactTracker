@@ -310,7 +310,7 @@ export function AttendanceDataTable({
                 </AvatarFallback>
               </Avatar>
               <div className="space-y-1">
-                <div className="font-medium">
+                <div className="font-medium capitalize">
                   {participant
                     ? `${firstName} ${lastName}`
                     : "Unknown Participant"}

@@ -69,27 +69,36 @@ interface SessionData {
 
 // Attendance display component to avoid React Hook usage in columns
 function AttendanceCell({ sessionId }: { sessionId: string }) {
-  const { data: attendance } = useSessionAttendance(sessionId);
+  const { data: attendance, isLoading } = useSessionAttendance(sessionId);
+
+  if (isLoading) {
+    return (
+      <div className="text-muted-foreground flex items-center gap-2">
+        <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+        <span className="text-sm">Loading...</span>
+      </div>
+    );
+  }
 
   if (!attendance?.data || attendance.data.length === 0) {
     return (
       <div className="text-muted-foreground flex items-center gap-2">
         <Users className="h-4 w-4 text-gray-400" />
-        <span className="text-sm">0 registered</span>
+        <span className="text-sm">0 attended</span>
       </div>
     );
   }
 
   // Count all participants registered for the session (any status)
-  const registeredCount = attendance.data.length;
+  const attendedCount = attendance.data.length;
 
   return (
     <div className="flex items-center gap-2">
       <Users className="h-4 w-4 text-purple-600 dark:text-purple-400" />
       <span className="font-medium text-purple-700 dark:text-purple-300">
-        {registeredCount}
+        {attendedCount}
       </span>
-      <span className="text-muted-foreground text-sm">registered</span>
+      <span className="text-muted-foreground text-sm">attended</span>
     </div>
   );
 }
