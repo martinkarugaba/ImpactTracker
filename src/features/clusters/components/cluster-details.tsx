@@ -45,19 +45,19 @@ export function ClusterDetails({ cluster }: ClusterDetailsProps) {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <h3 className="text-muted-foreground text-sm font-medium">
+                  <h3 className="text-sm font-medium text-muted-foreground">
                     Name
                   </h3>
                   <p className="text-base">{cluster.name}</p>
                 </div>
                 <div>
-                  <h3 className="text-muted-foreground text-sm font-medium">
+                  <h3 className="text-sm font-medium text-muted-foreground">
                     Country
                   </h3>
                   <p className="text-base">{cluster.country}</p>
                 </div>
                 <div>
-                  <h3 className="text-muted-foreground text-sm font-medium">
+                  <h3 className="text-sm font-medium text-muted-foreground">
                     Districts
                   </h3>
                   <p className="text-base">
@@ -67,7 +67,7 @@ export function ClusterDetails({ cluster }: ClusterDetailsProps) {
                   </p>
                 </div>
                 <div>
-                  <h3 className="text-muted-foreground text-sm font-medium">
+                  <h3 className="text-sm font-medium text-muted-foreground">
                     Created
                   </h3>
                   <p className="text-base">
@@ -79,7 +79,7 @@ export function ClusterDetails({ cluster }: ClusterDetailsProps) {
               </div>
               {cluster.about && (
                 <div>
-                  <h3 className="text-muted-foreground text-sm font-medium">
+                  <h3 className="text-sm font-medium text-muted-foreground">
                     About
                   </h3>
                   <p className="text-base">{cluster.about}</p>

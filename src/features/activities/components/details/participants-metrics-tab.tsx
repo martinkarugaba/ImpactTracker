@@ -128,7 +128,7 @@ export function ParticipantsMetricsTab({
   if (isLoadingParticipants) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="border-primary h-8 w-8 animate-spin rounded-full border-b-2"></div>
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -148,13 +148,13 @@ export function ParticipantsMetricsTab({
   return (
     <div className="space-y-8">
       {/* Hero Metrics */}
-      <div className="dark:via-background relative overflow-hidden rounded-xl border bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-8 dark:from-indigo-950/20 dark:to-purple-950/20">
+      <div className="relative overflow-hidden rounded-xl border bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-8 dark:from-indigo-950/20 dark:via-background dark:to-purple-950/20">
         <div className="relative z-10">
           <div className="mb-6 text-center">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               Participant Analytics
             </h2>
-            <p className="text-muted-foreground mt-2">
+            <p className="mt-2 text-muted-foreground">
               Comprehensive demographic insights and engagement metrics
             </p>
           </div>
@@ -361,7 +361,7 @@ export function ParticipantsMetricsTab({
               <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 Employment Impact
               </h3>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-sm text-muted-foreground">
                 Economic activity and entrepreneurship metrics
               </p>
             </div>
@@ -428,7 +428,7 @@ export function ParticipantsMetricsTab({
               <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 Inclusion & Reach
               </h3>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-sm text-muted-foreground">
                 Accessibility and geographic representation
               </p>
             </div>

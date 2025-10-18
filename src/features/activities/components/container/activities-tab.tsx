@@ -96,7 +96,7 @@ export function ActivitiesTab({
   };
 
   return (
-    <TabsContent value="activities" className="mt-0">
+    <TabsContent value="activities" className="mt-4">
       <div className="space-y-4">
         {/* Action Buttons Section - At the very top */}
         <div className="flex items-center justify-between gap-4">
@@ -201,7 +201,7 @@ export function ActivitiesTab({
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleBulkDelete}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                className="bg-destructive hover:bg-destructive/90 text-white"
               >
                 Delete
               </AlertDialogAction>

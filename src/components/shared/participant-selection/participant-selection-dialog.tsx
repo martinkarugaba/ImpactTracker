@@ -37,6 +37,8 @@ import {
   FieldLabel,
   FieldTitle,
 } from "@/components/ui/field";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
 export interface ParticipantSelectionContext {
@@ -48,12 +50,17 @@ export interface ParticipantSelectionContext {
 export interface ParticipantSelectionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onParticipantsSelected: (participants: Participant[]) => Promise<void>;
+  onParticipantsSelected: (
+    participants: Participant[],
+    attendanceStatus: "invited" | "attended"
+  ) => Promise<void>;
   context: ParticipantSelectionContext;
   title?: string;
   description?: string;
   allowCreateNew?: boolean;
   maxSelection?: number;
+  showAttendanceStatus?: boolean;
+  defaultAttendanceStatus?: "invited" | "attended";
 }
 
 export function ParticipantSelectionDialog({
@@ -65,6 +72,8 @@ export function ParticipantSelectionDialog({
   description = "Search existing participants from your database first. If the participant doesn't exist, you can create a new one.",
   allowCreateNew = true,
   maxSelection,
+  showAttendanceStatus = false,
+  defaultAttendanceStatus = "invited",
 }: ParticipantSelectionDialogProps) {
   const [selectedParticipants, setSelectedParticipants] = useState<
     Participant[]
@@ -73,6 +82,9 @@ export function ParticipantSelectionDialog({
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [attendanceStatus, setAttendanceStatus] = useState<
+    "invited" | "attended"
+  >(defaultAttendanceStatus);
 
   // Debounce search term to improve performance
   useEffect(() => {
@@ -129,7 +141,7 @@ export function ParticipantSelectionDialog({
   const handleAddSelected = async () => {
     setIsSubmitting(true);
     try {
-      await onParticipantsSelected(selectedParticipants);
+      await onParticipantsSelected(selectedParticipants, attendanceStatus);
       setSelectedParticipants([]);
       setSearchTerm("");
       setShowCreateForm(false);
@@ -253,7 +265,7 @@ export function ParticipantSelectionDialog({
 
       if (result.success && result.data) {
         toast.success("Participant created successfully");
-        onParticipantsSelected([result.data]);
+        onParticipantsSelected([result.data], attendanceStatus);
         setShowCreateForm(false);
         onOpenChange(false);
       } else {
@@ -272,7 +284,7 @@ export function ParticipantSelectionDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex h-[90vh] max-w-5xl flex-col">
+      <DialogContent className="flex h-[90vh] w-full max-w-6xl flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <UserPlus className="h-5 w-5" />
@@ -431,6 +443,36 @@ export function ParticipantSelectionDialog({
                     </Button>
                   </div>
                 )}
+
+                {showAttendanceStatus && selectedParticipants.length > 0 && (
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium">
+                      How did these participants engage with the session?
+                    </Label>
+                    <RadioGroup
+                      value={attendanceStatus}
+                      onValueChange={(value: "invited" | "attended") =>
+                        setAttendanceStatus(value)
+                      }
+                      className="flex flex-col space-y-2"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="invited" id="invited" />
+                        <Label htmlFor="invited" className="text-sm">
+                          <span className="font-medium">Invited</span> - These
+                          participants were invited but may not have attended
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="attended" id="attended" />
+                        <Label htmlFor="attended" className="text-sm">
+                          <span className="font-medium">Attended</span> - These
+                          participants have attended the session
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                )}
               </div>
 
               <div className="flex h-[400px] flex-col overflow-hidden rounded-md border">
@@ -451,12 +493,12 @@ export function ParticipantSelectionDialog({
                   <div className="flex flex-1 flex-col items-center justify-center space-y-4 p-8">
                     <div className="text-center">
                       <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-                        <UserPlus className="text-muted-foreground h-6 w-6" />
+                        <UserPlus className="h-6 w-6 text-muted-foreground" />
                       </div>
                       <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
                         No participants found
                       </h3>
-                      <p className="text-muted-foreground mt-1 text-sm">
+                      <p className="mt-1 text-sm text-muted-foreground">
                         No participants match "{debouncedSearchTerm}". Try a
                         different search term.
                       </p>
@@ -478,7 +520,7 @@ export function ParticipantSelectionDialog({
                         <div className="flex items-center justify-center py-12">
                           <div className="text-center">
                             <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600" />
-                            <p className="text-muted-foreground text-sm">
+                            <p className="text-sm text-muted-foreground">
                               Loading participants...
                             </p>
                           </div>
@@ -486,8 +528,8 @@ export function ParticipantSelectionDialog({
                       ) : availableParticipants.length === 0 ? (
                         <div className="flex items-center justify-center py-12">
                           <div className="text-center">
-                            <Users className="text-muted-foreground mx-auto mb-3 h-12 w-12" />
-                            <p className="text-muted-foreground text-sm">
+                            <Users className="mx-auto mb-3 h-12 w-12 text-muted-foreground" />
+                            <p className="text-sm text-muted-foreground">
                               {debouncedSearchTerm
                                 ? "No participants found"
                                 : "No participants available"}

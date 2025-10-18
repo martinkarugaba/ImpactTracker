@@ -14,7 +14,7 @@ export function AssignmentLevelTabs({
 }: AssignmentLevelTabsProps) {
   return (
     <div className="w-full space-y-2">
-      <div className="text-muted-foreground text-sm">
+      <div className="text-sm text-muted-foreground">
         Choose assignment method (subcounty-based OR parish-based):
       </div>
       <Tabs

@@ -19,7 +19,7 @@ export function SelectedSubCountiesDisplay({
       <label className="text-sm font-medium">
         Selected Subcounties ({selectedSubCounties.length})
       </label>
-      <div className="bg-muted/50 flex flex-wrap gap-2 rounded-md border p-3">
+      <div className="flex flex-wrap gap-2 rounded-md border bg-muted/50 p-3">
         {selectedSubCounties.map(subCounty => (
           <Badge
             key={subCounty}

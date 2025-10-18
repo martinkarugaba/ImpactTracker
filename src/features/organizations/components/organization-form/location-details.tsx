@@ -110,7 +110,7 @@ export function LocationDetails({
 
         {/* District and Sub-counties Selection */}
         {currentCountry && (
-          <div className="animate-in slide-in-from-top-2 space-y-4 duration-300">
+          <div className="animate-in space-y-4 duration-300 slide-in-from-top-2">
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-medium">
                 Selected Country: {currentCountry.name}
@@ -176,7 +176,7 @@ export function LocationDetails({
                 )}
               />
             ) : (
-              <div className="animate-in slide-in-from-top-2 space-y-4 duration-300">
+              <div className="animate-in space-y-4 duration-300 slide-in-from-top-2">
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-medium">
                     Current District: {currentDistrict.name}
@@ -256,7 +256,7 @@ export function LocationDetails({
                             <Badge
                               key={subCountyName}
                               variant="secondary"
-                              className="animate-in fade-in-0 cursor-pointer duration-300"
+                              className="animate-in cursor-pointer duration-300 fade-in-0"
                               onClick={() => {
                                 const updatedSubCounties = districtSubCounties[
                                   currentDistrict.code
@@ -295,7 +295,7 @@ export function LocationDetails({
         {/* Summary of selected locations */}
         {(form.getValues("country")?.length > 0 ||
           form.getValues("district")?.length > 0) && (
-          <div className="animate-in fade-in-50 mt-4 rounded-lg border p-4 duration-300">
+          <div className="mt-4 animate-in rounded-lg border p-4 duration-300 fade-in-50">
             <h4 className="mb-2 text-sm font-medium">Selected Locations:</h4>
             {form.getValues("country")?.map(countryName => (
               <div key={countryName} className="mb-4">

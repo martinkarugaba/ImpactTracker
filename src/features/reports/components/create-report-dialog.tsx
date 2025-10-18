@@ -227,7 +227,7 @@ export function CreateReportDialog({
                     <SelectItem key={activity.id} value={activity.id}>
                       <div className="flex flex-col">
                         <span>{activity.title}</span>
-                        <span className="text-muted-foreground text-sm">
+                        <span className="text-sm text-muted-foreground">
                           {activity.project_name} - {activity.type}
                         </span>
                       </div>
@@ -398,7 +398,7 @@ export function CreateReportDialog({
                 Number of Participants
               </Label>
               <div className="relative">
-                <Users className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                <Users className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="number_of_participants"
                   type="number"
@@ -414,7 +414,7 @@ export function CreateReportDialog({
             <div className="space-y-2">
               <Label htmlFor="actual_cost">Actual Cost (UGX)</Label>
               <div className="relative">
-                <DollarSign className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                <DollarSign className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="actual_cost"
                   type="number"

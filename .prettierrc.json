@@ -16,7 +16,6 @@
   "jsxSingleQuote": false,
   "jsxBracketSameLine": false,
   "embeddedLanguageFormatting": "auto",
-  "plugins": ["prettier-plugin-tailwindcss"],
   "overrides": [
     {
       "files": "*.json",

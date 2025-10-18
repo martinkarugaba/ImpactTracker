@@ -103,7 +103,7 @@ export function ActivityHeader({
               </div>
             </div>
             {activity.description && (
-              <p className="text-muted-foreground text-base leading-relaxed">
+              <p className="text-base leading-relaxed text-muted-foreground">
                 {activity.description}
               </p>
             )}
@@ -140,7 +140,7 @@ export function ActivityHeader({
       <CardContent>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <div className="flex items-center gap-2">
-            <Calendar className="text-primary h-5 w-5" />
+            <Calendar className="h-5 w-5 text-primary" />
             <div className="text-base">
               <div className="font-medium">
                 {format(new Date(activity.startDate), "MMM dd, yyyy")}
@@ -155,13 +155,13 @@ export function ActivityHeader({
 
           {activity.venue && (
             <div className="flex items-center gap-2">
-              <MapPin className="text-primary h-5 w-5" />
+              <MapPin className="h-5 w-5 text-primary" />
               <span className="text-base font-medium">{activity.venue}</span>
             </div>
           )}
 
           <div className="flex items-center gap-2">
-            <Users className="text-primary h-5 w-5" />
+            <Users className="h-5 w-5 text-primary" />
             <span className="text-base font-medium">
               {activity.participantCount || 0} participants
             </span>
@@ -169,7 +169,7 @@ export function ActivityHeader({
 
           {activity.organizationName && (
             <div className="flex items-center gap-2">
-              <Building className="text-primary h-5 w-5" />
+              <Building className="h-5 w-5 text-primary" />
               <span className="text-base font-medium">
                 {activity.organizationName}
               </span>

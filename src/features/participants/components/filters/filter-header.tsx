@@ -91,7 +91,7 @@ export function FilterHeader({
   if (!hasActiveFilters) return null;
 
   return (
-    <div className="bg-muted/30 overflow-hidden rounded-lg">
+    <div className="overflow-hidden rounded-lg bg-muted/30">
       <div className="flex items-center justify-between p-3">
         {/* Active Filter Badges Container */}
         <div className="flex-1 overflow-hidden">
@@ -100,7 +100,7 @@ export function FilterHeader({
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-muted-foreground text-sm font-medium"
+              className="text-sm font-medium text-muted-foreground"
             >
               Active filters:
             </motion.span>
@@ -120,7 +120,7 @@ export function FilterHeader({
                 >
                   <Badge
                     variant="outline"
-                    className="bg-background border-border hover:bg-muted/50 flex items-center gap-1.5 px-2.5 py-1 text-xs transition-all duration-200"
+                    className="flex items-center gap-1.5 border-border bg-background px-2.5 py-1 text-xs transition-all duration-200 hover:bg-muted/50"
                   >
                     <span className="font-medium">{filter.displayName}</span>
                     <motion.button
@@ -131,7 +131,7 @@ export function FilterHeader({
                         e.stopPropagation();
                         onRemoveFilter(filter.key);
                       }}
-                      className="hover:bg-destructive/20 hover:text-destructive flex h-4 w-4 cursor-pointer items-center justify-center rounded-full transition-colors duration-200"
+                      className="flex h-4 w-4 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 hover:bg-destructive/20 hover:text-destructive"
                     >
                       <X className="h-2.5 w-2.5" />
                       <span className="sr-only">
@@ -156,7 +156,7 @@ export function FilterHeader({
             <Button
               variant="outline"
               onClick={onClearFilters}
-              className="text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground h-8 px-3 text-sm transition-colors"
+              className="h-8 border-destructive/30 px-3 text-sm text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground"
             >
               Clear all
               <X className="ml-1.5 h-3.5 w-3.5" />

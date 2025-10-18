@@ -81,7 +81,7 @@ export function SkillsEducationSection({
 
   return (
     <div className="space-y-4">
-      <h5 className="text-muted-foreground border-b pb-1 text-sm font-medium">
+      <h5 className="border-b pb-1 text-sm font-medium text-muted-foreground">
         Skills & Education
       </h5>
 

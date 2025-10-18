@@ -182,7 +182,7 @@ export function CreateConceptNoteDialog({
                     <SelectItem key={activity.id} value={activity.id}>
                       <div className="flex flex-col">
                         <span className="font-medium">{activity.title}</span>
-                        <span className="text-muted-foreground text-sm">
+                        <span className="text-sm text-muted-foreground">
                           {activity.type} • {activity.projectName} •{" "}
                           {activity.organizationName}
                         </span>

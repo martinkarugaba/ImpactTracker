@@ -1,72 +1,76 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { ActivityParticipant } from "../../types/types";
 import type { Participant } from "@/features/participants/types/types";
-import {
-  Users,
-  Calendar,
-  CheckCircle,
-  Clock,
-  Plus,
-  Play,
-  Loader2,
-} from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { MetricCard } from "@/components/ui/metric-card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import type { Activity } from "../../types/types";
+import type { Activity, DailyAttendance } from "../../types/types";
 import {
   useActivitySessions,
   useGenerateActivitySessions,
   useDeleteActivitySession,
   useActivitySessionsAttendance,
+  useActivityParticipants,
 } from "../../hooks/use-activities";
+import { initializeAllActivityParticipantsInSession } from "../../actions/participants";
 import { EditParticipantDialog } from "@/features/participants/components/edit-participant-dialog";
 import { ParticipantFeedbackDialog } from "../dialogs/participant-feedback-dialog";
 import { TabLoadingSkeleton } from "./tab-loading-skeleton";
-import { SessionsManagementTab } from "./sessions-management-tab";
-import { AttendanceOverviewTab } from "./attendance-overview-tab";
+import { AttendanceDataTable } from "./attendance-data-table";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 interface AttendanceTabProps {
   activity: Activity;
-  onManageAttendance: (sessionId?: string) => void;
-  onCreateSession: () => void;
   onEditSession: (sessionId: string) => void;
   onDuplicateSession?: (sessionId: string) => void;
 }
 
 export function AttendanceTab({
   activity,
-  onManageAttendance,
-  onCreateSession,
-  onEditSession,
-  onDuplicateSession,
+  onEditSession: _onEditSession,
+  onDuplicateSession: _onDuplicateSession,
 }: AttendanceTabProps) {
+  console.log("AttendanceTab rendered with activity:", activity?.id);
+
   // Local state
-  const [sessionCount, setSessionCount] = useState<number>(5);
+  const [sessionCount, _setSessionCount] = useState<number>(5);
   const [editingParticipant, setEditingParticipant] =
     useState<ActivityParticipant | null>(null);
   const [feedbackParticipant, setFeedbackParticipant] =
     useState<ActivityParticipant | null>(null);
-  const [activeSubTab, setActiveSubTab] = useState<string>("management");
+  const [selectedSessionId, setSelectedSessionId] = useState<string | "all">(
+    "all"
+  );
 
   // Data fetching hooks
   const {
     data: sessionsResponse,
     isLoading: isLoadingSessions,
+    error: _sessionsError,
     refetch: refetchSessions,
   } = useActivitySessions(activity.id);
 
   const {
     data: attendanceResponse,
     isLoading: _isLoadingAttendance,
+    error: _attendanceError,
     refetch: refetchAttendance,
   } = useActivitySessionsAttendance(activity.id);
+
+  const { data: participantsResponse, isLoading: _isLoadingParticipants } =
+    useActivityParticipants(activity.id);
+
+  console.log("AttendanceTab - isLoadingSessions:", isLoadingSessions);
+  console.log("AttendanceTab - sessionsResponse:", sessionsResponse);
+  console.log("AttendanceTab - _sessionsError:", _sessionsError);
 
   // Mutations
   const generateSessions = useGenerateActivitySessions();
@@ -74,17 +78,28 @@ export function AttendanceTab({
 
   // Extract data from responses
   const sessions = sessionsResponse?.data || [];
-  const attendanceBySession = attendanceResponse?.data || {};
+  const attendanceBySession = useMemo(
+    () => attendanceResponse?.data || {},
+    [attendanceResponse]
+  );
+  const participants = useMemo(
+    () => participantsResponse?.data || [],
+    [participantsResponse]
+  );
 
-  // Calculate total unique participants across all sessions
-  const totalParticipants = Object.values(attendanceBySession)
-    .flat()
-    .reduce((acc, attendance) => {
-      if (!acc.has(attendance.participant_id)) {
-        acc.set(attendance.participant_id, true);
-      }
-      return acc;
-    }, new Map()).size;
+  // Track which sessions we've already initialized to avoid repeated calls
+  const [initializedSessions, setInitializedSessions] = useState<Set<string>>(
+    new Set()
+  );
+
+  console.log("AttendanceTab - sessions:", sessions);
+  console.log("AttendanceTab - attendanceResponse:", attendanceResponse);
+  console.log("AttendanceTab - attendanceBySession:", attendanceBySession);
+  console.log("AttendanceTab - selectedSessionId:", selectedSessionId);
+  console.log(
+    "AttendanceTab - selected session attendance:",
+    attendanceBySession[selectedSessionId]
+  );
 
   // Handle feedback submission
   const handleFeedbackSubmit = async (
@@ -107,7 +122,7 @@ export function AttendanceTab({
   };
 
   // Handle session generation
-  const handleGenerateSessions = async () => {
+  const _handleGenerateSessions = async () => {
     if (sessionCount < 1 || sessionCount > 50) {
       toast.error("Please enter a valid number of sessions (1-50)");
       return;
@@ -134,7 +149,7 @@ export function AttendanceTab({
   };
 
   // Handle session deletion
-  const handleDeleteSession = async (sessionId: string) => {
+  const _handleDeleteSession = async (sessionId: string) => {
     try {
       const result = await deleteSession.mutateAsync({ sessionId });
       if (result.success) {
@@ -148,21 +163,95 @@ export function AttendanceTab({
     }
   };
 
-  // Handle session status update
-  const handleUpdateSessionStatus = async (
-    _sessionId: string,
-    _status: string
-  ) => {
-    // TODO: Implement session status update
-    toast.info("Session status update coming soon");
-  };
+  // Session selector for table actions
+  const sessionSelector = (
+    <div className="flex min-w-0 items-center gap-2">
+      <Label
+        htmlFor="session-dropdown"
+        className="hidden text-sm font-medium whitespace-nowrap sm:block"
+      >
+        Session:
+      </Label>
+      <Select value={selectedSessionId} onValueChange={setSelectedSessionId}>
+        <SelectTrigger className="w-32 min-w-0 sm:w-40 md:w-48 lg:w-56">
+          <SelectValue placeholder="All Sessions" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Sessions</SelectItem>
+          {sessions.map(session => (
+            <SelectItem value={session.id} key={session.id}>
+              {session.title
+                ? `${session.session_number || "#"} - ${session.title}`
+                : `Session ${session.session_number || "#"}`}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
 
   // Handle edit participant
-  const _handleEditParticipant = (participant: ActivityParticipant) => {
-    setEditingParticipant(participant);
+  const _handleEditParticipant = (
+    participant: DailyAttendance["participant"]
+  ) => {
+    if (participant) {
+      setEditingParticipant({
+        participant: participant,
+      } as ActivityParticipant);
+    }
   };
 
-  if (isLoadingSessions || _isLoadingAttendance) {
+  // Initialize attendance for the selected session if needed
+  useEffect(() => {
+    let mounted = true;
+
+    const tryInitialize = async () => {
+      if (
+        !selectedSessionId ||
+        selectedSessionId === "all" ||
+        attendanceBySession[selectedSessionId]?.length > 0 ||
+        initializedSessions.has(selectedSessionId)
+      ) {
+        return;
+      }
+
+      if (participants.length === 0) return;
+
+      try {
+        toast.loading("Initializing attendance for session...");
+        const result = await initializeAllActivityParticipantsInSession(
+          activity.id,
+          selectedSessionId
+        );
+        if (!mounted) return;
+        if (result?.success) {
+          toast.success(result.message || "Attendance initialized");
+          setInitializedSessions(prev => new Set(prev).add(selectedSessionId));
+          refetchAttendance();
+        } else {
+          toast.error(result?.error || "Failed to initialize attendance");
+        }
+      } catch (err) {
+        console.error("Error initializing attendance for session:", err);
+        toast.error("Failed to initialize attendance");
+      }
+    };
+
+    tryInitialize();
+
+    return () => {
+      mounted = false;
+    };
+  }, [
+    selectedSessionId,
+    attendanceBySession,
+    participants,
+    initializedSessions,
+    activity.id,
+    refetchAttendance,
+  ]);
+
+  if (isLoadingSessions) {
     return (
       <TabLoadingSkeleton
         type="attendance"
@@ -171,145 +260,96 @@ export function AttendanceTab({
     );
   }
 
-  return (
-    <div className="w-full space-y-6 overflow-x-hidden">
-      {/* Sessions Overview Metrics */}
-      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid w-full gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard
-          title="Total Sessions"
-          value={sessions.length}
-          icon={<Calendar className="h-4 w-4" />}
-          footer={{
-            title: "Session count",
-            description: "Total sessions planned",
-          }}
-        />
-        <MetricCard
-          title="Completed"
-          value={sessions.filter(s => s.status === "completed").length}
-          icon={<CheckCircle className="h-4 w-4 text-green-600" />}
-          footer={{
-            title: "Finished sessions",
-            description: "Successfully completed",
-          }}
-        />
-        <MetricCard
-          title="Scheduled"
-          value={sessions.filter(s => s.status === "scheduled").length}
-          icon={<Clock className="h-4 w-4 text-blue-600" />}
-          footer={{
-            title: "Upcoming sessions",
-            description: "Ready to conduct",
-          }}
-        />
-        <MetricCard
-          title="Total Participants"
-          value={totalParticipants}
-          icon={<Users className="h-4 w-4 text-purple-600" />}
-          footer={{
-            title: "Registered participants",
-            description: "All activity participants",
-          }}
-        />
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h3 className="text-lg font-semibold">
-            Sessions & Attendance Management
-          </h3>
-          <p className="text-muted-foreground text-sm">
-            Manage sessions and track participant attendance
+  // Handle errors
+  if (_sessionsError) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 text-center">
+        <div className="mb-4 text-red-600">
+          <h3 className="text-lg font-semibold">Error Loading Sessions</h3>
+          <p className="text-muted-foreground mt-2 text-sm">
+            {_sessionsError.message || "Failed to load activity sessions"}
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button onClick={onCreateSession} variant="outline">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Session
-          </Button>
-        </div>
+        <Button onClick={() => refetchSessions()} variant="outline">
+          Try Again
+        </Button>
       </div>
+    );
+  }
 
-      {/* Sub-tabs for Management and Overview */}
-      {sessions.length > 0 ? (
-        <Tabs
-          value={activeSubTab}
-          onValueChange={setActiveSubTab}
-          className="w-full"
-        >
-          <TabsList className="grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="management">Sessions Management</TabsTrigger>
-            <TabsTrigger value="overview">Attendance Overview</TabsTrigger>
-          </TabsList>
+  return (
+    <div className="w-full max-w-full space-y-6 overflow-hidden">
+      {/* Attendance Table Section */}
+      <div className="w-full max-w-full overflow-hidden">
+        {selectedSessionId !== "all"
+          ? (() => {
+              const records = attendanceBySession[selectedSessionId] || [];
+              console.log("Rendering AttendanceDataTable with:", records);
 
-          <TabsContent value="management" className="mt-6">
-            <SessionsManagementTab
-              sessions={sessions}
-              attendanceBySession={attendanceBySession}
-              onEditSession={onEditSession}
-              onManageAttendance={onManageAttendance}
-              onDeleteSession={handleDeleteSession}
-              onUpdateSessionStatus={handleUpdateSessionStatus}
-              onDuplicateSession={onDuplicateSession}
-              isLoading={isLoadingSessions}
-            />
-          </TabsContent>
-
-          <TabsContent value="overview" className="mt-6">
-            <AttendanceOverviewTab
-              sessions={sessions}
-              attendanceBySession={attendanceBySession}
-              isLoading={_isLoadingAttendance}
-              onAttendanceRefresh={refetchAttendance}
-            />
-          </TabsContent>
-        </Tabs>
-      ) : (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <Calendar className="text-muted-foreground/50 h-12 w-12" />
-            <h4 className="mt-4 text-lg font-semibold">No sessions found</h4>
-            <p className="text-muted-foreground mt-2 text-center text-sm">
-              This activity doesn&apos;t have any sessions yet. Create sessions
-              to track attendance for your activity.
-            </p>
-            <div className="mt-6 flex flex-col items-center gap-4 sm:flex-row">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="sessionCount" className="text-sm font-medium">
-                  Sessions:
-                </Label>
-                <Input
-                  id="sessionCount"
-                  type="number"
-                  min="1"
-                  max="50"
-                  value={sessionCount}
-                  onChange={e => setSessionCount(parseInt(e.target.value) || 1)}
-                  className="w-20"
-                  placeholder="5"
+              return (
+                <AttendanceDataTable
+                  sessionAttendance={records}
+                  isLoading={_isLoadingAttendance}
+                  additionalActionButtons={sessionSelector}
+                  onEditParticipant={_handleEditParticipant}
                 />
-                <Button
-                  onClick={handleGenerateSessions}
-                  disabled={generateSessions.isPending || sessionCount < 1}
-                  variant="outline"
-                >
-                  {generateSessions.isPending ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Play className="mr-2 h-4 w-4" />
-                  )}
-                  Generate
-                </Button>
-              </div>
-              <Button onClick={onCreateSession}>
-                <Plus className="mr-2 h-4 w-4" />
-                Create Session
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+              );
+            })()
+          : (() => {
+              const allRecords = Object.values(
+                attendanceBySession
+              ).flat() as DailyAttendance[];
+              console.log(
+                "Rendering AttendanceDataTable with all sessions:",
+                allRecords
+              );
+
+              // If there are no attendance records at all but we have activity
+              // participants, show a participants-based fallback so the user sees
+              // the expected rows (they can initialize per-session if needed).
+              if (allRecords.length === 0 && participants.length > 0) {
+                const fallback = participants.map(p => ({
+                  id: `pseudo-${p.participant_id || p.id}`,
+                  // use the nested participant object (if available) to match DailyAttendance.participant
+                  participant: p.participant || undefined,
+                  participantName:
+                    p.participantName ||
+                    (p.participant
+                      ? `${p.participant.firstName} ${p.participant.lastName}`
+                      : undefined),
+                  participantEmail:
+                    p.participantEmail || p.participant?.contact || "",
+                  participant_id: p.participant_id || p.participant?.id || "",
+                  session_id: "",
+                  attendance_status: "invited",
+                  created_at: null,
+                  updated_at: null,
+                  notes: null,
+                  check_in_time: null,
+                  check_out_time: null,
+                  recorded_by: null,
+                }));
+
+                return (
+                  <AttendanceDataTable
+                    sessionAttendance={fallback as unknown as DailyAttendance[]}
+                    isLoading={_isLoadingAttendance}
+                    additionalActionButtons={sessionSelector}
+                    onEditParticipant={_handleEditParticipant}
+                  />
+                );
+              }
+
+              return (
+                <AttendanceDataTable
+                  sessionAttendance={allRecords}
+                  isLoading={_isLoadingAttendance}
+                  additionalActionButtons={sessionSelector}
+                  onEditParticipant={_handleEditParticipant}
+                />
+              );
+            })()}
+      </div>
 
       {/* Edit Participant Dialog */}
       {editingParticipant?.participant && (

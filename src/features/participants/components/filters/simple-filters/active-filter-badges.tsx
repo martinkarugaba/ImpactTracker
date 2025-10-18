@@ -80,7 +80,7 @@ export function ActiveFilterBadges({ filterGroups }: ActiveFilterBadgesProps) {
                     "all"
                   );
                 }}
-                className="hover:text-destructive flex h-3 w-3 cursor-pointer items-center justify-center"
+                className="flex h-3 w-3 cursor-pointer items-center justify-center hover:text-destructive"
               >
                 <X className="h-3 w-3" />
               </motion.button>
@@ -105,7 +105,7 @@ export function ActiveFilterBadges({ filterGroups }: ActiveFilterBadgesProps) {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-muted-foreground text-sm"
+              className="text-sm text-muted-foreground"
             >
               Active filters:
             </motion.span>

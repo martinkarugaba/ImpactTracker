@@ -936,8 +936,8 @@ export function ParticipantDemographicsAnalytics({
 
         {/* Detailed Vocational Skills Metrics */}
         <div className="space-y-4">
-          <h4 className="text-md text-foreground flex items-center gap-2 font-medium">
-            <Briefcase className="text-primary h-4 w-4" />
+          <h4 className="text-md flex items-center gap-2 font-medium text-foreground">
+            <Briefcase className="h-4 w-4 text-primary" />
             Vocational Skills Training Details
           </h4>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -989,8 +989,8 @@ export function ParticipantDemographicsAnalytics({
 
         {/* Detailed Soft Skills Metrics */}
         <div className="space-y-4">
-          <h4 className="text-md text-foreground flex items-center gap-2 font-medium">
-            <Heart className="text-secondary h-4 w-4" />
+          <h4 className="text-md flex items-center gap-2 font-medium text-foreground">
+            <Heart className="h-4 w-4 text-secondary" />
             Soft Skills Training Details
           </h4>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -1042,12 +1042,12 @@ export function ParticipantDemographicsAnalytics({
 
         {/* Detailed Skills Metrics */}
         <div className="space-y-4">
-          <h4 className="text-md text-foreground font-medium">
+          <h4 className="text-md font-medium text-foreground">
             Detailed Skills Training
           </h4>
 
           {/* Vocational Skills Details */}
-          <div className="bg-card rounded-lg border p-4">
+          <div className="rounded-lg border bg-card p-4">
             <h5 className="mb-3 font-medium text-blue-600 dark:text-blue-400">
               Vocational Skills Training
             </h5>
@@ -1086,7 +1086,7 @@ export function ParticipantDemographicsAnalytics({
           </div>
 
           {/* Soft Skills Details */}
-          <div className="bg-card rounded-lg border p-4">
+          <div className="rounded-lg border bg-card p-4">
             <h5 className="mb-3 font-medium text-green-600 dark:text-green-400">
               Soft Skills Training
             </h5>
@@ -1127,8 +1127,8 @@ export function ParticipantDemographicsAnalytics({
 
         {/* Skills of Interest */}
         {Object.keys(demographics.skills.skillsOfInterest).length > 0 && (
-          <div className="bg-card rounded-lg border p-4">
-            <h5 className="text-primary mb-3 font-medium">
+          <div className="rounded-lg border bg-card p-4">
+            <h5 className="mb-3 font-medium text-primary">
               Skills of Interest
             </h5>
             <div className="grid grid-cols-2 gap-3 text-sm md:grid-cols-3 lg:grid-cols-4">
@@ -1136,12 +1136,12 @@ export function ParticipantDemographicsAnalytics({
                 ([skill, count]) => (
                   <div
                     key={skill}
-                    className="bg-primary/5 dark:bg-primary/10 flex justify-between rounded-lg p-3"
+                    className="flex justify-between rounded-lg bg-primary/5 p-3 dark:bg-primary/10"
                   >
-                    <span className="text-foreground font-medium capitalize">
+                    <span className="font-medium text-foreground capitalize">
                       {skill}
                     </span>
-                    <span className="text-primary font-bold">{count}</span>
+                    <span className="font-bold text-primary">{count}</span>
                   </div>
                 )
               )}
@@ -1157,7 +1157,7 @@ export function ParticipantDemographicsAnalytics({
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Briefcase className="text-primary h-5 w-5" />
+                <Briefcase className="h-5 w-5 text-primary" />
                 <span className="text-primary">
                   Individual Vocational Skills
                 </span>
@@ -1169,14 +1169,14 @@ export function ParticipantDemographicsAnalytics({
                   ([skill, count]) => (
                     <div
                       key={skill}
-                      className="bg-primary/5 dark:bg-primary/10 flex justify-between rounded-lg p-3"
+                      className="flex justify-between rounded-lg bg-primary/5 p-3 dark:bg-primary/10"
                     >
-                      <span className="text-foreground font-medium capitalize">
+                      <span className="font-medium text-foreground capitalize">
                         {skill}
                       </span>
                       <div className="flex flex-col items-end">
-                        <span className="text-primary font-bold">{count}</span>
-                        <span className="text-muted-foreground text-xs">
+                        <span className="font-bold text-primary">{count}</span>
+                        <span className="text-xs text-muted-foreground">
                           participated
                         </span>
                       </div>
@@ -1193,7 +1193,7 @@ export function ParticipantDemographicsAnalytics({
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Users className="text-secondary h-5 w-5" />
+                <Users className="h-5 w-5 text-secondary" />
                 <span className="text-secondary">Individual Soft Skills</span>
               </CardTitle>
             </CardHeader>
@@ -1203,16 +1203,16 @@ export function ParticipantDemographicsAnalytics({
                   ([skill, count]) => (
                     <div
                       key={skill}
-                      className="bg-secondary/5 dark:bg-secondary/10 flex justify-between rounded-lg p-3"
+                      className="flex justify-between rounded-lg bg-secondary/5 p-3 dark:bg-secondary/10"
                     >
-                      <span className="text-foreground font-medium capitalize">
+                      <span className="font-medium text-foreground capitalize">
                         {skill}
                       </span>
                       <div className="flex flex-col items-end">
-                        <span className="text-secondary font-bold">
+                        <span className="font-bold text-secondary">
                           {count}
                         </span>
-                        <span className="text-muted-foreground text-xs">
+                        <span className="text-xs text-muted-foreground">
                           participated
                         </span>
                       </div>
@@ -1231,7 +1231,7 @@ export function ParticipantDemographicsAnalytics({
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Award className="text-accent h-5 w-5" />
+                <Award className="h-5 w-5 text-accent" />
                 <span className="text-accent">
                   Skills Completion & Certification
                 </span>
@@ -1241,7 +1241,7 @@ export function ParticipantDemographicsAnalytics({
               {Object.keys(demographics.skills.vocationalSkillsCompleted)
                 .length > 0 && (
                 <div>
-                  <h5 className="text-primary mb-2 font-medium">
+                  <h5 className="mb-2 font-medium text-primary">
                     Vocational Skills Completed
                   </h5>
                   <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-4">
@@ -1267,7 +1267,7 @@ export function ParticipantDemographicsAnalytics({
               {Object.keys(demographics.skills.softSkillsCompleted).length >
                 0 && (
                 <div>
-                  <h5 className="text-secondary mb-2 font-medium">
+                  <h5 className="mb-2 font-medium text-secondary">
                     Soft Skills Completed
                   </h5>
                   <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-4">

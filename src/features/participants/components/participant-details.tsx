@@ -133,9 +133,9 @@ export function ParticipantDetails({
       <Card className={className}>
         <CardContent className="flex items-center justify-center p-8">
           <div className="text-center">
-            <AlertTriangle className="text-destructive mx-auto mb-4 h-12 w-12" />
+            <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-destructive" />
             <h3 className="text-lg font-semibold">Error Loading Participant</h3>
-            <p className="text-muted-foreground mt-2">{error}</p>
+            <p className="mt-2 text-muted-foreground">{error}</p>
           </div>
         </CardContent>
       </Card>
@@ -147,9 +147,9 @@ export function ParticipantDetails({
       <Card className={className}>
         <CardContent className="flex items-center justify-center p-8">
           <div className="text-center">
-            <XCircle className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+            <XCircle className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
             <h3 className="text-lg font-semibold">Participant Not Found</h3>
-            <p className="text-muted-foreground mt-2">
+            <p className="mt-2 text-muted-foreground">
               The participant you're looking for doesn't exist.
             </p>
           </div>
@@ -275,7 +275,7 @@ export function ParticipantDetails({
                     src={profilePhoto || undefined}
                     alt={`${participant.firstName} ${participant.lastName}`}
                   />
-                  <AvatarFallback className="bg-primary/10 text-primary text-2xl font-semibold">
+                  <AvatarFallback className="bg-primary/10 text-2xl font-semibold text-primary">
                     {getInitials(participant.firstName, participant.lastName)}
                   </AvatarFallback>
                 </Avatar>
@@ -327,7 +327,7 @@ export function ParticipantDetails({
             <div className="flex items-start gap-4">
               <div className="flex-1">
                 <h3 className="font-semibold">Update Profile Picture</h3>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   Upload a new profile photo for {participant.firstName}{" "}
                   {participant.lastName}. The photo will be displayed across the
                   system.
@@ -373,7 +373,7 @@ export function ParticipantDetails({
                   <Button
                     variant="ghost"
                     onClick={removePhoto}
-                    className="text-destructive hover:text-destructive gap-2"
+                    className="gap-2 text-destructive hover:text-destructive"
                   >
                     <XCircle className="h-4 w-4" />
                     Remove Photo
@@ -381,7 +381,7 @@ export function ParticipantDetails({
                 )}
               </div>
 
-              <div className="text-muted-foreground text-right text-xs">
+              <div className="text-right text-xs text-muted-foreground">
                 <div>Supported: JPG, PNG, GIF</div>
                 <div>Max size: 5MB</div>
                 <div>Recommended: 400x400px</div>
@@ -460,7 +460,7 @@ export function ParticipantDetails({
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <div>
-              <span className="text-muted-foreground text-sm">Country</span>
+              <span className="text-sm text-muted-foreground">Country</span>
               <div className="mt-1">
                 <span className="font-semibold text-green-700 dark:text-green-300">
                   {participant.country}
@@ -468,22 +468,22 @@ export function ParticipantDetails({
               </div>
             </div>
             <div>
-              <span className="text-muted-foreground text-sm">District</span>
+              <span className="text-sm text-muted-foreground">District</span>
               <p className="mt-1 text-lg font-semibold">
                 {participant.district}
               </p>
             </div>
             <div>
-              <span className="text-muted-foreground text-sm">Sub County</span>
+              <span className="text-sm text-muted-foreground">Sub County</span>
               <p className="mt-1 font-medium">{participant.subCounty}</p>
             </div>
             <div>
-              <span className="text-muted-foreground text-sm">Parish</span>
-              <p className="text-muted-foreground mt-1">{participant.parish}</p>
+              <span className="text-sm text-muted-foreground">Parish</span>
+              <p className="mt-1 text-muted-foreground">{participant.parish}</p>
             </div>
             <div>
-              <span className="text-muted-foreground text-sm">Village</span>
-              <p className="text-muted-foreground mt-1">
+              <span className="text-sm text-muted-foreground">Village</span>
+              <p className="mt-1 text-muted-foreground">
                 {participant.village}
               </p>
             </div>
@@ -515,7 +515,7 @@ export function ParticipantDetails({
                 <p className="text-lg font-semibold">
                   {participant.organizationName || "Unknown Organization"}
                 </p>
-                <p className="text-muted-foreground text-sm">Organization</p>
+                <p className="text-sm text-muted-foreground">Organization</p>
               </div>
             </div>
           </CardContent>
@@ -531,7 +531,7 @@ export function ParticipantDetails({
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <span className="text-muted-foreground text-sm">Project</span>
+              <span className="text-sm text-muted-foreground">Project</span>
               <div className="mt-1">
                 <span className="text-lg font-semibold text-emerald-700 dark:text-emerald-300">
                   {participant.projectName || "Unknown Project"}
@@ -539,7 +539,7 @@ export function ParticipantDetails({
               </div>
             </div>
             <div>
-              <span className="text-muted-foreground text-sm">Cluster</span>
+              <span className="text-sm text-muted-foreground">Cluster</span>
               <p className="mt-1 font-medium">
                 {participant.clusterName || "Unknown Cluster"}
               </p>
@@ -625,10 +625,10 @@ export function ParticipantDetails({
         <CardContent className="space-y-6">
           {participant.mainChallenge && (
             <div>
-              <h4 className="text-muted-foreground mb-2 text-sm font-medium">
+              <h4 className="mb-2 text-sm font-medium text-muted-foreground">
                 Main Challenge
               </h4>
-              <p className="bg-muted rounded-md p-3 text-sm">
+              <p className="rounded-md bg-muted p-3 text-sm">
                 {participant.mainChallenge}
               </p>
             </div>
@@ -636,10 +636,10 @@ export function ParticipantDetails({
 
           {participant.skillOfInterest && (
             <div>
-              <h4 className="text-muted-foreground mb-2 text-sm font-medium">
+              <h4 className="mb-2 text-sm font-medium text-muted-foreground">
                 Skill of Interest
               </h4>
-              <p className="bg-muted rounded-md p-3 text-sm">
+              <p className="rounded-md bg-muted p-3 text-sm">
                 {participant.skillOfInterest}
               </p>
             </div>
@@ -647,10 +647,10 @@ export function ParticipantDetails({
 
           {participant.expectedImpact && (
             <div>
-              <h4 className="text-muted-foreground mb-2 text-sm font-medium">
+              <h4 className="mb-2 text-sm font-medium text-muted-foreground">
                 Expected Impact
               </h4>
-              <p className="bg-muted rounded-md p-3 text-sm">
+              <p className="rounded-md bg-muted p-3 text-sm">
                 {participant.expectedImpact}
               </p>
             </div>
@@ -684,7 +684,7 @@ export function ParticipantDetails({
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <span className="text-muted-foreground text-sm">Created</span>
+              <span className="text-sm text-muted-foreground">Created</span>
               <p className="mt-1 font-medium">
                 {participant.created_at
                   ? new Date(participant.created_at).toLocaleDateString()
@@ -692,7 +692,7 @@ export function ParticipantDetails({
               </p>
             </div>
             <div>
-              <span className="text-muted-foreground text-sm">
+              <span className="text-sm text-muted-foreground">
                 Last Updated
               </span>
               <p className="mt-1 font-medium">

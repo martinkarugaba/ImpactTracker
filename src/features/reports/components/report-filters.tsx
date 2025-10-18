@@ -90,7 +90,7 @@ export function ReportFilters({
           <div className="space-y-2">
             <Label htmlFor="search">Search</Label>
             <div className="relative">
-              <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="search"
                 placeholder="Search reports..."
@@ -130,7 +130,7 @@ export function ReportFilters({
           <div className="space-y-2">
             <Label htmlFor="dateFrom">Date From</Label>
             <div className="relative">
-              <Calendar className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+              <Calendar className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="dateFrom"
                 type="date"
@@ -146,7 +146,7 @@ export function ReportFilters({
           <div className="space-y-2">
             <Label htmlFor="dateTo">Date To</Label>
             <div className="relative">
-              <Calendar className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+              <Calendar className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="dateTo"
                 type="date"

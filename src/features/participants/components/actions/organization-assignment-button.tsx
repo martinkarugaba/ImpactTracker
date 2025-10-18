@@ -70,7 +70,7 @@ export function OrganizationAssignmentButton({
             {/* Custom Assignment Section */}
             <div className="space-y-4">
               <div className="rounded-lg border p-4">
-                <p className="text-muted-foreground mb-3 text-sm">
+                <p className="mb-3 text-sm text-muted-foreground">
                   Assign all participants from any subcounty to a specific
                   organization. This gives you full control over organization
                   assignments.

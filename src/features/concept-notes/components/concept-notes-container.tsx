@@ -171,7 +171,7 @@ export function ConceptNotesContainer() {
         <Card>
           <CardContent className="flex items-center justify-between p-6">
             <div className="flex items-center gap-2">
-              <span className="text-muted-foreground text-sm">
+              <span className="text-sm text-muted-foreground">
                 Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
                 {Math.min(pagination.page * pagination.limit, pagination.total)}{" "}
                 of {pagination.total} entries

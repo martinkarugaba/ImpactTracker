@@ -371,7 +371,7 @@ export function ParticipantsTab({
 
         {/* Pagination Controls - Right above table */}
         <div className="-mb-5 flex items-center justify-between">
-          <div className="text-muted-foreground text-sm">
+          <div className="text-sm text-muted-foreground">
             {(() => {
               const data = participantsData as ParticipantsResponse;
               return data?.success && data.data
@@ -475,7 +475,7 @@ export function ParticipantsTab({
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
-              <p className="text-muted-foreground text-sm">
+              <p className="text-sm text-muted-foreground">
                 Choose an assignment method to fix organization assignments for
                 participants.
               </p>

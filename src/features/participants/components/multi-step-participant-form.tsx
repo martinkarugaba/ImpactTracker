@@ -582,7 +582,7 @@ export function MultiStepParticipantForm({
             );
           })}
         </div>
-        <span className="text-muted-foreground text-sm">
+        <span className="text-sm text-muted-foreground">
           {currentStepIndex + 1} / {STEPS.length}
         </span>
       </div>
@@ -653,12 +653,12 @@ function PersonalInfoStep({ form }: { form: any }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3 border-b pb-4">
-        <div className="bg-primary/10 rounded-lg p-2">
-          <User className="text-primary h-5 w-5" />
+        <div className="rounded-lg bg-primary/10 p-2">
+          <User className="h-5 w-5 text-primary" />
         </div>
         <div>
           <h3 className="text-lg font-semibold">Personal Information</h3>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             Basic personal details and identity
           </p>
         </div>

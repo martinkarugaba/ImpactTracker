@@ -71,7 +71,7 @@ export function BatchProgress({
             </span>
           </div>
           <Progress value={progress.percentage} className="h-2" />
-          <div className="text-muted-foreground text-center text-xs">
+          <div className="text-center text-xs text-muted-foreground">
             {progress.percentage}% complete
           </div>
         </div>
@@ -91,7 +91,7 @@ export function BatchProgress({
           </div>
         )}
 
-        <div className="text-muted-foreground text-xs">
+        <div className="text-xs text-muted-foreground">
           {isImporting ? (
             <>
               Processing in batches of 100 participants for optimal performance.

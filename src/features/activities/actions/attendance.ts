@@ -7,7 +7,9 @@ import {
   activitySessions,
   activityParticipants,
 } from "@/lib/db/schema";
+import { activities } from "@/lib/db/schema";
 import { eq, and, inArray } from "drizzle-orm";
+import { retryAsync } from "@/lib/db/retry";
 import {
   type DailyAttendanceResponse,
   type DailyAttendanceListResponse,
@@ -124,29 +126,32 @@ export async function markAttendance(
   }
 ): Promise<DailyAttendanceResponse> {
   try {
-    // Check if attendance record already exists
-    const existingRecord = await db.query.dailyAttendance.findFirst({
-      where: and(
-        eq(dailyAttendance.session_id, sessionId),
-        eq(dailyAttendance.participant_id, participantId)
-      ),
-    });
+    // Perform DB operations with retries to tolerate transient network/DB errors
+    const attendanceRecord = await retryAsync(async () => {
+      // Check if attendance record already exists
+      const existingRecord = await db.query.dailyAttendance.findFirst({
+        where: and(
+          eq(dailyAttendance.session_id, sessionId),
+          eq(dailyAttendance.participant_id, participantId)
+        ),
+      });
 
-    let attendanceRecord;
+      if (existingRecord) {
+        // Update existing record
+        const [updated] = await db
+          .update(dailyAttendance)
+          .set({
+            ...attendanceData,
+            updated_at: new Date(),
+          })
+          .where(eq(dailyAttendance.id, existingRecord.id))
+          .returning();
 
-    if (existingRecord) {
-      // Update existing record
-      [attendanceRecord] = await db
-        .update(dailyAttendance)
-        .set({
-          ...attendanceData,
-          updated_at: new Date(),
-        })
-        .where(eq(dailyAttendance.id, existingRecord.id))
-        .returning();
-    } else {
+        return updated;
+      }
+
       // Create new record
-      [attendanceRecord] = await db
+      const [created] = await db
         .insert(dailyAttendance)
         .values({
           session_id: sessionId,
@@ -154,7 +159,9 @@ export async function markAttendance(
           ...attendanceData,
         })
         .returning();
-    }
+
+      return created;
+    });
 
     // Get session info for revalidation
     const session = await db.query.activitySessions.findFirst({
@@ -311,10 +318,27 @@ export async function initializeSessionAttendance(
 
     // Create attendance records for participants who don't have one yet
     if (newParticipantIds.length > 0) {
+      // Check activity status: if activity is completed mark as attended by default
+      const sessionInfo = await db.query.activitySessions.findFirst({
+        where: eq(activitySessions.id, sessionId),
+        columns: { activity_id: true },
+      });
+
+      let defaultStatus: DailyAttendanceStatus = "invited";
+      if (sessionInfo) {
+        const parentActivity = await db.query.activities.findFirst({
+          where: eq(activities.id, sessionInfo.activity_id),
+          columns: { status: true },
+        });
+        if (parentActivity && parentActivity.status === "completed") {
+          defaultStatus = "attended" as DailyAttendanceStatus;
+        }
+      }
+
       const newAttendanceRecords = newParticipantIds.map(participantId => ({
         session_id: sessionId,
         participant_id: participantId,
-        attendance_status: "invited" as DailyAttendanceStatus,
+        attendance_status: defaultStatus,
         recorded_by: "system",
       }));
 
@@ -449,6 +473,11 @@ export async function getActivitySessionsAttendance(
   error?: string;
 }> {
   try {
+    console.log(
+      "getActivitySessionsAttendance called with activityId:",
+      activityId
+    );
+
     // First get all session IDs for the activity
     const sessions = await db.query.activitySessions.findMany({
       where: eq(activitySessions.activity_id, activityId),
@@ -495,6 +524,16 @@ export async function getActivitySessionsAttendance(
         subCounty: record.participant?.subCounty ?? null,
       } as DailyAttendance);
     }
+
+    console.log(
+      "getActivitySessionsAttendance returning with data:",
+      attendanceBySession
+    );
+
+    console.log("getActivitySessionsAttendance returning:", {
+      success: true,
+      data: attendanceBySession,
+    });
 
     return {
       success: true,

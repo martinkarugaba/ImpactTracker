@@ -314,7 +314,7 @@ export function VSLAForm({
         <div className="space-y-6">
           <div className="border-b pb-4">
             <h3 className="text-lg font-medium">Basic Information</h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               Basic details about the VSLA group
             </p>
           </div>
@@ -447,7 +447,7 @@ export function VSLAForm({
         <div className="space-y-6">
           <div className="border-b pb-4">
             <h3 className="text-lg font-medium">Organization & Project</h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               Link this VSLA to organization and project
             </p>
           </div>
@@ -555,7 +555,7 @@ export function VSLAForm({
         <div className="space-y-6">
           <div className="border-b pb-4">
             <h3 className="text-lg font-medium">Location Information</h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               Administrative location details
             </p>
           </div>
@@ -751,7 +751,7 @@ export function VSLAForm({
         <div className="space-y-6">
           <div className="border-b pb-4">
             <h3 className="text-lg font-medium">Important Dates</h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               Formation and closing dates
             </p>
           </div>
@@ -845,7 +845,7 @@ export function VSLAForm({
         <div className="space-y-6">
           <div className="border-b pb-4">
             <h3 className="text-lg font-medium">Meeting Information</h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               Meeting schedule and location details
             </p>
           </div>
@@ -942,7 +942,7 @@ export function VSLAForm({
         <div className="space-y-6">
           <div className="border-b pb-4">
             <h3 className="text-lg font-medium">Local Leadership</h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               LC1 Chairperson information
             </p>
           </div>
@@ -985,7 +985,7 @@ export function VSLAForm({
         <div className="space-y-6">
           <div className="border-b pb-4">
             <h3 className="text-lg font-medium">Governance</h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               Constitution and governance information
             </p>
           </div>
@@ -1047,7 +1047,7 @@ export function VSLAForm({
         <div className="space-y-6">
           <div className="border-b pb-4">
             <h3 className="text-lg font-medium">Banking Information</h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               Bank account and registration details
             </p>
           </div>
@@ -1115,7 +1115,7 @@ export function VSLAForm({
         <div className="space-y-6">
           <div className="border-b pb-4">
             <h3 className="text-lg font-medium">SACCO Information</h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               SACCO membership details
             </p>
           </div>
@@ -1150,7 +1150,7 @@ export function VSLAForm({
         <div className="space-y-6">
           <div className="border-b pb-4">
             <h3 className="text-lg font-medium">Financial Summary</h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               Current financial status (usually auto-calculated)
             </p>
           </div>
@@ -1225,7 +1225,7 @@ export function VSLAForm({
         <div className="space-y-6">
           <div className="border-b pb-4">
             <h3 className="text-lg font-medium">Additional Information</h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               Notes and additional comments
             </p>
           </div>

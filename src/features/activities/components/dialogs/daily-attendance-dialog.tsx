@@ -237,7 +237,7 @@ export function DailyAttendanceDialog({
             <div className="grid gap-4 md:grid-cols-5">
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-muted-foreground text-sm font-medium">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
                     Total
                   </CardTitle>
                 </CardHeader>
@@ -250,7 +250,7 @@ export function DailyAttendanceDialog({
 
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-muted-foreground text-sm font-medium">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
                     Attended
                   </CardTitle>
                 </CardHeader>
@@ -267,7 +267,7 @@ export function DailyAttendanceDialog({
 
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-muted-foreground text-sm font-medium">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
                     Absent
                   </CardTitle>
                 </CardHeader>
@@ -284,7 +284,7 @@ export function DailyAttendanceDialog({
 
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-muted-foreground text-sm font-medium">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
                     Late
                   </CardTitle>
                 </CardHeader>
@@ -301,7 +301,7 @@ export function DailyAttendanceDialog({
 
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-muted-foreground text-sm font-medium">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
                     Excused
                   </CardTitle>
                 </CardHeader>
@@ -429,7 +429,7 @@ export function DailyAttendanceDialog({
                             className="w-48"
                           />
                         ) : (
-                          <span className="text-muted-foreground text-sm">
+                          <span className="text-sm text-muted-foreground">
                             {record.notes || "-"}
                           </span>
                         )}
@@ -482,7 +482,7 @@ export function DailyAttendanceDialog({
             </Table>
           </div>
         ) : (
-          <div className="text-muted-foreground py-8 text-center">
+          <div className="py-8 text-center text-muted-foreground">
             No attendance records found for this session.
           </div>
         )}

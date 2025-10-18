@@ -8,13 +8,13 @@ export default function ActivityNotFound() {
     <div className="container mx-auto px-6 py-12">
       <Card className="mx-auto max-w-md">
         <CardHeader className="text-center">
-          <div className="bg-muted mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-            <FileQuestion className="text-muted-foreground h-8 w-8" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+            <FileQuestion className="h-8 w-8 text-muted-foreground" />
           </div>
           <CardTitle className="text-xl">Activity Not Found</CardTitle>
         </CardHeader>
         <CardContent className="text-center">
-          <p className="text-muted-foreground mb-6">
+          <p className="mb-6 text-muted-foreground">
             The activity you're looking for doesn't exist or may have been
             deleted.
           </p>

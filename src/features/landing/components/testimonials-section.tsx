@@ -36,7 +36,7 @@ export function TestimonialsSection() {
           <h2 className="mb-2 text-3xl font-bold tracking-tight">
             What Our Customers Say
           </h2>
-          <p className="text-muted-foreground mx-auto max-w-2xl text-xl">
+          <p className="mx-auto max-w-2xl text-xl text-muted-foreground">
             Trusted by businesses worldwide to track and improve their
             performance
           </p>
@@ -44,7 +44,7 @@ export function TestimonialsSection() {
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {testimonials.map((testimonial, index) => (
-            <Card key={index} className="border-border/40 border">
+            <Card key={index} className="border border-border/40">
               <CardHeader className="pb-2">
                 <div className="flex justify-start space-x-1">
                   {[1, 2, 3, 4, 5].map(star => (
@@ -75,7 +75,7 @@ export function TestimonialsSection() {
                 <div className="text-lg font-semibold">
                   {testimonial.author}
                 </div>
-                <div className="text-muted-foreground text-base">
+                <div className="text-base text-muted-foreground">
                   {testimonial.role}
                 </div>
               </CardFooter>
@@ -91,20 +91,20 @@ export function TestimonialsSection() {
           <Separator className="mx-auto my-8 w-1/2" />
           <div className="flex flex-wrap justify-center gap-x-12 gap-y-6">
             <div className="text-center">
-              <div className="text-primary text-3xl font-bold">500+</div>
-              <div className="text-muted-foreground text-base">
+              <div className="text-3xl font-bold text-primary">500+</div>
+              <div className="text-base text-muted-foreground">
                 Active businesses
               </div>
             </div>
             <div className="text-center">
-              <div className="text-primary text-3xl font-bold">10,000+</div>
-              <div className="text-muted-foreground text-base">
+              <div className="text-3xl font-bold text-primary">10,000+</div>
+              <div className="text-base text-muted-foreground">
                 KPIs tracked monthly
               </div>
             </div>
             <div className="text-center">
-              <div className="text-primary text-3xl font-bold">30%</div>
-              <div className="text-muted-foreground text-base">
+              <div className="text-3xl font-bold text-primary">30%</div>
+              <div className="text-base text-muted-foreground">
                 Average performance increase
               </div>
             </div>

@@ -71,13 +71,13 @@ export function ConceptNoteDetailsDialog({
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
-                  <span className="text-muted-foreground text-sm font-medium">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Activity:
                   </span>
                   <p className="font-medium">{conceptNote.activity.title}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground text-sm font-medium">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Type:
                   </span>
                   <div className="mt-1">
@@ -85,7 +85,7 @@ export function ConceptNoteDetailsDialog({
                   </div>
                 </div>
                 <div>
-                  <span className="text-muted-foreground text-sm font-medium">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Activity Period:
                   </span>
                   <p>
@@ -102,7 +102,7 @@ export function ConceptNoteDetailsDialog({
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
-                  <span className="text-muted-foreground text-sm font-medium">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Project:
                   </span>
                   <p className="font-medium">
@@ -110,13 +110,13 @@ export function ConceptNoteDetailsDialog({
                   </p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground text-sm font-medium">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Organization:
                   </span>
                   <p className="font-medium">{conceptNote.organization.name}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground text-sm font-medium">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Status:
                   </span>
                   <div className="mt-1">
@@ -146,10 +146,10 @@ export function ConceptNoteDetailsDialog({
             <CardContent className="space-y-4">
               {conceptNote.charge_code && (
                 <div>
-                  <span className="text-muted-foreground text-sm font-medium">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Charge Code:
                   </span>
-                  <p className="bg-muted mt-1 rounded px-2 py-1 font-mono text-sm">
+                  <p className="mt-1 rounded bg-muted px-2 py-1 font-mono text-sm">
                     {conceptNote.charge_code}
                   </p>
                 </div>
@@ -157,7 +157,7 @@ export function ConceptNoteDetailsDialog({
 
               {conceptNote.activity_lead && (
                 <div>
-                  <span className="text-muted-foreground text-sm font-medium">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Activity Lead:
                   </span>
                   <p className="mt-1">{conceptNote.activity_lead}</p>
@@ -166,7 +166,7 @@ export function ConceptNoteDetailsDialog({
 
               {conceptNote.submission_date && (
                 <div>
-                  <span className="text-muted-foreground text-sm font-medium">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Submission Date:
                   </span>
                   <p className="mt-1">
@@ -178,7 +178,7 @@ export function ConceptNoteDetailsDialog({
               <Separator />
 
               <div>
-                <span className="text-muted-foreground text-sm font-medium">
+                <span className="text-sm font-medium text-muted-foreground">
                   Main Content:
                 </span>
                 <div className="prose prose-sm mt-2 max-w-none">
@@ -190,7 +190,7 @@ export function ConceptNoteDetailsDialog({
                 <>
                   <Separator />
                   <div>
-                    <span className="text-muted-foreground text-sm font-medium">
+                    <span className="text-sm font-medium text-muted-foreground">
                       Project Summary:
                     </span>
                     <div className="prose prose-sm mt-2 max-w-none">
@@ -206,7 +206,7 @@ export function ConceptNoteDetailsDialog({
                 <>
                   <Separator />
                   <div>
-                    <span className="text-muted-foreground text-sm font-medium">
+                    <span className="text-sm font-medium text-muted-foreground">
                       Methodology:
                     </span>
                     <div className="prose prose-sm mt-2 max-w-none">
@@ -222,7 +222,7 @@ export function ConceptNoteDetailsDialog({
                 <>
                   <Separator />
                   <div>
-                    <span className="text-muted-foreground text-sm font-medium">
+                    <span className="text-sm font-medium text-muted-foreground">
                       Requirements:
                     </span>
                     <div className="prose prose-sm mt-2 max-w-none">
@@ -238,7 +238,7 @@ export function ConceptNoteDetailsDialog({
                 <>
                   <Separator />
                   <div>
-                    <span className="text-muted-foreground text-sm font-medium">
+                    <span className="text-sm font-medium text-muted-foreground">
                       Participant Details:
                     </span>
                     <div className="prose prose-sm mt-2 max-w-none">
@@ -262,7 +262,7 @@ export function ConceptNoteDetailsDialog({
               <CardContent className="space-y-4">
                 {conceptNote.budget_items.length > 0 && (
                   <div>
-                    <span className="text-muted-foreground text-sm font-medium">
+                    <span className="text-sm font-medium text-muted-foreground">
                       Budget Items:
                     </span>
                     <ul className="mt-2 list-inside list-disc space-y-1">
@@ -279,7 +279,7 @@ export function ConceptNoteDetailsDialog({
                   <>
                     {conceptNote.budget_items.length > 0 && <Separator />}
                     <div>
-                      <span className="text-muted-foreground text-sm font-medium">
+                      <span className="text-sm font-medium text-muted-foreground">
                         Budget Notes:
                       </span>
                       <div className="prose prose-sm mt-2 max-w-none">

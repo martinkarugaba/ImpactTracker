@@ -59,7 +59,7 @@ export function JotaiParticipantsContainer({
       <div className="flex h-96 items-center justify-center">
         <div className="text-center">
           <h3 className="text-lg font-semibold">Error loading participants</h3>
-          <p className="text-muted-foreground mt-2">
+          <p className="mt-2 text-muted-foreground">
             {state.participantsError?.message ||
               state.metricsError?.message ||
               "Something went wrong"}

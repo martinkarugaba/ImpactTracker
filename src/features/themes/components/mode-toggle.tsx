@@ -49,7 +49,7 @@ export function ModeToggle() {
           variant="outline"
           size="sm"
           onClick={toggleTheme}
-          className="text-foreground hover:bg-accent relative h-8 overflow-hidden border-none bg-transparent shadow-none outline-none"
+          className="relative h-8 overflow-hidden border-none bg-transparent text-foreground shadow-none outline-none hover:bg-accent"
         >
           <IconBrightness className="h-4 w-4" />
           <span className="sr-only">

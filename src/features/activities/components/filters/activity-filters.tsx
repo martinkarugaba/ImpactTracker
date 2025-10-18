@@ -83,7 +83,7 @@ export function ActivityFiltersComponent({
                   variant="ghost"
                   size="sm"
                   onClick={clearFilters}
-                  className="text-muted-foreground h-auto p-0"
+                  className="h-auto p-0 text-muted-foreground"
                 >
                   Clear all
                 </Button>
@@ -93,7 +93,7 @@ export function ActivityFiltersComponent({
               <div className="space-y-2">
                 <label className="text-sm font-medium">Search</label>
                 <div className="relative">
-                  <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
+                  <Search className="absolute top-2.5 left-2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search activities..."
                     value={searchValue || filters.search || ""}

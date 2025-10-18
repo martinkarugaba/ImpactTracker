@@ -4,7 +4,7 @@ import { Info } from "lucide-react";
 export function DataAvailabilityNotice() {
   return (
     <Card
-      className="border-muted-foreground/20 bg-muted/50 border-l-4"
+      className="border-l-4 border-muted-foreground/20 bg-muted/50"
       style={{ borderLeftColor: "oklch(var(--primary))" }}
     >
       <CardContent className="pt-6">
@@ -15,7 +15,7 @@ export function DataAvailabilityNotice() {
           />
           <div className="space-y-2">
             <p className="text-sm font-medium">Demographics Data Status</p>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               This tab shows participant demographics with mock data
               calculations. Demographic fields (age, gender, disability status,
               employment details) are not yet available in the current

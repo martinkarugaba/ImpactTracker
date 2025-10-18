@@ -193,7 +193,7 @@ export function ParticipantFeedbackDialog({
                               <span className="font-medium">
                                 {option.label}
                               </span>
-                              <span className="text-muted-foreground text-xs">
+                              <span className="text-xs text-muted-foreground">
                                 {option.description}
                               </span>
                             </div>
@@ -232,7 +232,7 @@ export function ParticipantFeedbackDialog({
                               <span className="font-medium">
                                 {option.label}
                               </span>
-                              <span className="text-muted-foreground text-xs">
+                              <span className="text-xs text-muted-foreground">
                                 {option.description}
                               </span>
                             </div>
@@ -267,7 +267,7 @@ export function ParticipantFeedbackDialog({
                         <SelectItem value="yes">
                           <div className="flex flex-col">
                             <span className="font-medium">Yes</span>
-                            <span className="text-muted-foreground text-xs">
+                            <span className="text-xs text-muted-foreground">
                               Would recommend to others
                             </span>
                           </div>
@@ -275,7 +275,7 @@ export function ParticipantFeedbackDialog({
                         <SelectItem value="no">
                           <div className="flex flex-col">
                             <span className="font-medium">No</span>
-                            <span className="text-muted-foreground text-xs">
+                            <span className="text-xs text-muted-foreground">
                               Would not recommend
                             </span>
                           </div>

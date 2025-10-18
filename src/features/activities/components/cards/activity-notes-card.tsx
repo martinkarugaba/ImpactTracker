@@ -14,7 +14,7 @@ export function ActivityNotesCard({ activity }: ActivityNotesCardProps) {
       <CardContent className="space-y-4">
         {activity.outcomes && (
           <div>
-            <label className="text-muted-foreground text-base font-medium">
+            <label className="text-base font-medium text-muted-foreground">
               Outcomes
             </label>
             <p className="mt-1 text-base">{activity.outcomes}</p>
@@ -23,7 +23,7 @@ export function ActivityNotesCard({ activity }: ActivityNotesCardProps) {
 
         {activity.challenges && (
           <div>
-            <label className="text-muted-foreground text-base font-medium">
+            <label className="text-base font-medium text-muted-foreground">
               Challenges
             </label>
             <p className="mt-1 text-base">{activity.challenges}</p>
@@ -32,7 +32,7 @@ export function ActivityNotesCard({ activity }: ActivityNotesCardProps) {
 
         {activity.recommendations && (
           <div>
-            <label className="text-muted-foreground text-base font-medium">
+            <label className="text-base font-medium text-muted-foreground">
               Recommendations
             </label>
             <p className="mt-1 text-base">{activity.recommendations}</p>
@@ -42,7 +42,7 @@ export function ActivityNotesCard({ activity }: ActivityNotesCardProps) {
         {!activity.outcomes &&
           !activity.challenges &&
           !activity.recommendations && (
-            <p className="text-muted-foreground text-base">
+            <p className="text-base text-muted-foreground">
               No notes or outcomes recorded yet.
             </p>
           )}

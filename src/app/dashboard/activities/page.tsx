@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PageTitle } from "@/features/dashboard/components/page-title";
 import { ActivitiesTableSkeleton } from "@/features/activities/components/table/activities-table-skeleton";
 import { IconActivity } from "@tabler/icons-react";
-import { getUserClusterId } from "@/features/auth/actions";
+import { auth } from "@/features/auth/auth";
 
 // Force dynamic rendering since this page uses authentication
 export const dynamic = "force-dynamic";
@@ -16,7 +16,7 @@ function ActivitiesPageSkeleton() {
   return (
     <div className="space-y-6">
       {/* Metrics Cards Skeleton */}
-      <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4 dark:*:data-[slot=card]:bg-card">
         {Array.from({ length: 8 }).map((_, i) => (
           <MetricCard
             key={i}
@@ -78,15 +78,15 @@ function ActivitiesPageSkeleton() {
 // Main activities page content
 async function ActivitiesPageContent() {
   try {
-    // Get user's cluster ID first
-    const clusterId = await getUserClusterId();
+    // Get user's session to access cluster information
+    const session = await auth();
 
-    if (!clusterId) {
+    if (!session?.user?.clusterId) {
       return (
         <div className="flex h-96 items-center justify-center">
           <div className="text-center">
             <h3 className="text-lg font-semibold">No cluster assigned</h3>
-            <p className="text-muted-foreground mt-2">
+            <p className="mt-2 text-muted-foreground">
               Please contact an administrator to assign you to a cluster.
             </p>
           </div>
@@ -94,7 +94,7 @@ async function ActivitiesPageContent() {
       );
     }
 
-    return <ActivitiesContainerNew clusterId={clusterId} />;
+    return <ActivitiesContainerNew clusterId={session.user.clusterId} />;
   } catch (error) {
     console.error("Error loading activities page data:", error);
 
@@ -102,7 +102,7 @@ async function ActivitiesPageContent() {
       <div className="flex h-96 items-center justify-center">
         <div className="text-center">
           <h3 className="text-lg font-semibold">Error loading activities</h3>
-          <p className="text-muted-foreground mt-2">
+          <p className="mt-2 text-muted-foreground">
             Failed to load page data. Please try refreshing the page.
           </p>
         </div>

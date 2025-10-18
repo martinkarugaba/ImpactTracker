@@ -4,4 +4,4 @@ export { PaginationControls } from "./data-table";
 export { useTableState } from "./data-table";
 export { InterventionFilters } from "./filters/intervention-filters";
 export { default as InterventionsContainer } from "./container/interventions-container";
-export { getInterventionColumns } from "./table/columns";
+export { getInterventionColumns } from "./data-table/columns";

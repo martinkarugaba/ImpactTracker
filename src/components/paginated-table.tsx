@@ -184,7 +184,7 @@ export default function Component() {
 
   return (
     <div className="space-y-4">
-      <div className="bg-background overflow-hidden rounded-md border">
+      <div className="overflow-hidden rounded-md border bg-background">
         <Table className="table-fixed">
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
@@ -283,7 +283,7 @@ export default function Component() {
       <div className="flex items-center justify-between gap-3 max-sm:flex-col">
         {/* Page number information */}
         <p
-          className="text-muted-foreground flex-1 text-sm whitespace-nowrap"
+          className="flex-1 text-sm whitespace-nowrap text-muted-foreground"
           aria-live="polite"
         >
           Page{" "}
@@ -385,10 +385,10 @@ export default function Component() {
           </Select>
         </div>
       </div>
-      <p className="text-muted-foreground mt-4 text-center text-sm">
+      <p className="mt-4 text-center text-sm text-muted-foreground">
         Numeric pagination made with{" "}
         <a
-          className="hover:text-foreground underline"
+          className="underline hover:text-foreground"
           href="https://tanstack.com/table"
           target="_blank"
           rel="noopener noreferrer"

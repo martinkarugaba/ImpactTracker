@@ -39,8 +39,8 @@ export function CompactMetricCard({
   return (
     <Card
       className={cn(
-        "border-border/50 relative overflow-hidden border p-4",
-        onClick && "hover:bg-accent cursor-pointer transition-colors",
+        "relative overflow-hidden border border-border/50 p-4",
+        onClick && "cursor-pointer transition-colors hover:bg-accent",
         isActive && "border-primary bg-accent",
         className
       )}
@@ -56,7 +56,7 @@ export function CompactMetricCard({
                 <div className={cn(iconColor)}>{icon}</div>
               </div>
             )}
-            <p className="text-muted-foreground text-sm font-medium">{title}</p>
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
           </div>
           {isLoading ? (
             <Skeleton className="h-7 w-20" />
@@ -93,7 +93,7 @@ export function CompactMetricCard({
                     {value}
                   </p>
                   {subtitle && (
-                    <span className="text-muted-foreground text-sm">
+                    <span className="text-sm text-muted-foreground">
                       {subtitle}
                     </span>
                   )}
@@ -112,7 +112,7 @@ export function CompactMetricCard({
                 {trend.isPositive ? "+" : "-"}
                 {Math.abs(trend.value)}%
               </span>
-              <span className="text-muted-foreground ml-1">vs. previous</span>
+              <span className="ml-1 text-muted-foreground">vs. previous</span>
             </div>
           )}
         </div>

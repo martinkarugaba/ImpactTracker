@@ -15,7 +15,7 @@ export function SelectionSummary() {
   if (selectedForDeletion.length === 0) return null;
 
   return (
-    <div className="bg-muted sticky bottom-0 rounded-lg border p-4">
+    <div className="sticky bottom-0 rounded-lg border bg-muted p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Trash2 className="h-4 w-4 text-red-600" />

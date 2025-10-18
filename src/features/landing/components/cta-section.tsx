@@ -6,12 +6,12 @@ export function CTASection() {
   return (
     <section className="relative overflow-hidden py-20">
       <Container>
-        <div className="bg-primary/10 border-primary/20 relative z-10 rounded-3xl border p-8 backdrop-blur-sm md:p-12">
+        <div className="relative z-10 rounded-3xl border border-primary/20 bg-primary/10 p-8 backdrop-blur-sm md:p-12">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="mb-4 text-3xl font-bold tracking-tight">
               Ready to transform how you track performance?
             </h2>
-            <p className="text-muted-foreground mx-auto mb-8 max-w-2xl text-xl">
+            <p className="mx-auto mb-8 max-w-2xl text-xl text-muted-foreground">
               Join thousands of organizations using KPI Tracker to make better
               decisions with their data.
             </p>

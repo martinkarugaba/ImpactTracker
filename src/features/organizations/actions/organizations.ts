@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
+import { retryAsync } from "@/lib/db/retry";
 import {
   organizations,
   clusters,
@@ -118,42 +119,44 @@ export async function getOrganizations(cluster_id?: string) {
     }
     // super_admin sees all organizations (no filter applied)
 
-    const orgs = await db
-      .select({
-        id: organizations.id,
-        name: organizations.name,
-        acronym: organizations.acronym,
-        cluster_id: organizations.cluster_id,
-        project_id: organizations.project_id,
-        country: organizations.country,
-        district: organizations.district,
-        sub_county_id: organizations.sub_county_id,
-        operation_sub_counties: organizations.operation_sub_counties,
-        parish: organizations.parish,
-        village: organizations.village,
-        address: organizations.address,
-        created_at: organizations.created_at,
-        updated_at: organizations.updated_at,
-        cluster: {
-          id: clusters.id,
-          name: clusters.name,
-        },
-        project: {
-          id: projects.id,
-          name: projects.name,
-          acronym: projects.acronym,
-        },
-      })
-      .from(organizations)
-      .leftJoin(clusters, eq(organizations.cluster_id, clusters.id))
-      .leftJoin(projects, eq(organizations.project_id, projects.id))
-      .where(
-        cluster_id
-          ? eq(organizations.cluster_id, cluster_id)
-          : allowedClusterIds
-            ? inArray(organizations.cluster_id, allowedClusterIds)
-            : undefined
-      );
+    const orgs = await retryAsync(() =>
+      db
+        .select({
+          id: organizations.id,
+          name: organizations.name,
+          acronym: organizations.acronym,
+          cluster_id: organizations.cluster_id,
+          project_id: organizations.project_id,
+          country: organizations.country,
+          district: organizations.district,
+          sub_county_id: organizations.sub_county_id,
+          operation_sub_counties: organizations.operation_sub_counties,
+          parish: organizations.parish,
+          village: organizations.village,
+          address: organizations.address,
+          created_at: organizations.created_at,
+          updated_at: organizations.updated_at,
+          cluster: {
+            id: clusters.id,
+            name: clusters.name,
+          },
+          project: {
+            id: projects.id,
+            name: projects.name,
+            acronym: projects.acronym,
+          },
+        })
+        .from(organizations)
+        .leftJoin(clusters, eq(organizations.cluster_id, clusters.id))
+        .leftJoin(projects, eq(organizations.project_id, projects.id))
+        .where(
+          cluster_id
+            ? eq(organizations.cluster_id, cluster_id)
+            : allowedClusterIds
+              ? inArray(organizations.cluster_id, allowedClusterIds)
+              : undefined
+        )
+    );
 
     // Collect all district codes and subcounty codes for batch lookup
     const districtCodes = orgs.map(org => org.district).filter(Boolean);
@@ -194,36 +197,38 @@ export async function getOrganizations(cluster_id?: string) {
 
 export async function getOrganization(id: string) {
   try {
-    const [organization] = await db
-      .select({
-        id: organizations.id,
-        name: organizations.name,
-        acronym: organizations.acronym,
-        cluster_id: organizations.cluster_id,
-        project_id: organizations.project_id,
-        country: organizations.country,
-        district: organizations.district,
-        sub_county_id: organizations.sub_county_id,
-        operation_sub_counties: organizations.operation_sub_counties,
-        parish: organizations.parish,
-        village: organizations.village,
-        address: organizations.address,
-        created_at: organizations.created_at,
-        updated_at: organizations.updated_at,
-        cluster: {
-          id: clusters.id,
-          name: clusters.name,
-        },
-        project: {
-          id: projects.id,
-          name: projects.name,
-          acronym: projects.acronym,
-        },
-      })
-      .from(organizations)
-      .leftJoin(clusters, eq(organizations.cluster_id, clusters.id))
-      .leftJoin(projects, eq(organizations.project_id, projects.id))
-      .where(eq(organizations.id, id));
+    const [organization] = await retryAsync(() =>
+      db
+        .select({
+          id: organizations.id,
+          name: organizations.name,
+          acronym: organizations.acronym,
+          cluster_id: organizations.cluster_id,
+          project_id: organizations.project_id,
+          country: organizations.country,
+          district: organizations.district,
+          sub_county_id: organizations.sub_county_id,
+          operation_sub_counties: organizations.operation_sub_counties,
+          parish: organizations.parish,
+          village: organizations.village,
+          address: organizations.address,
+          created_at: organizations.created_at,
+          updated_at: organizations.updated_at,
+          cluster: {
+            id: clusters.id,
+            name: clusters.name,
+          },
+          project: {
+            id: projects.id,
+            name: projects.name,
+            acronym: projects.acronym,
+          },
+        })
+        .from(organizations)
+        .leftJoin(clusters, eq(organizations.cluster_id, clusters.id))
+        .leftJoin(projects, eq(organizations.project_id, projects.id))
+        .where(eq(organizations.id, id))
+    );
 
     if (!organization) {
       return { success: false, error: "Organization not found" };
@@ -383,36 +388,38 @@ export async function getCurrentOrganizationWithCluster(
 
 export async function getOrganizationsByCluster(clusterId: string) {
   try {
-    const orgs = await db
-      .select({
-        id: organizations.id,
-        name: organizations.name,
-        acronym: organizations.acronym,
-        cluster_id: organizations.cluster_id,
-        project_id: organizations.project_id,
-        country: organizations.country,
-        district: organizations.district,
-        sub_county_id: organizations.sub_county_id,
-        operation_sub_counties: organizations.operation_sub_counties,
-        parish: organizations.parish,
-        village: organizations.village,
-        address: organizations.address,
-        created_at: organizations.created_at,
-        updated_at: organizations.updated_at,
-        cluster: {
-          id: clusters.id,
-          name: clusters.name,
-        },
-        project: {
-          id: projects.id,
-          name: projects.name,
-          acronym: projects.acronym,
-        },
-      })
-      .from(organizations)
-      .leftJoin(clusters, eq(organizations.cluster_id, clusters.id))
-      .leftJoin(projects, eq(organizations.project_id, projects.id))
-      .where(eq(organizations.cluster_id, clusterId));
+    const orgs = await retryAsync(() =>
+      db
+        .select({
+          id: organizations.id,
+          name: organizations.name,
+          acronym: organizations.acronym,
+          cluster_id: organizations.cluster_id,
+          project_id: organizations.project_id,
+          country: organizations.country,
+          district: organizations.district,
+          sub_county_id: organizations.sub_county_id,
+          operation_sub_counties: organizations.operation_sub_counties,
+          parish: organizations.parish,
+          village: organizations.village,
+          address: organizations.address,
+          created_at: organizations.created_at,
+          updated_at: organizations.updated_at,
+          cluster: {
+            id: clusters.id,
+            name: clusters.name,
+          },
+          project: {
+            id: projects.id,
+            name: projects.name,
+            acronym: projects.acronym,
+          },
+        })
+        .from(organizations)
+        .leftJoin(clusters, eq(organizations.cluster_id, clusters.id))
+        .leftJoin(projects, eq(organizations.project_id, projects.id))
+        .where(eq(organizations.cluster_id, clusterId))
+    );
 
     // Collect all district codes and subcounty codes for batch lookup
     const districtCodes = orgs.map(org => org.district).filter(Boolean);

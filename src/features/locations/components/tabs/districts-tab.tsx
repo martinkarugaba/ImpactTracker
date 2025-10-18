@@ -22,7 +22,7 @@ export function DistrictsTab({ countryId }: DistrictsTabProps) {
 
   if (error) {
     return (
-      <div className="text-destructive p-4">
+      <div className="p-4 text-destructive">
         Error loading districts:{" "}
         {error instanceof Error ? error.message : "Unknown error"}
       </div>

@@ -63,9 +63,9 @@ export function MetricsTab({
 
           if (hasActiveFilters) {
             return (
-              <div className="text-muted-foreground flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1">
-                  <div className="bg-primary h-2 w-2 rounded-full"></div>
+                  <div className="h-2 w-2 rounded-full bg-primary"></div>
                   <span>Metrics reflect current filters</span>
                 </div>
               </div>

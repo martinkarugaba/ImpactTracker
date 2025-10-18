@@ -52,14 +52,14 @@ export function CountryDetailClient({
 
   if ((error || !country) && !initialCountry) {
     return (
-      <div className="border-destructive/20 bg-destructive/5 text-destructive flex flex-col items-start gap-2 rounded-lg border p-6 shadow-sm">
+      <div className="flex flex-col items-start gap-2 rounded-lg border border-destructive/20 bg-destructive/5 p-6 text-destructive shadow-sm">
         <h3 className="text-lg font-semibold">Error loading country data</h3>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           {error instanceof Error ? error.message : "Country not found"}
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="bg-background border-input hover:bg-accent mt-2 rounded-md border px-4 py-2 text-sm transition-colors"
+          className="mt-2 rounded-md border border-input bg-background px-4 py-2 text-sm transition-colors hover:bg-accent"
         >
           Retry
         </button>

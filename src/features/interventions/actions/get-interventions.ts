@@ -24,6 +24,7 @@ export async function getInterventions(_opts?: {
               district: true,
               subCounty: true,
               age: true,
+              sex: true,
             },
           },
           activity: {
@@ -49,6 +50,7 @@ export async function getInterventions(_opts?: {
           : "Unknown",
         participantContact: r.participant?.contact ?? null,
         age: r.participant?.age ?? null,
+        sex: r.participant?.sex ?? null,
         subcounty: r.participant?.subCounty ?? null,
         activityId: r.activity_id,
         activityTitle: r.activity?.title ?? null,
@@ -81,6 +83,7 @@ export async function getInterventions(_opts?: {
               district: true,
               subCounty: true,
               age: true,
+              sex: true,
             },
           },
           session: {
@@ -114,6 +117,7 @@ export async function getInterventions(_opts?: {
           : "Unknown",
         participantContact: r.participant?.contact ?? null,
         age: r.participant?.age ?? null,
+        sex: r.participant?.sex ?? null,
         subcounty: r.participant?.subCounty ?? null,
         activityId: r.session?.activity_id ?? r.session?.activity?.id ?? "",
         activityTitle: r.session?.activity?.title ?? null,

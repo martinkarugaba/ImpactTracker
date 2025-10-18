@@ -31,7 +31,7 @@ export function DialogHeader() {
           </Button>
         </div>
         {duplicatesData && (
-          <div className="text-muted-foreground text-sm">
+          <div className="text-sm text-muted-foreground">
             Found {duplicatesData.totalGroups} duplicate groups with{" "}
             {totalDuplicateCount} participants
           </div>

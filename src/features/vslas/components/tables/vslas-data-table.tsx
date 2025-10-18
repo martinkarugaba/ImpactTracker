@@ -259,10 +259,10 @@ export function VSLAsDataTable({
             </TableBody>
           </Table>
           {isLoading && (
-            <div className="bg-background/80 absolute inset-0 flex items-center justify-center backdrop-blur-sm">
+            <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-muted-foreground text-sm">
+                <span className="text-sm text-muted-foreground">
                   Loading VSLAs...
                 </span>
               </div>
@@ -272,7 +272,7 @@ export function VSLAsDataTable({
       </div>
       {showPagination && (
         <div className="flex items-center justify-between space-x-2 py-4">
-          <div className="text-muted-foreground flex-1 text-sm">
+          <div className="flex-1 text-sm text-muted-foreground">
             {showRowSelection ? (
               <>
                 {table.getFilteredSelectedRowModel().rows.length} of{" "}
@@ -302,7 +302,7 @@ export function VSLAsDataTable({
                 onChange={e => {
                   table.setPageSize(Number(e.target.value));
                 }}
-                className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring h-8 w-[70px] rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                className="h-8 w-[70px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {[10, 20, 30, 40, 50].map(pageSize => (
                   <option key={pageSize} value={pageSize}>

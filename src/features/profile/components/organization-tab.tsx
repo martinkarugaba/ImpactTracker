@@ -81,12 +81,12 @@ export function OrganizationTab({ canEdit, _userRole }: OrganizationTabProps) {
       {/* Organization Header */}
       <div className="flex items-start justify-between">
         <div className="flex items-center space-x-4">
-          <div className="bg-primary/10 flex h-16 w-16 items-center justify-center rounded-lg">
-            <IconBuilding className="text-primary h-8 w-8" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-primary/10">
+            <IconBuilding className="h-8 w-8 text-primary" />
           </div>
           <div className="space-y-1">
             <h3 className="text-xl font-semibold">{orgData.name}</h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               Established {orgData.established}
             </p>
             <Badge variant="secondary">
@@ -146,7 +146,7 @@ export function OrganizationTab({ canEdit, _userRole }: OrganizationTabProps) {
                 onChange={e => setOrgData({ ...orgData, name: e.target.value })}
                 disabled={!isEditing}
               />
-              <IconBuilding className="text-muted-foreground absolute top-3 right-3 h-4 w-4" />
+              <IconBuilding className="absolute top-3 right-3 h-4 w-4 text-muted-foreground" />
             </div>
           </div>
 
@@ -162,7 +162,7 @@ export function OrganizationTab({ canEdit, _userRole }: OrganizationTabProps) {
                 }
                 disabled={!isEditing}
               />
-              <IconMail className="text-muted-foreground absolute top-3 right-3 h-4 w-4" />
+              <IconMail className="absolute top-3 right-3 h-4 w-4 text-muted-foreground" />
             </div>
           </div>
 
@@ -177,7 +177,7 @@ export function OrganizationTab({ canEdit, _userRole }: OrganizationTabProps) {
                 }
                 disabled={!isEditing}
               />
-              <IconPhone className="text-muted-foreground absolute top-3 right-3 h-4 w-4" />
+              <IconPhone className="absolute top-3 right-3 h-4 w-4 text-muted-foreground" />
             </div>
           </div>
 
@@ -208,7 +208,7 @@ export function OrganizationTab({ canEdit, _userRole }: OrganizationTabProps) {
                 disabled={!isEditing}
                 rows={3}
               />
-              <IconMapPin className="text-muted-foreground absolute top-3 right-3 h-4 w-4" />
+              <IconMapPin className="absolute top-3 right-3 h-4 w-4 text-muted-foreground" />
             </div>
           </div>
 
@@ -240,7 +240,7 @@ export function OrganizationTab({ canEdit, _userRole }: OrganizationTabProps) {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{orgData.memberCount}</p>
-            <p className="text-muted-foreground text-xs">Active members</p>
+            <p className="text-xs text-muted-foreground">Active members</p>
           </CardContent>
         </Card>
 
@@ -253,7 +253,7 @@ export function OrganizationTab({ canEdit, _userRole }: OrganizationTabProps) {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{orgData.clustersCount}</p>
-            <p className="text-muted-foreground text-xs">Active clusters</p>
+            <p className="text-xs text-muted-foreground">Active clusters</p>
           </CardContent>
         </Card>
 
@@ -263,7 +263,7 @@ export function OrganizationTab({ canEdit, _userRole }: OrganizationTabProps) {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{orgData.established}</p>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               {new Date().getFullYear() - parseInt(orgData.established)} years
               ago
             </p>
@@ -276,7 +276,7 @@ export function OrganizationTab({ canEdit, _userRole }: OrganizationTabProps) {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">Active</p>
-            <p className="text-muted-foreground text-xs">Good standing</p>
+            <p className="text-xs text-muted-foreground">Good standing</p>
           </CardContent>
         </Card>
       </div>

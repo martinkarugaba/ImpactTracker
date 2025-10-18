@@ -132,7 +132,7 @@ export function VSLAMembersManagement({ vsla }: VSLAMembersManagementProps) {
             <CardTitle className="flex items-center gap-2">
               Members ({members.length})
               {selectedMembers.length > 0 && (
-                <span className="text-muted-foreground text-sm font-normal">
+                <span className="text-sm font-normal text-muted-foreground">
                   ({selectedMembers.length} selected)
                 </span>
               )}

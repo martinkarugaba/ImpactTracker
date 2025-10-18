@@ -10,7 +10,7 @@ export default function UnauthorizedPage() {
           <CardTitle className="text-center">Unauthorized Access</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-muted-foreground text-center">
+          <p className="text-center text-muted-foreground">
             You don&apos;t have permission to access this page. Please contact
             your administrator if you believe this is a mistake.
           </p>

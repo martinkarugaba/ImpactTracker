@@ -112,7 +112,7 @@ export function ProfileTab({ canEdit, userRole }: ProfileTabProps) {
 
         <div className="flex-1 space-y-1">
           <h3 className="text-xl font-semibold">{session?.user?.name}</h3>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             {session?.user?.email}
           </p>
           <Badge variant="outline" className="w-fit">
@@ -167,7 +167,7 @@ export function ProfileTab({ canEdit, userRole }: ProfileTabProps) {
                 }
                 disabled={!isEditing}
               />
-              <IconUser className="text-muted-foreground absolute top-3 right-3 h-4 w-4" />
+              <IconUser className="absolute top-3 right-3 h-4 w-4 text-muted-foreground" />
             </div>
           </div>
 
@@ -183,7 +183,7 @@ export function ProfileTab({ canEdit, userRole }: ProfileTabProps) {
                 }
                 disabled={!isEditing}
               />
-              <IconMail className="text-muted-foreground absolute top-3 right-3 h-4 w-4" />
+              <IconMail className="absolute top-3 right-3 h-4 w-4 text-muted-foreground" />
             </div>
           </div>
 
@@ -199,7 +199,7 @@ export function ProfileTab({ canEdit, userRole }: ProfileTabProps) {
                 disabled={!isEditing}
                 placeholder="+256 XXX XXX XXX"
               />
-              <IconPhone className="text-muted-foreground absolute top-3 right-3 h-4 w-4" />
+              <IconPhone className="absolute top-3 right-3 h-4 w-4 text-muted-foreground" />
             </div>
           </div>
 
@@ -215,7 +215,7 @@ export function ProfileTab({ canEdit, userRole }: ProfileTabProps) {
                 disabled={!isEditing}
                 placeholder="City, Country"
               />
-              <IconMapPin className="text-muted-foreground absolute top-3 right-3 h-4 w-4" />
+              <IconMapPin className="absolute top-3 right-3 h-4 w-4 text-muted-foreground" />
             </div>
           </div>
         </div>
@@ -272,7 +272,7 @@ export function ProfileTab({ canEdit, userRole }: ProfileTabProps) {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">Jan 2024</p>
-            <p className="text-muted-foreground text-xs">Member since</p>
+            <p className="text-xs text-muted-foreground">Member since</p>
           </CardContent>
         </Card>
 
@@ -282,7 +282,7 @@ export function ProfileTab({ canEdit, userRole }: ProfileTabProps) {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">Today</p>
-            <p className="text-muted-foreground text-xs">2 hours ago</p>
+            <p className="text-xs text-muted-foreground">2 hours ago</p>
           </CardContent>
         </Card>
 
@@ -294,7 +294,7 @@ export function ProfileTab({ canEdit, userRole }: ProfileTabProps) {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">Active</p>
-            <p className="text-muted-foreground text-xs">Regular user</p>
+            <p className="text-xs text-muted-foreground">Regular user</p>
           </CardContent>
         </Card>
       </div>

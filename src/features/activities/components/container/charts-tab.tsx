@@ -53,7 +53,7 @@ export function ChartsTab({
             <h4 className="mb-3 font-medium">Activities by Status</h4>
             {isMetricsLoading ? (
               <div className="flex h-32 items-center justify-center">
-                <div className="text-muted-foreground text-sm">Loading...</div>
+                <div className="text-sm text-muted-foreground">Loading...</div>
               </div>
             ) : (
               <div className="space-y-2">
@@ -69,7 +69,7 @@ export function ChartsTab({
                   )
                 )}
                 {Object.keys(metrics.byStatus || {}).length === 0 && (
-                  <div className="text-muted-foreground py-4 text-center text-sm">
+                  <div className="py-4 text-center text-sm text-muted-foreground">
                     No data available
                   </div>
                 )}
@@ -82,7 +82,7 @@ export function ChartsTab({
             <h4 className="mb-3 font-medium">Activities by Type</h4>
             {isMetricsLoading ? (
               <div className="flex h-32 items-center justify-center">
-                <div className="text-muted-foreground text-sm">Loading...</div>
+                <div className="text-sm text-muted-foreground">Loading...</div>
               </div>
             ) : (
               <div className="space-y-2">
@@ -93,7 +93,7 @@ export function ChartsTab({
                   </div>
                 ))}
                 {Object.keys(metrics.byType || {}).length === 0 && (
-                  <div className="text-muted-foreground py-4 text-center text-sm">
+                  <div className="py-4 text-center text-sm text-muted-foreground">
                     No data available
                   </div>
                 )}
@@ -105,7 +105,7 @@ export function ChartsTab({
         {/* Recent Activities Summary */}
         {isMetricsLoading ? (
           <div className="flex h-32 items-center justify-center rounded-md bg-gray-50 p-4 dark:bg-gray-900/50">
-            <div className="text-muted-foreground text-sm">Loading...</div>
+            <div className="text-sm text-muted-foreground">Loading...</div>
           </div>
         ) : metricsActivities.length > 0 ? (
           <div className="rounded-md bg-gray-50 p-4 dark:bg-gray-900/50">
@@ -120,11 +120,11 @@ export function ChartsTab({
                     <span className="text-sm font-medium">
                       {activity.title}
                     </span>
-                    <span className="text-muted-foreground ml-2 text-xs">
+                    <span className="ml-2 text-xs text-muted-foreground">
                       {activity.type}
                     </span>
                   </div>
-                  <span className="text-muted-foreground text-xs">
+                  <span className="text-xs text-muted-foreground">
                     {activity.status}
                   </span>
                 </div>
@@ -133,7 +133,7 @@ export function ChartsTab({
           </div>
         ) : (
           <div className="rounded-md bg-gray-50 p-4 dark:bg-gray-900/50">
-            <div className="text-muted-foreground py-4 text-center text-sm">
+            <div className="py-4 text-center text-sm text-muted-foreground">
               No activities available
             </div>
           </div>

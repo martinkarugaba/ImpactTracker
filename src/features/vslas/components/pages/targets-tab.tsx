@@ -137,7 +137,7 @@ export function TargetsTab({ vslas = [], isLoading }: TargetsTabProps) {
         <Card className="flex flex-col">
           <CardHeader className="items-center pb-0">
             <CardTitle className="flex items-center gap-2">
-              <Building className="text-muted-foreground h-5 w-5" />
+              <Building className="h-5 w-5 text-muted-foreground" />
               Total VSLAs
             </CardTitle>
             <CardDescription>Target: {target.toLocaleString()}</CardDescription>
@@ -200,7 +200,7 @@ export function TargetsTab({ vslas = [], isLoading }: TargetsTabProps) {
               {vslasPercentage.toFixed(1)}% of target{" "}
               <TrendingUp className="h-4 w-4" />
             </div>
-            <div className="text-muted-foreground leading-none">
+            <div className="leading-none text-muted-foreground">
               {(target - total).toLocaleString()} more to reach target
             </div>
           </CardFooter>
@@ -210,7 +210,7 @@ export function TargetsTab({ vslas = [], isLoading }: TargetsTabProps) {
         <Card className="flex flex-col">
           <CardHeader className="items-center pb-0">
             <CardTitle className="flex items-center gap-2">
-              <Users className="text-muted-foreground h-5 w-5" />
+              <Users className="h-5 w-5 text-muted-foreground" />
               Total Members
             </CardTitle>
             <CardDescription>
@@ -275,7 +275,7 @@ export function TargetsTab({ vslas = [], isLoading }: TargetsTabProps) {
               {membersPercentage.toFixed(1)}% of target{" "}
               <TrendingUp className="h-4 w-4" />
             </div>
-            <div className="text-muted-foreground leading-none">
+            <div className="leading-none text-muted-foreground">
               {(membersTarget - totalMembers).toLocaleString()} more to reach
               target
             </div>
@@ -286,7 +286,7 @@ export function TargetsTab({ vslas = [], isLoading }: TargetsTabProps) {
         <Card className="flex flex-col">
           <CardHeader className="items-center pb-0">
             <CardTitle className="flex items-center gap-2">
-              <DollarSign className="text-muted-foreground h-5 w-5" />
+              <DollarSign className="h-5 w-5 text-muted-foreground" />
               Total Savings
             </CardTitle>
             <CardDescription>
@@ -351,7 +351,7 @@ export function TargetsTab({ vslas = [], isLoading }: TargetsTabProps) {
               {savingsPercentage.toFixed(1)}% of target{" "}
               <TrendingUp className="h-4 w-4" />
             </div>
-            <div className="text-muted-foreground leading-none">
+            <div className="leading-none text-muted-foreground">
               {((savingsTarget - totalSavings) / 1000000).toFixed(1)}M more to
               reach target
             </div>
@@ -362,7 +362,7 @@ export function TargetsTab({ vslas = [], isLoading }: TargetsTabProps) {
         <Card className="flex flex-col">
           <CardHeader className="items-center pb-0">
             <CardTitle className="flex items-center gap-2">
-              <TrendingDown className="text-muted-foreground h-5 w-5" />
+              <TrendingDown className="h-5 w-5 text-muted-foreground" />
               Active %
             </CardTitle>
             <CardDescription>Target: {activeTarget}%</CardDescription>
@@ -425,7 +425,7 @@ export function TargetsTab({ vslas = [], isLoading }: TargetsTabProps) {
               {activeVSLAs.toLocaleString()} active VSLAs{" "}
               <TrendingUp className="h-4 w-4" />
             </div>
-            <div className="text-muted-foreground leading-none">
+            <div className="leading-none text-muted-foreground">
               {activePercentage >= activeTarget
                 ? "Target achieved!"
                 : `${(activeTarget - activePercentage).toFixed(1)}% to reach target`}

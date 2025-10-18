@@ -35,7 +35,7 @@ export function CodeInput({ form, districtName, countryId }: CodeInputProps) {
           </FormControl>
           <FormMessage />
           {districtName && countryId && (
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               Auto-generated from country code and district name
             </p>
           )}

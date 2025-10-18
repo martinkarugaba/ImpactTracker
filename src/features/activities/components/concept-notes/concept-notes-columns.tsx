@@ -50,7 +50,7 @@ export const conceptNoteColumns: ColumnDef<ConceptNote>[] = [
       <div className="max-w-[200px]">
         <div className="font-medium">{row.original.title}</div>
         {row.original.charge_code && (
-          <div className="text-muted-foreground text-sm">
+          <div className="text-sm text-muted-foreground">
             Code: {row.original.charge_code}
           </div>
         )}
@@ -97,7 +97,7 @@ export const conceptNoteColumns: ColumnDef<ConceptNote>[] = [
     header: "Content Preview",
     cell: ({ row }) => (
       <div className="max-w-[300px]">
-        <p className="text-muted-foreground truncate text-sm">
+        <p className="truncate text-sm text-muted-foreground">
           {row.original.content.substring(0, 100)}
           {row.original.content.length > 100 && "..."}
         </p>

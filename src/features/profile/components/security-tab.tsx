@@ -124,7 +124,7 @@ export function SecurityTab({ userRole: _userRole }: SecurityTabProps) {
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
                     <Label>Password</Label>
-                    <p className="text-muted-foreground text-xs">
+                    <p className="text-xs text-muted-foreground">
                       Last changed 3 months ago
                     </p>
                   </div>
@@ -226,7 +226,7 @@ export function SecurityTab({ userRole: _userRole }: SecurityTabProps) {
                       {twoFactorEnabled ? "Enabled" : "Disabled"}
                     </Badge>
                   </div>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Add an extra layer of security to your account
                   </p>
                 </div>
@@ -275,7 +275,7 @@ export function SecurityTab({ userRole: _userRole }: SecurityTabProps) {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <Label>Login Alerts</Label>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Get notified of new login attempts
                   </p>
                 </div>
@@ -293,7 +293,7 @@ export function SecurityTab({ userRole: _userRole }: SecurityTabProps) {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <Label>Device Tracking</Label>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Track devices that access your account
                   </p>
                 </div>
@@ -327,7 +327,7 @@ export function SecurityTab({ userRole: _userRole }: SecurityTabProps) {
                 >
                   <div className="space-y-1">
                     <p className="text-sm font-medium">{session.device}</p>
-                    <p className="text-muted-foreground text-xs">
+                    <p className="text-xs text-muted-foreground">
                       {session.location}
                     </p>
                   </div>
@@ -372,7 +372,7 @@ export function SecurityTab({ userRole: _userRole }: SecurityTabProps) {
                 >
                   <div className="space-y-1">
                     <p className="text-sm">{login.device}</p>
-                    <p className="text-muted-foreground text-xs">
+                    <p className="text-xs text-muted-foreground">
                       {login.date} • {login.location}
                     </p>
                   </div>

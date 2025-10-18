@@ -40,7 +40,7 @@ export function ResponsiveTable<T extends Record<string, unknown>>({
                       key={String(column.key)}
                       className="flex justify-between"
                     >
-                      <span className="text-muted-foreground text-sm font-medium">
+                      <span className="text-sm font-medium text-muted-foreground">
                         {column.label}:
                       </span>
                       <span className="text-sm font-medium">

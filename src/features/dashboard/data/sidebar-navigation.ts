@@ -7,9 +7,9 @@ import {
   IconLocation,
   IconNote,
   IconReport,
+  IconRocket,
   IconUsers,
   IconUsersGroup,
-  IconCertificate,
 } from "@tabler/icons-react";
 
 export const navigationData = {
@@ -76,7 +76,7 @@ export const navigationData = {
     {
       name: "Interventions",
       url: "/dashboard/interventions",
-      icon: IconCertificate,
+      icon: IconRocket,
     },
     {
       name: "VSLAs",

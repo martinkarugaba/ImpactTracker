@@ -3,10 +3,11 @@
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Info, Users, UserCheck, TrendingUp } from "lucide-react";
-import type { Activity } from "../../types/types";
+import { Info, Users, UserCheck, TrendingUp, Calendar } from "lucide-react";
+import type { Activity, DailyAttendance } from "../../types/types";
 import { ActivityOverviewTab } from "./activity-overview-tab";
 import { AttendanceTab } from "./attendance-tab";
+import { SessionsTab } from "./sessions-tab";
 import { AttendanceAnalyticsTab } from "./attendance-analytics-tab";
 import { AttendanceDemographicsTab } from "./attendance-demographics-tab";
 
@@ -22,6 +23,7 @@ interface ActivityDetailsTabsProps {
   onCreateSession: () => void;
   onEditSession: (sessionId: string) => void;
   onDuplicateSession?: (sessionId: string) => void;
+  attendanceBySession: Record<string, DailyAttendance[]>;
   refreshKey: number;
   activityReportsRefreshKey: number;
 }
@@ -35,9 +37,10 @@ export function ActivityDetailsTabs({
   onEditActivityReport,
   onDeleteActivityReport,
   onManageAttendance,
-  onCreateSession,
+  onCreateSession: _onCreateSession,
   onEditSession,
   onDuplicateSession,
+  attendanceBySession: _attendanceBySession,
   refreshKey,
   activityReportsRefreshKey,
 }: ActivityDetailsTabsProps) {
@@ -46,12 +49,21 @@ export function ActivityDetailsTabs({
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<string>("overview");
 
+  // Individual tab components handle their own data fetching
+
   // Initialize tab from URL on mount
   useEffect(() => {
     const tab = searchParams.get("tab");
     if (
       tab &&
-      ["overview", "attendance", "demographics", "analytics"].includes(tab)
+      [
+        "overview",
+        "attendance",
+        "attendance-overview",
+        "sessions-management",
+        "demographics",
+        "analytics",
+      ].includes(tab)
     ) {
       setActiveTab(tab);
     }
@@ -88,7 +100,12 @@ export function ActivityDetailsTabs({
           <span className="hidden sm:inline">Overview</span>
           <span className="sm:hidden">Info</span>
         </TabsTrigger>
-        <TabsTrigger value="attendance">
+        <TabsTrigger value="sessions-management">
+          <Calendar className="h-4 w-4" />
+          <span className="hidden sm:inline">Sessions</span>
+          <span className="sm:hidden">Sess</span>
+        </TabsTrigger>
+        <TabsTrigger value="attendance-overview">
           <Users className="h-4 w-4" />
           <span className="hidden sm:inline">Attendance</span>
           <span className="sm:hidden">People</span>
@@ -119,11 +136,18 @@ export function ActivityDetailsTabs({
         />
       </TabsContent>
 
-      <TabsContent value="attendance" className="mt-6">
-        <AttendanceTab
+      <TabsContent value="sessions-management" className="mt-6">
+        <SessionsTab
           activity={activity}
           onManageAttendance={onManageAttendance}
-          onCreateSession={onCreateSession}
+          onCreateSession={_onCreateSession}
+          onEditSession={onEditSession}
+        />
+      </TabsContent>
+
+      <TabsContent value="attendance-overview" className="mt-6">
+        <AttendanceTab
+          activity={activity}
           onEditSession={onEditSession}
           onDuplicateSession={onDuplicateSession}
         />

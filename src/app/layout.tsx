@@ -5,6 +5,7 @@ import { QueryProvider } from "@/providers/query-provider";
 import { AuthProvider } from "@/providers/session-provider";
 import { ActiveThemeProvider } from "@/features/themes/components/active-theme";
 import { CalendarProvider } from "@/components/event-calendar/calendar-context";
+import { ClusterProvider } from "@/features/auth/components/cluster-provider";
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -12,7 +13,7 @@ const fontSans = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "700"],
+  weight: ["200", "300", "400", "500", "600", "700"],
   preload: true,
   fallback: ["system-ui", "arial"],
 });
@@ -48,7 +49,9 @@ export default function RootLayout({
           <ActiveThemeProvider>
             <AuthProvider>
               <QueryProvider>
-                <CalendarProvider>{children}</CalendarProvider>
+                <CalendarProvider>
+                  <ClusterProvider>{children}</ClusterProvider>
+                </CalendarProvider>
               </QueryProvider>
             </AuthProvider>
           </ActiveThemeProvider>

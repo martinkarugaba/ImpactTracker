@@ -209,7 +209,7 @@ export const createColumns = (
       if (!time) return <span className="text-muted-foreground">-</span>;
       return (
         <div className="flex items-center gap-2">
-          <Clock className="text-muted-foreground h-3.5 w-3.5" />
+          <Clock className="h-3.5 w-3.5 text-muted-foreground" />
           <span>{time}</span>
         </div>
       );

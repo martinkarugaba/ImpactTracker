@@ -320,7 +320,7 @@ export function ImportParticipants({
           {/* Upload Step */}
           {currentStep === "upload" && (
             <div className="space-y-4">
-              <div className="border-muted flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-6">
+              <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted p-6">
                 <input
                   type="file"
                   accept=".xlsx,.xls"
@@ -337,19 +337,19 @@ export function ImportParticipants({
                   htmlFor="file-upload"
                   className="flex cursor-pointer flex-col items-center gap-2"
                 >
-                  <Upload className="text-muted-foreground h-8 w-8" />
+                  <Upload className="h-8 w-8 text-muted-foreground" />
                   <div className="text-center">
-                    <p className="text-muted-foreground text-sm">
+                    <p className="text-sm text-muted-foreground">
                       Click to upload or drag and drop an Excel file
                     </p>
-                    <p className="text-muted-foreground text-xs">
+                    <p className="text-xs text-muted-foreground">
                       .xlsx or .xls files only
                     </p>
                   </div>
                 </label>
               </div>
               {file && (
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   Selected: {file.name}
                 </p>
               )}
@@ -379,7 +379,7 @@ export function ImportParticipants({
           {currentStep === "validate" && (
             <div className="space-y-4">
               <div className="text-center">
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   Validating data from sheet: <strong>{selectedSheet}</strong>
                 </p>
                 {isProcessing && (
@@ -391,7 +391,7 @@ export function ImportParticipants({
 
               {validationErrors.length > 0 && (
                 <div className="space-y-2">
-                  <h4 className="text-destructive font-medium">
+                  <h4 className="font-medium text-destructive">
                     Validation Errors
                   </h4>
                   <div className="max-h-40 overflow-y-auto rounded border">
@@ -402,7 +402,7 @@ export function ImportParticipants({
                       </div>
                     ))}
                     {validationErrors.length > 10 && (
-                      <div className="text-muted-foreground p-2 text-xs">
+                      <div className="p-2 text-xs text-muted-foreground">
                         ... and {validationErrors.length - 10} more errors
                       </div>
                     )}

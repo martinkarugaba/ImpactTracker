@@ -11,14 +11,14 @@ export function AttendanceListCard({ activity }: AttendanceListCardProps) {
     <Card>
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Users className="text-muted-foreground h-6 w-6" />
+          <Users className="h-6 w-6 text-muted-foreground" />
           <CardTitle className="text-xl">Participants</CardTitle>
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground text-base">
+            <span className="text-base text-muted-foreground">
               Total Participants
             </span>
             <span className="text-base font-medium">
@@ -28,7 +28,7 @@ export function AttendanceListCard({ activity }: AttendanceListCardProps) {
 
           {activity.numberOfParticipants !== undefined && (
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-base">
+              <span className="text-base text-muted-foreground">
                 Expected Participants
               </span>
               <span className="text-base font-medium">
@@ -37,8 +37,8 @@ export function AttendanceListCard({ activity }: AttendanceListCardProps) {
             </div>
           )}
 
-          <div className="border-muted mt-4 border-t pt-4">
-            <p className="text-muted-foreground text-base">
+          <div className="mt-4 border-t border-muted pt-4">
+            <p className="text-base text-muted-foreground">
               Detailed attendance information will be displayed here when
               participant data is available.
             </p>
