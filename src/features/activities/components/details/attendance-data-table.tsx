@@ -65,7 +65,7 @@ function SubcountyCell({ subCounty }: { subCounty?: string }) {
             variant="outline"
             className="border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-800 dark:bg-purple-950 dark:text-purple-300"
           >
-            {displayName}
+            {toTitleCase(displayName)}
           </Badge>
         ) : (
           <span className="text-muted-foreground text-sm">-</span>
@@ -125,6 +125,15 @@ const getAttendanceStatusBadge = (status: string) => {
           "bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-200 dark:bg-gray-900 dark:text-gray-200 dark:border-gray-800",
       };
   }
+};
+
+// Helper function to convert text to title case
+const toTitleCase = (str: string) => {
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 };
 
 export function AttendanceDataTable({
@@ -310,9 +319,9 @@ export function AttendanceDataTable({
                 </AvatarFallback>
               </Avatar>
               <div className="space-y-1">
-                <div className="font-medium capitalize">
+                <div className="font-medium">
                   {participant
-                    ? `${firstName} ${lastName}`
+                    ? `${toTitleCase(firstName)} ${toTitleCase(lastName)}`
                     : "Unknown Participant"}
                 </div>
                 {participant?.designation && (
@@ -448,7 +457,7 @@ export function AttendanceDataTable({
                     variant="outline"
                     className="border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-300"
                   >
-                    {district}
+                    {toTitleCase(district)}
                   </Badge>
                 ) : (
                   <span className="text-muted-foreground text-sm">-</span>

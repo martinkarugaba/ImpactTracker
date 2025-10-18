@@ -14,10 +14,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { UserCheck } from "lucide-react";
-import { ActivitiesCalendar } from "@/features/activities/components/calendar/activities-calendar";
+import { PieChart, Target, Table, BarChart3 } from "lucide-react";
 import { DetailedParticipantMetrics } from "@/components/shared/detailed-metrics";
 import type { LocationData } from "@/features/locations/actions/location-data";
+import { SharedChartsTab } from "@/components/shared/charts-tab";
+import { SharedTargetsTab } from "@/components/shared/targets-tab";
 
 interface InterventionsContainerProps {
   initialData: Intervention[];
@@ -219,11 +220,21 @@ export default function InterventionsContainer({
 
       <Tabs defaultValue="table">
         <TabsList>
-          <TabsTrigger value="table">Table</TabsTrigger>
-          <TabsTrigger value="metrics">Metrics</TabsTrigger>
-          <TabsTrigger value="demographics" className="flex items-center gap-2">
-            <UserCheck className="h-4 w-4" />
-            Demographics
+          <TabsTrigger value="table" className="flex items-center gap-2">
+            <Table className="h-4 w-4" />
+            Table
+          </TabsTrigger>
+          <TabsTrigger value="metrics" className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Metrics
+          </TabsTrigger>
+          <TabsTrigger value="charts" className="flex items-center gap-2">
+            <PieChart className="h-4 w-4" />
+            Charts
+          </TabsTrigger>
+          <TabsTrigger value="targets" className="flex items-center gap-2">
+            <Target className="h-4 w-4" />
+            Targets
           </TabsTrigger>
         </TabsList>
 
@@ -308,15 +319,17 @@ export default function InterventionsContainer({
           />
         </TabsContent>
 
-        <TabsContent value="demographics">
-          <div className="p-4">
-            <h3 className="text-lg font-medium">Demographics</h3>
-            <ActivitiesCalendar
-              className="w-full"
-              clusterId="example-cluster-id"
-            />
-          </div>
-        </TabsContent>
+        <SharedChartsTab
+          data={filteredData}
+          dataType="interventions"
+          isLoading={false}
+        />
+
+        <SharedTargetsTab
+          data={filteredData}
+          dataType="interventions"
+          isLoading={false}
+        />
       </Tabs>
     </div>
   );
