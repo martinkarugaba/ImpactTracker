@@ -7,10 +7,10 @@ import { useParticipantContainerJotai } from "../../state/use-participant-contai
 import { useParticipantState } from "../../state/use-participant-state";
 import type { Participant } from "../../types/types";
 import { AnalyticsTab } from "./metrics-tab";
-import { ChartsTab } from "./charts-tab";
 import { ParticipantsTab } from "./participants-tab";
-import { TargetsTab } from "./targets-tab";
 import { ParticipantDialogs } from "./participant-dialogs";
+import { SharedChartsTab } from "@/components/shared/charts-tab";
+import { SharedTargetsTab } from "@/components/shared/targets-tab";
 
 interface JotaiParticipantsContainerProps {
   clusterId: string;
@@ -159,17 +159,19 @@ export function JotaiParticipantsContainer({
 
           {/* Charts Tab - Super Admin Only */}
           {isSuperAdmin && (
-            <ChartsTab
-              metricsParticipants={state.metricsParticipants}
-              isMetricsLoading={state.isMetricsLoading}
+            <SharedChartsTab
+              data={state.metricsParticipants}
+              dataType="participants"
+              isLoading={state.isMetricsLoading}
             />
           )}
 
           {/* Targets Tab - Super Admin Only */}
           {isSuperAdmin && (
-            <TargetsTab
-              metricsParticipants={state.metricsParticipants}
-              isMetricsLoading={state.isMetricsLoading}
+            <SharedTargetsTab
+              data={state.metricsParticipants}
+              dataType="participants"
+              isLoading={state.isMetricsLoading}
             />
           )}
         </Tabs>

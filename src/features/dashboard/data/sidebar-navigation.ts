@@ -64,6 +64,11 @@ export const navigationData = {
       icon: IconDashboard,
     },
     {
+      name: "Interventions",
+      url: "/dashboard/interventions",
+      icon: IconRocket,
+    },
+    {
       name: "Participants",
       url: "/dashboard/participants",
       icon: IconUsersGroup,
@@ -73,11 +78,7 @@ export const navigationData = {
       url: "/dashboard/activities",
       icon: IconActivity,
     },
-    {
-      name: "Interventions",
-      url: "/dashboard/interventions",
-      icon: IconRocket,
-    },
+
     {
       name: "VSLAs",
       url: "/dashboard/vslas",

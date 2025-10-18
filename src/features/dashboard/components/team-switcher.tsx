@@ -33,6 +33,17 @@ import { useAtom } from "jotai";
 import { clusterAtom } from "@/features/auth/atoms/cluster-atom";
 import type { Organization } from "@/features/organizations/types";
 
+// Check if we're in a client environment with QueryClient available
+const useIsQueryClientAvailable = () => {
+  const [isAvailable, setIsAvailable] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsAvailable(true);
+  }, []);
+
+  return isAvailable;
+};
+
 interface OrganizationsData {
   currentOrg: Organization;
   organizations: Organization[];
@@ -44,6 +55,7 @@ export function TeamSwitcher() {
   const router = useRouter();
   const { isMobile } = useSidebar();
   const [cluster] = useAtom(clusterAtom);
+  const isQueryClientAvailable = useIsQueryClientAvailable();
 
   const { data: organizationId, isLoading: isLoadingOrgId } = useQuery({
     queryKey: ["organizationId"],
@@ -53,6 +65,7 @@ export function TeamSwitcher() {
       console.log("Got organization ID result:", result);
       return result;
     },
+    enabled: isQueryClientAvailable,
   });
 
   const { data: organizationsData, isLoading: isLoadingOrgs } =
@@ -114,13 +127,13 @@ export function TeamSwitcher() {
         console.log("Final organizations data:", result);
         return result;
       },
-      enabled: !!organizationId,
+      enabled: !!organizationId && isQueryClientAvailable,
       refetchOnWindowFocus: true,
       staleTime: 10 * 1000,
       refetchInterval: 30 * 1000,
     });
 
-  if (isLoadingOrgId || isLoadingOrgs) {
+  if (!isQueryClientAvailable || isLoadingOrgId || isLoadingOrgs) {
     return (
       <Button
         variant="ghost"
@@ -129,7 +142,9 @@ export function TeamSwitcher() {
       >
         <div className="flex items-center gap-2">
           <Building2 className="h-4 w-4 animate-pulse text-primary/70" />
-          <span className="truncate text-muted-foreground">Loading...</span>
+          <span className="truncate text-muted-foreground">
+            {!isQueryClientAvailable ? "Initializing..." : "Loading..."}
+          </span>
         </div>
         <ChevronDown className="h-4 w-4 animate-pulse text-muted-foreground" />
       </Button>

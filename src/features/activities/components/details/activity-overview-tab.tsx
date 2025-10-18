@@ -197,7 +197,7 @@ export function ActivityOverviewTab({
       <ActivityNotesCard activity={activity} />
 
       {/* Documents Section */}
-      <div className="grid gap-6 lg:grid-cols-1 xl:grid-cols-2">
+      <div className="grid gap-6 grid-cols-1">
         {/* Concept Notes Table */}
         <div className="group rounded-lg border p-1 transition-all hover:shadow-sm">
           <Card className="border-0">
